@@ -12,6 +12,7 @@
                     <table class="table table-sm table-borderless mb-2 ms-2">
                         <?php foreach ($data['setor'] as $set) { ?>
                             <tr>
+                                <td class="text-primary" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
                                 <td><?= $set['count'] ?> Transaksi</td>
                                 <td><?= $set['ref_setoran'] ?></td>
                                 <td class="text-end">Rp<?= number_format($set['jumlah']) ?></td>
@@ -46,6 +47,7 @@
                         }
                     ?>
                         <tr>
+                            <td class="text-primary" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
                             <td><?= $set['count'] ?> Transaksi</td>
                             <td><?= $set['ref_setoran'] ?></td>
                             <td class="text-end">Rp<?= number_format($set['jumlah']) ?></td>
@@ -57,6 +59,14 @@
         </div>
     </div>
 </main>
+
+<div class="modal" id="modalCek" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="cek_load">
+
+        </div>
+    </div>
+</div>
 
 <script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
@@ -77,5 +87,10 @@
                 }
             },
         });
+    });
+
+    $('span.cekTrx').click(function() {
+        var ref = $(this).attr("data-ref");
+        $("div#cek_load").load('<?= $this->BASE_URL ?>Setoran_F/cek/' + ref);
     });
 </script>

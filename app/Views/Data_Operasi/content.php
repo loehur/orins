@@ -44,6 +44,7 @@
 
                     $dibayar = 0;
                     $showMutasi = "";
+
                     foreach ($data['kas'] as $dk) {
                         if ($dk['ref_transaksi'] == $ref) {
                             if ($dk['status_mutasi'] == 0 || $dk['status_mutasi'] == 1) {
@@ -56,15 +57,15 @@
                             switch ($dk['status_mutasi']) {
                                 case 0:
                                     $statusP = "<small class='text-warning'>(Dalam Pengecekan)</small> ";
-                                    $showMutasi .= $statusP . $dk['note'] . " -Rp" . number_format($dk['jumlah']) . "<br>";
+                                    $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
                                     break;
                                 case 1:
                                     $statusP = '<small><i class="fa-solid fa-check text-success"></i></small> ';
-                                    $showMutasi .= $statusP . $dk['note'] . " -Rp" . number_format($dk['jumlah']) . "<br>";
+                                    $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
                                     break;
                                 default:
                                     $statusP = '<small><i class="fa-solid fa-xmark text-danger"></i></small> ';
-                                    $showMutasi .= $statusP . "<del>" . $dk['note'] . " -Rp" . number_format($dk['jumlah']) . "</del><br>";
+                                    $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "</del><br>";
                                     break;
                             }
                         }
@@ -259,12 +260,17 @@
                                             $showMutasi .= "<span class='text-danger'><b>Sisa Rp" . number_format($sisa) . "</b></span>";
                                         }
 
+                                        $print_mode = "A4";
+                                        if ($no <= 6) {
+                                            $print_mode = "&#189;";
+                                        }
+
                                         ?>
                                         <tr class="border-top">
                                             <td class="text-end text" colspan="3">
                                                 <table>
                                                     <tr>
-                                                        <td class="text-end pe-1"><small><a href="<?= $this->BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm py-1 px-1"><i class="fa-solid fa-print"></i></a></small></td>
+                                                        <td class="text-end pe-1"><small><a href="<?= $this->BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm py-1 px-1"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
                                                         <?php
                                                         if ($ambil == true) { ?>
                                                             <td class="text-end pe-1"><small><span data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua border border-purple text-purple btn btn-sm py-1 px-1" data-ref="<?= $do['ref'] ?>">Ambil Semua</span></small></td>

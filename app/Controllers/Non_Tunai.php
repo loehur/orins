@@ -37,7 +37,7 @@ class Non_Tunai extends Controller
       $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
       $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
 
-      $where = "metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_kas DESC, id_client ASC";
+      $where = "metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_kas ASC, id_client ASC";
       $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
 
       $where = "metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY id_kas DESC, id_client ASC LIMIT 20";

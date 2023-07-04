@@ -55,4 +55,15 @@ class Setoran extends Controller
       $update = $this->model('M_DB_1')->update("kas", $set, $where);
       echo $update['errno'];
    }
+
+   function cek($ref_setor)
+   {
+      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
+      $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
+
+      $where = "metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '" . $ref_setor . "' ORDER BY id_kas DESC, id_client ASC";
+      $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
+
+      $this->view($this->page . "/cek", $data);
+   }
 }
