@@ -1,5 +1,19 @@
 <main>
-    <?php if (count($data['kas']) > 0) { ?>
+    <?php if (count($data['kas']) > 0) {
+        $rekap = [];
+        foreach ($data['kas'] as $a) {
+            $client = $a['id_client'];
+            $jumlah = $a['jumlah'];
+            if (isset($rekap[$client])) {
+                $rekap[$client]["c"] += 1;
+                $rekap[$client]["t"] += $jumlah;
+            } else {
+                $rekap[$client]["c"] = 1;
+                $rekap[$client]["t"] = $jumlah;
+            }
+        }
+
+    ?>
         <div class="p-2 ms-3 mt-3 me-3 bg-white">
             <div class="row">
                 <div class="col">
@@ -18,21 +32,13 @@
                             <th>Action</th>
                         </tr>
                         <?php
-                        $count = 1;
-                        $sum = 0;
-                        $client_old = 0;
-                        $rows = count($data['kas']);
                         $no = 0;
                         foreach ($data['kas'] as $a) {
                             $no += 1;
-
                             $client = $a['id_client'];
                             $jumlah = $a['jumlah'];
-
-                            if ($client_old == $client) {
-                                $count += 1;
-                                $sum += $jumlah;
-                            }
+                            $count = $rekap[$client]["c"];
+                            $total = $rekap[$client]['t'];
 
                             $pelanggan = "Non";
                             foreach ($data['pelanggan'] as $dp) {
@@ -42,18 +48,6 @@
                             }
 
                         ?>
-                            <?php
-                            if (($count > 1 && $client_old <> $client)) { ?>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td align="right">Rp<?= number_format($sum) ?></td>
-                                    <td></td>
-                                </tr>
-                            <?php } ?>
-
                             <tr>
                                 <td align="right">#<?= $a['id_kas'] ?></td>
                                 <td><?= strtoupper($pelanggan) ?></td>
@@ -67,25 +61,23 @@
                             </tr>
 
                             <?php
-                            if ($client_old <> $client) {
-                                $count = 1;
-                                $sum = 0;
+                            if (($no == $count)) {
+                                $no = 0;
+                                if ($count > 1) {
+                            ?>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td align="right"><b>Rp<?= number_format($total) ?></b></td>
+                                        <td></td>
+                                    </tr>
+                        <?php
+                                }
                             }
-
-                            if (($count > 1 && $no == $rows)) { ?>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td align="right">Rp<?= number_format($sum) ?></td>
-                                    <td></td>
-                                </tr>
-                        <?php }
-                            $client_old = $client;
                         } ?>
                     </table>
-
                 </div>
             </div>
         </div>
