@@ -41,7 +41,7 @@ class Setoran extends Controller
       $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
 
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran LIMIT 5";
+      $where = "metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 5";
       $data['setor'] = $this->model('M_DB_1')->get_cols_where('kas', $cols, $where, 1);
 
       $this->view($this->v_content, $data);
