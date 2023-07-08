@@ -46,15 +46,13 @@ class Data_Operasi extends Controller
       $data['kas'] = [];
       $data['order'] = [];
 
-      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
-      $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
-      $whereKarywan = "id_toko = " . $this->userData['id_toko'];
-      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKarywan);
+      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
+      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
 
       if ($parse_2 < 2023) {
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND id_pelanggan = " . $parse . " AND tuntas = 0 ORDER BY id_order_data DESC";
+         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0 ORDER BY id_order_data DESC";
       } else {
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND id_pelanggan = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%' ORDER BY id_order_data DESC";
+         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%' ORDER BY id_order_data DESC";
       }
       if ($parse <> "" && $parse <> 0) {
          $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);

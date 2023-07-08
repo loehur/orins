@@ -41,11 +41,8 @@ class SPK_C extends Controller
    public function content($parse = "", $date = "")
    {
       $data['parse'] = $parse;
-
-      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
-      $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
-      $whereKarywan = "id_toko = " . $this->userData['id_toko'];
-      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKarywan);
+      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
+      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
 
       $dvs = '"D-' . $parse . '"';
 
@@ -56,7 +53,7 @@ class SPK_C extends Controller
 
       $data['date'] = $TD;
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND id_pelanggan <> 0 AND cancel = 0 AND insertTime LIKE '%" . $TD . "%' AND spk_dvs LIKE '%" . $dvs . "%' ORDER BY id_order_data DESC";
+      $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND cancel = 0 AND insertTime LIKE '%" . $TD . "%' AND spk_dvs LIKE '%" . $dvs . "%' ORDER BY id_order_data DESC";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
 
       $data_ = [];

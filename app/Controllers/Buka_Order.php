@@ -45,20 +45,27 @@ class Buka_Order extends Controller
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
-
-
-      $whereToko = "id_toko = " . $this->userData['id_toko'];
-      $data_harga = $this->model('M_DB_1')->get_where('produk_harga', $whereToko);
-
+      $data_harga = $this->model('M_DB_1')->get('produk_harga');
       $data['count'] = count($data['order']);
 
+      $getHarga = [];
+
       foreach ($data['order'] as $key => $do) {
-         foreach ($data_harga as $dh) {
-            if ($dh['code'] == $do['produk_code']) {
-               $harga = $dh['harga_' . $parse];
-               $data['order'][$key]['harga'] = $harga;
-               break;
+         $detail_harga = unserialize($do['detail_harga']);
+         $countDH[$key] = count($detail_harga);
+         foreach ($detail_harga as $dh_o) {
+            $getHarga[$key][$dh_o['c_h']] = 0;
+            foreach ($data_harga as $dh) {
+               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse] <> 0) {
+                  $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse];
+                  $countDH[$key] -= 1;
+                  break;
+               }
             }
+         }
+
+         if ($countDH[$key] == 0) {
+            $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
          }
       }
 
@@ -66,11 +73,12 @@ class Buka_Order extends Controller
       $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
       $whereKarywan = "id_toko = " . $this->userData['id_toko'];
       $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKarywan);
+      $data['harga'] = $getHarga;
 
       $this->view($this->v_content, $data);
    }
 
-   function add()
+   function add($afiliasi = 0)
    {
       $this->dataSynchrone();
       $this->data();
@@ -79,37 +87,56 @@ class Buka_Order extends Controller
       $jumlah = $_POST['jumlah'];
       $note = $_POST['note'];
 
+      $where_idProduk = "id_produk = " . $id_produk;
+      $detailHarga = [];
+      $listDetail = $this->model('M_DB_1')->get_where('produk_detail', $where_idProduk);
+
+      if (count($listDetail) == 0) {
+         echo "Pengaturan Harga belum di setting!";
+         exit();
+      }
+
       $spkNote = [];
-      foreach ($this->dSPK as $sd) {
+      foreach ($this->dSPK_all as $sd) {
          if ($sd['id_produk'] == $id_produk) {
             $spkNote[$sd['id_divisi']] = $_POST['d-' . $sd['id_divisi']];
          }
       }
 
       $data = [];
-
-      foreach ($this->dProduk as $dp) {
+      foreach ($this->dProdukAll as $dp) {
          if ($dp['id_produk'] == $id_produk) {
             $data = unserialize($dp['produk_detail']);
+            $produk_name = $dp['produk'];
          }
       }
 
       $produk_code = $id_produk . "#";
       $detail_code = "";
+      $get_detail_item = [];
 
       foreach ($data as $d) {
 
          $groupName = "";
-         $detail_item = "";
+         $detail_item = [];
 
-         $id_detail_item = $_POST['f-' . $d];
-         foreach ($this->dDetailItem as $di) {
-            if ($di['id_detail_item'] == $id_detail_item) {
-               $detail_item = $di['detail_item'];
-            }
+         $id_detail_item_ex = explode("#", $_POST['f-' . $d]);
+         $id_item_ex = explode("-", $id_detail_item_ex[0]);
+         $get_detail_item[$d]['id'] = $id_item_ex[0];
+         $get_detail_item[$d]['name'] = $id_item_ex[1];
+
+         if ($id_detail_item_ex[1] <> "") {
+            $varian_ex = explode("-", $id_detail_item_ex[1]);
+            $get_detail_item[$d]['id_varian'] = $varian_ex[0];
+            $get_detail_item[$d]['varian'] = $varian_ex[1];
+            $detail_item = $get_detail_item[$d]['name'] . "-" . $get_detail_item[$d]['varian'];
+         } else {
+            $get_detail_item[$d]['id_varian'] = "";
+            $get_detail_item[$d]['varian'] = "";
+            $detail_item = $get_detail_item[$d]['name'];
          }
 
-         foreach ($this->dDetailGroup as $dg) {
+         foreach ($this->dDetailGroupAll as $dg) {
             if ($dg['id_index'] == $d) {
                $groupName = $dg['detail_group'];
             }
@@ -122,19 +149,56 @@ class Buka_Order extends Controller
 
          $produk_detail_[$d] = array(
             "group_name" => $groupName,
-            "detail_id" => $id_detail_item,
+            "detail_id" =>   $get_detail_item[$d]['id'] . "_" .  $get_detail_item[$d]['id_varian'],
             "detail_name" => $detail_item,
          );
 
-         $detail_code .= "-" . $id_detail_item;
+         $detail_code .= "-" .  $get_detail_item[$d]['id_varian'] . "&" .  $get_detail_item[$d]['id_varian'];
       }
+
+      foreach ($listDetail as $key_l => $ldt) {
+         $c_harga = "";
+         $c_barang = "";
+         $g = "";
+         $n_b = "";
+         $n_v = "";
+
+         $detail__ = unserialize($ldt['detail']);
+         foreach ($detail__ as $d_L) {
+            foreach ($data as $d) {
+               if ($d_L == $d) {
+                  $c_harga .= $get_detail_item[$d]['id'] . "-";
+                  $c_barang .= $get_detail_item[$d]['id'] . "&" . $get_detail_item[$d]['id_varian'] . "-";
+                  $n_b .= $get_detail_item[$d]['name'] . " ";
+
+                  if (strlen($get_detail_item[$d]['varian']) > 0) {
+                     $n_v .= $get_detail_item[$d]['name'] . "-" . $get_detail_item[$d]['varian'] . " ";
+                  } else {
+                     $n_v .= $get_detail_item[$d]['name'] . " ";
+                  }
+                  $g .= $d . "-";
+               }
+            }
+
+            $detailHarga[$key_l] = array(
+               "c_h" => $c_harga, //code harga
+               "c_b" => $c_barang, // code_barang
+               "n_b" => $n_b, // nama barang
+               "n_v" => $n_v, // nama barang varian
+               "g" => $g, // group komponen
+               "h" => 0, // harga
+               "d" => 0, // diskon
+            );
+         }
+      }
+
 
       $produk_code .= $detail_code;
       $produk_detail = serialize($produk_detail_);
 
       $spkDVS = [];
 
-      foreach ($this->dSPK as $ds) {
+      foreach ($this->dSPK_all as $ds) {
          if ($id_produk == $ds['id_produk']) {
             $detailNeed = [];
             $dgr = unserialize($ds['detail_groups']);
@@ -164,9 +228,15 @@ class Buka_Order extends Controller
 
       $spkDVS_ = serialize($spkDVS);
       $spkNote_ = serialize($spkNote);
+      $detailHarga_ = serialize($detailHarga);
 
-      $cols = 'id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk';
-      $vals = $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'";
+      if ($afiliasi == 0) {
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'";
+      } else {
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1";
+      }
 
       $do = $this->model('M_DB_1')->insertCols('order_data', $cols, $vals);
       if ($do['errno'] == 0) {
@@ -180,26 +250,36 @@ class Buka_Order extends Controller
    function load_detail($produk)
    {
       $data = [];
-      foreach ($this->dProduk as $dp) {
+      foreach ($this->dProdukAll as $dp) {
          if ($dp['id_produk'] == $produk) {
             $data = unserialize($dp['produk_detail']);
          }
       }
 
       $spkNote = [];
-      foreach ($this->dSPK as $sd) {
+      foreach ($this->dSPK_all as $sd) {
          if ($sd['id_produk'] == $produk) {
             $spkNote[$sd['id_divisi']] = "";
          }
       }
 
       $data_ = [];
+      $varian = [];
       foreach ($data as $d) {
          $groupName = "";
-         foreach ($this->dDetailGroup as $dg) {
+         foreach ($this->dDetailGroupAll as $dg) {
             if ($dg['id_index'] == $d) {
                $where = "id_detail_group = " . $dg['id_detail_group'] . " ORDER BY detail_item ASC";
                $data_item = $this->model('M_DB_1')->get_where('detail_item', $where);
+
+               foreach ($data_item as $di) {
+                  $where = "id_detail_item = " . $di['id_detail_item'];
+                  $varian_ = $this->model('M_DB_1')->get_where('detail_item_varian', $where);
+                  if (count($varian_) > 0) {
+                     $varian[$di['id_detail_item']] = $varian_;
+                  }
+               }
+
                $groupName = $dg['detail_group'];
             }
          }
@@ -208,20 +288,20 @@ class Buka_Order extends Controller
       }
 
       $data_['detail'] = $data_;
+      $data_['varian'] = $varian;
       $data_['spkNote'] = $spkNote;
-
       $this->view($this->page . "/detail", $data_);
    }
 
    function add_price($id_pelanggan_jenis)
    {
-      $produk_code = $_POST['produk_code'];
+      $harga_code = $_POST['harga_code'];
       $harga = $_POST['harga'];
 
       $cols = 'id_toko, code, harga_' . $id_pelanggan_jenis;
-      $vals = "'" . $this->userData['id_toko'] . "','" . $produk_code . "'," . $harga;
+      $vals = "'" . $this->userData['id_toko'] . "','" . $harga_code . "'," . $harga;
 
-      $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND code = '" . $produk_code . "'";
+      $whereCount = "code = '" . $harga_code . "'";
       $dataCount = $this->model('M_DB_1')->count_where('produk_harga', $whereCount);
       if ($dataCount < 1) {
          $do = $this->model('M_DB_1')->insertCols('produk_harga', $cols, $vals);
@@ -232,7 +312,7 @@ class Buka_Order extends Controller
             print_r($do['error']);
          }
       } else {
-         $where = "code = '" . $produk_code . "'";
+         $where = "code = '" . $harga_code . "'";
          $set = "harga_" . $id_pelanggan_jenis . " = " . $harga;
          $update = $this->model('M_DB_1')->update("produk_harga", $set, $where);
          echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
@@ -250,41 +330,44 @@ class Buka_Order extends Controller
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
-      $whereToko = "id_toko = " . $this->userData['id_toko'];
-      $data_harga = $this->model('M_DB_1')->get_where('produk_harga', $whereToko);
+      $data_harga = $this->model('M_DB_1')->get('produk_harga');
 
-      $c_cart = count($data['order']);
-
+      $detail_harga = [];
       foreach ($data['order'] as $do) {
-         foreach ($data_harga as $dh) {
-            if ($dh['code'] == $do['produk_code']) {
-               $harga = $dh['harga_' . $id_pelanggan_jenis];
-               if ($harga <> 0) {
-                  $c_cart -= 1;
+         $detail_harga = unserialize($do['detail_harga']);
+         $countDH = count($detail_harga);
+         foreach ($detail_harga as $kH => $dh_o) {
+            foreach ($data_harga as $dh) {
+               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
+                  $countDH -= 1;
+                  break;
                }
             }
          }
-      }
 
-      if ($c_cart <> 0) {
-         echo "Tetapkan Harga terlebih dahulu!";
-         exit();
+         if ($countDH <> 0) {
+            echo "Tetapkan Harga terlebih dahulu!";
+            exit();
+         }
       }
 
       $error = 0;
 
       foreach ($data['order'] as $do) {
-         foreach ($data_harga as $dh) {
-            if ($dh['code'] == $do['produk_code']) {
-               $harga = $dh['harga_' . $id_pelanggan_jenis];
-               if ($harga <> 0) {
-                  $where = "id_order_data = " . $do['id_order_data'];
-                  $set = "harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
-                  $update = $this->model('M_DB_1')->update("order_data", $set, $where);
-                  $error = $update['errno'];
+         $detail_harga = unserialize($do['detail_harga']);
+         $harga = 0;
+         foreach ($detail_harga as $dh_o) {
+            foreach ($data_harga as $dh) {
+               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
+                  $harga +=  $dh['harga_' . $id_pelanggan_jenis];
+                  break;
                }
             }
          }
+         $where = "id_order_data = " . $do['id_order_data'];
+         $set = "detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
+         $update = $this->model('M_DB_1')->update("order_data", $set, $where);
+         $error = $update['errno'];
       }
 
       if ($error == 0) {
@@ -305,7 +388,7 @@ class Buka_Order extends Controller
       }
    }
 
-   public function updateCell($parse)
+   function updateCell($parse)
    {
       if (!in_array($this->userData['user_tipe'], $this->pKasir)) {
          echo "Perubahan Harga hanya Kasir/Admin";
@@ -321,7 +404,7 @@ class Buka_Order extends Controller
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
    }
 
-   public function updateCell_N()
+   function updateCell_N()
    {
       $value = $_POST['value'];
       $id = $_POST['id'];
@@ -330,5 +413,17 @@ class Buka_Order extends Controller
       $set = "jumlah = " . $value;
       $update = $this->model('M_DB_1')->update("order_data", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+   }
+
+   function load_aff($target)
+   {
+      foreach ($this->dToko as $dt) {
+         if ($dt['id_toko'] == $target) {
+            $data['toko'] = $dt['nama_toko'];
+         }
+      }
+
+      $data['id_toko'] = $target;
+      $this->view($this->page . "/afiliasi", $data);
    }
 }

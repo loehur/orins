@@ -82,9 +82,11 @@
                         <label class="form-label">User Produksi</label>
                         <select class="form-select tize" name="id_karyawan" required>
                             <option></option>
-                            <?php foreach ($data['karyawan'] as $k) { ?>
-                                <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
-                            <?php } ?>
+                            <?php foreach ($data['karyawan'] as $k) {
+                                if ($k['id_toko'] == $this->userData['id_toko']) { ?>
+                                    <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
+                            <?php }
+                            } ?>
                         </select>
                     </div>
                     <div class="col" id="cekUpdate"></div>

@@ -30,276 +30,301 @@
         $arr_tuntas = [];
 
         for ($x = 1; $x <= 2; $x++) {
+            if (count($data['order'][$x]) > 0) {
         ?>
-            <div class="col ps-0 pe-2">
-                <?php foreach ($data['order'][$x] as $ref => $data['order_']) {
-                    $bill = 0;
-                    $total = 0;
-                    $ambil = false;
-                    $ambil_all = true;
+                <div class="col ps-0 pe-2">
+                    <?php foreach ($data['order'][$x] as $ref => $data['order_']) {
+                        $bill = 0;
+                        $total = 0;
+                        $ambil = false;
+                        $ambil_all = true;
 
-                    $tuntas = true;
-                    $lunas = false;
-                    $pending_bayar = false;
+                        $tuntas = true;
+                        $lunas = false;
+                        $pending_bayar = false;
 
-                    $dibayar = 0;
-                    $showMutasi = "";
+                        $dibayar = 0;
+                        $showMutasi = "";
 
-                    foreach ($data['kas'] as $dk) {
-                        if ($dk['ref_transaksi'] == $ref) {
-                            if ($dk['status_mutasi'] == 0 || $dk['status_mutasi'] == 1) {
-                                $dibayar += $dk['jumlah'];
-                            }
-                            if ($dk['status_mutasi'] == 0) {
-                                $pending_bayar = true;
-                            }
+                        foreach ($data['kas'] as $dk) {
+                            if ($dk['ref_transaksi'] == $ref) {
+                                if ($dk['status_mutasi'] == 0 || $dk['status_mutasi'] == 1) {
+                                    $dibayar += $dk['jumlah'];
+                                }
+                                if ($dk['status_mutasi'] == 0) {
+                                    $pending_bayar = true;
+                                }
 
-                            switch ($dk['status_mutasi']) {
-                                case 0:
-                                    $statusP = "<small class='text-warning'>(Dalam Pengecekan)</small> ";
-                                    $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
-                                    break;
-                                case 1:
-                                    $statusP = '<small><i class="fa-solid fa-check text-success"></i></small> ';
-                                    $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
-                                    break;
-                                default:
-                                    $statusP = '<small><i class="fa-solid fa-xmark text-danger"></i></small> ';
-                                    $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "</del><br>";
-                                    break;
+                                switch ($dk['status_mutasi']) {
+                                    case 0:
+                                        $statusP = "<small class='text-warning'>(Dalam Pengecekan)</small> ";
+                                        $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
+                                        break;
+                                    case 1:
+                                        $statusP = '<small><i class="fa-solid fa-check text-success"></i></small> ';
+                                        $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
+                                        break;
+                                    default:
+                                        $statusP = '<small><i class="fa-solid fa-xmark text-danger"></i></small> ';
+                                        $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "</del><br>";
+                                        break;
+                                }
                             }
                         }
-                    }
-                ?>
-                    <div class="container-fluid pt-2 ps-0 pe-0">
-                        <div class="card p-0">
-                            <small>
-                                <table class="table table-sm mb-0">
-                                    <tbody>
-                                        <?php
-                                        $no = 0;
-                                        foreach ($data['order_'] as $do) {
-                                            $no++;
-                                            $id = $do['id_order_data'];
-                                            $jumlah = $do['harga'] * $do['jumlah'];
+                    ?>
+                        <div class="container-fluid pt-2 ps-0 pe-0">
+                            <div class="card p-0">
+                                <small>
+                                    <table class="table table-sm mb-0">
+                                        <tbody>
+                                            <?php
+                                            $no = 0;
+                                            foreach ($data['order_'] as $do) {
+                                                $no++;
+                                                $id = $do['id_order_data'];
+                                                $jumlah = $do['harga'] * $do['jumlah'];
 
-                                            $cancel = $do['cancel'];
-                                            $id_cancel = $do['id_cancel'];
+                                                $cancel = $do['cancel'];
+                                                $id_cancel = $do['id_cancel'];
 
-                                            if ($cancel == 0) {
-                                                $bill += $jumlah;
-                                                $total += $jumlah;
-                                            }
-
-                                            $id_order_data = $do['id_order_data'];
-                                            $id_produk = $do['id_produk'];
-                                            $detail_arr = unserialize($do['produk_detail']);
-
-                                            $dateTime = substr($do['insertTime'], 0, 10);
-                                            $today = date("Y-m-d");
-
-                                            foreach ($this->dProduk as $dp) {
-                                                if ($dp['id_produk'] == $id_produk) {
-                                                    $produk = $dp['produk'];
+                                                if ($cancel == 0) {
+                                                    $bill += $jumlah;
+                                                    $total += $jumlah;
                                                 }
-                                            }
 
-                                            $divisi_arr = unserialize($do['spk_dvs']);
-                                            $divisi = [];
-                                            $countSPK =  count($divisi_arr);
-                                            foreach ($divisi_arr as $key => $dv) {
-                                                foreach ($this->dDvs as $dv_) {
-                                                    if ($dv_['id_divisi'] == $key) {
-                                                        $divisi[$key] = $dv_['divisi'];
-                                                    }
-                                                }
-                                            }
+                                                $id_order_data = $do['id_order_data'];
+                                                $id_produk = $do['id_produk'];
+                                                $detail_arr = unserialize($do['produk_detail']);
 
-                                            $id_pelanggan = $do['id_pelanggan'];
-                                            if ($no == 1) {
-                                                foreach ($data['pelanggan'] as $dp) {
-                                                    if ($dp['id_pelanggan'] == $id_pelanggan) {
-                                                        $pelanggan = $dp['nama'];
+                                                $dateTime = substr($do['insertTime'], 0, 10);
+                                                $today = date("Y-m-d");
+
+                                                foreach ($this->dProdukAll as $dp) {
+                                                    if ($dp['id_produk'] == $id_produk) {
+                                                        $produk = $dp['produk'];
                                                     }
                                                 }
 
-                                                foreach ($data['karyawan'] as $dp) {
-                                                    if ($dp['id_karyawan'] == $do['id_penerima']) {
-                                                        $cs = $dp['nama'];
+                                                $divisi_arr = unserialize($do['spk_dvs']);
+                                                $divisi = [];
+                                                $countSPK =  count($divisi_arr);
+                                                foreach ($divisi_arr as $key => $dv) {
+                                                    foreach ($this->dDvsAll as $dv_) {
+                                                        if ($dv_['id_divisi'] == $key) {
+                                                            $divisi[$key] = $dv_['divisi'];
+                                                        }
                                                     }
                                                 }
-                                        ?>
-                                                <tr class="">
-                                                    <td colspan="5" class="table-light <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
-                                                        <table class="w-100 p-0 m-0">
+
+                                                $id_pelanggan = $do['id_pelanggan'];
+                                                if ($no == 1) {
+                                                    foreach ($data['pelanggan'] as $dp) {
+                                                        if ($dp['id_pelanggan'] == $id_pelanggan) {
+                                                            $pelanggan = $dp['nama'];
+                                                        }
+                                                    }
+
+                                                    foreach ($data['karyawan'] as $dp) {
+                                                        if ($dp['id_karyawan'] == $do['id_penerima']) {
+                                                            $cs = $dp['nama'];
+                                                        }
+                                                        if ($dp['id_karyawan'] == $do['id_user_afiliasi']) {
+                                                            $cs_to = $dp['nama'];
+                                                        }
+                                                    }
+                                            ?>
+                                                    <tr class="">
+                                                        <td colspan="5" class="table-light <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
+                                                            <table class="w-100 p-0 m-0">
+                                                                <tr>
+                                                                    <td>
+                                                                        <span class="text-danger"><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b>
+                                                                    </td>
+                                                                    <?php if ($do['id_afiliasi'] == 0 || $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
+                                                                        <td class="text-end"><small><b><?= $cs ?></b></span></small></td>
+                                                                    <?php } else { ?>
+                                                                        <td class="text-end"><small><b><?= $cs ?> -> <?= $cs_to ?></b></span></small></td>
+                                                                    <?php }
+                                                                    ?>
+                                                                    <td class="text-end ps-1" style="width: 1%; white-space:nowrap">[<?= substr($do['insertTime'], 2, -3) ?>]</td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                <?php }
+                                                ?>
+                                                <tr style="<?= ($cancel == 1) ? 'color:silver' : '' ?>">
+                                                    <td>
+                                                        <table class="border-bottom">
+                                                            <?php
+                                                            if ($cancel <> 0) {
+                                                                $canceler = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $id_cancel); ?>
+                                                                <tr>
+                                                                    <td><span class="badge text-dark border border-dark"><?= $canceler ?> : <?= $do['cancel_reason'] ?></span></td>
+                                                                </tr>
+                                                            <?php } ?>
                                                             <tr>
-                                                                <td>
-                                                                    <span class="text-danger"><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b>
+                                                                <td colspan="10">
+                                                                    <?php
+                                                                    if ($cancel == 1) { ?>
+                                                                        <span class="text-nowrap text-success"><small><del><?= $id . "# " . ucwords($produk) ?></del></small></span>
+                                                                    <?php } else { ?>
+                                                                        <span class="text-nowrap text-success"><small><?= $id . "# " . ucwords($produk) ?></small></span>
+                                                                    <?php } ?>
+                                                                    <?php if ($dibayar == 0 && $cancel == 0) { ?>
+                                                                        <div class="btn-group">
+                                                                            <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                                <span class="visually-hidden">Toggle Dropdown</span>
+                                                                            </button>
+                                                                            <ul class="dropdown-menu p-0">
+                                                                                <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    <?php } ?>
+                                                                    <?php if ($do['id_afiliasi'] <> 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) {
+                                                                        $toko_aff = $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $do['id_afiliasi']);
+                                                                        if ($do['status_order'] == 1) { ?>
+                                                                            <span class="badge text-primary border border-warning"><?= $toko_aff ?> - <span class="text-danger">Checking</span></span>
+                                                                        <?php } else {
+                                                                            $cs_aff = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $do['id_user_afiliasi']);
+                                                                        ?>
+                                                                            <span class="badge text-dark border border-success"><span class="text-dark">Verified</span> by <?= $cs_aff ?> - <?= $toko_aff ?></span>
+                                                                        <?php } ?>
+                                                                    <?php } ?>
                                                                 </td>
-                                                                <td style="width: 180px;" class="text-end"><small><?= $cs  ?> [<?= substr($do['insertTime'], 2, -3) ?>]</span></small></td>
+                                                            <tr>
+                                                            <tr>
+                                                                <?php
+                                                                foreach ($detail_arr as $da) { ?>
+                                                                    <td class="pe-1" nowrap>
+                                                                        <?= "<small>" . $da['group_name'] . "</small> <br>" . strtoupper($da['detail_name']) ?>
+                                                                    </td>
+                                                                <?php } ?>
                                                             </tr>
                                                         </table>
+                                                        <div class="row">
+                                                            <div class="col-auto">
+                                                                <span class="text-nowrap">
+                                                                    <small>Catatan Utama</small><br><span><?= $do['note'] ?></span>
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <span class="text-nowrap">
+                                                                    <small>Catatan Produksi</small><br>
+                                                                    <span>
+                                                                        <?php
+                                                                        foreach (unserialize($do['note_spk']) as $ks => $ns) {
+                                                                            echo $this->model('Arr')->get($this->dDvsAll, "id_divisi", "divisi", $ks) . ": " . $ns . ", ";
+                                                                        }
+                                                                        ?>
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><small>
+                                                            <?php
+                                                            foreach ($divisi as $key => $dvs) {
+                                                                if ($divisi_arr[$key]['status'] == 1) {
+                                                                    $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
+                                                                    echo '<i class="fa-solid fa-check text-success"></i> ' . $dvs . " (" . $karyawan . ")<br>";
+                                                                } else {
+                                                                    echo '<i class="fa-regular fa-circle"></i> ' . $dvs . "<br>";
+                                                                }
+
+                                                                if ($divisi_arr[$key]['cm'] == 1) {
+                                                                    if ($divisi_arr[$key]['cm_status'] == 1) {
+                                                                        $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_cm']);
+                                                                        echo '<i class="fa-solid text-success fa-check-double"></i> ' . $dvs . " (" . $karyawan . ")<br>";
+                                                                    } else {
+                                                                        echo '<i class="fa-regular fa-circle"></i> ' . $dvs . '<br>';
+                                                                    }
+                                                                }
+                                                            }
+                                                            ?>
+                                                            <?php
+                                                            $id_ambil = $do['id_ambil'];
+                                                            if ($id_ambil == 0) {
+                                                                $ambil = true;
+                                                                if ($countSPK > 0 && $cancel == 0) {
+                                                                    $ambil_all = false;
+                                                            ?>
+                                                                    <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
+
+                                                            <?php }
+                                                            } else {
+                                                                $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $id_ambil);
+                                                                echo '<span class="text-purple"><i class="fa-solid fa-check"></i> Ambil (' . $karyawan . ")</span>";
+                                                            } ?>
+                                                        </small>
+                                                    </td>
+                                                    <td class="text-end"><?= number_format($do['jumlah']) ?></td>
+                                                    <td class="text-end">
+                                                        <?php
+                                                        if ($cancel == 0) { ?>
+                                                            Rp<?= number_format($jumlah) ?>
+                                                        <?php } else { ?>
+                                                            <del>Rp<?= number_format($jumlah) ?></del>
+                                                        <?php } ?>
                                                     </td>
                                                 </tr>
                                             <?php }
+
+                                            $sisa = $bill - $dibayar;
+
+                                            if ($sisa <= 0 && $pending_bayar == false) {
+                                                $lunas = true;
+                                            }
+
+                                            if ($dibayar > 0 && $lunas == false) {
+                                                $showMutasi .= "<span class='text-danger'><b>Sisa Rp" . number_format($sisa) . "</b></span>";
+                                            }
+
+                                            $print_mode = "A4";
+                                            if ($no <= 6) {
+                                                $print_mode = "&#189;";
+                                            }
+
                                             ?>
-                                            <tr style="<?= ($cancel == 1) ? 'color:silver' : '' ?>">
-                                                <td>
-                                                    <table class="border-bottom">
-                                                        <?php
-                                                        if ($cancel <> 0) {
-                                                            $canceler = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $id_cancel); ?>
+                                            <tr class="border-top">
+                                                <td class="text-end text" colspan="3">
+                                                    <?php if (($do['id_afiliasi'] == 0 || $do['id_afiliasi'] <> $this->userData['id_toko'])) { ?>
+                                                        <table>
                                                             <tr>
-                                                                <td><span class="badge badge-dagner text-dark border border-dark"><?= $canceler ?> : <?= $do['cancel_reason'] ?></span></td>
-                                                            </tr>
-                                                        <?php } ?>
-                                                        <tr>
-                                                            <td colspan="10">
+                                                                <td class="text-end pe-1"><small><a href="<?= $this->BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm px-1"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
                                                                 <?php
-                                                                if ($cancel == 1) { ?>
-                                                                    <span class="text-nowrap text-success"><small><del><?= $id . "# " . ucwords($produk) ?></del></small></span>
-                                                                <?php } else { ?>
-                                                                    <span class="text-nowrap text-success"><small><?= $id . "# " . ucwords($produk) ?></small></span>
+                                                                if ($ambil_all == false) { ?>
+                                                                    <td class="text-end pe-1"><small><span data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua border border-purple text-purple btn btn-sm px-1" data-ref="<?= $do['ref'] ?>">Ambil</span></small></td>
                                                                 <?php } ?>
-                                                                <?php if ($dibayar == 0 && $cancel == 0) { ?>
-                                                                    <div class="btn-group">
-                                                                        <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                            <span class="visually-hidden">Toggle Dropdown</span>
-                                                                        </button>
-                                                                        <ul class="dropdown-menu p-0">
-                                                                            <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
-                                                                        </ul>
-                                                                    </div>
+                                                                <td class="text-end pe-1"><small><span data-bs-toggle="modal" data-bs-target="#exampleModalSurcharge" class="btnSurcharge border border-info text-info btn btn-sm px-1" data-ref="<?= $do['ref'] ?>">Surcharge</span></small></td>
+                                                                <?php
+                                                                if (in_array($this->userData['user_tipe'], $this->pCS) && $sisa > 0) { ?>
+                                                                    <td class="text-end pe-1"><small><span data-ref="<?= $ref ?>" data-client="<?= $id_pelanggan ?>" data-bill="<?= $sisa ?>" data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btnBayar border border-danger text-danger btn btn-sm py-1 px-1">Bayar</span></small></td>
                                                                 <?php } ?>
-                                                            </td>
-                                                        <tr>
-                                                        <tr>
-                                                            <?php
-                                                            foreach ($detail_arr as $da) { ?>
-                                                                <td class="pe-1" nowrap>
-                                                                    <?= "<small>" . $da['group_name'] . "</small> <br>" . strtoupper($da['detail_name']) ?>
-                                                                </td>
-                                                            <?php } ?>
-                                                        </tr>
-                                                    </table>
-                                                    <div class="row">
-                                                        <div class="col-auto">
-                                                            <span class="text-nowrap">
-                                                                <small>Catatan Utama</small><br><span><?= $do['note'] ?></span>
-                                                            </span>
-                                                        </div>
-                                                        <div class="col-auto">
-                                                            <span class="text-nowrap">
-                                                                <small>Catatan Produksi</small><br>
-                                                                <span>
-                                                                    <?php
-                                                                    foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                                        echo $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) . ": " . $ns . ", ";
-                                                                    }
-                                                                    ?>
-                                                                </span>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td><small>
-                                                        <?php
-                                                        foreach ($divisi as $key => $dvs) {
-                                                            if ($divisi_arr[$key]['status'] == 1) {
-                                                                $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
-                                                                echo '<i class="fa-solid fa-check text-success"></i> ' . $dvs . " (" . $karyawan . ")<br>";
-                                                            } else {
-                                                                echo '<i class="fa-regular fa-circle"></i> ' . $dvs . "<br>";
-                                                            }
-
-                                                            if ($divisi_arr[$key]['cm'] == 1) {
-                                                                if ($divisi_arr[$key]['cm_status'] == 1) {
-                                                                    $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_cm']);
-                                                                    echo '<i class="fa-solid text-success fa-check-double"></i> ' . $dvs . " (" . $karyawan . ")<br>";
-                                                                } else {
-                                                                    echo '<i class="fa-regular fa-circle"></i> ' . $dvs . '<br>';
-                                                                }
-                                                            }
-                                                        }
-                                                        ?>
-                                                        <?php
-                                                        $id_ambil = $do['id_ambil'];
-                                                        if ($id_ambil == 0) {
-                                                            $ambil = true;
-                                                            if ($countSPK > 0 && $cancel == 0) {
-                                                                $ambil_all = false;
-                                                            }
-
-                                                        ?>
-                                                            <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
-                                                        <?php } else {
-                                                            $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $id_ambil);
-                                                            echo '<span class="text-purple"><i class="fa-solid fa-check"></i> Ambil (' . $karyawan . ")</span>";
-                                                        } ?>
-                                                    </small>
-                                                </td>
-                                                <td class="text-end"><?= number_format($do['jumlah']) ?></td>
-                                                <td class="text-end">
-                                                    <?php
-                                                    if ($cancel == 0) { ?>
-                                                        Rp<?= number_format($jumlah) ?>
-                                                    <?php } else { ?>
-                                                        <del>Rp<?= number_format($jumlah) ?></del>
+                                                            </tr>
+                                                        </table>
                                                     <?php } ?>
                                                 </td>
+                                                <td class="text-end" nowrap><?= ($lunas == true) ? '<i class="fa-solid text-success fa-circle-check"></i>' : '' ?> <b>Rp<?= number_format($total) ?></b></td>
                                             </tr>
-                                        <?php }
-
-                                        $sisa = $bill - $dibayar;
-
-                                        if ($sisa <= 0 && $pending_bayar == false) {
-                                            $lunas = true;
-                                        }
-
-                                        if ($dibayar > 0 && $lunas == false) {
-                                            $showMutasi .= "<span class='text-danger'><b>Sisa Rp" . number_format($sisa) . "</b></span>";
-                                        }
-
-                                        $print_mode = "A4";
-                                        if ($no <= 6) {
-                                            $print_mode = "&#189;";
-                                        }
-
-                                        ?>
-                                        <tr class="border-top">
-                                            <td class="text-end text" colspan="3">
-                                                <table>
-                                                    <tr>
-                                                        <td class="text-end pe-1"><small><a href="<?= $this->BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm py-1 px-1"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
-                                                        <?php
-                                                        if ($ambil == true) { ?>
-                                                            <td class="text-end pe-1"><small><span data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua border border-purple text-purple btn btn-sm py-1 px-1" data-ref="<?= $do['ref'] ?>">Ambil Semua</span></small></td>
-                                                        <?php }
-                                                        if (in_array($this->userData['user_tipe'], $this->pKasir) && $sisa > 0) { ?>
-                                                            <td class="text-end pe-1"><small><span data-ref="<?= $ref ?>" data-client="<?= $id_pelanggan ?>" data-bill="<?= $sisa ?>" data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btnBayar border border-danger text-danger btn btn-sm py-1 px-1">Bayar</span></small></td>
-                                                        <?php } ?>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                            <td class="text-end" nowrap><?= ($lunas == true) ? '<i class="fa-solid text-success fa-circle-check"></i>' : '' ?> <b>Rp<?= number_format($total) ?></b></td>
-                                        </tr>
-                                        <tr class="border-top">
-                                            <td class="text-end text" colspan="4">
-                                                <?= $showMutasi ?>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </small>
+                                            <tr class="border-top">
+                                                <td class="text-end text" colspan="4">
+                                                    <?= $showMutasi ?>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </small>
+                            </div>
                         </div>
-                    </div>
-                <?php
-                    if ($lunas == true && $ambil_all == true) {
-                        array_push($arr_tuntas, $ref);
-                    }
-                } ?>
-            </div>
+                    <?php
+                        if ($lunas == true && $ambil_all == true) {
+                            array_push($arr_tuntas, $ref);
+                        }
+                    } ?>
+                </div>
         <?php }
+        }
         ?>
     </div>
 </main>
@@ -426,7 +451,9 @@
                             <div class="col-sm-6">
                                 <label class="form-label">Metode</label>
                                 <select name="method" class="form-select metodeBayar" required>
-                                    <option value="1">Tunai</option>
+                                    <?php if (in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
+                                        <option value="1">Tunai</option>
+                                    <?php } ?>
                                     <option value="2">Non Tunai</option>
                                 </select>
                             </div>

@@ -6,9 +6,16 @@
                 <label class="form-label mb-0 pb-0"><?= $d['name'] ?></label>
                 <select class="border tize" name="f-<?= $key ?>" required>
                     <option></option>
-                    <?php foreach ($d['item'] as $i) { ?>
-                        <option value="<?= $i['id_detail_item'] ?>"><?= strtoupper($i['detail_item']) ?></option>
-                    <?php } ?>
+                    <?php foreach ($d['item'] as $i) {
+                        if (isset($data['varian'][$i['id_detail_item']]) && count($data['varian'][$i['id_detail_item']]) > 0) {
+                            foreach ($data['varian'][$i['id_detail_item']] as $vr) { ?>
+                                <option value="<?= $i['id_detail_item'] ?>-<?= strtoupper($i['detail_item']) ?>#<?= $vr['id_varian'] ?>-<?= $vr['varian'] ?>"><?= strtoupper($i['detail_item']) ?>-<?= strtoupper($vr['varian']) ?></option>
+                            <?php } ?>
+                        <?php } else {
+                        ?>
+                            <option value="<?= $i['id_detail_item'] ?>-<?= strtoupper($i['detail_item']) ?>#"><?= strtoupper($i['detail_item']) ?></option>
+                    <?php }
+                    } ?>
                 </select>
             </div>
         <?php  } ?>
@@ -24,7 +31,7 @@
 </div>
 <?php foreach ($data['spkNote'] as $key => $d) { ?>
     <div class="mb-2">
-        <label class="form-label mb-0 pb-0" required>Catatan <b><?= $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $key) ?></b></label>
+        <label class="form-label mb-0 pb-0" required>Catatan <b><?= $this->model('Arr')->get($this->dDvsAll, "id_divisi", "divisi", $key) ?></b></label>
         <input type="text" name="d-<?= $key ?>" class="form-control form-control-sm">
     </div>
 <?php  } ?>

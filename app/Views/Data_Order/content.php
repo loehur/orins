@@ -113,23 +113,31 @@
                                 $lunas = true;
                             }
                                 ?>
-                                <td class="text-end pe-1">
-                                    <small>
-                                        Ambil
-                                        <?php if ($ambil_all == true) { ?>
-                                            <i class="fa-solid fa-circle-check text-purple"></i>
-                                        <?php } else { ?>
-                                            <i class="fa-regular fa-circle"></i>
-                                        <?php } ?>
-                                        <br>
-                                        Lunas
-                                        <?php if ($lunas == true) { ?>
-                                            <i class="fa-solid fa-circle-check text-success"></i>
-                                        <?php } else { ?>
-                                            <i class="fa-regular fa-circle"></i>
-                                        <?php } ?>
-                                    </small>
-                                </td>
+                                <?php if ($do['id_afiliasi'] == 0) { ?>
+                                    <td class="text-end pe-1">
+                                        <small>
+                                            Ambil
+                                            <?php if ($ambil_all == true) { ?>
+                                                <i class="fa-solid fa-circle-check text-purple"></i>
+                                            <?php } else { ?>
+                                                <i class="fa-regular fa-circle"></i>
+                                            <?php } ?>
+                                            <br>
+                                            Lunas
+                                            <?php if ($lunas == true) { ?>
+                                                <i class="fa-solid fa-circle-check text-success"></i>
+                                            <?php } else { ?>
+                                                <i class="fa-regular fa-circle"></i>
+                                            <?php } ?>
+                                        </small>
+                                    </td>
+                                <?php } else { ?>
+                                    <td class="text-end pe-1">
+                                        <small>
+                                            Afiliated Order
+                                        </small>
+                                    </td>
+                                <?php } ?>
                                     </tr>
                                 </table>
                             </div>

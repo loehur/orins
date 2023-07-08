@@ -65,6 +65,13 @@
 
 <?php $t = $data['title']; ?>
 
+<?php
+$cols = "id_toko, id_pelanggan, ref";
+$where = "id_afiliasi = " . $this->userData['id_toko'] . " AND status_order = 1 AND cancel = 0 GROUP BY id_toko, id_pelanggan, ref";
+$aff_ = $this->model('M_DB_1')->get_cols_where('order_data', $cols, $where, 1);
+$aff_c = count($aff_);
+?>
+
 <body class="nav-fixed">
 	<nav class="topnav navbar navbar-expand shadow justify-content-between justify-content-sm-start navbar-light bg-white" id="sidenavAccordion">
 		<button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0" id="sidebarToggle"><i data-feather="menu"></i></button>
@@ -125,6 +132,20 @@
 								<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
 									<a class="nav-link <?= ($t == "Buka Order - Umum") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Buka_Order/index/1">Umum</a>
 									<a class="nav-link <?= ($t == "Buka Order - Rekanan") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Buka_Order/index/2">Rekanan</a>
+								</nav>
+							</div>
+							<!-- Sidenav Accordion (Dashboard)-->
+							<a class="nav-link <?= (str_contains($t, "Afiliasi Order")) ? 'active' : 'collapsed' ?> mt-2" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseAff" aria-expanded="true" aria-controls="collapseAff">
+								<div class="nav-link-icon"><i data-feather="plus-square"></i></div>
+								Afiliasi Order <span class="badge bg-danger-soft text-danger ms-auto"><?= $aff_c ?></span>
+								<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+							</a>
+							<div class="collapse <?= (str_contains($t, "Afiliasi Order")) ? 'show' : '' ?>" id="collapseAff" data-bs-parent="#accordionSidenav">
+								<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
+									<?php foreach ($aff_ as $af) {
+										$toko = $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $af['id_toko']); ?>
+										<a class="nav-link <?= ($t == "Afiliasi Order - " . $af['ref']) ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Buka_Order_Aff/index/<?= $af['ref'] ?>"><?= $toko ?> - C#<?= $af['id_pelanggan'] ?></a>
+									<?php } ?>
 								</nav>
 							</div>
 							<!-- Sidenav Accordion (Dashboard)-->
@@ -244,7 +265,7 @@
 								<nav class="sidenav-menu-nested nav">
 									<a class="nav-link <?= ($t == "Set Produksi - Divisi") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Divisi">Divisi</a>
 									<a class="nav-link <?= ($t == "Set Produksi - Group Detail") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Group_Detail">Kelompok Detail</a>
-									<a class="nav-link <?= ($t == "Set Produksi - Produk") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Produk">Produk</a>
+									<a class="nav-link <?= ($t == "Set Produksi - Produk") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Produk">Produk Produksi</a>
 								</nav>
 							</div>
 						<?php } ?>

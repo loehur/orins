@@ -42,13 +42,11 @@ class SPK extends Controller
    {
       $data['id_divisi'] = $parse;
 
-      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
-      $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
-      $whereKarywan = "id_toko = " . $this->userData['id_toko'];
-      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKarywan);
+      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
+      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
 
       $dvs = '"D-' . $parse . '"';
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND id_pelanggan <> 0 AND tuntas = 0 AND cancel = 0 AND spk_dvs LIKE '%" . $dvs . "%' ORDER BY id_order_data DESC";
+      $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND cancel = 0 AND spk_dvs LIKE '%" . $dvs . "%' ORDER BY id_order_data DESC";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
 
       $recap = [];
@@ -168,10 +166,8 @@ class SPK extends Controller
       }
 
       $data['order'] = $data_;
-      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
-      $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
-      $whereKarywan = "id_toko = " . $this->userData['id_toko'];
-      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKarywan);
+      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
+      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
 
       $data['parse'] = $parse;
       $this->view($this->page . "/cek", $data);

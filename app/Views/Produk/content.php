@@ -21,7 +21,7 @@
                         <thead>
                             <tr>
                                 <th>Produk</th>
-                                <th>Detail</th>
+                                <th>Komponen Harga</th>
                                 <th>SPK Divisi</th>
                             </tr>
                         </thead>
@@ -30,28 +30,42 @@
                             foreach ($data['produk'] as $a) {
                                 $id_produk = $a['id_produk'];
                                 $detail = "";
-                                foreach (unserialize($a['produk_detail']) as $pd) {
+                                foreach (unserialize($a['produk_detail']) as $key => $pd) {
                                     foreach ($data['detail'] as $d) {
                                         if ($pd == $d['id_index'])
-                                            $detail .= $d['detail_group'] . ", ";
+                                            $detail .= "<span class='text-secondary'>" . $key . "</span>#" . $d['detail_group'] . ", ";
                                     }
                                 }
                                 $spk_dvs = $a['spk_dvs'];
+                                $produk_detail = $a['detail'];
                                 $c_spk = count($spk_dvs);
                             ?>
                                 <tr>
                                     <td>
-                                        <?= $a['produk'] ?>
+                                        <span class="text-success"><b><?= $a['produk'] ?></b></span>
 
                                         <?php if ($c_spk == 0) { ?>
                                             <span style="cursor: pointer;" data-id="<?= $id_produk ?>" class="deleteProduk text-danger"><i class=" fa-regular fa-circle-xmark"></i></span>
                                         <?php } ?>
+                                        <br>
+                                        <span onclic k="chgActionEdit(<?= $id_produk ?>,'<?= $a['produk'] ?>')" data-bs-toggle="modal" data-bs-target="#exampleModalEdit" class="text-primary" style="cursor: pointer;"><i class="fa-regular fa-pen-to-square"></i></span> <?= $detail ?>
                                     </td>
                                     <td>
-                                        <span onclick="chgActionEdit(<?= $id_produk ?>,'<?= $a['produk'] ?>')" data-bs-toggle="modal" data-bs-target="#exampleModalEdit" class="text-primary" style="cursor: pointer;"><i class="fa-regular fa-pen-to-square"></i></span> <?= $detail ?>
+                                        <button type="button" class="border rounded bg-white addHarga" data-id="<?= $id_produk ?>" data-bs-toggle="modal" data-bs-target="#add_harga">+</button>
+                                        <br>
+                                        <?php
+                                        foreach ($produk_detail as $sd) { ?>
+                                            <span style="cursor: pointer;" data-id="<?= $sd['id_produk_detail'] ?>" class="deleteDetail text-danger"><i class=" fa-regular fa-circle-xmark"></i></span>
+                                        <?php
+                                            $details = unserialize($sd['detail']);
+                                            foreach ($details as $dg) {
+                                                echo $this->model("Arr")->get($this->dDetailGroup, "id_index", "detail_group", $dg) . ", ";
+                                            }
+                                            echo "<br>";
+                                        }
+                                        ?>
                                     </td>
                                     <td>
-                                        <!-- <?= $divisi ?> -->
                                         <button onclick="chgAction(<?= $id_produk ?>)" type="button" class="border rounded bg-white" data-bs-toggle="modal" data-bs-target="#setSPK">+ / Edit</button>
                                         <br>
                                         <?php
@@ -162,18 +176,7 @@
                             ?>
                         </select>
                     </div>
-                    <div class="row">
-                        <?php foreach ($this->dDetailGroup as $gd) { ?>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" name="detail_group[]" type="checkbox" value="<?= $gd['id_index'] ?>">
-                                    <label class="form-check-label">
-                                        <?= $gd['detail_group'] ?>
-                                    </label>
-                                </div>
-                            </div>
-                        <?php } ?>
-                    </div>
+                    <div class="row cekDetail"></div>
                     <hr>
                     <div class="row">
                         <div class="col-md-6">
@@ -195,15 +198,43 @@
     </div>
 </div>
 
+<div class="modal fade" id="add_harga" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Menambah Komponen Harga</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= $this->BASE_URL ?>Produk/add_componen_harga" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="id_produk_harga" value="">
+                    <div class="row cekDetail"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Tambah</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script>
     var addItemAction = $("form#addSPK").attr('action');
     var actionEdit = $("form#produk_edit").attr('action');
 
-    function chgAction(id_detail_group) {
-        var newAction = addItemAction + "/" + id_detail_group;
+    function chgAction(id_produk) {
+        var newAction = addItemAction + "/" + id_produk;
         $('form#addSPK').attr('action', newAction);
+        $("div.cekDetail").load('<?= $this->BASE_URL ?>Produk/load_detail/' + id_produk);
     }
+
+    $(".addHarga").click(function() {
+        var id_produk = $(this).attr("data-id");
+        $("input[name=id_produk_harga]").val(id_produk);
+        $("div.cekDetail").load('<?= $this->BASE_URL ?>Produk/load_detail/' + id_produk);
+    })
 
     function chgActionEdit(id_produk, name) {
         var newAction = actionEdit + "/" + id_produk;

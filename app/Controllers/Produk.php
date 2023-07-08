@@ -44,6 +44,9 @@ class Produk extends Controller
          $where = "id_produk = " . $d['id_produk'];
          $data_item = $this->model('M_DB_1')->get_where('spk_dvs', $where);
          $data['produk'][$key]['spk_dvs'] = $data_item;
+
+         $data_detail = $this->model('M_DB_1')->get_where('produk_detail', $where);
+         $data['produk'][$key]['detail'] = $data_detail;
       }
 
       $this->view($this->v_content, $data);
@@ -69,6 +72,32 @@ class Produk extends Controller
          }
       } else {
          $this->model('Log')->write($this->userData['user'] . " Add Produk Failed, Double Forbidden!");
+         echo "Double Entry!";
+      }
+
+      $this->dataSynchrone();
+   }
+
+   function add_componen_harga()
+   {
+      $id_produk = $_POST['id_produk_harga'];
+      $detail = serialize($_POST['detail_group']);
+
+      $cols = 'id_toko, id_produk, detail';
+      $vals = "'" . $this->userData['id_toko'] . "','" . $id_produk . "','" . $detail . "'";
+
+      $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_produk = " . $id_produk . " AND detail = '" . $detail . "'";
+      $dataCount = $this->model('M_DB_1')->count_where('produk_detail', $whereCount);
+      if ($dataCount == 0) {
+         $do = $this->model('M_DB_1')->insertCols('produk_detail', $cols, $vals);
+         if ($do['errno'] == 0) {
+            $this->model('Log')->write($this->userData['user'] . " Add Produk Detail Success!");
+            echo $do['errno'];
+         } else {
+            print_r($do['error']);
+         }
+      } else {
+         $this->model('Log')->write($this->userData['user'] . " Add Produk Detail Failed, Double Forbidden!");
          echo "Double Entry!";
       }
 
@@ -184,5 +213,23 @@ class Produk extends Controller
             echo "Double Entry!";
          }
       }
+   }
+
+   function load_detail($id_produk)
+   {
+      $data['produk'] = $this->model('M_DB_1')->get_where_row('produk', "id_produk =" . $id_produk);
+      $dp = $data['produk'];
+      $detail = unserialize($dp['produk_detail']);
+      $dg = [];
+
+      foreach ($this->dDetailGroup as $ddg) {
+         foreach ($detail as $dt) {
+            if ($dt == $ddg['id_index']) {
+               array_push($dg, ["id" => $dt, "detail" => $ddg['detail_group']]);
+            }
+         }
+      }
+
+      $this->view($this->page . "/detail", $dg);
    }
 }

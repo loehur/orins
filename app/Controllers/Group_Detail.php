@@ -36,12 +36,17 @@ class Group_Detail extends Controller
    {
 
       $where = "id_toko = " . $this->userData['id_toko'] . " ORDER BY detail_group ASC";
-      $data = $this->model('M_DB_1')->get_where('detail_group', $where);
-
-      foreach ($data as $key => $d) {
+      $data['main'] = $this->model('M_DB_1')->get_where('detail_group', $where);
+      foreach ($data['main'] as $key => $d) {
          $where = "id_detail_group = " . $d['id_detail_group'] . " ORDER BY detail_item ASC";
          $data_item = $this->model('M_DB_1')->get_where('detail_item', $where);
-         $data[$key]['item'] = $data_item;
+         $data['main'][$key]['item'] = $data_item;
+
+         foreach ($data_item as $di) {
+            $where = "id_detail_item = " . $di['id_detail_item'];
+            $varian = $this->model('M_DB_1')->get_where('detail_item_varian', $where);
+            $data['varian'][$di['id_detail_item']] = $varian;
+         }
       }
 
       $this->view($this->v_content, $data);
@@ -81,48 +86,27 @@ class Group_Detail extends Controller
       }
    }
 
-   function add_item($id_detail_group)
+   function add_varian()
    {
-      $item_post = $_POST['item'];
+      $id_item = $_POST['id_item'];
       $varian = $_POST['varian'];
-      $cols = 'id_toko, id_detail_group, detail_item';
+      $varian = explode(",", $varian);
 
-      if (strlen($varian) > 0) {
-         $varian = explode(",", $varian);
-         foreach ($varian as $v) {
-            $item = $item_post . "-" . $v;
-            $vals = "'" . $this->userData['id_toko'] . "','" . $id_detail_group . "','" . $item . "'";
-            $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $item . "'";
-            $dataCount = $this->model('M_DB_1')->count_where('detail_item', $whereCount);
-            if ($dataCount == 0) {
-               $do = $this->model('M_DB_1')->insertCols('detail_item', $cols, $vals);
-               if ($do['errno'] == 0) {
-                  $this->model('Log')->write($this->userData['user'] . " Add Detail Item Success!");
-                  echo $do['errno'];
-               } else {
-                  print_r($do['error']);
-               }
-            } else {
-               $this->model('Log')->write($this->userData['user'] . " Add Detail Item Failed, Double Forbidden!");
-               echo "Double Entry!";
-            }
-         }
-      } else {
-         $item = $item_post;
-         $vals = "'" . $this->userData['id_toko'] . "','" . $id_detail_group . "','" . $item . "'";
-         $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $item . "'";
-         $dataCount = $this->model('M_DB_1')->count_where('detail_item', $whereCount);
+      $cols = "id_toko, id_detail_item, varian";
+      foreach ($varian as $v) {
+         $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_detail_item = " . $id_item . " AND varian = '" . $v . "'";
+         $dataCount = $this->model('M_DB_1')->count_where('detail_item_varian', $whereCount);
          if ($dataCount == 0) {
-            $do = $this->model('M_DB_1')->insertCols('detail_item', $cols, $vals);
+            $vals = $this->userData['id_toko'] . "," . $id_item . ",'" . $v . "'";
+            $do = $this->model('M_DB_1')->insertCols('detail_item_varian', $cols, $vals);
             if ($do['errno'] == 0) {
-               $this->model('Log')->write($this->userData['user'] . " Add Detail Item Success!");
+               $this->model('Log')->write($this->userData['user'] . " Add Varian Item Success!");
                echo $do['errno'];
             } else {
                print_r($do['error']);
             }
          } else {
-            $this->model('Log')->write($this->userData['user'] . " Add Detail Item Failed, Double Forbidden!");
-            echo "Double Entry!";
+            $this->model('Log')->write($this->userData['user'] . " Add Varian Failed, Double Forbidden!");
          }
       }
    }
@@ -135,6 +119,18 @@ class Group_Detail extends Controller
       $set = "detail_item = '" . $value . "'";
       $where = "id_detail_item = " . $id;
       $update = $this->model('M_DB_1')->update("detail_item", $set, $where);
+      $this->dataSynchrone();
+      echo $update['errno'];
+   }
+
+   public function updateCellVarian()
+   {
+      $value = $_POST['value'];
+      $id = $_POST['id'];
+
+      $set = "varian = '" . $value . "'";
+      $where = "id_varian = " . $id;
+      $update = $this->model('M_DB_1')->update("detail_item_varian", $set, $where);
       $this->dataSynchrone();
       echo $update['errno'];
    }
@@ -156,6 +152,19 @@ class Group_Detail extends Controller
       $id = $_POST['id'];
       $where = "id_detail_item = " . $id;
       $delete = $this->model('M_DB_1')->delete_where("detail_item", $where);
+
+      $where = "code LIKE '%" . $id . "-%'";
+      $delete = $this->model('M_DB_1')->delete_where("produk_harga", $where);
+
+      $this->dataSynchrone();
+      echo $delete['errno'];
+   }
+
+   public function delete_varian()
+   {
+      $id = $_POST['id'];
+      $where = "id_varian = " . $id;
+      $delete = $this->model('M_DB_1')->delete_where("detail_item_varian", $where);
       $this->dataSynchrone();
       echo $delete['errno'];
    }
