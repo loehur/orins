@@ -31,7 +31,7 @@
                                             if ($c_item == 0) { ?>
                                                 <span style="cursor: pointer;" data-id="<?= $a['id_index'] ?>" class="deleteGrup text-danger"><i class=" fa-regular fa-circle-xmark"></i></span>
                                             <?php } ?>
-                                            <span class="text-success"><?= $a['detail_group'] ?></span>
+                                            <span class="text-success"><b><?= $a['detail_group'] ?></b></span>
                                         </div>
                                         <div class="col">
                                             <div class="float-end">
@@ -43,16 +43,17 @@
                                     <div class="row mt-1">
                                         <?php
                                         foreach ($data['main'][$k]['item'] as $di) { ?>
-                                            <div class="col-md-4">
+                                            <div class="col-md-4 border-end">
                                                 <small>
                                                     <?php if (count($data['varian'][$di['id_detail_item']]) == 0) { ?>
                                                         <span style="cursor: pointer;" data-id="<?= $di['id_detail_item'] ?>" class="deleteItem text-danger"><i class=" fa-regular fa-circle-xmark"></i></span>
                                                     <?php } ?>
-                                                    <span class="edit pe-2 text-nowrap" data-id='<?= $di['id_detail_item'] ?>'><?= strtoupper($di['detail_item']) ?></span>
+                                                    <span class="edit pe-2 text-nowrap text-purple" data-id='<?= $di['id_detail_item'] ?>'><?= strtoupper($di['detail_item']) ?></span>
                                                     <i class="fa-regular me-1 fa-square-plus text-secondary varian" style="cursor: pointer;" data-id='<?= $di['id_detail_item'] ?>' data-bs-toggle="modal" data-bs-target="#varian"></i>
                                                     <?php
 
                                                     if (count($data['varian'][$di['id_detail_item']]) > 0) {
+                                                        echo "<br>";
                                                         foreach ($data['varian'][$di['id_detail_item']] as $vr) { ?>
                                                             <small><span class="border rounded px-2"><span style="cursor: pointer;" data-id="<?= $vr['id_varian'] ?>" class="deleteVarian text-secondary"><i class="fa-regular fa-circle-xmark"></i></span><span class="ms-2 editVarian" data-id="<?= $vr['id_varian'] ?>"><?= strtoupper($vr['varian']) ?></span></span></small>
                                                     <?php }

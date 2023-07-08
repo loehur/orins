@@ -74,28 +74,28 @@
             $sisa = $total - $dibayar;
         ?>
             <tr style="border-bottom: 1px solid;">
-                <td style="text-align: right;">
+                <td style="text-align: right; vertical-align:text-top; padding-top:4px">
                     <?= $no ?>.
                 </td>
-                <td>
-                    <table class="border-bottom">
-                        <tr>
-                            <?php
-                            foreach ($detail_arr as $da) { ?>
+                <td style="padding-right: 5px;">
+                    <?php
+                    foreach ($detail_arr as $da) { ?>
+                        <table class="border-bottom" style="float: left;">
+                            <tr>
                                 <td class="pe-1" nowrap>
                                     <?= "<small>" . $da['group_name'] . "</small> <br>" . strtoupper($da['detail_name']) ?>
                                 </td>
-                            <?php } ?>
-                        </tr>
-                    </table>
+                            </tr>
+                        </table>
+                    <?php } ?>
                 </td>
-                <td style="text-align: right;">
-                    <?= $do['jumlah'] ?>pcs
+                <td style="text-align: right;vertical-align:text-top; padding-left:7px">
+                    <?= $do['jumlah'] ?>
                 </td>
-                <td style="text-align: right;">
+                <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                     <?= number_format($do['harga']) ?>
                 </td>
-                <td style="text-align: right;">
+                <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                     <?= number_format($do['harga'] * $do['jumlah']) ?>
                 </td>
             </tr>
