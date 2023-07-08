@@ -49,7 +49,7 @@
                                             <span style="cursor: pointer;" data-id="<?= $id_produk ?>" class="deleteProduk text-danger"><i class="fa-regular fa-circle-xmark"></i></span>
                                         <?php } ?>
                                         <br>
-                                        <span onclic k="chgActionEdit(<?= $id_produk ?>,'<?= $a['produk'] ?>')" data-bs-toggle="modal" data-bs-target="#exampleModalEdit" class="text-primary" style="cursor: pointer;"><i class="fa-regular fa-pen-to-square"></i></span> <?= $detail ?>
+                                        <span onclick="chgActionEdit(<?= $id_produk ?>,'<?= $a['produk'] ?>')" data-bs-toggle="modal" data-bs-target="#exampleModalEdit" class="text-primary" style="cursor: pointer;"><i class="fa-regular fa-pen-to-square"></i></span> <?= $detail ?>
                                     </td>
                                     <td>
                                         <button type="button" class="border rounded bg-white addHarga" data-id="<?= $id_produk ?>" data-bs-toggle="modal" data-bs-target="#add_harga">+</button>
@@ -107,14 +107,19 @@
                         <label class="form-label">Nama Produk</label>
                         <input type="text" name="produk" class="form-control" required>
                     </div>
-                    <div class="mb-3">
+                    <div class="row mb-3">
                         <label class="form-label">Detail yang diperlukan</label>
-                        <select class="form-select" name="detail[]" multiple aria-label="multiple select example" required>
-                            <?php foreach ($data['detail'] as $d) { ?>
-                                <option value="<?= $d['id_index'] ?>"><?= $d['detail_group'] ?></option>
-                            <?php  }
-                            ?>
-                        </select>
+                        <?php foreach ($data['detail'] as $d) { ?>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" name="detail[]" type="checkbox" value="<?= $d['id_index'] ?>">
+                                    <label class="form-check-label">
+                                        <?= $d['detail_group'] ?>
+                                    </label>
+                                </div>
+                            </div>
+                        <?php  }
+                        ?>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -139,14 +144,19 @@
                         <label class="form-label">Nama Produk</label>
                         <input type="text" name="produk" id="input_produk_edit" class="form-control" required>
                     </div>
-                    <div class="mb-3">
+                    <div class="row mb-3">
                         <label class="form-label">Detail yang diperlukan</label>
-                        <select class="form-select" name="detail[]" multiple aria-label="multiple select example" required>
-                            <?php foreach ($data['detail'] as $d) { ?>
-                                <option value="<?= $d['id_index'] ?>"><?= $d['detail_group'] ?></option>
-                            <?php  }
-                            ?>
-                        </select>
+                        <?php foreach ($data['detail'] as $d) { ?>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" name="detail[]" type="checkbox" value="<?= $d['id_index'] ?>">
+                                    <label class="form-check-label">
+                                        <?= $d['detail_group'] ?>
+                                    </label>
+                                </div>
+                            </div>
+                        <?php  }
+                        ?>
                     </div>
                 </div>
                 <div class="modal-footer">
