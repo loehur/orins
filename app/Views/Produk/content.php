@@ -39,13 +39,14 @@
                                 $spk_dvs = $a['spk_dvs'];
                                 $produk_detail = $a['detail'];
                                 $c_spk = count($spk_dvs);
+                                $c_detail = count($produk_detail);
                             ?>
                                 <tr>
                                     <td>
                                         <span class="text-success"><b><?= $a['produk'] ?></b></span>
 
-                                        <?php if ($c_spk == 0) { ?>
-                                            <span style="cursor: pointer;" data-id="<?= $id_produk ?>" class="deleteProduk text-danger"><i class=" fa-regular fa-circle-xmark"></i></span>
+                                        <?php if ($c_spk == 0 && $c_detail == 0) { ?>
+                                            <span style="cursor: pointer;" data-id="<?= $id_produk ?>" class="deleteProduk text-danger"><i class="fa-regular fa-circle-xmark"></i></span>
                                         <?php } ?>
                                         <br>
                                         <span onclic k="chgActionEdit(<?= $id_produk ?>,'<?= $a['produk'] ?>')" data-bs-toggle="modal" data-bs-target="#exampleModalEdit" class="text-primary" style="cursor: pointer;"><i class="fa-regular fa-pen-to-square"></i></span> <?= $detail ?>
@@ -263,6 +264,28 @@
             var id = $(this).attr("data-id");
             $.ajax({
                 url: "<?= $this->BASE_URL ?>Produk/delete_item",
+                data: {
+                    id: id
+                },
+                type: "POST",
+                success: function(res) {
+                    if (res == 0) {
+                        content();
+                    } else {
+                        alert(res);
+                    }
+                },
+            });
+        } else {
+            return false;
+        }
+    });
+
+    $("span.deleteDetail").click(function() {
+        if (confirm("Yakin Hapus?")) {
+            var id = $(this).attr("data-id");
+            $.ajax({
+                url: "<?= $this->BASE_URL ?>Produk/delete_detail",
                 data: {
                     id: id
                 },

@@ -158,6 +158,15 @@ class Produk extends Controller
       echo $delete['errno'];
    }
 
+   public function delete_detail()
+   {
+      $id = $_POST['id'];
+      $where = "id_produk_detail = " . $id;
+      $delete = $this->model('M_DB_1')->delete_where("produk_detail", $where);
+      $this->dataSynchrone();
+      echo $delete['errno'];
+   }
+
    public function delete_produk()
    {
       $id = $_POST['id'];
