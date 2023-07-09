@@ -253,8 +253,10 @@
 
                                                             <?php }
                                                             } else {
-                                                                $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $id_ambil);
-                                                                echo '<span class="text-purple"><i class="fa-solid fa-check"></i> Ambil (' . $karyawan . ")</span>";
+                                                                if ($cancel == 0) {
+                                                                    $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $id_ambil);
+                                                                    echo '<span class="text-purple"><i class="fa-solid fa-check"></i> Ambil (' . $karyawan . ")</span>";
+                                                                }
                                                             } ?>
                                                         </small>
                                                     </td>
