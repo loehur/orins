@@ -136,7 +136,7 @@ if ($id_pelanggan_jenis == 1) {
                                                 <?php
                                                 foreach ($listDetail as $kl => $ld_o) { ?>
                                                     <span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga border px-2 rounded">P</span>
-                                                    <span style="cursor: pointer;" class="border px-2 rounded">D</span> <?= $ld_o['n_v'] . " " ?>
+                                                    <span style="cursor: pointer;" class="border px-2 rounded">D</span> <?= strtoupper($ld_o['n_v']) . " " ?>
                                                     Rp<?= ($data['harga'][$keyD][$ld_o['c_h']] > 0) ? "<span class='text-success'>" . $data['harga'][$keyD][$ld_o['c_h']] . "</span>" : $data['harga'][$keyD][$ld_o['c_h']] ?>, Disc. Rp<?= $ld_o['d'] ?><br>
                                                 <?php }
                                                 ?>
