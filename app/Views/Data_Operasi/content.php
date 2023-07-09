@@ -214,7 +214,9 @@
                                                                     <span>
                                                                         <?php
                                                                         foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                                            echo $this->model('Arr')->get($this->dDvsAll, "id_divisi", "divisi", $ks) . ": " . $ns . ", ";
+                                                                            if (strlen($ns) > 0) {
+                                                                                echo $this->model('Arr')->get($this->dDvsAll, "id_divisi", "divisi", $ks) . ": " . $ns . ", ";
+                                                                            }
                                                                         }
                                                                         ?>
                                                                     </span>
