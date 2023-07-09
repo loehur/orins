@@ -244,7 +244,7 @@
                                                             ?>
                                                             <?php
                                                             $id_ambil = $do['id_ambil'];
-                                                            if ($id_ambil == 0) {
+                                                            if ($id_ambil == 0 && $cancel == 0) {
                                                                 $ambil = true;
                                                                 if ($countSPK > 0 && $cancel == 0) {
                                                                     $ambil_all = false;
