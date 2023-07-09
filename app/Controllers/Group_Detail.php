@@ -153,7 +153,7 @@ class Group_Detail extends Controller
       $where = "id_detail_item = " . $id;
       $delete = $this->model('M_DB_1')->delete_where("detail_item", $where);
 
-      $where = "code LIKE '%" . $id . "-%'";
+      $where = "code LIKE '%#" . $id . "-%'";
       $delete = $this->model('M_DB_1')->delete_where("produk_harga", $where);
 
       $this->dataSynchrone();

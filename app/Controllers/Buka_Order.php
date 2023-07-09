@@ -167,7 +167,7 @@ class Buka_Order extends Controller
          foreach ($detail__ as $d_L) {
             foreach ($data as $d) {
                if ($d_L == $d) {
-                  $c_harga .= $get_detail_item[$d]['id'] . "-";
+                  $c_harga .= "#" . $get_detail_item[$d]['id'] . "-";
                   $c_barang .= $get_detail_item[$d]['id'] . "&" . $get_detail_item[$d]['id_varian'] . "-";
                   $n_b .= $get_detail_item[$d]['name'] . " ";
 

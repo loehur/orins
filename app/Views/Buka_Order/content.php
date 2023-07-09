@@ -41,7 +41,7 @@ if ($id_pelanggan_jenis == 1) {
                     <button type="button" class="float-end btn btn-outline-primary py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
                     <div class="btn-group float-end me-3">
                         <button type="button" class="border bg-white py-1 px-3 rounded dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                            Order Afiliasi
+                            Order Afiliasi (Soon)
                             <span class="visually-hidden">Toggle Dropdown</span>
                         </button>
                         <ul class="dropdown-menu p-0">
@@ -134,12 +134,10 @@ if ($id_pelanggan_jenis == 1) {
                                         <td colspan="10">
                                             <small>
                                                 <?php
-                                                foreach ($listDetail as $kl => $ld_o) {
-                                                    if (in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
-                                                        <span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga border px-2 rounded">P</span>
-                                                        <span style="cursor: pointer;" class="border px-2 rounded">D</span> <?= $ld_o['n_v'] . " " ?>
-                                                    <?php } ?>
-                                                    Rp<?= $data['harga'][$keyD][$ld_o['c_h']] ?>, Disc. Rp<?= $ld_o['d'] ?><br>
+                                                foreach ($listDetail as $kl => $ld_o) { ?>
+                                                    <span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga border px-2 rounded">P</span>
+                                                    <span style="cursor: pointer;" class="border px-2 rounded">D</span> <?= $ld_o['n_v'] . " " ?>
+                                                    Rp<?= ($data['harga'][$keyD][$ld_o['c_h']] > 0) ? "<span class='text-success'>" . $data['harga'][$keyD][$ld_o['c_h']] . "</span>" : $data['harga'][$keyD][$ld_o['c_h']] ?>, Disc. Rp<?= $ld_o['d'] ?><br>
                                                 <?php }
                                                 ?>
                                             </small>
@@ -257,11 +255,11 @@ if ($id_pelanggan_jenis == 1) {
         $("input[name=harga_code").val(harga_code);
     })
 
-    $("a.aff").click(function() {
+
+    $("a.aff_Belum").click(function() {
         var target = $(this).attr("data-id");
         $("div#aff").load('<?= $this->BASE_URL ?>Buka_Order/load_aff/' + target);
     })
-
 
     $("a.deleteItem").click(function() {
         var id = $(this).attr("data-id_order");
