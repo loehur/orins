@@ -356,10 +356,11 @@ class Buka_Order extends Controller
       foreach ($data['order'] as $do) {
          $detail_harga = unserialize($do['detail_harga']);
          $harga = 0;
-         foreach ($detail_harga as $dh_o) {
+         foreach ($detail_harga as $key => $dh_o) {
             foreach ($data_harga as $dh) {
                if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
                   $harga +=  $dh['harga_' . $id_pelanggan_jenis];
+                  $detail_harga[$key]['h'] = $dh['harga_' . $id_pelanggan_jenis];
                   break;
                }
             }
