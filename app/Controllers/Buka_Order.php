@@ -176,7 +176,7 @@ class Buka_Order extends Controller
                   } else {
                      $n_v .= $get_detail_item[$d]['name'] . " ";
                   }
-                  $g .= $d . "-";
+                  $g .= "#" . $d . "-";
                }
             }
 
