@@ -205,21 +205,22 @@
                                                         <div class="row">
                                                             <div class="col-auto">
                                                                 <span class="text-nowrap">
-                                                                    <small>Catatan Utama</small><br><span><?= $do['note'] ?></span>
+                                                                    <small>Catatan Utama<br><span class="text-danger"><?= $do['note'] ?></span></small>
                                                                 </span>
                                                             </div>
                                                             <div class="col-auto">
                                                                 <span class="text-nowrap">
-                                                                    <small>Catatan Produksi</small><br>
-                                                                    <span>
-                                                                        <?php
-                                                                        foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                                            if (strlen($ns) > 0) {
-                                                                                echo $this->model('Arr')->get($this->dDvsAll, "id_divisi", "divisi", $ks) . ": " . $ns . ", ";
+                                                                    <small>Catatan Produksi<br>
+                                                                        <span class="text-primary">
+                                                                            <?php
+                                                                            foreach (unserialize($do['note_spk']) as $ks => $ns) {
+                                                                                if (strlen($ns) > 0) {
+                                                                                    echo "<b>" . $this->model('Arr')->get($this->dDvsAll, "id_divisi", "divisi", $ks) . ":</b> " . $ns . ", ";
+                                                                                }
                                                                             }
-                                                                        }
-                                                                        ?>
-                                                                    </span>
+                                                                            ?>
+                                                                        </span>
+                                                                    </small>
                                                                 </span>
                                                             </div>
                                                         </div>
