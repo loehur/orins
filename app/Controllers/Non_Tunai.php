@@ -34,10 +34,9 @@ class Non_Tunai extends Controller
 
    public function content($parse = "")
    {
-      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
-      $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
+      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
 
-      $where = "metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_kas ASC, id_client ASC";
+      $where = "metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
       $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
 
       $where = "metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY id_kas DESC, id_client ASC LIMIT 20";
@@ -54,5 +53,21 @@ class Non_Tunai extends Controller
       $where = "id_kas = " . $id;
       $update = $this->model('M_DB_1')->update("kas", $set, $where);
       echo $update['errno'];
+   }
+
+   function actionMulti()
+   {
+      $id = explode("_", $_POST['id']);
+      $val = $_POST['val'];
+
+      foreach ($id as $i) {
+         $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
+         $where = "id_kas = " . $i;
+         $update = $this->model('M_DB_1')->update("kas", $set, $where);
+         if ($update['errno'] <> 0) {
+            echo $update['error'];
+            exit();
+         }
+      }
    }
 }

@@ -133,11 +133,7 @@
                     <tr>
                         <td style="text-align:right">Total :</td>
                         <td style="text-align:right">
-                            <?php if ($total_disc > 0) { ?>
-                                <del><?= number_format($total) ?></del>
-                            <?php } else { ?>
-                                <?= number_format($total) ?>
-                            <?php } ?>
+                            <?= number_format($total) ?>
                         </td>
                     </tr>
                     <?php if ($total_disc > 0) { ?>

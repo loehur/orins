@@ -19,26 +19,109 @@
                 <div class="col">
                     <div class="row border-bottom">
                         <div class="col ms-2">
-                            <span class="text-danger">Antrian Pengecekan Non Tunai</span>
+                            <span><b>Antrian Pengecekan Non Tunai</b></span>
                         </div>
                     </div>
-                    <table class="table table-sm">
+                    <small>
+                        <table class="table table-sm table-hover mt-2">
+                            <tr>
+                                <th>Toko/Ref</th>
+                                <th>Customer</th>
+                                <th class="text-end">Jumlah/Via</th>
+                                <th colspan="2" class="text-center"></th>
+                            </tr>
+                            <?php
+                            $no = 0;
+                            $id_multi = "";
+                            foreach ($data['kas'] as $a) {
+                                $no += 1;
+                                $id =  $a['id_kas'];
+
+                                $client = $a['id_client'];
+                                $jumlah = $a['jumlah'];
+                                $count = $rekap[$client]["c"];
+                                $total = $rekap[$client]['t'];
+
+                                if ($no == $count) {
+                                    $id_multi .= $id;
+                                } else {
+                                    $id_multi .= $id . "_";
+                                }
+
+
+                                $pelanggan = "Non";
+                                foreach ($data['pelanggan'] as $dp) {
+                                    if ($dp['id_pelanggan'] == $client) {
+                                        $pelanggan = $dp['nama'];
+                                    }
+                                }
+
+                            ?>
+                                <tr>
+                                    <td><span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br><small><?= $a['ref_transaksi'] ?></small></td>
+                                    <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
+                                    <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
+                                    <td align="left">
+                                        <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-success border-0">Verify</button>
+                                    </td>
+                                    <td align="right">
+                                        <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-danger border-0">Reject</button>
+                                    </td>
+                                </tr>
+                                <?php
+                                if (($no == $count)) {
+                                    $no = 0; ?>
+                                    <?php
+                                    if ($count > 1) {
+                                    ?>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="pe-0" align="right"><button data-id="<?= $id_multi ?>" data-val="1" class="border-0 actionMulti btn btn-sm btn-outline-primary">Multi Verify - <b>Rp<?= number_format($total) ?></b></button></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    <?php
+                                    }
+                                    ?>
+                                    <tr>
+                                        <td colspan="10" class="bg-secondary"></td>
+                                    </tr>
+                            <?php
+                                    $id_multi = "";
+                                }
+                            } ?>
+                        </table>
+                    </small>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
+    <div class="p-2 ms-3 mt-3 me-3 bg-white">
+        <div class="row">
+            <div class="col">
+                <div class="row border-bottom">
+                    <div class="col ms-2">
+                        <span><b>Riwayat Pembayaran Terkonfirmasi</b></span><small>(Last 20)</small>
+                    </div>
+                </div>
+                <small>
+                    <table class="table table-sm mt-2">
                         <tr>
                             <th class="text-end">ID</th>
                             <th>Customer</th>
                             <th>Referensi</th>
                             <th>Payment</th>
                             <th class="text-end">Jumlah</th>
-                            <th>Action</th>
+                            <th>Status</th>
                         </tr>
                         <?php
                         $no = 0;
-                        foreach ($data['kas'] as $a) {
+                        foreach ($data['kas_done'] as $a) {
                             $no += 1;
+
                             $client = $a['id_client'];
                             $jumlah = $a['jumlah'];
-                            $count = $rekap[$client]["c"];
-                            $total = $rekap[$client]['t'];
 
                             $pelanggan = "Non";
                             foreach ($data['pelanggan'] as $dp) {
@@ -55,89 +138,22 @@
                                 <td><?= $a['note'] ?></td>
                                 <td align="right">Rp<?= number_format($jumlah) ?></td>
                                 <td>
-                                    <button data-id="<?= $a['id_kas'] ?>" data-val="1" class="action btn btn-sm btn-outline-success">Verify</button>
-                                    <button data-id="<?= $a['id_kas'] ?>" data-val="2" class="action border-0 btn-sm bg-white text-danger">Reject</button>
+                                    <?php
+                                    switch ($a['status_mutasi']) {
+                                        case 1:
+                                            echo '<span class="text-success"><i class="fa-solid fa-check-to-slot"></i> Verified</span>';
+                                            break;
+                                        default:
+                                            echo '<span><i class="fa-solid fa-xmark"></i> Rejected</span>';
+                                            break;
+                                    }
+                                    ?>
                                 </td>
                             </tr>
 
-                            <?php
-                            if (($no == $count)) {
-                                $no = 0;
-                                if ($count > 1) {
-                            ?>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td align="right"><b>Rp<?= number_format($total) ?></b></td>
-                                        <td></td>
-                                    </tr>
-                        <?php
-                                }
-                            }
-                        } ?>
+                        <?php } ?>
                     </table>
-                </div>
-            </div>
-        </div>
-    <?php } ?>
-    <div class="p-2 ms-3 mt-3 me-3 bg-white">
-        <div class="row">
-            <div class="col">
-                <div class="row border-bottom">
-                    <div class="col ms-2">
-                        <span class="text-purple">Riwayat Pembayaran Terkonfirmasi</span> <small>(Last 30)</small>
-                    </div>
-                </div>
-                <table class="table table-sm">
-                    <tr>
-                        <th class="text-end">ID</th>
-                        <th>Customer</th>
-                        <th>Referensi</th>
-                        <th>Payment</th>
-                        <th class="text-end">Jumlah</th>
-                        <th>Status</th>
-                    </tr>
-                    <?php
-                    $no = 0;
-                    foreach ($data['kas_done'] as $a) {
-                        $no += 1;
-
-                        $client = $a['id_client'];
-                        $jumlah = $a['jumlah'];
-
-                        $pelanggan = "Non";
-                        foreach ($data['pelanggan'] as $dp) {
-                            if ($dp['id_pelanggan'] == $client) {
-                                $pelanggan = $dp['nama'];
-                            }
-                        }
-
-                    ?>
-                        <tr>
-                            <td align="right">#<?= $a['id_kas'] ?></td>
-                            <td><?= strtoupper($pelanggan) ?></td>
-                            <td><?= $a['ref_transaksi'] ?></td>
-                            <td><?= $a['note'] ?></td>
-                            <td align="right">Rp<?= number_format($jumlah) ?></td>
-                            <td>
-                                <?php
-                                switch ($a['status_mutasi']) {
-                                    case 1:
-                                        echo '<span class="text-success"><i class="fa-solid fa-check-to-slot"></i> Verified</span>';
-                                        break;
-                                    default:
-                                        echo '<span><i class="fa-solid fa-xmark"></i> Rejected</span>';
-                                        break;
-                                }
-                                ?>
-                            </td>
-                        </tr>
-
-                    <?php } ?>
-                </table>
-
+                </small>
             </div>
         </div>
     </div>
@@ -151,6 +167,26 @@
         var value = $(this).attr("data-val");
         $.ajax({
             url: "<?= $this->BASE_URL ?>Non_Tunai/action",
+            data: {
+                id: id_,
+                val: value
+            },
+            type: "POST",
+            success: function(result) {
+                if (result == 0) {
+                    content();
+                } else {
+                    alert(result);
+                }
+            },
+        });
+    });
+
+    $("button.actionMulti").click(function() {
+        var id_ = $(this).attr("data-id");
+        var value = $(this).attr("data-val");
+        $.ajax({
+            url: "<?= $this->BASE_URL ?>Non_Tunai/actionMulti",
             data: {
                 id: id_,
                 val: value
