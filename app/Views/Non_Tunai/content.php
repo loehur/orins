@@ -58,7 +58,10 @@
 
                             ?>
                                 <tr>
-                                    <td><span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br><small><?= $a['ref_transaksi'] ?></small></td>
+                                    <td>
+                                        <span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br>
+                                        <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
+                                    </td>
                                     <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
                                     <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
                                     <td align="left">
@@ -102,7 +105,7 @@
             <div class="col">
                 <div class="row border-bottom">
                     <div class="col ms-2">
-                        <span><b>Riwayat Pembayaran Terkonfirmasi</b></span><small>(Last 20)</small>
+                        <span><b>Riwayat Pembayaran Terkonfirmasi</b></span> <small>(Last 20)</small>
                     </div>
                 </div>
                 <small>
@@ -159,6 +162,12 @@
     </div>
 </main>
 
+<div class="modal" id="modalCek" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="cekOrder"></div>
+    </div>
+</div>
+
 <script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
@@ -200,5 +209,10 @@
                 }
             },
         });
+    });
+
+    $('span.cekTrx').click(function() {
+        var ref = $(this).attr("data-ref");
+        $("div#cekOrder").load('<?= $this->BASE_URL ?>Non_Tunai/cekOrder/' + ref);
     });
 </script>
