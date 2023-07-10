@@ -95,7 +95,6 @@
                                                 $bill -= $do['diskon'];
                                                 $total -= $do['diskon'];
 
-
                                                 $id_order_data = $do['id_order_data'];
                                                 $id_produk = $do['id_produk'];
                                                 $detail_arr = unserialize($do['produk_detail']);

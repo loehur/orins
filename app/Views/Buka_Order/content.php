@@ -192,18 +192,16 @@ if ($id_pelanggan_jenis == 1) {
                                 </div>
                             </td>
                             <td class="text-end">
-                                <span data-id="<?= $do['produk_code'] ?>">
-                                    <?php
-                                    if ($harga_ok == false) {
-                                        echo $btnSetHarga;
+                                <?php
+                                if ($harga_ok == false) {
+                                    echo $btnSetHarga;
+                                } else {
+                                    if ($akum_diskon > 0) {
+                                        echo "<del>" . number_format($do['harga']) . "</del><br><small>Disc. Rp" . number_format($akum_diskon) . "</small><br>" . number_format($do['harga'] - $akum_diskon);
                                     } else {
-                                        if ($akum_diskon > 0) {
-                                            echo "<del>" . number_format($do['harga']) . "</del><br><small>Disc. Rp" . number_format($akum_diskon) . "</small><br>" . number_format($do['harga'] - $akum_diskon);
-                                        } else {
-                                            echo number_format($do['harga']);
-                                        }
-                                    } ?>
-                                </span>
+                                        echo number_format($do['harga']);
+                                    }
+                                } ?>
                             </td>
                             <td class="text-end"><span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= number_format($do['jumlah']) ?></span></td>
                             <td class="text-end">

@@ -351,7 +351,7 @@ class Buka_Order extends Controller
 
       $id_pelanggan = $_POST['id_pelanggan'];
       $id_karyawan = $_POST['id_karyawan'];
-      $ref = date("Ymdhis");
+      $ref = date("Ymdhis") . rand(0, 9);
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);

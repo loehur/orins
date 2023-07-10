@@ -90,7 +90,6 @@ class Buka_Order_Aff extends Controller
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
       $data_harga = $this->model('M_DB_1')->get('produk_harga');
 
-      $c_cart = count($data['order']);
       $error = 0;
       foreach ($data['order'] as $do) {
          $detail_harga = unserialize($do['detail_harga']);

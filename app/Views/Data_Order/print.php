@@ -45,11 +45,14 @@
         <?php
         $no = 0;
         $total = 0;
+        $total_disc = 0;
         foreach ($data['order'] as $do) {
             $no += 1;
+            $akum_diskon = 0;
             $total += $do['harga'] * $do['jumlah'];
             $id_produk = $do['id_produk'];
             $detail_arr = unserialize($do['produk_detail']);
+            $listDetail = unserialize($do['detail_harga']);
 
             foreach ($this->dProduk as $dp) {
                 if ($dp['id_produk'] == $id_produk) {
@@ -64,20 +67,26 @@
                     $dibayar += $dk['jumlah'];
 
                     if ($dk['status_mutasi'] == 0) {
-                        $showMutasi .= "Rp" . number_format($dk['jumlah']) . " (" . $dk['insertTime'] . ") <b>*Dalam Pengecekan</b><br>";
+                        $showMutasi .= "<tr><td><small>* " . $dk['insertTime'] . ")</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td><td><small><b>*Dalam Pengecekan</b></small></td></tr>";
                     } else {
-                        $showMutasi .= "Rp" . number_format($dk['jumlah']) . " (" . $dk['insertTime'] . ")<br>";
+                        $showMutasi .= "<tr><td><small>* " . $dk['insertTime'] . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td></tr>";
                     }
                 }
             }
 
             $sisa = $total - $dibayar;
+            foreach ($listDetail as $kl => $ld_o) {
+                $disk = $ld_o['d'];
+                $akum_diskon += $disk;
+                $total_disc += $disk * $do['jumlah'];
+            }
         ?>
-            <tr style="border-bottom: 1px solid;">
-                <td style="text-align: right; vertical-align:text-top; padding-top:4px">
+
+            <tr style="border-bottom: 1px solid grey;">
+                <td style="text-align: right; vertical-align:text-top; padding-top:2px">
                     <?= $no ?>.
                 </td>
-                <td style="padding-right: 5px;">
+                <td style="padding-right: 5px;" valign='top'>
                     <?php
                     foreach ($detail_arr as $da) { ?>
                         <table class="border-bottom" style="float: left;">
@@ -92,31 +101,61 @@
                 <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                     <?= $do['jumlah'] ?>
                 </td>
-                <td style="text-align: right;vertical-align:text-top; padding-left:7px">
-                    <?= number_format($do['harga']) ?>
+                <td style="text-align: right;vertical-align:text-top; padding-left:7px;">
+                    <?php
+                    if ($akum_diskon > 0) {
+                        echo "<del>" . number_format($do['harga']) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format($do['harga'] - $akum_diskon);
+                    } else {
+                        echo number_format($do['harga']);
+                    } ?>
                 </td>
                 <td style="text-align: right;vertical-align:text-top; padding-left:7px">
-                    <?= number_format($do['harga'] * $do['jumlah']) ?>
+                    <?php
+                    if ($akum_diskon > 0) {
+                        echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del><br><small>Disc. " . number_format($akum_diskon * $do['jumlah']) . "</small><br>" . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                    } else {
+                        echo number_format($do['harga'] * $do['jumlah']);
+                    } ?>
                 </td>
             </tr>
         <?php } ?>
+    </table>
+    <table style="width: 100%;">
         <tr>
-            <td style="height: 20px;"></td>
+            <td colspan="3" style="height: 20px;"></td>
         </tr>
         <tr>
-            <td valign=top colspan="2" rowspan="3"><small>Riwayat Pembayaran:</small><br><?= $showMutasi ?></td>
-            <td colspan="2" style="text-align:right">Total:</td>
-            <td style="text-align:right"><?= number_format($total) ?></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td style="text-align:right">Dibayar:</td>
-            <td style="text-align:right"><?= number_format($dibayar) ?></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td style="text-align:right"><b>Sisa:</b></td>
-            <td style="text-align:right"><b><?= number_format($sisa) ?></b></td>
+            <td valign=top><small>Riwayat Pembayaran:</small>
+                <table><?= $showMutasi ?></table>
+            </td>
+            <td align="right">
+                <table>
+                    <tr>
+                        <td style="text-align:right">Total :</td>
+                        <td style="text-align:right">
+                            <?php if ($total_disc > 0) { ?>
+                                <del><?= number_format($total) ?></del>
+                            <?php } else { ?>
+                                <?= number_format($total) ?>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                    <?php if ($total_disc > 0) { ?>
+                        <tr>
+                            <td style="text-align:right">Diskon :</td>
+                            <td style="text-align:right"><?= number_format($total_disc) ?></td>
+                        </tr>
+                    <?php } ?>
+                    <tr>
+                        <td style="text-align:right">Dibayar :</td>
+                        <td style="text-align:right"><?= number_format($dibayar) ?></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right"><b>Sisa :</b></td>
+                        <td style="text-align:right"><b><?= number_format($sisa - $total_disc) ?></b></td>
+                    </tr>
+                </table>
+            </td>
         </tr>
     </table>
 </div>
