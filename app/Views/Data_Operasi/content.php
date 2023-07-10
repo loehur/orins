@@ -272,6 +272,8 @@
                                                         <?php
                                                         if ($do['diskon'] > 0) { ?>
                                                             <del>Rp<?= number_format($jumlah) ?></del><br><small>Disc. Rp<?= $do['diskon'] ?></small><br>Rp<?= number_format($jumlah - $do['diskon']) ?>
+                                                        <?php } else { ?>
+                                                            <?= number_format($jumlah) ?>
                                                         <?php } ?>
                                                     </td>
                                                 </tr>
