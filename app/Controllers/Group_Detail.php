@@ -58,12 +58,15 @@ class Group_Detail extends Controller
       $cols = 'id_toko, id_detail_group, detail_group';
 
       if ($link == 0) {
-         $where = "id_toko = " . $this->userData['id_toko'];
-         $dataD = $this->model('M_DB_1')->get_where('detail_group', $where);
-
-         $ar_id = array_column($dataD, 'id_detail_group');
-         $max = max($ar_id);
-         $id_detail_group = $max + 1;
+         $count = $this->model('M_DB_1')->count('detail_group');
+         if ($count == 0) {
+            $id_detail_group = 1;
+         } else {
+            $dataD = $this->model('M_DB_1')->get('detail_group');
+            $ar_id = array_column($dataD, 'id_detail_group');
+            $max = max($ar_id);
+            $id_detail_group = $max + 1;
+         }
       } else {
          $id_detail_group = $_POST['id_detail_group'];
       }

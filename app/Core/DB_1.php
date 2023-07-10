@@ -150,6 +150,20 @@ class DB_1 extends DB_Config
         return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
     }
 
+    public function count($table)
+    {
+        $query = "SELECT COUNT(*) as count FROM $table";
+        $result = $this->mysqli->query($query);
+
+        $reply = $result->fetch_assoc();
+        if ($reply) {
+            return $reply['count'];
+        } else {
+            return array('query' => $query, 'info' => $this->mysqli->error);
+        }
+    }
+
+
     public function count_where($table, $where)
     {
         $query = "SELECT COUNT(*) FROM $table WHERE $where";
