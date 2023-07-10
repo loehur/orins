@@ -92,6 +92,10 @@
                                                     $total += $jumlah;
                                                 }
 
+                                                $bill -= $do['diskon'];
+                                                $total -= $do['diskon'];
+
+
                                                 $id_order_data = $do['id_order_data'];
                                                 $id_produk = $do['id_produk'];
                                                 $detail_arr = unserialize($do['produk_detail']);
@@ -266,10 +270,8 @@
                                                     <td class="text-end"><?= number_format($do['jumlah']) ?></td>
                                                     <td class="text-end">
                                                         <?php
-                                                        if ($cancel == 0) { ?>
-                                                            Rp<?= number_format($jumlah) ?>
-                                                        <?php } else { ?>
-                                                            <del>Rp<?= number_format($jumlah) ?></del>
+                                                        if ($do['diskon'] > 0) { ?>
+                                                            <del>Rp<?= number_format($jumlah) ?></del><br><small>Disc. Rp<?= $do['diskon'] ?></small><br>Rp<?= number_format($jumlah - $do['diskon']) ?>
                                                         <?php } ?>
                                                     </td>
                                                 </tr>
@@ -293,19 +295,25 @@
                                             ?>
                                             <tr class="border-top">
                                                 <td class="text-end text" colspan="3">
-                                                    <?php if (($do['id_afiliasi'] == 0 || $do['id_afiliasi'] <> $this->userData['id_toko'])) { ?>
+                                                    <?php if (($do['id_afiliasi'] == 0 || $do['id_afiliasi'] <> $this->userData['id_toko']) && $do['tuntas'] == 0) { ?>
+                                                        <table>
+                                                            <tr>
+                                                                <td class="text-end pe-1"><small><a href="<?= $this->BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
+                                                                <?php
+                                                                if ($ambil_all == false) { ?>
+                                                                    <td class="text-end pe-1"><small><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded border text-purple px-1" data-ref="<?= $do['ref'] ?>">Ambil</span></small></td>
+                                                                <?php } ?>
+                                                                <td class="text-end pe-1"><small><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModalSurcharge" class="btnSurcharge border rounded text-info px-2" data-ref="<?= $do['ref'] ?>"><i class="fa-solid fa-sliders"></i></span></small></td>
+                                                                <?php
+                                                                if (in_array($this->userData['user_tipe'], $this->pCS) && $sisa > 0) { ?>
+                                                                    <td class="text-end pe-1 ps-2"><small><span style="cursor: pointer;" data-ref="<?= $ref ?>" data-client="<?= $id_pelanggan ?>" data-bill="<?= $sisa ?>" data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btnBayar border rounded text-danger px-1">Bayar</span></small></td>
+                                                                <?php } ?>
+                                                            </tr>
+                                                        </table>
+                                                    <?php } else { ?>
                                                         <table>
                                                             <tr>
                                                                 <td class="text-end pe-1"><small><a href="<?= $this->BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm px-1"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
-                                                                <?php
-                                                                if ($ambil_all == false) { ?>
-                                                                    <td class="text-end pe-1"><small><span data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua border border-purple text-purple btn btn-sm px-1" data-ref="<?= $do['ref'] ?>">Ambil</span></small></td>
-                                                                <?php } ?>
-                                                                <td class="text-end pe-1"><small><span data-bs-toggle="modal" data-bs-target="#exampleModalSurcharge" class="btnSurcharge border border-info text-info btn btn-sm px-1" data-ref="<?= $do['ref'] ?>">Surcharge</span></small></td>
-                                                                <?php
-                                                                if (in_array($this->userData['user_tipe'], $this->pCS) && $sisa > 0) { ?>
-                                                                    <td class="text-end pe-1"><small><span data-ref="<?= $ref ?>" data-client="<?= $id_pelanggan ?>" data-bill="<?= $sisa ?>" data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btnBayar border border-danger text-danger btn btn-sm py-1 px-1">Bayar</span></small></td>
-                                                                <?php } ?>
                                                             </tr>
                                                         </table>
                                                     <?php } ?>

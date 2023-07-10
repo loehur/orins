@@ -40,7 +40,7 @@ if ($id_pelanggan_jenis == 1) {
                 <?php if ($data['count'] <= 15) { ?>
                     <button type="button" class="float-end btn btn-outline-primary py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
                     <div class="btn-group float-end me-3">
-                        <button type="button" class="border bg-white py-1 px-3 rounded dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button type="button" class="border bg-white py-1 px-3 rounded dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" disabled>
                             Order Afiliasi (Soon)
                             <span class="visually-hidden">Toggle Dropdown</span>
                         </button>
@@ -97,6 +97,8 @@ if ($id_pelanggan_jenis == 1) {
                     $no = 0;
                     foreach ($data['order'] as $keyD => $do) {
                         $no++;
+                        $akum_diskon = 0;
+
                         $id_order_data = $do['id_order_data'];
                         $id_produk = $do['id_produk'];
                         $detail_arr = unserialize($do['produk_detail']);
@@ -133,13 +135,36 @@ if ($id_pelanggan_jenis == 1) {
                                     <tr>
                                         <td colspan="10">
                                             <small>
-                                                <?php
-                                                foreach ($listDetail as $kl => $ld_o) { ?>
-                                                    <span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga border px-2 rounded">P</span>
-                                                    <span style="cursor: pointer;" class="border px-2 rounded">D</span> <?= strtoupper($ld_o['n_v']) . " " ?>
-                                                    Rp<?= ($data['harga'][$keyD][$ld_o['c_h']] > 0) ? "<span class='text-success'>" . $data['harga'][$keyD][$ld_o['c_h']] . "</span>" : $data['harga'][$keyD][$ld_o['c_h']] ?>, Disc. Rp<?= $ld_o['d'] ?><br>
-                                                <?php }
-                                                ?>
+                                                <table class="border">
+                                                    <?php
+                                                    foreach ($listDetail as $kl => $ld_o) {
+                                                        $harga_d = $data['harga'][$keyD][$ld_o['c_h']];
+                                                        $disk = $ld_o['d'];
+                                                        $akum_diskon += $disk ?>
+                                                        <tr>
+                                                            <td class="text-success"><b><span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b></td>
+                                                            <?php if ($harga_d > 0 && in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
+                                                                <td class="text-purple"><b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b></td>
+                                                            <?php } elseif (in_array($this->userData['user_tipe'], $this->pKasir)) {
+                                                                echo "<td></td>";
+                                                            } ?>
+                                                            <td class="ps-2"><?= strtoupper($ld_o['n_v']) . " " ?></td>
+                                                            <td class="ps-2 text-end">Disc. <?= number_format($ld_o['d']) ?></td>
+                                                            <?php if ($disk > 0) { ?>
+                                                                <td class="ps-2 text-end"><del>Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del></td>
+                                                            <?php } ?>
+                                                            <td class="ps-2 text-end">Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?></td>
+                                                            <td class="ps-2 pe-2">
+                                                                <?php if ($data['harga'][$keyD][$ld_o['c_h']] > 0) { ?>
+                                                                    <i class="fa-solid fa-circle-check text-success"></i>
+                                                                <?php } else { ?>
+                                                                    <i class="fa-regular fa-circle text-warning"></i>
+                                                                <?php } ?>
+                                                            </td>
+                                                        </tr>
+                                                    <?php }
+                                                    ?>
+                                                </table>
                                             </small>
                                         </td>
                                     </tr>
@@ -166,9 +191,33 @@ if ($id_pelanggan_jenis == 1) {
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-end"><span class="edit" data-id="<?= $do['produk_code'] ?>"><?= ($harga_ok == false) ? $btnSetHarga : number_format($do['harga']) ?></span></td>
+                            <td class="text-end">
+                                <span data-id="<?= $do['produk_code'] ?>">
+                                    <?php
+                                    if ($harga_ok == false) {
+                                        echo $btnSetHarga;
+                                    } else {
+                                        if ($akum_diskon > 0) {
+                                            echo "<del>" . number_format($do['harga']) . "</del><br><small>Disc. Rp" . number_format($akum_diskon) . "</small><br>" . number_format($do['harga'] - $akum_diskon);
+                                        } else {
+                                            echo number_format($do['harga']);
+                                        }
+                                    } ?>
+                                </span>
+                            </td>
                             <td class="text-end"><span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= number_format($do['jumlah']) ?></span></td>
-                            <td class="text-end"><?= number_format($do['harga'] * $do['jumlah']) ?></td>
+                            <td class="text-end">
+                                <?php
+                                if ($harga_ok == false) {
+                                    echo $btnSetHarga;
+                                } else {
+                                    if ($akum_diskon > 0) {
+                                        echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del><br><small>Disc. Rp" . number_format($akum_diskon * $do['jumlah']) . "</small><br>" . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                    } else {
+                                        echo number_format($do['harga'] * $do['jumlah']);
+                                    }
+                                } ?>
+                            </td>
                             <td><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                         </tr>
                     <?php }
@@ -231,7 +280,29 @@ if ($id_pelanggan_jenis == 1) {
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Simpan</button>
+                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Tetapkan HARGA</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalDiskon" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><b><span class="produk_harga"></span></b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= $this->BASE_URL ?>Buka_Order/diskon" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" required>Diskon Rp</label>
+                        <input type="number" min="1" name="diskon" class="form-control" required>
+                        <input type="hidden" name="parse" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn text-purple border-purple" data-bs-dismiss="modal">Tetapkan Diskon</button>
                 </div>
             </form>
         </div>
@@ -253,6 +324,13 @@ if ($id_pelanggan_jenis == 1) {
         var harga_code = $(this).attr("data-code");
         $("span.produk_harga").html(produk);
         $("input[name=harga_code").val(harga_code);
+    })
+
+    $("span.tetapkanDiskon").click(function() {
+        var produk = $(this).attr("data-produk");
+        var parse = $(this).attr("data-parse");
+        $("span.produk_harga").html(produk);
+        $("input[name=parse").val(parse);
     })
 
 
@@ -294,47 +372,6 @@ if ($id_pelanggan_jenis == 1) {
                 } else {
                     alert(res);
                 }
-            }
-        });
-    });
-
-    var click = 0;
-    $("span.edit").on('dblclick', function() {
-        click = click + 1;
-        if (click != 1) {
-            return;
-        }
-
-        var parse = <?= $id_pelanggan_jenis ?>;
-
-        var id = $(this).attr('data-id');
-        var value = $(this).html();
-        var value_before = value;
-        var span = $(this);
-        span.html("<input type='text' id='value_3313' style='text-align:center;width:150px' value='" + value.toUpperCase() + "'>");
-
-        $("#value_3313").focus();
-        $("#value_3313").focusout(function() {
-            var value_after = $(this).val();
-            if (value_after == value_before) {
-                span.html(value_before);
-                click = 0;
-            } else {
-                $.ajax({
-                    url: '<?= $this->BASE_URL ?>Buka_Order/updateCell/' + parse,
-                    data: {
-                        'id': id,
-                        'value': value_after,
-                    },
-                    type: 'POST',
-                    success: function(res) {
-                        if (res == 0) {
-                            content();
-                        } else {
-                            alert(res);
-                        }
-                    },
-                });
             }
         });
     });

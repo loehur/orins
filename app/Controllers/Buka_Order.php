@@ -321,6 +321,31 @@ class Buka_Order extends Controller
       $this->dataSynchrone();
    }
 
+   function diskon()
+   {
+      $parse = explode("_", $_POST['parse']);
+      $diskon = $_POST['diskon'];
+      $harga = $parse[2];
+
+      if ($diskon > $harga) {
+         echo "Diskon tidak boleh melebihi harga!";
+         exit();
+      }
+
+      $cols = "detail_harga";
+      $where = "id_order_data = " . $parse[0];
+      $detail = unserialize($this->model('M_DB_1')->get_cols_where('order_data', $cols, $where, 0)['detail_harga']);
+
+      $detail[$parse[1]]['d'] = $diskon;
+      $detail_ = serialize($detail);
+
+      $set = "detail_harga = '" . $detail_ . "'";
+      $update = $this->model('M_DB_1')->update("order_data", $set, $where);
+      echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+
+      $this->dataSynchrone();
+   }
+
    function proses($id_pelanggan_jenis)
    {
 
@@ -356,7 +381,9 @@ class Buka_Order extends Controller
       foreach ($data['order'] as $do) {
          $detail_harga = unserialize($do['detail_harga']);
          $harga = 0;
+         $diskon = 0;
          foreach ($detail_harga as $key => $dh_o) {
+            $diskon += $dh_o['d'];
             foreach ($data_harga as $dh) {
                if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
                   $harga +=  $dh['harga_' . $id_pelanggan_jenis];
@@ -366,7 +393,7 @@ class Buka_Order extends Controller
             }
          }
          $where = "id_order_data = " . $do['id_order_data'];
-         $set = "detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
+         $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
          $update = $this->model('M_DB_1')->update("order_data", $set, $where);
          $error = $update['errno'];
       }
@@ -387,22 +414,6 @@ class Buka_Order extends Controller
       } else {
          print_r($do);
       }
-   }
-
-   function updateCell($parse)
-   {
-      if (!in_array($this->userData['user_tipe'], $this->pKasir)) {
-         echo "Perubahan Harga hanya Kasir/Admin";
-         exit();
-      }
-
-      $value = $_POST['value'];
-      $id = $_POST['id'];
-
-      $where = "code = '" . $id . "'";
-      $set = "harga_" . $parse . " = " . $value;
-      $update = $this->model('M_DB_1')->update("produk_harga", $set, $where);
-      echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
    }
 
    function updateCell_N()
