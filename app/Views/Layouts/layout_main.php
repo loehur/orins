@@ -227,6 +227,7 @@ $aff_c = count($aff_);
 							<div class="collapse <?= (str_contains($t, "Cashier")) ? 'show' : '' ?>" id="collapseCashier" data-bs-parent="#accordionSidenav">
 								<nav class="sidenav-menu-nested nav">
 									<a class="nav-link <?= ($t == "Cashier - Setoran") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Setoran">Setoran</a>
+									<a class="nav-link <?= ($t == "Cashier - Non Tunai") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Non_Tunai_C">Transaksi Non Tunai</a>
 								</nav>
 							</div>
 						<?php } ?>

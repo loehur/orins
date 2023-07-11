@@ -35,12 +35,12 @@
                 <div class="col ps-0 pe-2">
                     <?php foreach ($data['order'][$x] as $ref => $data['order_']) {
                         $bill = 0;
-                        $total = 0;
                         $ambil = false;
                         $ambil_all = true;
 
                         $tuntas = true;
                         $lunas = false;
+                        $verify_payment = 0;
                         $pending_bayar = false;
 
                         $dibayar = 0;
@@ -53,6 +53,14 @@
                                 }
                                 if ($dk['status_mutasi'] == 0) {
                                     $pending_bayar = true;
+                                }
+
+                                if ($dk['metode_mutasi'] == 1 && $dk['status_setoran'] == 1) {
+                                    $verify_payment += $dk['jumlah'];
+                                }
+
+                                if ($dk['metode_mutasi'] == 2 && $dk['status_mutasi'] == 1) {
+                                    $verify_payment += $dk['jumlah'];
                                 }
 
                                 switch ($dk['status_mutasi']) {
@@ -89,11 +97,9 @@
 
                                                 if ($cancel == 0) {
                                                     $bill += $jumlah;
-                                                    $total += $jumlah;
                                                 }
 
                                                 $bill -= $do['diskon'];
-                                                $total -= $do['diskon'];
 
                                                 $id_order_data = $do['id_order_data'];
                                                 $id_produk = $do['id_produk'];
@@ -319,7 +325,7 @@
                                                         </table>
                                                     <?php } ?>
                                                 </td>
-                                                <td class="text-end" nowrap><?= ($lunas == true) ? '<i class="fa-solid text-success fa-circle-check"></i>' : '' ?> <b>Rp<?= number_format($total) ?></b></td>
+                                                <td class="text-end" nowrap><?= ($lunas == true) ? '<i class="fa-solid text-success fa-circle-check"></i>' : '' ?> <b>Rp<?= number_format($bill) ?></b></td>
                                             </tr>
                                             <tr class="border-top">
                                                 <td class="text-end text" colspan="4">
@@ -332,7 +338,7 @@
                             </div>
                         </div>
                     <?php
-                        if ($lunas == true && $ambil_all == true) {
+                        if ($verify_payment >= $bill && $ambil_all == true) {
                             array_push($arr_tuntas, $ref);
                         }
                     } ?>

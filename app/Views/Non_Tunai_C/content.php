@@ -28,7 +28,6 @@
                                 <th>Toko/Ref</th>
                                 <th>Customer</th>
                                 <th class="text-end">Jumlah/Via</th>
-                                <th colspan="2" class="text-center"></th>
                             </tr>
                             <?php
                             $no = 0;
@@ -63,13 +62,7 @@
                                         <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
                                     </td>
                                     <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
-                                    <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
-                                    <td align="left">
-                                        <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-success border-0">Verify</button>
-                                    </td>
-                                    <td align="right">
-                                        <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-danger border-0">Reject</button>
-                                    </td>
+                                    <td align="right">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
                                 </tr>
                                 <?php
                                 if (($no == $count)) {
@@ -80,9 +73,7 @@
                                         <tr>
                                             <td></td>
                                             <td></td>
-                                            <td class="pe-0" align="right"><button data-id="<?= $id_multi ?>" data-val="1" class="border-0 actionMulti btn btn-sm btn-outline-primary">Multi Verify - <b>Rp<?= number_format($total) ?></b></button></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td class="pe-0" align="right"><b>Rp<?= number_format($total) ?></b></td>
                                         </tr>
                                     <?php
                                     }
@@ -172,48 +163,8 @@
 <script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
-    $("button.action").click(function() {
-        var id_ = $(this).attr("data-id");
-        var value = $(this).attr("data-val");
-        $.ajax({
-            url: "<?= $this->BASE_URL ?>Non_Tunai/action",
-            data: {
-                id: id_,
-                val: value
-            },
-            type: "POST",
-            success: function(result) {
-                if (result == 0) {
-                    content();
-                } else {
-                    alert(result);
-                }
-            },
-        });
-    });
-
-    $("button.actionMulti").click(function() {
-        var id_ = $(this).attr("data-id");
-        var value = $(this).attr("data-val");
-        $.ajax({
-            url: "<?= $this->BASE_URL ?>Non_Tunai/actionMulti",
-            data: {
-                id: id_,
-                val: value
-            },
-            type: "POST",
-            success: function(result) {
-                if (result == 0) {
-                    content();
-                } else {
-                    alert(result);
-                }
-            },
-        });
-    });
-
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
-        $("div#cekOrder").load('<?= $this->BASE_URL ?>Non_Tunai/cekOrder/' + ref);
+        $("div#cekOrder").load('<?= $this->BASE_URL . $data['c_'] ?>/cekOrder/' + ref);
     });
 </script>

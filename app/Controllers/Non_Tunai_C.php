@@ -1,6 +1,6 @@
 <?php
 
-class Non_Tunai extends Controller
+class Non_Tunai_C extends Controller
 {
    public $page = __CLASS__;
 
@@ -8,7 +8,7 @@ class Non_Tunai extends Controller
    {
       $this->session_cek();
       $this->data();
-      if (!in_array($this->userData['user_tipe'], $this->pFinance)) {
+      if (!in_array($this->userData['user_tipe'], $this->pKasir)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -22,7 +22,7 @@ class Non_Tunai extends Controller
 
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Finance - Non Tunai"
+         "title" => "Cashier - Non Tunai"
       ]);
       $this->viewer();
    }
@@ -34,41 +34,15 @@ class Non_Tunai extends Controller
 
    public function content($parse = "")
    {
+      $data['c_'] = __CLASS__;
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
 
-      $where = "metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
       $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
 
-      $where = "metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 20";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 20";
       $data['kas_done'] = $this->model('M_DB_1')->get_where('kas', $where);
       $this->view($this->v_content, $data);
-   }
-
-   function action()
-   {
-      $id = $_POST['id'];
-      $val = $_POST['val'];
-
-      $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
-      $where = "id_kas = " . $id;
-      $update = $this->model('M_DB_1')->update("kas", $set, $where);
-      echo $update['errno'];
-   }
-
-   function actionMulti()
-   {
-      $id = explode("_", $_POST['id']);
-      $val = $_POST['val'];
-
-      foreach ($id as $i) {
-         $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
-         $where = "id_kas = " . $i;
-         $update = $this->model('M_DB_1')->update("kas", $set, $where);
-         if ($update['errno'] <> 0) {
-            echo $update['error'];
-            exit();
-         }
-      }
    }
 
    function cekOrder($ref)
@@ -79,13 +53,11 @@ class Non_Tunai extends Controller
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
       $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
 
-
       $where = "ref = '" . $ref . "'";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
 
       $where = "ref_transaksi = '" . $ref . "'";
       $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
-
 
       $this->view($this->page . "/cek", $data);
    }
