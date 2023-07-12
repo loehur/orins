@@ -367,7 +367,7 @@
                                 <tr>
                                     <td>Metode</td>
                                     <td class="pb-2">
-                                        <select name="metode_multi" class="form-select" required>
+                                        <select name="metode_multi" class="form-select metodeBayar_multi" required>
                                             <?php if (in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
                                                 <option value="1">Tunai</option>
                                             <?php } ?>
@@ -376,10 +376,10 @@
                                     </td>
                                     <td></td>
                                 </tr>
-                                <tr id="nTunaiBill" class="border-top">
-                                    <td class="pr-2" nowrap>Catatan<br><small>Contoh (BCA/Qris 17/23)</small></td>
+                                <tr id="noteBayar_multi" class="border-top">
+                                    <td class="pe-2 text-danger" nowrap>Catatan Pembayaran</td>
                                     <td colspan="2" class="pb-2 pt-2">
-                                        <input type="text" name="note_multi" class="form-control">
+                                        <input type="text" name="note_multi" class="form-control border border-danger">
                                     </td>
                                     <td></td>
                                 </tr>
@@ -549,7 +549,7 @@
                         <div class="row mb-2">
                             <div class="col-sm-6">
                                 <label class="form-label">Jumlah Bill (Rp)</label>
-                                <input type="number" name="bill" class="form-control bill" readonly>
+                                <input type="number" name="bill" class="form-control bill text-end" readonly>
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label">Metode</label>
@@ -564,23 +564,23 @@
                         <div class="row mb-2">
                             <div class="col-sm-6">
                                 <label class="form-label">Bayar (Rp) <small><span style="cursor: pointer;" class="bayarPas text-danger">Bayar Pas (Click)</span></small></label>
-                                <input type="number" name="jumlah" class="form-control dibayar" required>
+                                <input type="number" name="jumlah" class="form-control dibayar text-end" required>
                                 <input type="hidden" name="ref" id="refBayar" required>
                                 <input type="hidden" name="client" id="client" required>
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label">Kembalian (Rp)</label>
-                                <input type="number" class="form-control kembalian" readonly>
+                                <input type="number" class="form-control kembalian text-end" readonly>
                             </div>
                         </div>
-                        <div class="row mb-2">
+                        <div class="row mb-2" id="noteBayar">
                             <div class="col">
-                                <label class="form-label"><span class="text-primary">Catatan</span> <small>(Contoh: BCA/Qris)</small></label>
-                                <input type="text" name="note" class="form-control">
+                                <label class="form-label"><span class="text-danger">Catatan Pemabayaran</span></label>
+                                <input type="text" name="note" class="form-control border border-danger">
                             </div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-sm-6">
+                            <div class="col-sm-6 pt-3">
                                 <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Bayar</button>
                             </div>
                         </div>
@@ -603,6 +603,9 @@
         if (parse_2 == 0) {
             clearTuntas();
         }
+
+        $("div#noteBayar").hide();
+        $("tr#noteBayar_multi").hide();
 
         //MULTI
         totalBill = $("span#totalBill").attr("data-total");
@@ -698,6 +701,24 @@
                 }
             }
         });
+    });
+
+    $("select.metodeBayar").on("keyup change", function() {
+        if ($(this).val() == 2) {
+            $("div#noteBayar").show();
+        } else {
+            $("div#noteBayar").hide();
+            $("input[name=note").val("");
+        }
+    });
+
+    $("select.metodeBayar_multi").on("keyup change", function() {
+        if ($(this).val() == 2) {
+            $("tr#noteBayar_multi").show();
+        } else {
+            $("tr#noteBayar_multi").hide();
+            $("input[name=note_multi").val("");
+        }
     });
 
 
