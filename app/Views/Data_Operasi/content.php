@@ -235,7 +235,7 @@
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td><small>
+                                                    <td class="text-nowrap"><small>
                                                             <?php
                                                             foreach ($divisi as $key => $dvs) {
                                                                 if ($divisi_arr[$key]['status'] == 1) {
