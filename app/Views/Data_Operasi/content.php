@@ -214,12 +214,12 @@
                                                         </table>
                                                         <div class="row">
                                                             <div class="col-auto">
-                                                                <span class="text-nowrap">
+                                                                <span>
                                                                     <small>Catatan Utama<br><span class="text-danger"><?= $do['note'] ?></span></small>
                                                                 </span>
                                                             </div>
                                                             <div class="col-auto">
-                                                                <span class="text-nowrap">
+                                                                <span>
                                                                     <small>Catatan Produksi<br>
                                                                         <span class="text-primary">
                                                                             <?php
