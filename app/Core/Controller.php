@@ -5,7 +5,7 @@ require 'app/Config/Public_Variables.php';
 class Controller extends Public_Variables
 {
 
-    public $userData, $dToko, $dDvs, $dDvsAll, $dProduk, $dProdukAll, $dDetailGroup, $dDetailGroupAll, $dDetailItem, $dDetailItemAll, $dSPK, $dSPK_all, $dUser, $dPelangganAll, $dKaryawan, $dKaryawanAll;
+    public $userData, $dToko, $dDvs, $dDvsAll, $dProduk, $dProdukAll, $dDetailGroup, $dDetailGroupAll, $dDetailItem, $dDetailItemAll, $dSPK, $dSPK_all, $dUser, $dPelanggan, $dPelangganAll, $dKaryawan, $dKaryawanAll;
     public $v_viewer, $v_content, $v_load;
 
     public function view($file, $data = [])
@@ -56,6 +56,7 @@ class Controller extends Public_Variables
                 $this->dDetailItemAll = $_SESSION['detail_item_all'];
                 $this->dSPK_all = $_SESSION['spk_divisi_all'];
                 $this->dUser = $_SESSION['data_user'];
+                $this->dPelanggan = $_SESSION['data_pelanggan'];
                 $this->dPelangganAll = $_SESSION['data_pelanggan_all'];
                 $this->dKaryawan = $_SESSION['karyawan'];
                 $this->dKaryawanAll = $_SESSION['karyawan_all'];
@@ -83,6 +84,7 @@ class Controller extends Public_Variables
         $_SESSION['detail_item'] = $this->model('M_DB_1')->get_where('detail_item', $whereToko . " ORDER BY detail_item ASC");
         $_SESSION['detail_item_all'] = $this->model('M_DB_1')->get_order('detail_item', "detail_item ASC");
         $_SESSION['data_user'] = $this->model('M_DB_1')->get('user', $whereToko);
+        $_SESSION['data_pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $whereToko);
         $_SESSION['data_pelanggan_all'] = $this->model('M_DB_1')->get('pelanggan');
         $_SESSION['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereToko);
         $_SESSION['karyawan_all'] = $this->model('M_DB_1')->get('karyawan');

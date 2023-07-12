@@ -3,7 +3,7 @@
         <div class="col pe-0" style="min-width: 250px; max-width: 300px">
             <select class="border tize" name="id_pelanggan" required>
                 <option></option>
-                <?php foreach ($data['pelanggan'] as $p) { ?>
+                <?php foreach ($this->dPelanggan as $p) { ?>
                     <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?></option>
                 <?php } ?>
             </select>
