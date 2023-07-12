@@ -105,4 +105,73 @@ class Data_Operasi extends Controller
          }
       }
    }
+
+
+   public function bayar_multi()
+   {
+      if (isset($_POST['ref_multi'])) {
+         $ref_multi = $_POST['ref_multi'];
+      } else {
+         exit();
+      }
+
+      $dibayar = $_POST['dibayar_multi'];
+      if (count($ref_multi) == 0) {
+         exit();
+      }
+      $note =  $_POST['note_multi'];
+      $metode =  $_POST['metode_multi'];
+
+      if (strlen($note) == 0 && $metode == 2) {
+         $note = "Non_Tunai";
+      }
+
+      $error = 0;
+      ksort($ref_multi);
+      foreach ($ref_multi as $value) {
+
+         if ($dibayar == 0) {
+            echo 0;
+            exit();
+         }
+
+         $value_ = explode("_", $value);
+
+         $client = $value_[0];
+         $ref = $value_[1];
+         $jumlah = $value_[2];
+
+         if ($dibayar < $jumlah) {
+            $jumlah = $dibayar;
+         }
+
+         switch ($metode) {
+            case "1":
+               $status_mutasi = 1;
+               break;
+            default:
+               $status_mutasi = 0;
+               break;
+         }
+
+         $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $metode . " AND status_mutasi = " . $status_mutasi;
+         $dataCount = $this->model('M_DB_1')->count_where('kas', $whereCount);
+
+         $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client,note";
+         $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "'";
+
+         if ($dataCount < 1) {
+            $do = $this->model('M_DB_1')->insertCols('kas', $cols, $vals);
+            if ($do['errno'] == 0) {
+               $dibayar -= $jumlah;
+               $error = $do['errno'];
+            } else {
+               echo $do['error'];
+               exit();
+            }
+         }
+      }
+
+      echo $error;
+   }
 }

@@ -283,7 +283,6 @@ $aff_c = count($aff_);
 								<nav class="sidenav-menu-nested nav">
 									<a class="nav-link <?= ($t == "Finance - Non Tunai") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Non_Tunai">Transaksi Non Tunai</a>
 									<a class="nav-link <?= ($t == "Finance - Setoran") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Setoran_F">Setoran Kasir</a>
-									<a class="nav-link <?= ($t == "Finance - Piutang") ? 'active' : '' ?>" href="#">Data Piutang</a>
 								</nav>
 							</div>
 						<?php } ?>

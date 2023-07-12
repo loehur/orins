@@ -152,7 +152,7 @@
                                 <input type="hidden" name="mode">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
-                                    <?php foreach ($data['karyawan'] as $k) {
+                                    <?php foreach ($this->dKaryawan as $k) {
                                         if ($k['id_toko'] == $this->userData['id_toko']) { ?>
                                             <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
                                     <?php }

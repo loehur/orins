@@ -28,11 +28,12 @@
     <div class="row me-2 ps-4">
         <?php
         $arr_tuntas = [];
+        $loadRekap = [];
 
         for ($x = 1; $x <= 2; $x++) {
             if (count($data['order'][$x]) > 0) {
         ?>
-                <div class="col ps-0 pe-2">
+                <div class="col ps-0 pe-2" style="max-width: 800px;">
                     <?php foreach ($data['order'][$x] as $ref => $data['order_']) {
                         $bill = 0;
                         $ambil = false;
@@ -290,6 +291,11 @@
                                                 $lunas = true;
                                             }
 
+                                            if ($sisa <> 0) {
+                                                $loadRekap[$id_pelanggan . "_" . $ref] = $sisa;
+                                            }
+
+
                                             if ($dibayar > 0 && $lunas == false) {
                                                 $showMutasi .= "<span class='text-danger'><b>Sisa Rp" . number_format($sisa) . "</b></span>";
                                             }
@@ -347,6 +353,83 @@
         }
         ?>
     </div>
+
+    <div class="row row me-2 ps-4" id="loadMulti">
+        <div class="col-auto ps-0 pe-2">
+            <form action="<?= $this->BASE_URL; ?>Data_Operasi/bayar_multi" method="POST">
+                <div class="container-fluid pt-2 ps-0 pe-0">
+                    <div class="card p-2">
+                        <small>
+                            <table class="table table-sm mb-0 table-borderless w-auto">
+                                <tr class="table-info">
+                                    <td colspan="3" class="p-2 text-center"><b>PEMBAYARAN MULTI</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Metode</td>
+                                    <td class="pb-2">
+                                        <select name="metode_multi" class="form-select" required>
+                                            <?php if (in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
+                                                <option value="1">Tunai</option>
+                                            <?php } ?>
+                                            <option value="2">Non Tunai</option>
+                                        </select>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr id="nTunaiBill" class="border-top">
+                                    <td class="pr-2" nowrap>Catatan<br><small>Contoh (BCA/Qris 17/23)</small></td>
+                                    <td colspan="2" class="pb-2 pt-2">
+                                        <input type="text" name="note_multi" class="form-control">
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td colspan="3" class="pb-1"></td>
+                                </tr>
+                                <?php
+                                $totalTagihan = 0;
+                                foreach ($loadRekap as $key => $value) { ?>
+                                    <tr class='hoverBill'>
+                                        <td><span class='text-dark'><?= $key ?></span></td>
+                                        <td class="text-end"><input type='checkbox' class='cek_multi' name="ref_multi[]" value="<?= $key ?>_<?= $value ?>" data-jumlah='<?= $value ?>' data-ref='<?= $key ?>' checked></td>
+                                        <td class='text-end ps-2'>Rp<?= number_format($value) ?></td>
+                                    </tr>
+                                <?php
+                                    $totalTagihan += $value;
+                                } ?>
+                                <tr>
+                                    <td class="pb-2 pr-2" nowrap>
+                                        <b>TOTAL TAGIHAN</b>
+                                    </td>
+                                    <td></td>
+                                    <td class="text-end">
+                                        <span data-total=''><b>Rp<span id="totalBill" data-total="<?= $totalTagihan ?>"><?= number_format($totalTagihan) ?></span></b>
+                                    </td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td></td>
+                                    <td class="pt-2 pb-1"><span class="bayarPasMulti text-danger" style="cursor:pointer"><small>Bayar Pas (Click)</small></span></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Jumlah Bayar</td>
+                                    <td class="pb-1"><input id="bayarBill" name="dibayar_multi" class="text-end form-control" type="number" min="1" value="" required /></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Kembalian</td>
+                                    <td><input id='kembalianBill' name="kembalianBill" class="text-end form form-control" type="number" readonly /></td>
+                                    <td class="text-end ps-2" nowrap>
+                                        <button type="submit" id="btnBayarBill" class='btn btn-primary  '>Bayar</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </small>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </main>
 
 <form action="<?= $this->BASE_URL; ?>Data_Order/ambil_semua" method="POST">
@@ -364,7 +447,7 @@
                                 <input type="hidden" name="ambil_ref">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
-                                    <?php foreach ($data['karyawan'] as $k) { ?>
+                                    <?php foreach ($this->dKaryawan as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
                                     <?php } ?>
                                 </select>
@@ -397,7 +480,7 @@
                                 <input type="hidden" name="ambil_id">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
-                                    <?php foreach ($data['karyawan'] as $k) { ?>
+                                    <?php foreach ($this->dKaryawan as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
                                     <?php } ?>
                                 </select>
@@ -430,7 +513,7 @@
                                 <input type="hidden" name="cancel_id">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
-                                    <?php foreach ($data['karyawan'] as $k) { ?>
+                                    <?php foreach ($dKaryawan as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
                                     <?php } ?>
                                 </select>
@@ -512,12 +595,22 @@
 <script src="<?= $this->ASSETS_URL ?>js/selectize.min.js"></script>
 
 <script>
+    var totalBill = 0;
     $(document).ready(function() {
         $('select.tize').selectize();
 
         var parse_2 = <?= $data['parse_2'] ?>;
         if (parse_2 == 0) {
             clearTuntas();
+        }
+
+        //MULTI
+        totalBill = $("span#totalBill").attr("data-total");
+        json_rekap = [<?= json_encode($loadRekap) ?>];
+
+        totalBill = $("span#totalBill").attr("data-total");
+        if (totalBill == 0) {
+            $("div#loadMulti").fadeOut('fast');
         }
     });
 
@@ -605,5 +698,44 @@
                 }
             }
         });
+    });
+
+
+    //MULTI
+    $("input.cek_multi").change(function() {
+        var jumlah = $(this).attr("data-jumlah");
+        let refRekap = $(this).attr("data-ref");
+
+        if ($(this).is(':checked')) {
+            totalBill = parseInt(totalBill) + parseInt(jumlah);
+            json_rekap[0][refRekap] = jumlah;
+        } else {
+            delete json_rekap[0][refRekap];
+            totalBill = parseInt(totalBill) - parseInt(jumlah);
+        }
+
+        $("span#totalBill")
+            .html(totalBill.toLocaleString('en-US')).attr("data-total", totalBill);
+
+        bayarBill();
+    })
+
+    $("span.bayarPasMulti").on('click', function() {
+        $("input#bayarBill").val(totalBill);
+        bayarBill();
+    });
+
+    function bayarBill() {
+        var dibayar = parseInt($('input#bayarBill').val());
+        var kembalian = parseInt(dibayar) - parseInt(totalBill);
+        if (kembalian > 0) {
+            $('input#kembalianBill').val(kembalian);
+        } else {
+            $('input#kembalianBill').val(0);
+        }
+    }
+
+    $("input#bayarBill").on("keyup change", function() {
+        bayarBill();
     });
 </script>

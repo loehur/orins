@@ -382,8 +382,10 @@ class Buka_Order extends Controller
          $detail_harga = unserialize($do['detail_harga']);
          $harga = 0;
          $diskon = 0;
+         $jumlah = $do['jumlah'];
+
          foreach ($detail_harga as $key => $dh_o) {
-            $diskon += $dh_o['d'];
+            $diskon += $dh_o['d'] * $jumlah;
             foreach ($data_harga as $dh) {
                if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
                   $harga +=  $dh['harga_' . $id_pelanggan_jenis];
@@ -392,6 +394,7 @@ class Buka_Order extends Controller
                }
             }
          }
+
          $where = "id_order_data = " . $do['id_order_data'];
          $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
          $update = $this->model('M_DB_1')->update("order_data", $set, $where);

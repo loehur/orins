@@ -9,20 +9,6 @@ if ($id_pelanggan_jenis == 1) {
 }
 ?>
 
-<style>
-    .selectize-control {
-        padding: 0;
-    }
-
-    .selectize-input {
-        border: none;
-    }
-
-    .selectize-input::after {
-        visibility: hidden;
-    }
-</style>
-
 <main>
     <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-4">
         <div class="container-fluid px-4">
