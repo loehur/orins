@@ -11,6 +11,7 @@
                             <th>Referensi</th>
                             <th>Tanggal</th>
                             <th class="text-end">Jumlah</th>
+                            <th class="text-end"></th>
                         </tr>
                         <?php
                         $no = 0;
@@ -29,12 +30,18 @@
                             }
 
                         ?>
-                            <tr>
+                            <tr class="<?= ($a['status_mutasi'] == 2) ? 'text-secondary' : '' ?>">
                                 <td align="right">#<?= $a['id_kas'] ?></td>
                                 <td><?= strtoupper($pelanggan) ?></td>
                                 <td><?= $a['ref_transaksi'] ?></td>
                                 <td><?= $a['insertTime'] ?></td>
                                 <td align="right">Rp<?= number_format($jumlah) ?></td>
+                                <td>
+                                    <?php if ($a['status_mutasi'] == 2) { ?>
+                                        <small>Dibatalkan</small><br>
+                                        <small class="text-primary"><?= $a['note_batal'] ?></small>
+                                    <?php } ?>
+                                </td>
                             </tr>
                         <?php } ?>
                     </table>
