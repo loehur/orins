@@ -66,4 +66,15 @@ class Setoran extends Controller
 
       $this->view($this->page . "/cek", $data);
    }
+
+   function cancel()
+   {
+      $id = $_POST['id_kas'];
+      $reason = $_POST['reason'];
+
+      $where = "id_kas = " . $id;
+      $set = "status_mutasi = 2, note_batal = '" . $reason . "'";
+      $update = $this->model('M_DB_1')->update("kas", $set, $where);
+      echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+   }
 }

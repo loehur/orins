@@ -11,26 +11,18 @@
                             <th>Referensi</th>
                             <th>Tanggal</th>
                             <th class="text-end">Jumlah</th>
+                            <th>Actioan</th>
                         </tr>
                         <?php
-                        $count = 1;
-                        $sum = 0;
-                        $client_old = 0;
-                        $rows = count($data['kas']);
                         $no = 0;
-                        $total = 0;
                         foreach ($data['kas'] as $a) {
                             $no += 1;
 
                             $client = $a['id_client'];
                             $jumlah = $a['jumlah'];
-                            $total += $jumlah;
-
-                            if ($client_old == $client) {
-                                $count += 1;
-                                $sum += $jumlah;
+                            if ($a['status_mutasi'] == 1) {
+                                $total += $jumlah;
                             }
-
                             $pelanggan = "Non";
                             foreach ($data['pelanggan'] as $dp) {
                                 if ($dp['id_pelanggan'] == $client) {
@@ -39,44 +31,23 @@
                             }
 
                         ?>
-                            <?php
-                            if (($count > 1 && $client_old <> $client)) { ?>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td align="right">Rp<?= number_format($sum) ?></td>
-                                    <td></td>
-                                </tr>
-                            <?php } ?>
-
-                            <tr>
+                            <tr class="<?= ($a['status_mutasi'] == 2) ? 'text-secondary' : '' ?>">
                                 <td align="right">#<?= $a['id_kas'] ?></td>
                                 <td><?= strtoupper($pelanggan) ?></td>
                                 <td><?= $a['ref_transaksi'] ?></td>
                                 <td><?= $a['insertTime'] ?></td>
                                 <td align="right">Rp<?= number_format($jumlah) ?></td>
+                                <td>
+                                    <?php if ($a['status_mutasi'] == 1) { ?>
+                                        <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="px-2 text-decoration-none text-danger cancel border rounded" data-id="<?= $a['id_kas'] ?>" href="#">Batalkan</a>
+                                    <?php } else { ?>
+                                        <small>Dibatalkan</small><br>
+                                        <small class="text-primary"><?= $a['note_batal'] ?></small>
+                                    <?php } ?>
+                                </td>
                             </tr>
 
-                            <?php
-                            if ($client_old <> $client) {
-                                $count = 1;
-                                $sum = 0;
-                            }
-
-                            if (($count > 1 && $no == $rows)) { ?>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td align="right">Rp<?= number_format($sum) ?></td>
-                                    <td></td>
-                                </tr>
-                        <?php }
-                            $client_old = $client;
-                        } ?>
+                        <?php } ?>
                     </table>
 
                 </div>
@@ -132,11 +103,38 @@
 
 <div class="modal" id="modalCek" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" id="cek_load">
-
-        </div>
+        <div class="modal-content" id="cek_load"></div>
     </div>
 </div>
+
+<form action="<?= $this->BASE_URL; ?>Setoran/cancel" method="POST">
+    <div class="modal" id="exampleModalCancel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title text-white">Pembatalan!</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Alasan Cancel</label>
+                                <input type="text" name="reason" class="form-control form-control-sm" required>
+                                <input type="hidden" name="id_kas">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-danger">Cancel Pembayaran</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 
 <script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
@@ -160,4 +158,25 @@
         var ref = $(this).attr("data-ref");
         $("div#cek_load").load('<?= $this->BASE_URL ?>Setoran/cek/' + ref);
     });
+
+    $("form").on("submit", function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            type: $(this).attr("method"),
+            success: function(res) {
+                if (res == 0) {
+                    content();
+                } else {
+                    alert(res);
+                }
+            }
+        });
+    });
+
+    $("a.cancel").click(function() {
+        id = $(this).attr("data-id");
+        $("input[name=id_kas]").val(id);
+    })
 </script>

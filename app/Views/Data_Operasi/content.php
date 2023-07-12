@@ -513,7 +513,7 @@
                                 <input type="hidden" name="cancel_id">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
-                                    <?php foreach ($dKaryawan as $k) { ?>
+                                    <?php foreach ($this->dKaryawan as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
                                     <?php } ?>
                                 </select>
