@@ -157,12 +157,12 @@ if ($id_pelanggan_jenis == 1) {
                                 </table>
                                 <div class="row">
                                     <div class="col-auto">
-                                        <span class="text-nowrap">
+                                        <span>
                                             <small>Catatan Utama</small><br><span class="text-danger"><?= $do['note'] ?></span>
                                         </span>
                                     </div>
                                     <div class="col-auto">
-                                        <span class="text-nowrap">
+                                        <span>
                                             <small>Catatan Produksi</small><br>
                                             <span class="text-primary">
                                                 <?php
@@ -202,7 +202,7 @@ if ($id_pelanggan_jenis == 1) {
                                     }
                                 } ?>
                             </td>
-                            <td><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
+                            <td class="pe-3"><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                         </tr>
                     <?php }
                     ?>
