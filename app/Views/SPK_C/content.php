@@ -88,7 +88,6 @@
                                                         <?php if (strlen($do['note']) > 0) { ?>
                                                             <span class='text-danger'><i class='fa-solid fa-circle-exclamation'></i> <?= $do['note'] ?></span>
                                                         <?php } ?>
-                                                        <br>
                                                         <?php foreach (unserialize($do['note_spk']) as $ks => $ns) {
                                                             if ($ks == $parse && strlen($ns) > 0) {
                                                                 echo "<span class='text-primary'> <i class='fa-regular fa-clipboard'></i> " . $ns . "</span>";
