@@ -385,7 +385,7 @@ class Buka_Order extends Controller
          $jumlah = $do['jumlah'];
 
          foreach ($detail_harga as $key => $dh_o) {
-            $diskon += $dh_o['d'] * $jumlah;
+            $diskon += ($dh_o['d'] * $jumlah);
             foreach ($data_harga as $dh) {
                if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
                   $harga +=  $dh['harga_' . $id_pelanggan_jenis];
