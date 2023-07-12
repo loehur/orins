@@ -16,13 +16,14 @@
             for ($x = 1; $x <= 2; $x++) { ?>
                 <div class="col ps-0 pe-1">
                     <?php foreach ($data['order'][$x] as $ref => $data['order_']) { ?>
-                        <table class="table table-sm bg-white border shadow-sm mb-1">
+                        <table class="table table-sm shadow-sm mb-2">
                             <?php
                             $no = 0;
                             $total = 0;
-                            $spkDone = true;
                             foreach ($data['order_'] as $key => $do) {
                                 $no++;
+                                $spkDone = 0;
+                                $spkCount = 0;
                                 $id_order_data = $do['id_order_data'];
                                 $id_produk = $do['id_produk'];
                                 $detail_arr = unserialize($do['produk_detail']);
@@ -47,6 +48,30 @@
                                     }
                                 }
 
+                                foreach ($divisi as $key => $dvs) {
+                                    if ($key == $parse) {
+                                        $spkCount += 1;
+                                        if ($divisi_arr[$key]['status'] == 1) {
+                                            $spkDone += 1;
+                                        }
+                                        if ($divisi_arr[$key]['cm'] == 1) {
+                                            $spkCount += 1;
+                                            if ($divisi_arr[$key]['cm_status'] == 1) {
+                                                $spkDone += 1;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                $classTR = "";
+                                if ($spkDone == $spkCount) {
+                                    $classTR = "table-info";
+                                } else {
+                                    if ($spkDone == 1) {
+                                        $classTR = "table-warning";
+                                    }
+                                }
+
                                 if ($no == 1) {
                                     foreach ($data['pelanggan'] as $dp) {
                                         if ($dp['id_pelanggan'] == $do['id_pelanggan']) {
@@ -60,10 +85,10 @@
                                         }
                                     } ?>
                                     <tr>
-                                        <td colspan="5" class="table-light">
+                                        <td colspan="5" class="table-dark">
                                             <table class="w-100 p-0 m-0">
                                                 <tr>
-                                                    <td><span class="text-danger"><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
+                                                    <td><b><span><?= substr($ref, -4) ?></span> | <?= strtoupper($pelanggan) ?></b></td>
                                                     <td style="width: 180px;" class="text-end"><small><?= $cs  ?> [<?= substr($do['insertTime'], 2, -3) ?>]</span></small></td>
                                                 </tr>
                                             </table>
@@ -71,13 +96,13 @@
                                     </tr>
                                 <?php }
                                 ?>
-                                <tr>
+                                <tr class="<?= $classTR ?>">
                                     <td>
                                         <table class="float-start">
                                             <tr>
                                                 <?php
                                                 foreach ($detail_arr as $da) { ?>
-                                                    <td class="pe-1 text-success"> <?= strtoupper($da['detail_name']) ?></td>
+                                                    <td class="pe-1 text-success"><b><?= strtoupper($da['detail_name']) ?></b></td>
                                                 <?php } ?>
                                                 <td class="text-end text-purple"><b><?= " " . number_format($do['jumlah']) ?>pcs</b></td>
                                             </tr>
@@ -108,7 +133,6 @@
                                                             $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
                                                             echo '<i class="fa-solid fa-check text-success"></i> ' . $karyawan;
                                                         } else {
-                                                            $spkDone = false;
                                                             echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="1"> <i class="fa-regular fa-circle"></i> Tahap1 ';
                                                         }
                                                         echo "</td>";
@@ -118,7 +142,6 @@
                                                                 $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_cm']);
                                                                 echo '<i class="fa-solid text-success fa-check-double"></i> ' . $karyawan;
                                                             } else {
-                                                                $spkDone = false;
                                                                 echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="2"> <i class="fa-regular fa-circle"></i> Tahap2 ';
                                                             }
                                                             echo "</td>";
