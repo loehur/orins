@@ -73,11 +73,11 @@ $aff_c = count($aff_);
 ?>
 
 <body class="nav-fixed">
-	<nav class="topnav navbar navbar-expand shadow justify-content-between justify-content-sm-start navbar-light bg-white" id="sidenavAccordion">
-		<button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0" id="sidebarToggle"><i data-feather="menu"></i></button>
+	<nav class="topnav navbar navbar-expand border justify-content-between justify-content-sm-start navbar-light bg-light" id="sidenavAccordion">
+		<button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0 pt-3" id="sidebarToggle"><i data-feather="menu"></i></button>
 		<a class="navbar-brand pe-3 ps-4 ps-lg-2" id="sync" href="<?= $this->BASE_URL ?>Log/sync"><?= strtoupper($this->userData['nama_toko']) ?></a>
 		<?php if (in_array($this->userData['user_tipe'], $this->pFinance)) { ?>
-			<div class="dropdown me-2">
+			<div class="dropdown me-2 bg-white">
 				<button class="btn btn-icon btn-transparent-dark dropdown-toggle border" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
 					<i class="fa-solid fa-repeat"></i>
 				</button>
@@ -92,7 +92,7 @@ $aff_c = count($aff_);
 		<ul class="navbar-nav align-items-center ms-auto ms">
 			<!-- User Dropdown-->
 			<li class="nav-item dropdown no-caret dropdown-user me-3 me-lg-4">
-				<a class="btn rounded btn-transparent-dark dropdown-toggle border" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<a class="btn rounded btn-transparent-dark dropdown-toggle border bg-white" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<b><?= strtoupper($this->userData['nama']) ?></b>
 				</a>
 				<div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownUserImage">
@@ -116,12 +116,11 @@ $aff_c = count($aff_);
 	</nav>
 	<div id="layoutSidenav">
 		<div id="layoutSidenav_nav">
-			<nav class="sidenav shadow-right sidenav-light">
+			<nav class="sidenav sidenav-light bg-light border">
 				<div class="sidenav-menu">
 					<div class="nav accordion" id="accordionSidenav">
 						<!-- Sidenav Menu Heading (Account)-->
 						<?php if (in_array($this->userData['user_tipe'], $this->pCS)) { ?>
-							<hr class="p-0 m-0">
 							<!-- Sidenav Accordion (Dashboard)-->
 							<a class="nav-link <?= (str_contains($t, "Buka Order")) ? 'active' : 'collapsed' ?> mt-2" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseNewOrder" aria-expanded="true" aria-controls="collapseNewOrder">
 								<div class="nav-link-icon"><i data-feather="plus-square"></i></div>

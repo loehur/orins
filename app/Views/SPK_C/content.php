@@ -16,7 +16,7 @@
             for ($x = 1; $x <= 2; $x++) { ?>
                 <div class="col ps-0 pe-1">
                     <?php foreach ($data['order'][$x] as $ref => $data['order_']) { ?>
-                        <table class="table table-sm shadow-sm mb-2">
+                        <table class="table table-sm shadow-sm mb-2 border">
                             <?php
                             $no = 0;
                             $total = 0;
@@ -85,7 +85,7 @@
                                         }
                                     } ?>
                                     <tr>
-                                        <td colspan="5" class="table-dark">
+                                        <td colspan="5" class="table-secondary">
                                             <table class="w-100 p-0 m-0">
                                                 <tr>
                                                     <td><b><span><?= substr($ref, -4) ?></span> | <?= strtoupper($pelanggan) ?></b></td>

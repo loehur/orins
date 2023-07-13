@@ -81,8 +81,8 @@
                             }
                         }
                     ?>
-                        <div class="container-fluid pt-2 ps-0 pe-0">
-                            <div class="card p-0">
+                        <div class="pt-2 ps-0 pe-0">
+                            <div class="border p-0 rounded">
                                 <small>
                                     <table class="table table-sm mb-0">
                                         <tbody>
@@ -358,7 +358,7 @@
         <div class="col-auto ps-0 pe-2">
             <form action="<?= $this->BASE_URL; ?>Data_Operasi/bayar_multi" method="POST">
                 <div class="container-fluid pt-2 ps-0 pe-0">
-                    <div class="card p-2">
+                    <div class="rounded border p-2">
                         <small>
                             <table class="table table-sm mb-0 table-borderless w-auto">
                                 <tr class="table-info">
