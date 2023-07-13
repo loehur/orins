@@ -4,7 +4,14 @@
         <b><?= $this->userData['sub_nama'] ?></b><br>
         <?= $this->userData['alamat'] ?>
     </div>
-    <hr>
+    <table style="width: 100%;margin-top:3px; margin-bottom:5px">
+        <tr>
+            <td style="border-bottom: 2px solid; border-color:red"></td>
+            <td style="border-bottom: 2px solid; border-color:orange"></td>
+            <td style="border-bottom: 2px solid; border-color:green"></td>
+            <td style="border-bottom: 2px solid; border-color:blue"></td>
+        </tr>
+    </table>
 
     <?php
 
@@ -29,7 +36,7 @@
             <td><small>Pelanggan</small><br><b><?= strtoupper($pelanggan) ?></b></td>
             <td><small>CS</small><br><b><?= strtoupper($cs) ?></b></td>
             <td style="text-align: right;"><small>Tanggal Order</small><br><b><?= $do['insertTime'] ?></b></td>
-            <td style="text-align: right;"><small>No. Referensi</small><br><b><?= $do['ref'] ?></b></td>
+            <td style="text-align: right;"><small>No. Referensi</small><br><b><?= substr($do['ref'], 0, -4) ?>-<span style="color: green;"><?= substr($do['ref'], -4) ?></span></b></td>
         </tr>
     </table>
     <br>
