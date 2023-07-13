@@ -16,7 +16,7 @@
             for ($x = 1; $x <= 2; $x++) { ?>
                 <div class="col ps-0 pe-1">
                     <?php foreach ($data['order'][$x] as $ref => $data['order_']) { ?>
-                        <table class="table table-sm shadow-sm mb-2 border">
+                        <table class="table table-sm shadow-sm mb-2 border" style="min-width: 350px;">
                             <?php
                             $no = 0;
                             $total = 0;
@@ -88,7 +88,7 @@
                                         <td colspan="5" class="table-secondary">
                                             <table class="w-100 p-0 m-0">
                                                 <tr>
-                                                    <td><b><span><?= substr($ref, -4) ?></span> | <?= strtoupper($pelanggan) ?></b></td>
+                                                    <td><span><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
                                                     <td style="width: 180px;" class="text-end"><small><?= $cs  ?> [<?= substr($do['insertTime'], 2, -3) ?>]</span></small></td>
                                                 </tr>
                                             </table>
@@ -100,22 +100,25 @@
                                     <td>
                                         <table class="float-start">
                                             <tr>
-                                                <?php
-                                                foreach ($detail_arr as $da) { ?>
-                                                    <td class="pe-1 text-success"><b><?= strtoupper($da['detail_name']) ?></b></td>
-                                                <?php } ?>
-                                                <td class="text-end text-purple"><b><?= " " . number_format($do['jumlah']) ?>pcs</b></td>
+                                                <td class="text-end text-purple pe-2" style="width:40px"><b><?= number_format($do['jumlah']) ?></b></td>
+                                                <td class="pe-1 text-success">
+                                                    <?php
+                                                    foreach ($detail_arr as $da) { ?>
+                                                        <b><?= strtoupper($da['detail_name']) ?> </b>
+                                                    <?php } ?>
+                                                </td>
                                             </tr>
                                             <?php
                                             if (strlen($do['note']) > 0 || strlen($do['note_spk']) > 0) { ?>
                                                 <tr>
+                                                    <td></td>
                                                     <td colspan="10">
                                                         <?php if (strlen($do['note']) > 0) { ?>
                                                             <span class='text-danger'><i class='fa-solid fa-circle-exclamation'></i> <?= $do['note'] ?></span>
                                                         <?php } ?>
                                                         <?php foreach (unserialize($do['note_spk']) as $ks => $ns) {
                                                             if ($ks == $parse && strlen($ns) > 0) {
-                                                                echo "<span class='text-primary'> <i class='fa-regular fa-clipboard'></i> " . $ns . "</span>";
+                                                                echo "<br><span class='text-primary'><i class='fa-solid fa-circle-exclamation'></i> " . $ns . "</span>";
                                                             }
                                                         }
                                                         ?>
