@@ -32,7 +32,7 @@
 
                         ?>
                             <tr class="<?= ($a['status_mutasi'] == 2) ? 'text-secondary' : '' ?>">
-                                <td align="right">#<?= $a['id_kas'] ?></td>
+                                <td align="right">#<?= $a['id_kas'] ?> <?= $a['insertTime'] ?></td>
                                 <td><?= strtoupper($pelanggan) ?></td>
                                 <td><?= $a['ref_transaksi'] ?></td>
                                 <td><?= $a['insertTime'] ?></td>
@@ -46,7 +46,6 @@
                                     <?php } ?>
                                 </td>
                             </tr>
-
                         <?php } ?>
                     </table>
 
