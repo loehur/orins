@@ -26,8 +26,8 @@ if ($id_pelanggan_jenis == 1) {
                 <?php if ($data['count'] <= 15) { ?>
                     <button type="button" class="float-end btn btn-outline-primary py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
                     <div class="btn-group float-end me-3">
-                        <button type="button" class="border bg-white py-1 px-3 rounded dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" disabled>
-                            Order Afiliasi (Soon)
+                        <button type="button" class="border bg-white py-1 px-3 rounded dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            Order Afiliasi
                             <span class="visually-hidden">Toggle Dropdown</span>
                         </button>
                         <ul class="dropdown-menu p-0">
@@ -318,7 +318,7 @@ if ($id_pelanggan_jenis == 1) {
     })
 
 
-    $("a.aff_Belum").click(function() {
+    $("a.aff").click(function() {
         var target = $(this).attr("data-id");
         $("div#aff").load('<?= $this->BASE_URL ?>Buka_Order/load_aff/' + target);
     })

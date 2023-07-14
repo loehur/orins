@@ -1,4 +1,4 @@
-<form action="<?= $this->BASE_URL ?>Buka_Order/add/<?= $data['id_toko'] ?>" method="POST">
+<form class="aff_form" action="<?= $this->BASE_URL ?>Buka_Order/add/<?= $data['id_toko'] ?>" method="POST">
     <div class="modal-body">
         <label class="label-form">Produk <span class="text-success"><b><?= strtoupper($data['toko']) ?></b></span></label>
         <div class="mb-3 border border-success rounded">
@@ -11,7 +11,7 @@
                 } ?>
             </select>
         </div>
-        <div id="detail"></div>
+        <div id="detail_aff"></div>
     </div>
     <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
         <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Tambah</button>
@@ -25,10 +25,10 @@
 
     $('select.loadDetail').on('change', function() {
         var produk = this.value;
-        $("div#detail").load('<?= $this->BASE_URL ?>Buka_Order/load_detail/' + produk);
+        $("div#detail_aff").load('<?= $this->BASE_URL ?>Buka_Order/load_detail/' + produk);
     });
 
-    $("form").on("submit", function(e) {
+    $("form.aff_form").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
             url: $(this).attr('action'),

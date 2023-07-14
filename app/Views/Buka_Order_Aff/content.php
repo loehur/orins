@@ -69,28 +69,34 @@
                 <tbody>
                     <?php
                     $no = 0;
-                    foreach ($data['order'] as $do) {
+                    foreach ($data['order'] as $keyD => $do) {
                         $no++;
+                        $akum_diskon = 0;
+
                         $id_order_data = $do['id_order_data'];
                         $id_produk = $do['id_produk'];
                         $detail_arr = unserialize($do['produk_detail']);
                         $detail = "";
+                        $listDetail = unserialize($do['detail_harga']);
+
                         foreach ($detail_arr as $da) {
                             $detail .= $da['detail_name'] . ", ";
                         }
 
-                        foreach ($this->dProdukAll as $dp) {
-                            if ($dp['id_produk'] == $id_produk) {
-                                $produk = $dp['produk'];
-                            }
-                        }
+                        $produk = $do['produk'];
+
+                        $detail_harga = unserialize($do['detail_harga']);
+
+                        $harga_ok = true;
+                        $btnSetHarga = 'Uninitialized';
+
                     ?>
                         <tr>
                             <td class="text-end"><?= $no  ?></td>
                             <td>
-                                <table class="border-bottom">
+                                <table>
                                     <tr>
-                                        <td colspan="10"><span class="text-nowrap text-success"><small><?= ucwords($produk) ?></small></span><br>
+                                        <td colspan="10"><span class="text-nowrap text-success"><b><small><?= ucwords($produk) ?></small></small></span><br>
                                     <tr>
                                     <tr>
                                         <?php
@@ -100,20 +106,52 @@
                                             </td>
                                         <?php } ?>
                                     </tr>
+                                    <tr>
+                                        <td colspan="10">
+                                            <small>
+                                                <table class="border">
+                                                    <?php
+                                                    foreach ($listDetail as $kl => $ld_o) {
+                                                        $harga_d = $data['harga'][$keyD][$ld_o['c_h']];
+                                                        $disk = $ld_o['d'];
+                                                        $akum_diskon += $disk ?>
+                                                        <tr>
+                                                            <td class="ps-2"><?= strtoupper($ld_o['n_v']) . " " ?></td>
+                                                            <td class="ps-2 text-end">Disc. <?= number_format($ld_o['d']) ?></td>
+                                                            <?php if ($disk > 0) { ?>
+                                                                <td class="ps-2 text-end"><del>Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del></td>
+                                                            <?php } ?>
+                                                            <td class="ps-2 text-end">Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?></td>
+                                                            <td class="ps-2 pe-2">
+                                                                <?php if ($data['harga'][$keyD][$ld_o['c_h']] > 0) { ?>
+                                                                    <i class="fa-solid fa-circle-check text-success"></i>
+                                                                <?php } else { ?>
+                                                                    <i class="fa-regular fa-circle text-warning"></i>
+                                                                <?php } ?>
+                                                            </td>
+                                                        </tr>
+                                                    <?php }
+                                                    ?>
+                                                </table>
+                                            </small>
+                                        </td>
+                                    </tr>
                                 </table>
                                 <div class="row">
                                     <div class="col-auto">
-                                        <span class="text-nowrap">
+                                        <span>
                                             <small>Catatan Utama</small><br><span class="text-danger"><?= $do['note'] ?></span>
                                         </span>
                                     </div>
                                     <div class="col-auto">
-                                        <span class="text-nowrap">
+                                        <span>
                                             <small>Catatan Produksi</small><br>
-                                            <span>
+                                            <span class="text-primary">
                                                 <?php
                                                 foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                    echo $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) . ": " . $ns . ", ";
+                                                    if (strlen($ns) > 0) {
+                                                        echo "<b>" . $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) . "</b>: " . $ns . ", ";
+                                                    }
                                                 }
                                                 ?>
                                             </span>
@@ -121,9 +159,31 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-end"><span class="edit" data-id="<?= $do['produk_code'] ?>"><?= number_format($do['harga']) ?></span></td>
+                            <td class="text-end">
+                                <?php
+                                if ($harga_ok == false) {
+                                    echo $btnSetHarga;
+                                } else {
+                                    if ($akum_diskon > 0) {
+                                        echo "<del>" . number_format($do['harga']) . "</del><br><small>Disc. Rp" . number_format($akum_diskon) . "</small><br>" . number_format($do['harga'] - $akum_diskon);
+                                    } else {
+                                        echo number_format($do['harga']);
+                                    }
+                                } ?>
+                            </td>
                             <td class="text-end"><span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= number_format($do['jumlah']) ?></span></td>
-                            <td class="text-end"><?= number_format($do['harga'] * $do['jumlah']) ?></td>
+                            <td class="text-end">
+                                <?php
+                                if ($harga_ok == false) {
+                                    echo $btnSetHarga;
+                                } else {
+                                    if ($akum_diskon > 0) {
+                                        echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del><br><small>Disc. Rp" . number_format($akum_diskon * $do['jumlah']) . "</small><br>" . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                    } else {
+                                        echo number_format($do['harga'] * $do['jumlah']);
+                                    }
+                                } ?>
+                            </td>
                         </tr>
                     <?php }
                     ?>

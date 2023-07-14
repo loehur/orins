@@ -164,11 +164,9 @@ class Data_Order extends Controller
 
    public function print($parse = "")
    {
-      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
-      $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
-      $whereKarywan = "id_toko = " . $this->userData['id_toko'];
-      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKarywan);
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND ref = '" . $parse . "' AND cancel = 0";
+      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
+      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
+      $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND ref = '" . $parse . "' AND cancel = 0";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
 
       $refs = array_column($data['order'], 'ref');

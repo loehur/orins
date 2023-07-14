@@ -72,6 +72,7 @@ class Buka_Order_Aff extends Controller
          $data['pengirim'] = $do['id_penerima'];
       }
 
+      $data['harga'] = $getHarga;
       $data['parse'] = $parse;
       $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
       foreach ($data['karyawan'] as $dk) {

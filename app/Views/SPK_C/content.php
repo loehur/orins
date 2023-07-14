@@ -100,13 +100,13 @@
                                     <td>
                                         <table class="float-start">
                                             <tr>
-                                                <td class="text-end text-purple pe-2" style="width:40px"><b><?= number_format($do['jumlah']) ?></b></td>
                                                 <td class="pe-1 text-success">
                                                     <?php
                                                     foreach ($detail_arr as $da) { ?>
                                                         <b><?= strtoupper($da['detail_name']) ?> </b>
                                                     <?php } ?>
                                                 </td>
+                                                <td class="text-end text-purple pe-2" style="width:40px"><b><?= number_format($do['jumlah']) ?></b>pcs</td>
                                             </tr>
                                             <?php
                                             if (strlen($do['note']) > 0 || strlen($do['note_spk']) > 0) { ?>
