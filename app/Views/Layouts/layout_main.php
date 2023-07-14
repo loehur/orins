@@ -67,7 +67,7 @@
 
 <?php
 $cols = "id_toko, id_pelanggan, ref";
-$where = "id_afiliasi = " . $this->userData['id_toko'] . " AND status_order = 1 AND cancel = 0 GROUP BY id_toko, id_pelanggan, ref";
+$where = "id_afiliasi = " . $this->userData['id_toko'] . " AND status_order = 1 AND cancel = 0 AND tuntas = 0 GROUP BY id_toko, id_pelanggan, ref";
 $aff_ = $this->model('M_DB_1')->get_cols_where('order_data', $cols, $where, 1);
 $aff_c = count($aff_);
 ?>
