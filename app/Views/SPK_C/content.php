@@ -111,7 +111,6 @@
                                             <?php
                                             if (strlen($do['note']) > 0 || strlen($do['note_spk']) > 0) { ?>
                                                 <tr>
-                                                    <td></td>
                                                     <td colspan="10">
                                                         <?php if (strlen($do['note']) > 0) { ?>
                                                             <span class='text-danger'><i class='fa-solid fa-circle-exclamation'></i> <?= $do['note'] ?></span>
