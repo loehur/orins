@@ -41,16 +41,13 @@
 			font-family: <?= $fontStyle ?>;
 		}
 
-		body {
-			min-height: 100%;
-		}
-
 		.selectize-control {
-			padding: 0;
+			padding: 0px;
 		}
 
 		.selectize-input {
 			border: none;
+			padding-top: 12px;
 		}
 
 		.selectize-input::after {
@@ -73,25 +70,25 @@ $aff_c = count($aff_);
 ?>
 
 <body class="nav-fixed">
-	<nav class="topnav navbar navbar-expand border justify-content-between justify-content-sm-start navbar-light bg-light" id="sidenavAccordion">
+	<nav class="topnav navbar navbar-expand shadow-sm border-bottom-1 justify-content-between justify-content-sm-start bg-light" id="sidenavAccordion">
 		<button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0 pt-3" id="sidebarToggle"><i data-feather="menu"></i></button>
 		<a class="navbar-brand pe-3 ps-4 ps-lg-2" id="sync" href="<?= $this->BASE_URL ?>Log/sync"><?= strtoupper($this->userData['nama_toko']) ?></a>
-		<?php if (in_array($this->userData['user_tipe'], $this->pFinance)) { ?>
-			<div class="dropdown me-2 bg-white">
-				<button class="btn btn-icon btn-transparent-dark dropdown-toggle border" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-					<i class="fa-solid fa-repeat"></i>
-				</button>
-				<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-					<?php
-					foreach ($this->dToko as $dt) { ?>
-						<li><a class="dropdown-item sync" href="<?= $this->BASE_URL ?>Log/change_toko/<?= $dt['id_toko'] ?>"><?= $dt['nama_toko'] ?></a></li>
-					<?php } ?>
-				</ul>
-			</div>
-		<?php } ?>
 		<ul class="navbar-nav align-items-center ms-auto ms">
 			<!-- User Dropdown-->
-			<li class="nav-item dropdown no-caret dropdown-user me-3 me-lg-4">
+			<?php if (in_array($this->userData['user_tipe'], $this->pMaster)) { ?>
+				<li class="nav-item dropdown no-caret dropdown-user me-1">
+					<a class="btn bg-white rounded btn-transparent-dark dropdown-toggle border" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<b><i class="fa-solid fa-repeat"></i></b>
+					</a>
+					<div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownUserImage">
+						<?php
+						foreach ($this->dToko as $dt) { ?>
+							<a class="dropdown-item sync" href="<?= $this->BASE_URL ?>Log/change_toko/<?= $dt['id_toko'] ?>"><?= $dt['nama_toko'] ?></a>
+						<?php } ?>
+					</div>
+				</li>
+			<?php } ?>
+			<li class="nav-item dropdown no-caret dropdown-user me-3">
 				<a class="btn rounded btn-transparent-dark dropdown-toggle border bg-white" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<b><?= strtoupper($this->userData['nama']) ?></b>
 				</a>

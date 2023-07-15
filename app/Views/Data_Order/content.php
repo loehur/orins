@@ -1,7 +1,7 @@
 <?php $modeView = $data['parse'] ?>
 <main>
     <div class="position-fixed bg-white w-100" style="top:0; padding-top:65px;">
-        <div class="p-2 rounded bg-light ms-2 mb-2 me-3 border" style="max-width: 500px;">
+        <div class="p-2 rounded bg-light ms-2 mb-2 me-1 border" style="max-width: 500px;">
             <div class=" row mb-1">
                 <div class="col-auto pe-0">
                     <input type="text" placeholder="Cari Pelanggan..." id="myInput" class="form-control form-control-sm">

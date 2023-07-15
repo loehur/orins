@@ -49,10 +49,14 @@ class Buka_Order extends Controller
       $data['count'] = count($data['order']);
 
       $getHarga = [];
+      $total = 0;
 
       foreach ($data['order'] as $key => $do) {
          $detail_harga = unserialize($do['detail_harga']);
          $countDH[$key] = count($detail_harga);
+
+         $total_ = $do['harga'] * $do['jumlah'];
+
          foreach ($detail_harga as $dh_o) {
             $getHarga[$key][$dh_o['c_h']] = 0;
             foreach ($data_harga as $dh) {

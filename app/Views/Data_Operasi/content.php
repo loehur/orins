@@ -1,7 +1,7 @@
 <main>
-    <div class="row ms-1 me-2 mt-3">
-        <div class="col pe-0" style="min-width: 250px; max-width: 300px">
-            <select class="border tize" name="id_pelanggan" required>
+    <div class="row me-1 mt-3" style="margin-left:0px;max-width:600px">
+        <div class="col pe-0">
+            <select class="border rounded tize" name="id_pelanggan" required>
                 <option></option>
                 <?php foreach ($this->dPelanggan as $p) { ?>
                     <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?></option>
@@ -20,7 +20,7 @@
             </div>
         <?php } ?>
         <div class="col pt-auto mt-auto pe-0">
-            <button type="submit" class="cek btn btn-sm btn-primary">Cek</button>
+            <button type="submit" class="cek btn btn-light border">Cek</button>
         </div>
     </div>
 
@@ -82,7 +82,7 @@
                         }
                     ?>
                         <div class="pt-2 ps-0 pe-0">
-                            <div class="border p-0 rounded">
+                            <div class="border p-0">
                                 <small>
                                     <table class="table table-sm mb-0">
                                         <tbody>
@@ -333,11 +333,13 @@
                                                 </td>
                                                 <td class="text-end" nowrap><?= ($lunas == true) ? '<i class="fa-solid text-success fa-circle-check"></i>' : '' ?> <b>Rp<?= number_format($bill) ?></b></td>
                                             </tr>
-                                            <tr class="border-top">
-                                                <td class="text-end text" colspan="4">
-                                                    <?= $showMutasi ?>
-                                                </td>
-                                            </tr>
+                                            <?php if (strlen($showMutasi) > 0) { ?>
+                                                <tr>
+                                                    <td class="text-end text" colspan="4">
+                                                        <?= $showMutasi ?>
+                                                    </td>
+                                                </tr>
+                                            <?php } ?>
                                         </tbody>
                                     </table>
                                 </small>

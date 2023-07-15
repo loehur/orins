@@ -10,18 +10,9 @@ if ($id_pelanggan_jenis == 1) {
 ?>
 
 <main>
-    <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-4">
-        <div class="container-fluid px-4">
-            <div class="page-header-content pt-4">
-                <div class="row align-items-center justify-content-between">
-                    <div class="col-auto mt-4"></div>
-                </div>
-            </div>
-        </div>
-    </header>
     <!-- Main page content-->
-    <div class="container-fluid px-4">
-        <div class="card mt-n10">
+    <div class="container-fluid px-2">
+        <div class="card mt-2 shadow-sm">
             <div class="card-header ">Buka Order - <b><?= $pelanggan_jenis ?></b>
                 <?php if ($data['count'] <= 15) { ?>
                     <button type="button" class="float-end btn btn-outline-primary py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
@@ -42,7 +33,7 @@ if ($id_pelanggan_jenis == 1) {
             </div>
             <div class="card-body">
                 <form action="<?= $this->BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
-                    <div class="row pb-2">
+                    <div class="row">
                         <div class="col">
                             <label class="form-label">Pelanggan <?= $pelanggan_jenis ?></label>
                             <select class="border tize" name="id_pelanggan" required>
@@ -61,19 +52,22 @@ if ($id_pelanggan_jenis == 1) {
                                 <?php } ?>
                             </select>
                         </div>
-                        <div class="col mt-auto">
-                            <button type="submit" class="btn btn-primary">Proses - <span class="ms-1"><b><?= $data['count'] ?> Item</b></span></button>
+                        <div class="col-auto mt-auto">
+                            <span class="ms-1"><small><?= $data['count'] ?> Item</small></span><br>
+                            <button type="submit" class="btn btn-sm btn-primary w-100">Proses </button>
                         </div>
                     </div>
                 </form>
             </div>
+        </div>
+        <div class="card shadow-sm mt-1">
             <table class="table table-sm mb-0">
                 <thead>
                     <tr>
                         <td class="text-purple text-end">No</td>
                         <td class="text-purple">Produk</td>
                         <td class="text-purple text-end">Harga</td>
-                        <td class="text-purple text-end">Jumlah</td>
+                        <td class="text-purple text-end">Qty</td>
                         <td class="text-purple text-end">Total</td>
                         <td class="text-purple"></td>
                     </tr>
@@ -202,7 +196,7 @@ if ($id_pelanggan_jenis == 1) {
                                     }
                                 } ?>
                             </td>
-                            <td class="pe-3"><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
+                            <td class="pe-2"><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                         </tr>
                     <?php }
                     ?>
