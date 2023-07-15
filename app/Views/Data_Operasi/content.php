@@ -151,9 +151,9 @@
                                                                         <span class="text-danger"><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b>
                                                                     </td>
                                                                     <?php if ($do['id_afiliasi'] == 0 || $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
-                                                                        <td class="text-end"><small><b><?= $cs ?></b></span></small></td>
+                                                                        <td class="text-end"><small><b><?= strtoupper($cs) ?></b></span></small></td>
                                                                     <?php } else { ?>
-                                                                        <td class="text-end"><small><b><?= $cs ?> -> <?= $cs_to ?></b></span></small></td>
+                                                                        <td class="text-end"><small><b><?= strtoupper($cs) ?> - <?= strtoupper($cs_to) ?></b></span></small></td>
                                                                     <?php }
                                                                     ?>
                                                                     <td class="text-end ps-1" style="width: 1%; white-space:nowrap">[<?= substr($do['insertTime'], 2, -3) ?>]</td>

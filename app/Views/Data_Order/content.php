@@ -1,51 +1,53 @@
 <?php $modeView = $data['parse'] ?>
 <main>
-    <div class="p-2 ms-3 mt-3 me-3 bg-white">
-        <div class="row mb-1">
-            <div class="col-auto pe-0">
-                <input type="text" placeholder="Search..." id="myInput" class="form-control form-control-sm">
+    <div class="position-fixed bg-white w-100" style="top:0; padding-top:65px;">
+        <div class="p-2 rounded bg-light ms-2 mb-2 me-3 border" style="max-width: 500px;">
+            <div class=" row mb-1">
+                <div class="col-auto pe-0">
+                    <input type="text" placeholder="Cari Pelanggan..." id="myInput" class="form-control form-control-sm">
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <form id="main">
-                    <div class="d-flex align-items-start align-items-end pt-1">
-                        <div class="ps-0 pe-1">
-                            <?php $outline = ($modeView == 0) ? "" : "outline-" ?>
-                            <a href="<?= $this->BASE_URL ?>Data_Order/index/0" type="button" class="btn btn-sm btn-<?= $outline ?>primary">
-                                Terkini
-                            </a>
-                            <?php $outline = "outline-" ?>
+            <div class="row">
+                <div class="col">
+                    <form id="main">
+                        <div class="d-flex align-items-start align-items-end pt-1">
+                            <div class="ps-0 pe-1">
+                                <?php $outline = ($modeView == 0) ? "" : "outline-" ?>
+                                <a href="<?= $this->BASE_URL ?>Data_Order/index/0" type="button" class="btn btn-sm btn-<?= $outline ?>primary">
+                                    Terkini
+                                </a>
+                                <?php $outline = "outline-" ?>
+                            </div>
+                            <div class="ps-0 pe-1">
+                                <?php $outline = ($modeView == 1) ? "" : "outline-" ?>
+                                <a href="<?= $this->BASE_URL ?>Data_Order/index/1" type="button" class="btn btn-sm btn-<?= $outline ?>success">
+                                    >1 Minggu
+                                </a>
+                                <?php $outline = "outline-" ?>
+                            </div>
+                            <div class="ps-0 pe-1">
+                                <?php $outline = ($modeView == 2) ? "" : "outline-" ?>
+                                <a href="<?= $this->BASE_URL ?>Data_Order/index/2" type="button" class="btn btn-sm btn-<?= $outline ?>info">
+                                    >1 Bulan
+                                </a>
+                                <?php $outline = "outline-" ?>
+                            </div>
+                            <div class="ps-0 pe-1">
+                                <?php $outline = ($modeView == 3) ? "" : "outline-" ?>
+                                <a href="<?= $this->BASE_URL ?>Data_Order/index/3" type="button" class="btn btn-sm btn-<?= $outline ?>secondary">
+                                    >1 Tahun
+                                </a>
+                                <?php $outline = "outline-" ?>
+                            </div>
                         </div>
-                        <div class="ps-0 pe-1">
-                            <?php $outline = ($modeView == 1) ? "" : "outline-" ?>
-                            <a href="<?= $this->BASE_URL ?>Data_Order/index/1" type="button" class="btn btn-sm btn-<?= $outline ?>success">
-                                >1 Minggu
-                            </a>
-                            <?php $outline = "outline-" ?>
-                        </div>
-                        <div class="ps-0 pe-1">
-                            <?php $outline = ($modeView == 2) ? "" : "outline-" ?>
-                            <a href="<?= $this->BASE_URL ?>Data_Order/index/2" type="button" class="btn btn-sm btn-<?= $outline ?>info">
-                                >1 Bulan
-                            </a>
-                            <?php $outline = "outline-" ?>
-                        </div>
-                        <div class="ps-0 pe-1">
-                            <?php $outline = ($modeView == 3) ? "" : "outline-" ?>
-                            <a href="<?= $this->BASE_URL ?>Data_Order/index/3" type="button" class="btn btn-sm btn-<?= $outline ?>secondary">
-                                >1 Tahun
-                            </a>
-                            <?php $outline = "outline-" ?>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
     <!-- Main page content-->
     <small>
-        <div class="ms-1 mt-2 me-1">
+        <div class="ms-2 rounded pb-2 me-1 border" style="max-width: 500px; margin-top:102px">
             <div class="row row-cols-1 mx-2 mt-2">
                 <?php foreach ($data['order'] as $ref => $data['order_']) { ?>
                     <?php
@@ -132,7 +134,7 @@
                                         </small>
                                     </td>
                                 <?php } else { ?>
-                                    <td class="text-end pe-1">
+                                    <td class="text-end pe-1 text-success">
                                         <small>
                                             Afiliated Order
                                         </small>

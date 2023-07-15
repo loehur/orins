@@ -37,11 +37,11 @@ class Setoran extends Controller
       $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
       $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
 
-      $where = "metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
       $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
 
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 5";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 5";
       $data['setor'] = $this->model('M_DB_1')->get_cols_where('kas', $cols, $where, 1);
 
       $this->view($this->v_content, $data);
@@ -49,9 +49,9 @@ class Setoran extends Controller
 
    function setor()
    {
-      $ref = date("Ymdhis");
+      $ref = date("Ymdhis") . rand(0, 9);
       $set = "ref_setoran = '" . $ref . "'";
-      $where = "metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = ''";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = ''";
       $update = $this->model('M_DB_1')->update("kas", $set, $where);
       echo $update['errno'];
    }

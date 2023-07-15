@@ -97,6 +97,8 @@ class Data_Order extends Controller
       $note = $_POST['note'];
       $st_mutasi = 1;
 
+      $ref_bayar = date("Ymdhis") . rand(0, 9);
+
       if ($jumlah > $bill) {
          $jumlah = $bill;
       }
@@ -111,8 +113,8 @@ class Data_Order extends Controller
       $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $method . " AND status_mutasi = 0";
       $dataCount = $this->model('M_DB_1')->count_where('kas', $whereCount);
 
-      $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client,note";
-      $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $method . "," . $st_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "'";
+      $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar";
+      $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $method . "," . $st_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'";
 
       if ($dataCount < 1) {
          $do = $this->model('M_DB_1')->insertCols('kas', $cols, $vals);

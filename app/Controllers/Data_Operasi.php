@@ -119,8 +119,10 @@ class Data_Operasi extends Controller
       if (count($ref_multi) == 0) {
          exit();
       }
+
       $note =  $_POST['note_multi'];
       $metode =  $_POST['metode_multi'];
+      $ref_bayar = date("Ymdhis") . rand(0, 9);
 
       if (strlen($note) == 0 && $metode == 2) {
          $note = "Non_Tunai";
@@ -157,8 +159,8 @@ class Data_Operasi extends Controller
          $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $metode . " AND status_mutasi = " . $status_mutasi;
          $dataCount = $this->model('M_DB_1')->count_where('kas', $whereCount);
 
-         $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client,note";
-         $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "'";
+         $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar";
+         $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'";
 
          if ($dataCount < 1) {
             $do = $this->model('M_DB_1')->insertCols('kas', $cols, $vals);
