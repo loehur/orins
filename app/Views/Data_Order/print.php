@@ -55,6 +55,7 @@
         $total_disc = 0;
         $xtraDiskon = 0;
         $showMutasi = "";
+        $dibayar = 0;
         foreach ($data['order'] as $do) {
             $no += 1;
             $akum_diskon = 0;
@@ -69,24 +70,23 @@
                 }
             }
 
-            $dibayar = 0;
-            foreach ($data['kas'] as $dk) {
-                if ($dk['ref_transaksi'] == $do['ref'] && ($dk['status_mutasi'] == 1 || $dk['status_mutasi'] == 0)) {
-                    $dibayar += $dk['jumlah'];
-
-                    if ($dk['status_mutasi'] == 0) {
-                        $showMutasi .= "<tr><td><small>* " . $dk['insertTime'] . ")</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td><td><small><b>*Dalam Pengecekan</b></small></td></tr>";
-                    } else {
-                        $showMutasi .= "<tr><td><small>* " . $dk['insertTime'] . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td></tr>";
-                    }
-                }
-            }
-
             if ($no == 1) {
                 foreach ($data['diskon'] as $ds) {
                     if ($ds['ref_transaksi'] == $do['ref']) {
                         $xtraDiskon += $ds['jumlah'];
                         $showMutasi .= "<tr><td><small>* Extra Diskon " . $ds['insertTime'] . "</small></td><td align='right'><small>Rp" . number_format($ds['jumlah']) . "</small></tr>";
+                    }
+                }
+
+                foreach ($data['kas'] as $dk) {
+                    if ($dk['ref_transaksi'] == $do['ref'] && ($dk['status_mutasi'] == 1 || $dk['status_mutasi'] == 0)) {
+                        $dibayar += $dk['jumlah'];
+
+                        if ($dk['status_mutasi'] == 0) {
+                            $showMutasi .= "<tr><td><small>* " . $dk['insertTime'] . ")</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td><td><small><b>*Dalam Pengecekan</b></small></td></tr>";
+                        } else {
+                            $showMutasi .= "<tr><td><small>* " . $dk['insertTime'] . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td></tr>";
+                        }
                     }
                 }
             }
