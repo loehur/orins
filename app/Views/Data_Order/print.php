@@ -54,6 +54,7 @@
         $total = 0;
         $total_disc = 0;
         $xtraDiskon = 0;
+        $showMutasi = "";
         foreach ($data['order'] as $do) {
             $no += 1;
             $akum_diskon = 0;
@@ -69,7 +70,6 @@
             }
 
             $dibayar = 0;
-            $showMutasi = "";
             foreach ($data['kas'] as $dk) {
                 if ($dk['ref_transaksi'] == $do['ref'] && ($dk['status_mutasi'] == 1 || $dk['status_mutasi'] == 0)) {
                     $dibayar += $dk['jumlah'];
