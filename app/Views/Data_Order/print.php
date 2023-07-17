@@ -82,10 +82,12 @@
                 }
             }
 
-            foreach ($data['diskon'] as $ds) {
-                if ($ds['ref_transaksi'] == $do['ref']) {
-                    $xtraDiskon += $ds['jumlah'];
-                    $showMutasi .= "<tr><td><small>* Extra Diskon " . $ds['insertTime'] . "</small></td><td align='right'><small>Rp" . number_format($ds['jumlah']) . "</small></tr>";
+            if ($no == 1) {
+                foreach ($data['diskon'] as $ds) {
+                    if ($ds['ref_transaksi'] == $do['ref']) {
+                        $xtraDiskon += $ds['jumlah'];
+                        $showMutasi .= "<tr><td><small>* Extra Diskon " . $ds['insertTime'] . "</small></td><td align='right'><small>Rp" . number_format($ds['jumlah']) . "</small></tr>";
+                    }
                 }
             }
 
