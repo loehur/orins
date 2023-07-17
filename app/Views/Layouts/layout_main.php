@@ -131,19 +131,21 @@ $aff_c = count($aff_);
 								</nav>
 							</div>
 							<!-- Sidenav Accordion (Dashboard)-->
-							<a class="nav-link <?= (str_contains($t, "Afiliasi Order")) ? 'active' : 'collapsed' ?> mt-2" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseAff" aria-expanded="true" aria-controls="collapseAff">
-								<div class="nav-link-icon"><i data-feather="plus-square"></i></div>
-								Afiliasi Order <span class="badge bg-danger-soft text-danger ms-auto"><?= $aff_c ?></span>
-								<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-							</a>
-							<div class="collapse <?= (str_contains($t, "Afiliasi Order")) ? 'show' : '' ?>" id="collapseAff" data-bs-parent="#accordionSidenav">
-								<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
-									<?php foreach ($aff_ as $af) {
-										$toko = $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $af['id_toko']); ?>
-										<a class="nav-link <?= ($t == "Afiliasi Order - " . $af['ref']) ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Buka_Order_Aff/index/<?= $af['ref'] ?>"><?= $toko ?> - C#<?= $af['id_pelanggan'] ?></a>
-									<?php } ?>
-								</nav>
-							</div>
+							<?php if ($aff_c > 0) { ?>
+								<a class="nav-link <?= (str_contains($t, "Afiliasi Order")) ? 'active' : 'collapsed' ?> mt-2" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseAff" aria-expanded="true" aria-controls="collapseAff">
+									<div class="nav-link-icon"><i data-feather="plus-square"></i></div>
+									Afiliasi Order <span class="badge bg-danger-soft text-danger ms-auto"><?= $aff_c ?></span>
+									<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+								</a>
+								<div class="collapse <?= (str_contains($t, "Afiliasi Order")) ? 'show' : '' ?>" id="collapseAff" data-bs-parent="#accordionSidenav">
+									<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
+										<?php foreach ($aff_ as $af) {
+											$toko = $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $af['id_toko']); ?>
+											<a class="nav-link <?= ($t == "Afiliasi Order - " . $af['ref']) ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Buka_Order_Aff/index/<?= $af['ref'] ?>"><?= $toko ?> - C#<?= $af['id_pelanggan'] ?></a>
+										<?php } ?>
+									</nav>
+								</div>
+							<?php } ?>
 							<!-- Sidenav Accordion (Dashboard)-->
 							<a class="nav-link <?= (str_contains($t, "Data Order")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#dataOrder" aria-expanded="true" aria-controls="dataOrder">
 								<div class="nav-link-icon"><i data-feather="file-text"></i></div>

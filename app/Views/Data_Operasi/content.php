@@ -46,6 +46,7 @@
 
                         $dibayar = 0;
                         $showMutasi = "";
+                        $xtraDiskon = 0;
 
                         foreach ($data['kas'] as $dk) {
                             if ($dk['ref_transaksi'] == $ref) {
@@ -78,6 +79,14 @@
                                         $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "</del><br>";
                                         break;
                                 }
+                            }
+                        }
+
+                        foreach ($data['diskon'] as $ds) {
+                            if ($ds['ref_transaksi'] == $ref) {
+                                $xtraDiskon += $ds['jumlah'];
+                                $dibayar += $ds['jumlah'];
+                                $showMutasi .= "<span class='text-success'><small>Xtra Diskon</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
                             }
                         }
                     ?>
@@ -316,7 +325,22 @@
                                                                 if ($ambil_all == false) { ?>
                                                                     <td class="text-end pe-1"><small><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded border text-purple px-1" data-ref="<?= $do['ref'] ?>">Ambil</span></small></td>
                                                                 <?php } ?>
-                                                                <td class="text-end pe-1"><small><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModalSurcharge" class="btnSurcharge border rounded text-info px-2" data-ref="<?= $do['ref'] ?>"><i class="fa-solid fa-sliders"></i></span></small></td>
+                                                                <td class="text-end pe-1">
+                                                                    <button type="button" class="border-0 bg-white ps-1 dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        <small>
+                                                                            <span data-bs-toggle="modal" data-bs-target="#modalDiskon" data-bs-toggle="dropdown" class="border rounded text-info px-2 dropdown-toggle dropdown-toggle-split">
+                                                                                <i class="fa-solid fa-sliders"></i>
+                                                                            </span>
+                                                                        </small>
+                                                                        <span class="visually-hidden">Toggle Dropdown</span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu p-0">
+                                                                        <li><a data-bs-toggle="modal" data-bs-target="#exampleModalSur" class="dropdown-item surcharge" data-ref="<?= $do['ref'] ?>" href="#"><small>Surcharge</small></a></li>
+                                                                        <?php if (in_array($this->userData['user_tipe'], $this->pKasir) && $sisa > 0) { ?>
+                                                                            <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon" data-sisa="<?= $sisa ?>" data-ref="<?= $do['ref'] ?>" href="#"><small>Extra Diskon</small></a></li>
+                                                                        <?php } ?>
+                                                                    </ul>
+                                                                </td>
                                                                 <?php
                                                                 if (in_array($this->userData['user_tipe'], $this->pCS) && $sisa > 0) { ?>
                                                                     <td class="text-end pe-1 ps-2"><small><span style="cursor: pointer;" data-ref="<?= $ref ?>" data-client="<?= $id_pelanggan ?>" data-bill="<?= $sisa ?>" data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btnBayar border rounded text-danger px-1">Bayar</span></small></td>
@@ -543,12 +567,41 @@
     </div>
 </form>
 
+<form action="<?= $this->BASE_URL; ?>Data_Operasi/xtraDiskon" method="POST">
+    <div class="modal" id="exampleModalDiskon">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <h5 class="modal-title text-white">Extra Diskon</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Extra Diskon Rp</label>
+                                <input type="number" name="diskon" class="form-control form-control-sm text-end" required>
+                                <input name="ref_diskon" type="hidden">
+                                <input name="max_diskon" type="hidden">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-success">Tambah</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 <form action="<?= $this->BASE_URL; ?>Data_Order/bayar" method="POST">
     <div class="modal" id="exampleModal2">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Pembayaran</h5>
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white">Pembayaran</h5>
                 </div>
                 <div class="modal-body">
                     <div class="container">
@@ -646,6 +699,13 @@
         var parse_2 = $("select[name=y]").val() || 0;
         location.href = "<?= $this->BASE_URL ?>Data_Operasi/index/" + parse + "/" + parse_2;
     });
+
+    $("a.xtraDiskon").click(function() {
+        ref = $(this).attr("data-ref");
+        max_diskon = $(this).attr("data-sisa");
+        $("input[name=ref_diskon]").val(ref);
+        $("input[name=max_diskon]").val(max_diskon);
+    })
 
     var bill = 0;
     $("span.btnBayar").click(function() {

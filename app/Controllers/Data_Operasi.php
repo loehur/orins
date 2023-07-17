@@ -62,8 +62,12 @@ class Data_Operasi extends Controller
       if (count($refs) > 0) {
          $min_ref = min($refs);
          $max_ref = max($refs);
+
          $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "')";
          $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
+
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "')";
+         $data['diskon'] = $this->model('M_DB_1')->get_where('xtra_diskon', $where);
       }
 
       $data_ = [];
@@ -175,5 +179,33 @@ class Data_Operasi extends Controller
       }
 
       echo $error;
+   }
+
+   function xtraDiskon()
+   {
+      $ref = $_POST['ref_diskon'];
+      $jumlah = $_POST['diskon'];
+      $max = $_POST['max_diskon'];
+
+      if ($jumlah > $max || $jumlah == 0) {
+         echo "Jumlah Diskon tidak di izinkan!";
+         exit();
+      }
+
+      $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah;
+      $dataCount = $this->model('M_DB_1')->count_where('xtra_diskon', $whereCount);
+
+      $cols = "id_toko, ref_transaksi, jumlah, id_user";
+      $vals = $this->userData['id_toko'] . ",'" . $ref . "'," . $jumlah . "," . $this->userData['id_user'];
+
+      if ($dataCount < 1) {
+         $do = $this->model('M_DB_1')->insertCols('xtra_diskon', $cols, $vals);
+         if ($do['errno'] == 0) {
+            echo $do['errno'];
+            $this->model('Log')->write($this->userData['user'] . " Extra Diskon " . $jumlah . " Success!");
+         } else {
+            echo $do['error'];
+         }
+      }
    }
 }

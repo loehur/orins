@@ -177,6 +177,9 @@ class Data_Order extends Controller
          $max_ref = max($refs);
          $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN " . $min_ref . " AND " . $max_ref . ")";
          $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
+
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "')";
+         $data['diskon'] = $this->model('M_DB_1')->get_where('xtra_diskon', $where);
       }
 
       $this->view($this->page . "/print", $data);

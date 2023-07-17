@@ -53,6 +53,7 @@
         $no = 0;
         $total = 0;
         $total_disc = 0;
+        $xtraDiskon = 0;
         foreach ($data['order'] as $do) {
             $no += 1;
             $akum_diskon = 0;
@@ -81,7 +82,14 @@
                 }
             }
 
-            $sisa = $total - $dibayar;
+            foreach ($data['diskon'] as $ds) {
+                if ($ds['ref_transaksi'] == $do['ref']) {
+                    $xtraDiskon += $ds['jumlah'];
+                    $showMutasi .= "<tr><td><small>* Extra Diskon " . $ds['insertTime'] . "</small></td><td align='right'><small>Rp" . number_format($ds['jumlah']) . "</small></tr>";
+                }
+            }
+
+            $sisa = $total - $dibayar - $xtraDiskon;
             foreach ($listDetail as $kl => $ld_o) {
                 $disk = $ld_o['d'];
                 $akum_diskon += $disk;
@@ -140,22 +148,28 @@
                     <tr>
                         <td style="text-align:right">Total :</td>
                         <td style="text-align:right">
-                            <?= number_format($total) ?>
+                            Rp<?= number_format($total) ?>
                         </td>
                     </tr>
                     <?php if ($total_disc > 0) { ?>
                         <tr>
                             <td style="text-align:right">Diskon :</td>
-                            <td style="text-align:right"><?= number_format($total_disc) ?></td>
+                            <td style="text-align:right">Rp<?= number_format($total_disc) ?></td>
+                        </tr>
+                    <?php } ?>
+                    <?php if ($xtraDiskon > 0) { ?>
+                        <tr>
+                            <td style="text-align:right">Extra Diskon :</td>
+                            <td style="text-align:right">Rp<?= number_format($xtraDiskon) ?></td>
                         </tr>
                     <?php } ?>
                     <tr>
                         <td style="text-align:right">Dibayar :</td>
-                        <td style="text-align:right"><?= number_format($dibayar) ?></td>
+                        <td style="text-align:right">Rp<?= number_format($dibayar) ?></td>
                     </tr>
                     <tr>
                         <td style="text-align:right"><b>Sisa :</b></td>
-                        <td style="text-align:right"><b><?= number_format($sisa - $total_disc) ?></b></td>
+                        <td style="text-align:right"><b>Rp<?= number_format($sisa - $total_disc) ?></b></td>
                     </tr>
                 </table>
             </td>
