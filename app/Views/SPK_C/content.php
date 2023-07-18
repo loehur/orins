@@ -100,10 +100,10 @@
                                     <td>
                                         <table class="float-start">
                                             <tr>
-                                                <td class="pe-1 text-success">
+                                                <td class="pe-1">
                                                     <?php
                                                     foreach ($detail_arr as $da) { ?>
-                                                        <b><?= strtoupper($da['detail_name']) ?> </b>
+                                                        <?= strtoupper($da['detail_name']) ?>
                                                     <?php } ?>
                                                 </td>
                                                 <td class="text-end text-purple pe-2" style="width:40px"><b><?= number_format($do['jumlah']) ?></b>pcs</td>
@@ -135,7 +135,7 @@
                                                             $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
                                                             echo '<i class="fa-solid fa-check text-success"></i> ' . $karyawan;
                                                         } else {
-                                                            echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="1"> <i class="fa-regular fa-circle"></i> Tahap1 ';
+                                                            echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="1"> <i class="fa-regular fa-circle"></i>';
                                                         }
                                                         echo "</td>";
                                                         if ($divisi_arr[$key]['cm'] == 1) {
@@ -144,7 +144,7 @@
                                                                 $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_cm']);
                                                                 echo '<i class="fa-solid text-success fa-check-double"></i> ' . $karyawan;
                                                             } else {
-                                                                echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="2"> <i class="fa-regular fa-circle"></i> Tahap2 ';
+                                                                echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="2"> <i class="fa-regular fa-circle"></i>';
                                                             }
                                                             echo "</td>";
                                                         }
@@ -175,7 +175,7 @@
                                 <label class=" form-label">Karyawan</label>
                                 <input type="hidden" name="id">
                                 <input type="hidden" name="mode">
-                                <select class="form-select tize" name="id_karyawan" required>
+                                <select class="border tize" name="id_karyawan" required>
                                     <option></option>
                                     <?php foreach ($this->dKaryawan as $k) {
                                         if ($k['id_toko'] == $this->userData['id_toko']) { ?>

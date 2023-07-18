@@ -1,6 +1,6 @@
 <main>
     <!-- Main page content-->
-    <div class="row me-1 ms-2 mt-3">
+    <div class="row me-1 ms-2 mt-2">
         <div class="col-md-6 ps-0 pe-1">
             <small>
                 <table class="table table-sm mb-0 bg-white shadow-sm border">
@@ -9,17 +9,25 @@
                     </tr>
                     <?php foreach ($data['recap'] as $r) { ?>
                         <tr>
-                            <td><?= strtoupper($r['spk']) ?></td>
-                            <td align="right"><?= $r['jumlah'] ?> Pcs</td>
-                            <td align="right"><span class="border rounded px-1 py-1 btn updateSPK" data-order="<?= $r['order'] ?>" data-bs-toggle="modal" data-bs-target="#updateSPK">Update</span></td>
-                            <td><span data-bs-toggle="modal" data-bs-target="#modalOrder" class="border rounded px-1 py-1 btn cekSPK" data-parse="<?= $data['id_divisi'] ?>" data-order="<?= $r['order'] ?>">Cek</span></td>
+                            <td class=""><?= strtoupper($r['spk']) ?></td>
+                            <td align="right"><b><?= $r['jumlah'] ?></b>pcs</td>
+                            <td align="center">
+                                <span class="btn-outline-primary rounded px-1 updateSPK" style="cursor: pointer;" data-order="<?= $r['order'] ?>" data-bs-toggle="modal" data-bs-target="#updateSPK">
+                                    <small>Update</small>
+                                </span>
+                            </td>
+                            <td align="center">
+                                <span class="btn-outline-info rounded px-1 cekSPK" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalOrder" data-parse="<?= $data['id_divisi'] ?>" data-order="<?= $r['order'] ?>">
+                                    <small>Cek</small>
+                                </span>
+                            </td>
                         </tr>
                     <?php }
                     ?>
                 </table>
             </small>
         </div>
-        <div class="col-md-6 ps-0 pe-1">
+        <div class="col-md-6 ps-0 pe-1 mt-2">
             <small>
                 <table class="table table-sm mb-0 bg-white shadow-sm border">
                     <tr>
@@ -28,9 +36,17 @@
                     <?php foreach ($data['recap_2'] as $r) { ?>
                         <tr>
                             <td><?= strtoupper($r['spk']) ?></td>
-                            <td align="right"><?= $r['jumlah'] ?> Pcs</td>
-                            <td align="right"><span class="border rounded px-1 py-1 btn updateSPK" data-order="<?= $r['order'] ?>" data-bs-toggle="modal" data-bs-target="#updateSPK2">Update</span></td>
-                            <td><span data-bs-toggle="modal" data-bs-target="#modalOrder" class="border rounded px-1 py-1 btn cekSPK" data-parse="<?= $data['id_divisi'] ?>" data-order="<?= $r['order'] ?>">Cek</span></td>
+                            <td align="right"><b><?= $r['jumlah'] ?></b>pcs</td>
+                            <td align="center">
+                                <span class="btn-outline-primary rounded px-1 updateSPK" style="cursor: pointer;" data-order="<?= $r['order'] ?>" data-bs-toggle="modal" data-bs-target="#updateSPK2">
+                                    <small>Update</small>
+                                </span>
+                            </td>
+                            <td>
+                                <span data-bs-toggle="modal" data-bs-target="#modalOrder" style="cursor: pointer;" class="btn-outline-info rounded px-1 cekSPK" data-parse="<?= $data['id_divisi'] ?>" data-order="<?= $r['order'] ?>">
+                                    <small>Cek</small>
+                                </span>
+                            </td>
                         </tr>
                     <?php }
                     ?>
@@ -51,7 +67,7 @@
                 <div class="modal-body">
                     <div class="col mb-2">
                         <label class="form-label">User Produksi</label>
-                        <select class="form-select tize" name="id_karyawan" required>
+                        <select class="border tize" name="id_karyawan" required>
                             <option></option>
                             <?php foreach ($this->dKaryawan as $k) { ?>
                                 <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
