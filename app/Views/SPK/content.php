@@ -1,7 +1,7 @@
 <main>
     <!-- Main page content-->
     <div class="row me-1 ms-2 mt-2">
-        <div class="col-md-6 ps-0 pe-1">
+        <div class="col-md-6 ps-0 pe-1 mb-2">
             <small>
                 <table class="table table-sm mb-0 bg-white shadow-sm border">
                     <tr>
@@ -27,7 +27,7 @@
                 </table>
             </small>
         </div>
-        <div class="col-md-6 ps-0 pe-1 mt-2">
+        <div class="col-md-6 ps-0 pe-1">
             <small>
                 <table class="table table-sm mb-0 bg-white shadow-sm border">
                     <tr>
