@@ -12,13 +12,13 @@ if ($id_pelanggan_jenis == 1) {
 <main>
     <!-- Main page content-->
     <div class="container-fluid px-2">
-        <div class="card mt-2 shadow-sm">
-            <div class="card-header ">Buka Order - <b><?= $pelanggan_jenis ?></b>
+        <div class="card mt-2 shadow-none mb-1">
+            <div class="card-header"><b><?= $pelanggan_jenis ?></b>
                 <?php if ($data['count'] <= 15) { ?>
                     <button type="button" class="float-end btn btn-outline-primary py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
                     <div class="btn-group float-end me-3">
                         <button type="button" class="border bg-white py-1 px-3 rounded dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                            Order Afiliasi
+                            Afiliasi
                             <span class="visually-hidden">Toggle Dropdown</span>
                         </button>
                         <ul class="dropdown-menu p-0">
@@ -31,30 +31,27 @@ if ($id_pelanggan_jenis == 1) {
                     </div>
                 <?php } ?>
             </div>
-            <div class="card-body">
+            <div class="card-body bg-warning-soft pb-0 pt-2">
                 <form action="<?= $this->BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
                     <div class="row">
-                        <div class="col">
-                            <label class="form-label">Pelanggan <?= $pelanggan_jenis ?></label>
-                            <select class="border tize" name="id_pelanggan" required>
-                                <option></option>
+                        <div class="col px-1">
+                            <select class="tize" name="id_pelanggan" required>
+                                <option value=""><?= $pelanggan_jenis ?></option>
                                 <?php foreach ($data['pelanggan'] as $p) { ?>
                                     <option value="<?= $p['id_pelanggan'] ?>"><?= strtoupper($p['nama']) ?></option>
                                 <?php } ?>
                             </select>
                         </div>
-                        <div class="col">
-                            <label class="form-label">Customer Service</label>
-                            <select class="border tize" name="id_karyawan" required>
-                                <option></option>
+                        <div class="col ps-0 pe-2">
+                            <select class="tize" name="id_karyawan" required>
+                                <option value="">CS</option>
                                 <?php foreach ($data['karyawan'] as $k) { ?>
                                     <option value="<?= $k['id_karyawan'] ?>"><?= strtoupper($k['nama']) ?></option>
                                 <?php } ?>
                             </select>
                         </div>
-                        <div class="col-auto mt-auto">
-                            <span class="ms-1"><small><?= $data['count'] ?> Item</small></span><br>
-                            <button type="submit" class="btn btn-sm btn-primary w-100">Proses </button>
+                        <div class="col-auto mt-auto p-0 pb-2 pe-1">
+                            <button type="submit" class="btn btn-warning w-100">Proses </button>
                         </div>
                     </div>
                 </form>
@@ -135,7 +132,7 @@ if ($id_pelanggan_jenis == 1) {
                                         <td style="width: 30px;"><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="10">
+                                        <td colspan="10" class="border-bottom-0">
                                             <table class="table">
                                                 <tr>
                                                     <td class="pe-1" nowrap>
@@ -213,16 +210,16 @@ if ($id_pelanggan_jenis == 1) {
         </div>
     </div>
 </main>
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Produk - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= $this->BASE_URL ?>Buka_Order/add" method="POST">
-                <div class="modal-body">
-                    <div class="mb-3 border border-success rounded">
-                        <select class="border tize loadDetail" name="id_produk" required>
+                <div class="modal-body px-2 bg-info-soft">
+                    <div class="mb-3">
+                        <select class="tize loadDetail" name="id_produk" required>
                             <option></option>
                             <?php foreach ($this->dProduk as $dp) { ?>
                                 <option value="<?= $dp['id_produk'] ?>"><?= $dp['produk'] ?></option>
@@ -298,6 +295,9 @@ if ($id_pelanggan_jenis == 1) {
 <script>
     $(document).ready(function() {
         $('select.tize').selectize();
+
+        var produk = 1;
+        $("div#detail").load('<?= $this->BASE_URL ?>Buka_Order/load_detail/' + produk);
     });
 
     $('select.loadDetail').on('change', function() {

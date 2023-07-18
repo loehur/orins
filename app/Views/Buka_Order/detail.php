@@ -1,11 +1,10 @@
 <div class="mb-2">
-    <div class="row">
+    <div class="row pe-3">
         <?php foreach ($data['detail'] as $key => $d) {
         ?>
-            <div class="col-md-6 pb-2">
-                <label class="form-label mb-0 pb-0"><?= $d['name'] ?></label>
-                <select class="border tize" name="f-<?= $key ?>" required>
-                    <option></option>
+            <div class="col-md-6 pe-0 mb-1">
+                <select class="tize" name="f-<?= $key ?>" required>
+                    <option value=""><?= $d['name'] ?></option>
                     <?php foreach ($d['item'] as $i) {
                         if (isset($data['varian'][$i['id_detail_item']]) && count($data['varian'][$i['id_detail_item']]) > 0) {
                             foreach ($data['varian'][$i['id_detail_item']] as $vr) { ?>
@@ -19,20 +18,17 @@
                 </select>
             </div>
         <?php  } ?>
-        <div class="col-md-6 pb-2">
-            <label class="form-label mb-0 pb-0" required>Jumlah</label>
-            <input type="number" min="1" value="1" name="jumlah" class="form-control form-control-sm" required>
+        <div class="col-md-6 mb-1">
+            <input type="number" min="1" value="1" name="jumlah" class="form-control" required>
         </div>
     </div>
 </div>
-<div class="mb-2">
-    <label class="form-label mb-0 pb-0" required>Catatan Utama</label>
-    <input type="text" name="note" class="form-control form-control-sm">
+<div class="col px-0 mb-1">
+    <input type="text" name="note" placeholder="Catatan Utama" class="form-control form-control-sm">
 </div>
 <?php foreach ($data['spkNote'] as $key => $d) { ?>
-    <div class="mb-2">
-        <label class="form-label mb-0 pb-0" required>Catatan <b><?= $this->model('Arr')->get($this->dDvsAll, "id_divisi", "divisi", $key) ?></b></label>
-        <input type="text" name="d-<?= $key ?>" class="form-control form-control-sm">
+    <div class="col px-0 mb-1">
+        <input type="text" name="d-<?= $key ?>" placeholder="Catatan - <?= $this->model('Arr')->get($this->dDvsAll, "id_divisi", "divisi", $key) ?>" class="form-control form-control-sm">
     </div>
 <?php  } ?>
 
