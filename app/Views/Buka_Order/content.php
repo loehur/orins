@@ -94,26 +94,26 @@ if ($id_pelanggan_jenis == 1) {
                                 <table class="table table-sm w-100 mb-0">
                                     <tr class="bg-warning-soft">
                                         <td class="ps-2"><span class="text-nowrap text-dark"><b><small><?= ucwords($produk) ?></small></b></span></td>
-                                        <td class="text-end" style="width: 80px;">
+                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
                                             <small>
                                                 <?php
                                                 if ($harga_ok == false) {
                                                     echo $btnSetHarga;
                                                 } else {
                                                     if ($akum_diskon > 0) {
-                                                        echo "<del>" . number_format($do['harga']) . "</del><br><small>D. Rp" . number_format($akum_diskon) . "</small><br>" . number_format($do['harga'] - $akum_diskon);
+                                                        echo "<del>" . number_format($do['harga']) . "</del> <small>" . number_format($do['harga'] - $akum_diskon);
                                                     } else {
                                                         echo number_format($do['harga']);
                                                     }
                                                 } ?>
                                             </small>
                                         </td>
-                                        <td class="text-end" style="width: 50px;"><span class="edit_n" data-id="<?= $do['id_order_data'] ?>">
+                                        <td class="text-end" style="width: 1px;white-space: nowrap;"><span class="edit_n" data-id="<?= $do['id_order_data'] ?>">
                                                 <small>
                                                     <?= number_format($do['jumlah']) ?>
                                                 </small>
                                         </td>
-                                        <td class="text-end" style="width: 100px;">
+                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
                                             <b>
                                                 <small>
                                                     <?php
@@ -121,7 +121,7 @@ if ($id_pelanggan_jenis == 1) {
                                                         echo $btnSetHarga;
                                                     } else {
                                                         if ($akum_diskon > 0) {
-                                                            echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del><br><small>D. Rp" . number_format($akum_diskon * $do['jumlah']) . "</small><br>" . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                                            echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del> " . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
                                                         } else {
                                                             echo number_format($do['harga'] * $do['jumlah']);
                                                         }
@@ -135,7 +135,7 @@ if ($id_pelanggan_jenis == 1) {
                                         <td colspan="10" class="border-bottom-0">
                                             <table class="table">
                                                 <tr>
-                                                    <td class="pe-1" nowrap>
+                                                    <td class="pe-1 border-bottom-0" nowrap>
                                                         <div class="row">
                                                             <?php
                                                             foreach ($detail_arr as $da) { ?>
@@ -149,30 +149,27 @@ if ($id_pelanggan_jenis == 1) {
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="10" valign="top" class="p-0 border border-bottom-0">
+                                                    <td colspan="10" valign="top" class="p-0 border border-top-0">
                                                         <small>
                                                             <?php
                                                             foreach ($listDetail as $kl => $ld_o) {
                                                                 $harga_d = $data['harga'][$keyD][$ld_o['c_h']]; ?>
-                                                                <div class="row border-bottom mx-0">
-                                                                    <div class="col ps-1"><?= strtoupper($ld_o['n_v']) ?></div>
-                                                                    <div class="text-end pe-0" style="width: 80px;">D. <?= number_format($ld_o['d']) ?></div>
-                                                                    <div class="text-end" style="width: 100px;">
+                                                                <div class="border-bottom mx-0">
+                                                                    <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
+                                                                    <div class="float-end">
                                                                         <?php if ($disk > 0) { ?>
                                                                             <del>Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del>
                                                                         <?php } ?>
                                                                         Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
-                                                                    </div>
-                                                                    <div class="col-auto p-0">
                                                                         <b><span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
+                                                                        <?php if ($harga_d > 0 && in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
+                                                                            <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
+                                                                        <?php } ?>
                                                                     </div>
-                                                                    <?php if ($harga_d > 0 && in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
-                                                                        <div class="col-auto p-0"><b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b></div>
-                                                                    <?php } ?>
                                                                 </div>
+                                                                <br>
                                                             <?php }
                                                             ?>
-
                                                         </small>
                                                     </td>
                                                 </tr>
@@ -251,7 +248,7 @@ if ($id_pelanggan_jenis == 1) {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"><b><span class="produk_harga"></span></b></h5>
+                <h5 class="modal-title" id="exampleModalLabel"><small><span class="produk_harga"></span></small></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= $this->BASE_URL ?>Buka_Order/add_price/<?= $id_pelanggan_jenis ?>" method="POST">
