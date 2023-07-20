@@ -61,27 +61,28 @@
                             <?php }
                             ?>
                             <tr>
-                                <td>
-                                    <table>
-                                        <tr>
-                                            <td colspan="10"><span class="text-nowrap text-success"><small><?= ucwords($produk) ?></small></span><br>
-                                        <tr>
-                                        <tr>
-                                            <?php
-                                            foreach ($detail_arr as $da) { ?>
-                                                <td class="pe-1" nowrap>
-                                                    <?= "<small>" . $da['group_name'] . "</small> <br>" . strtoupper($da['detail_name']) ?>
-                                                </td>
-                                            <?php } ?>
-                                        </tr>
-                                    </table>
+                                <td class="text-success">
+                                    <b><small><?= ucwords($produk) ?></small></b>
+                                </td>
+                                <td class="text-end text-purple"><b><?= number_format($do['jumlah']) ?></b>pcs</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
                                     <div class="row">
-                                        <div class="col-auto">
+                                        <?php
+                                        foreach ($detail_arr as $da) { ?>
+                                            <div class="col-auto pe-1" style="line-height: 100%;">
+                                                <?= "<small><u>" . $da['group_name'] . "</u></small><br>" . strtoupper($da['detail_name']) ?>
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-auto" style="line-height: 100%;">
                                             <span>
                                                 <small>Catatan Utama<br><span class="text-danger"><?= $do['note'] ?></span></small>
                                             </span>
                                         </div>
-                                        <div class="col-auto">
+                                        <div class="col-auto" style="line-height: 100%;">
                                             <span>
                                                 <small>Catatan Produksi<br>
                                                     <span class="text-primary">
@@ -97,7 +98,33 @@
                                             </span>
                                         </div>
                                     </div>
-                                <td class="text-end"><?= number_format($do['jumlah']) ?>pcs</td>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-nowrap"><small>
+                                        <div class="row">
+                                            <?php
+                                            foreach ($divisi as $key => $dvs) {
+                                                if ($divisi_arr[$key]['status'] == 1) {
+                                                    $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
+                                                    echo '<div class="col text-center"><i class="fa-solid fa-check text-success"></i> ' . $dvs . " (" . $karyawan . ")</div>";
+                                                } else {
+                                                    echo '<div class="col text-center"><i class="fa-regular fa-circle"></i> ' . $dvs . "</div>";
+                                                }
+
+                                                if ($divisi_arr[$key]['cm'] == 1) {
+                                                    if ($divisi_arr[$key]['cm_status'] == 1) {
+                                                        $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_cm']);
+                                                        echo '<div class="col text-center"><i class="fa-solid text-success fa-check-double"></i> ' . $dvs . " (" . $karyawan . ")</div>";
+                                                    } else {
+                                                        echo '<div class="col text-center"><i class="fa-regular fa-circle"></i> ' . $dvs . '</div>';
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                        </div>
+                                    </small>
+                                </td>
                             </tr>
                         <?php }
                         ?>
