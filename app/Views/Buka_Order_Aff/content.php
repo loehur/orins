@@ -4,15 +4,15 @@
         <div class="card mt-2 shadow-none mb-1">
             <div class="card-body bg-warning-soft pb-0 pt-2">
                 <form action="<?= $this->BASE_URL ?>Buka_Order_Aff/proses/<?= $data['parse'] ?>/<?= $data['pelanggan_jenis'] ?>" method="POST">
-                    <div class="row pb-2">
-                        <div class="col">
+                    <div class="row">
+                        <div class="col px-1">
                             <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pelanggan_nama']) ?>" readonly>
                             <input class="form-control" type="hidden" name="pelanggan" value="<?= $data['pelanggan'] ?>" readonly>
                         </div>
-                        <div class="col">
+                        <div class="col ps-0 pe-1">
                             <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pengirim']) ?>" readonly>
                         </div>
-                        <div class="col">
+                        <div class="col ps-0 pe-1">
                             <select class="tize" name="id_karyawan" required>
                                 <option value="">CS</option>
                                 <?php foreach ($data['karyawan'] as $k) {
