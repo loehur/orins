@@ -1,8 +1,8 @@
 <form class="aff_form" action="<?= $this->BASE_URL ?>Buka_Order/add/<?= $data['id_toko'] ?>" method="POST">
-    <div class="modal-body">
+    <div class="modal-body px-2 bg-info-soft">
         <label class="label-form">Produk <span class="text-success"><b><?= strtoupper($data['toko']) ?></b></span></label>
-        <div class="mb-3 border border-success rounded">
-            <select class="border tize loadDetail" name="id_produk" required>
+        <div class="mb-3">
+            <select class="tize loadDetail" name="id_produk" required>
                 <option></option>
                 <?php foreach ($this->dProdukAll as $dp) {
                     if ($data['id_toko'] == $dp['id_toko']) { ?>
