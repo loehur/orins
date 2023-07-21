@@ -142,8 +142,7 @@ class SPK extends Controller
          $data_[$d] = $this->model('M_DB_1')->get_where_row('order_data', $where);
       }
 
-      $whereToko = "id_toko = " . $this->userData['id_toko'];
-      $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $whereToko);
+      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
 
       $data['order'] = $data_;
       $this->view($this->page . "/update", $data);
