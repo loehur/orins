@@ -71,6 +71,11 @@
                         $today = date("Y-m-d");
                         $cancel = $do['cancel'];
                         $id_ambil = $do['id_ambil'];
+                        $id_user_afiliasi = $do['id_user_afiliasi'];
+
+                        if ($do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
+                            break;
+                        }
 
                         $jumlah = $do['harga'] * $do['jumlah'];
                         if ($cancel == 0) {
@@ -115,7 +120,7 @@
                                 $lunas = true;
                             }
                                 ?>
-                                <?php if ($do['id_afiliasi'] == 0) { ?>
+                                <?php if ($do['id_afiliasi'] == 0 || $this->userData['id_toko'] == $do['id_toko']) { ?>
                                     <td class="text-end pe-1">
                                         <small>
                                             Ambil
@@ -133,13 +138,16 @@
                                             <?php } ?>
                                         </small>
                                     </td>
-                                <?php } else { ?>
-                                    <td class="text-end pe-1 text-success">
-                                        <small>
-                                            Afiliated Order
-                                        </small>
-                                    </td>
-                                <?php } ?>
+                                    <?php } else {
+                                    if ($id_user_afiliasi <> 0) {
+                                    ?>
+                                        <td class="text-end pe-1 text-success">
+                                            <small>
+                                                Afiliated Order
+                                            </small>
+                                        </td>
+                                <?php }
+                                } ?>
                                     </tr>
                                 </table>
                             </div>

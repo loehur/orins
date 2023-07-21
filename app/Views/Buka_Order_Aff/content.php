@@ -1,46 +1,20 @@
-<style>
-    .selectize-control {
-        padding: 0;
-    }
-
-    .selectize-input {
-        border: none;
-    }
-
-    .selectize-input::after {
-        visibility: hidden;
-    }
-</style>
-
 <main>
-    <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-4">
-        <div class="container-fluid px-4">
-            <div class="page-header-content pt-4">
-                <div class="row align-items-center justify-content-between">
-                    <div class="col-auto mt-4"></div>
-                </div>
-            </div>
-        </div>
-    </header>
     <!-- Main page content-->
-    <div class="container-fluid px-4">
-        <div class="card mt-n10">
-            <div class="card-body">
+    <div class="container-fluid px-2">
+        <div class="card mt-2 shadow-none mb-1">
+            <div class="card-body bg-warning-soft pb-0 pt-2">
                 <form action="<?= $this->BASE_URL ?>Buka_Order_Aff/proses/<?= $data['parse'] ?>/<?= $data['pelanggan_jenis'] ?>" method="POST">
                     <div class="row pb-2">
                         <div class="col">
-                            <label class="form-label">Pelanggan</label>
                             <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pelanggan_nama']) ?>" readonly>
                             <input class="form-control" type="hidden" name="pelanggan" value="<?= $data['pelanggan'] ?>" readonly>
                         </div>
                         <div class="col">
-                            <label class="form-label">CS Afiliasi</label>
                             <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pengirim']) ?>" readonly>
                         </div>
                         <div class="col">
-                            <label class="form-label">Customer Service</label>
-                            <select class="border tize" name="id_karyawan" required>
-                                <option></option>
+                            <select class="tize" name="id_karyawan" required>
+                                <option value="">CS</option>
                                 <?php foreach ($data['karyawan'] as $k) {
                                     if ($k['id_toko'] == $this->userData['id_toko']) { ?>
                                         ?>
@@ -49,23 +23,15 @@
                                 } ?>
                             </select>
                         </div>
-                        <div class="col mt-auto">
-                            <button type="submit" class="btn btn-primary">Proses - <span class="ms-1"><b><?= $data['count'] ?> Item</b></span></button>
+                        <div class="col-auto mt-auto p-0 pb-2 pe-1">
+                            <button type="submit" class="btn btn-warning w-100">Proses</button>
                         </div>
                     </div>
                 </form>
             </div>
+        </div>
+        <div class="card shadow-sm mt-1">
             <table class="table table-sm mb-0">
-                <thead>
-                    <tr>
-                        <td class="text-purple text-end">No</td>
-                        <td class="text-purple">Produk</td>
-                        <td class="text-purple text-end">Harga</td>
-                        <td class="text-purple text-end">Jumlah</td>
-                        <td class="text-purple text-end">Total</td>
-                        <td class="text-purple"></td>
-                    </tr>
-                </thead>
                 <tbody>
                     <?php
                     $no = 0;
@@ -90,99 +56,116 @@
                         $harga_ok = true;
                         $btnSetHarga = 'Uninitialized';
 
-                    ?>
+                        foreach ($listDetail as $kl => $ld_o) {
+                            $disk = $ld_o['d'];
+                            $akum_diskon += $disk ?>
+                        <?php }
+
+                        ?>
                         <tr>
-                            <td class="text-end"><?= $no  ?></td>
                             <td>
-                                <table>
-                                    <tr>
-                                        <td colspan="10"><span class="text-nowrap text-success"><b><small><?= ucwords($produk) ?></small></small></span><br>
-                                    <tr>
-                                    <tr>
-                                        <?php
-                                        foreach ($detail_arr as $da) { ?>
-                                            <td class="pe-1" nowrap>
-                                                <?= "<small>" . $da['group_name'] . "</small> <br>" . strtoupper($da['detail_name']) ?>
-                                            </td>
-                                        <?php } ?>
+                                <table class="table table-sm w-100 mb-0">
+                                    <tr class="bg-warning-soft">
+                                        <td class="ps-2"><span class="text-nowrap text-dark"><b><small><?= ucwords($produk) ?></small></b></span></td>
+                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                            <small>
+                                                <?php
+                                                if ($harga_ok == false) {
+                                                    echo $btnSetHarga;
+                                                } else {
+                                                    if ($akum_diskon > 0) {
+                                                        echo "<del>" . number_format($do['harga']) . "</del> <small>" . number_format($do['harga'] - $akum_diskon);
+                                                    } else {
+                                                        echo number_format($do['harga']);
+                                                    }
+                                                } ?>
+                                            </small>
+                                        </td>
+                                        <td class="text-end" style="width: 1px;white-space: nowrap;"><span class="edit_n" data-id="<?= $do['id_order_data'] ?>">
+                                                <small>
+                                                    <?= number_format($do['jumlah']) ?>
+                                                </small>
+                                        </td>
+                                        <td class="text-end pe-1" style="width: 1px;white-space: nowrap;">
+                                            <b>
+                                                <small>
+                                                    <?php
+                                                    if ($harga_ok == false) {
+                                                        echo $btnSetHarga;
+                                                    } else {
+                                                        if ($akum_diskon > 0) {
+                                                            echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del> " . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                                        } else {
+                                                            echo number_format($do['harga'] * $do['jumlah']);
+                                                        }
+                                                    } ?>
+                                                </small>
+                                            </b>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="10">
-                                            <small>
-                                                <table class="border">
-                                                    <?php
-                                                    foreach ($listDetail as $kl => $ld_o) {
-                                                        $harga_d = $data['harga'][$keyD][$ld_o['c_h']];
-                                                        $disk = $ld_o['d'];
-                                                        $akum_diskon += $disk ?>
-                                                        <tr>
-                                                            <td class="ps-2"><?= strtoupper($ld_o['n_v']) . " " ?></td>
-                                                            <td class="ps-2 text-end">Disc. <?= number_format($ld_o['d']) ?></td>
-                                                            <?php if ($disk > 0) { ?>
-                                                                <td class="ps-2 text-end"><del>Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del></td>
+                                        <td colspan="10" class="border-bottom-0">
+                                            <table class="table">
+                                                <tr>
+                                                    <td class="pe-1 border-bottom-0" nowrap>
+                                                        <div class="row">
+                                                            <?php
+                                                            foreach ($detail_arr as $da) { ?>
+                                                                <div class="col-auto" style="line-height: 80%;">
+                                                                    <small>
+                                                                        <small><u><?= $da['group_name'] ?></u></small><br> <?= strtoupper($da['detail_name']) ?>
+                                                                    </small>
+                                                                </div>
                                                             <?php } ?>
-                                                            <td class="ps-2 text-end">Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?></td>
-                                                            <td class="ps-2 pe-2">
-                                                                <?php if ($data['harga'][$keyD][$ld_o['c_h']] > 0) { ?>
-                                                                    <i class="fa-solid fa-circle-check text-success"></i>
-                                                                <?php } else { ?>
-                                                                    <i class="fa-regular fa-circle text-warning"></i>
-                                                                <?php } ?>
-                                                            </td>
-                                                        </tr>
-                                                    <?php }
-                                                    ?>
-                                                </table>
-                                            </small>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="10" valign="top" class="p-0 border border-top-0">
+                                                        <small>
+                                                            <?php
+                                                            foreach ($listDetail as $kl => $ld_o) {
+                                                                $harga_d = $data['harga'][$keyD][$ld_o['c_h']]; ?>
+                                                                <div class="border-bottom mx-0">
+                                                                    <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
+                                                                    <div class="float-end pe-1">
+                                                                        <?php if ($disk > 0) { ?>
+                                                                            <del>Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del>
+                                                                        <?php } ?>
+                                                                        Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                            <?php }
+                                                            ?>
+                                                        </small>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <div class="row">
+                                                <div class="col-auto">
+                                                    <span>
+                                                        <small>Catatan Utama</small><br><span class="text-danger"><?= $do['note'] ?></span>
+                                                    </span>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <span>
+                                                        <small>Catatan Produksi</small><br>
+                                                        <span class="text-primary">
+                                                            <?php
+                                                            foreach (unserialize($do['note_spk']) as $ks => $ns) {
+                                                                if (strlen($ns) > 0) {
+                                                                    echo "<b>" . $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) . "</b>: " . $ns . ", ";
+                                                                }
+                                                            }
+                                                            ?>
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 </table>
-                                <div class="row">
-                                    <div class="col-auto">
-                                        <span>
-                                            <small>Catatan Utama</small><br><span class="text-danger"><?= $do['note'] ?></span>
-                                        </span>
-                                    </div>
-                                    <div class="col-auto">
-                                        <span>
-                                            <small>Catatan Produksi</small><br>
-                                            <span class="text-primary">
-                                                <?php
-                                                foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                    if (strlen($ns) > 0) {
-                                                        echo "<b>" . $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) . "</b>: " . $ns . ", ";
-                                                    }
-                                                }
-                                                ?>
-                                            </span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-end">
-                                <?php
-                                if ($harga_ok == false) {
-                                    echo $btnSetHarga;
-                                } else {
-                                    if ($akum_diskon > 0) {
-                                        echo "<del>" . number_format($do['harga']) . "</del><br><small>Disc. Rp" . number_format($akum_diskon) . "</small><br>" . number_format($do['harga'] - $akum_diskon);
-                                    } else {
-                                        echo number_format($do['harga']);
-                                    }
-                                } ?>
-                            </td>
-                            <td class="text-end"><span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= number_format($do['jumlah']) ?></span></td>
-                            <td class="text-end">
-                                <?php
-                                if ($harga_ok == false) {
-                                    echo $btnSetHarga;
-                                } else {
-                                    if ($akum_diskon > 0) {
-                                        echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del><br><small>Disc. Rp" . number_format($akum_diskon * $do['jumlah']) . "</small><br>" . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
-                                    } else {
-                                        echo number_format($do['harga'] * $do['jumlah']);
-                                    }
-                                } ?>
                             </td>
                         </tr>
                     <?php }

@@ -51,7 +51,7 @@ if ($id_pelanggan_jenis == 1) {
                             </select>
                         </div>
                         <div class="col-auto mt-auto p-0 pb-2 pe-1">
-                            <button type="submit" class="btn btn-warning w-100">Proses </button>
+                            <button type="submit" class="btn btn-warning w-100">Proses</button>
                         </div>
                     </div>
                 </form>
