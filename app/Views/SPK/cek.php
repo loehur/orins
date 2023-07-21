@@ -1,6 +1,6 @@
 <div class="row p-1">
     <?php foreach ($data['order'] as $ref => $data['order_']) { ?>
-        <div class="col">
+        <div class="col-md-12">
             <small>
                 <table class="table table-sm mb-0 mt-1 border">
                     <tbody>
@@ -125,6 +125,9 @@
                                         </div>
                                     </small>
                                 </td>
+                            </tr>
+                            <tr>
+                                <td colspan="10" class="bg-light"></td>
                             </tr>
                         <?php }
                         ?>
