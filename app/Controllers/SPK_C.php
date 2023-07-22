@@ -42,7 +42,7 @@ class SPK_C extends Controller
    {
       $data['parse'] = $parse;
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
+      $data['karyawan'] = $this->dKaryawan;
 
       $dvs = '"D-' . $parse . '"';
 

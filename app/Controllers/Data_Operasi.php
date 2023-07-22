@@ -47,7 +47,7 @@ class Data_Operasi extends Controller
       $data['order'] = [];
 
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
+      $data['karyawan'] = $this->dKaryawan;
 
       if ($parse_2 < 2023) {
          $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0 ORDER BY id_order_data DESC";
@@ -116,11 +116,13 @@ class Data_Operasi extends Controller
       if (isset($_POST['ref_multi'])) {
          $ref_multi = $_POST['ref_multi'];
       } else {
+         echo "Tidak pembayaran yang di pilih";
          exit();
       }
 
       $dibayar = $_POST['dibayar_multi'];
       if (count($ref_multi) == 0) {
+         echo "Tidak pembayaran yang di pilih";
          exit();
       }
 

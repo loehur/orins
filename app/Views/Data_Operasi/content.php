@@ -402,7 +402,9 @@
                                                     <option value="2">Non Tunai</option>
                                                 </select>
                                             </td>
-                                            <td></td>
+                                            <td id="clearCheck" valign="bottom" class="text-end text-info" style="cursor: pointer;">
+                                                Clear <i class="fa-regular fa-square"></i>
+                                            </td>
                                         </tr>
                                         <tr id="noteBayar_multi" class="border-top">
                                             <td class="pe-2 text-danger" nowrap>Catatan Pembayaran</td>
@@ -801,8 +803,7 @@
             totalBill = parseInt(totalBill) - parseInt(jumlah);
         }
 
-        $("span#totalBill")
-            .html(totalBill.toLocaleString('en-US')).attr("data-total", totalBill);
+        $("span#totalBill").html(totalBill.toLocaleString('en-US')).attr("data-total", totalBill);
 
         bayarBill();
     })
@@ -825,4 +826,11 @@
     $("input#bayarBill").on("keyup change", function() {
         bayarBill();
     });
+
+    $("td#clearCheck").click(function() {
+        $("input.cek_multi").prop('checked', false);
+        totalBill = 0;
+        $("span#totalBill").html(totalBill.toLocaleString('en-US')).attr("data-total", totalBill);
+        bayarBill();
+    })
 </script>

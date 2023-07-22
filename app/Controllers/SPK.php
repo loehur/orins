@@ -166,8 +166,7 @@ class SPK extends Controller
 
       $data['order'] = $data_;
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
-
+      $data['karyawan'] = $this->dKaryawan;
       $data['parse'] = $parse;
       $this->view($this->page . "/cek", $data);
    }

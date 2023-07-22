@@ -86,8 +86,8 @@ class Controller extends Public_Variables
         $_SESSION['data_user'] = $this->model('M_DB_1')->get('user', $whereToko);
         $_SESSION['data_pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $whereToko);
         $_SESSION['data_pelanggan_all'] = $this->model('M_DB_1')->get('pelanggan');
-        $_SESSION['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereToko);
-        $_SESSION['karyawan_all'] = $this->model('M_DB_1')->get('karyawan');
+        $_SESSION['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereToko . " AND en = 1");
+        $_SESSION['karyawan_all'] = $this->model('M_DB_1')->get_where('karyawan', "en = 1");
     }
 
     public function logout()

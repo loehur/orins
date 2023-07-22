@@ -6,7 +6,7 @@
                 <div class="col col-t">
                     <small>
                         ID. <?= $a['id_karyawan'] ?>
-                        <a class="delete" data-id="<?= $a['id_karyawan'] ?>" data-nama="<?= $a['nama'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a>
+                        <a class="restore" data-id="<?= $a['id_karyawan'] ?>" data-nama="<?= $a['nama'] ?>" href="#"><i class="fa-solid fa-recycle text-success"></i></a>
                     </small>
                     <br>
                     <?= $a['nama'] ?>
@@ -58,12 +58,12 @@
         });
     });
 
-    $("a.delete").click(function() {
+    $("a.restore").click(function() {
         var nama = $(this).attr("data-nama");
-        if (confirm("Yakin Menonaktifkan " + nama + "?")) {
+        if (confirm("Yakin Mengaktifkan kembali " + nama + "?")) {
             var id = $(this).attr("data-id");
             $.ajax({
-                url: "<?= $this->BASE_URL ?>Karyawan/delete",
+                url: "<?= $this->BASE_URL ?>Karyawan_N/restore",
                 data: {
                     id: id
                 },

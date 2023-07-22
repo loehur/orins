@@ -57,6 +57,10 @@
 		main {
 			margin-bottom: 20px;
 		}
+
+		.col-t {
+			line-height: 100%;
+		}
 	</style>
 </head>
 
@@ -244,15 +248,15 @@ $aff_c = count($aff_);
 									<a class="nav-link <?= ($t == "User Produksi") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>User/index/4">Produksi</a>
 								</nav>
 							</div>
-							<a class="nav-link <?= (str_contains($t, "Karyawan")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlows" aria-expanded="false" aria-controls="collapseFlows">
+							<a class="nav-link <?= (str_contains($t, "Karyawan")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseKar" aria-expanded="false" aria-controls="collapseFlows">
 								<div class="nav-link-icon"><i data-feather="user"></i></div>
 								Karyawan
 								<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 							</a>
-							<div class="collapse <?= (str_contains($t, "Karyawan")) ? 'show' : '' ?>" id="collapseFlows" data-bs-parent="#accordionSidenav">
+							<div class="collapse <?= (str_contains($t, "Karyawan")) ? 'show' : '' ?>" id="collapseKar" data-bs-parent="#accordionSidenav">
 								<nav class="sidenav-menu-nested nav">
 									<a class="nav-link <?= ($t == "Karyawan Aktif") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Karyawan">Aktif</a>
-									<a class="nav-link" href="#">Tidak Aktif</a>
+									<a class="nav-link <?= ($t == "Karyawan Non Aktif") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Karyawan_N">Non Aktif</a>
 								</nav>
 							</div>
 							<a class="nav-link <?= (str_contains($t, "Set Produksi")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlows2" aria-expanded="false" aria-controls="collapseFlows">
