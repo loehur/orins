@@ -73,7 +73,7 @@
                         $id_ambil = $do['id_ambil'];
                         $id_user_afiliasi = $do['id_user_afiliasi'];
 
-                        if ($do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
+                        if ($this->userData['id_toko'] <> $do['id_toko'] && $do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
                             break;
                         }
 
