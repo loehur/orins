@@ -110,6 +110,13 @@ class Data_Order extends Controller
          $st_mutasi = 0;
       }
 
+      if ($method == 3) {
+         if (strlen($note) == 0) {
+            $note = "Afiliasi";
+         }
+         $st_mutasi = 0;
+      }
+
       $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $method . " AND status_mutasi = 0";
       $dataCount = $this->model('M_DB_1')->count_where('kas', $whereCount);
 

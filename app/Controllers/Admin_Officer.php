@@ -36,7 +36,7 @@ class Admin_Officer extends Controller
    public function content()
    {
 
-      $where = "user_tipe = 5";
+      $where = "user_tipe = 5 OR user_tipe = 6";
       $data = $this->model('M_DB_1')->get_where('user', $where);
       $this->view($this->v_content, $data);
    }

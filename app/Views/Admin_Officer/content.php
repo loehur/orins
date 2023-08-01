@@ -24,6 +24,7 @@
                     Username : <?= $a['user'] ?>
                     <button type="button" class="float-end btn btn-sm btn-outline-primary">Reset Password</button> <br>
                     <small>Default Password : 123</small>
+                    <hr>
                 <?php }
                 ?>
             </div>
@@ -53,6 +54,7 @@
                         <select class="form-select" name="office" required>
                             <option></option>
                             <option value="5">Finance</option>
+                            <option value="6">Audit</option>
                         </select>
                     </div>
                 </div>

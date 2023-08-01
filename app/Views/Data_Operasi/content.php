@@ -407,7 +407,7 @@
                                             </td>
                                         </tr>
                                         <tr id="noteBayar_multi" class="border-top">
-                                            <td class="pe-2 text-danger" nowrap>Catatan Pembayaran</td>
+                                            <td class="pe-2 text-danger" nowrap>Catatan Transaksi</td>
                                             <td colspan="2" class="pb-2 pt-2">
                                                 <input type="text" name="note_multi" class="form-control border border-danger">
                                             </td>
@@ -619,6 +619,7 @@
                                         <option value="1">Tunai</option>
                                     <?php } ?>
                                     <option value="2">Non Tunai</option>
+                                    <option value="3">Afiliasi</option>
                                 </select>
                             </div>
                         </div>
@@ -636,7 +637,7 @@
                         </div>
                         <div class="row mb-2" id="noteBayar">
                             <div class="col">
-                                <label class="form-label"><span class="text-danger">Catatan Pemabayaran</span></label>
+                                <label class="form-label"><span class="text-danger">Catatan Transaksi</span></label>
                                 <input type="text" name="note" class="form-control border border-danger">
                             </div>
                         </div>
@@ -772,7 +773,7 @@
     });
 
     $("select.metodeBayar").on("keyup change", function() {
-        if ($(this).val() == 2) {
+        if ($(this).val() == 2 || $(this).val() == 3) {
             $("div#noteBayar").show();
         } else {
             $("div#noteBayar").hide();
