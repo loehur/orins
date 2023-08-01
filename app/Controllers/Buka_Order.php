@@ -156,7 +156,7 @@ class Buka_Order extends Controller
             "detail_name" => $detail_item,
          );
 
-         $detail_code .= "-" .  $get_detail_item[$d]['id_varian'] . "&" .  $get_detail_item[$d]['id_varian'];
+         $detail_code .= "-" .  $get_detail_item[$d]['id'] . "&" .  $get_detail_item[$d]['id_varian'];
       }
 
       foreach ($listDetail as $key_l => $ldt) {
