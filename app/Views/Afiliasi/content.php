@@ -214,6 +214,6 @@
 
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
-        $("div#cekOrder").load('<?= $this->BASE_URL ?>Non_Tunai/cekOrder/' + ref);
+        $("div#cekOrder").load('<?= $this->BASE_URL . $data['_c'] ?>/cekOrder/' + ref);
     });
 </script>
