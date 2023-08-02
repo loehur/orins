@@ -143,7 +143,7 @@
                                                         }
                                                     }
 
-                                                    foreach ($data['karyawan'] as $dp) {
+                                                    foreach ($this->dKaryawanAll as $dp) {
                                                         if ($dp['id_karyawan'] == $do['id_penerima']) {
                                                             $cs = $dp['nama'];
                                                         }
@@ -177,7 +177,7 @@
                                                         <table class="border-bottom">
                                                             <?php
                                                             if ($cancel <> 0) {
-                                                                $canceler = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $id_cancel); ?>
+                                                                $canceler = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $id_cancel); ?>
                                                                 <tr>
                                                                     <td><span class="badge text-dark border border-dark"><?= $canceler ?> : <?= $do['cancel_reason'] ?></span></td>
                                                                 </tr>
@@ -248,7 +248,7 @@
                                                             <?php
                                                             foreach ($divisi as $key => $dvs) {
                                                                 if ($divisi_arr[$key]['status'] == 1) {
-                                                                    $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
+                                                                    $karyawan = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
                                                                     echo '<i class="fa-solid fa-check text-success"></i> ' . $dvs . " (" . $karyawan . ")<br>";
                                                                 } else {
                                                                     echo '<i class="fa-regular fa-circle"></i> ' . $dvs . "<br>";
@@ -256,7 +256,7 @@
 
                                                                 if ($divisi_arr[$key]['cm'] == 1) {
                                                                     if ($divisi_arr[$key]['cm_status'] == 1) {
-                                                                        $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_cm']);
+                                                                        $karyawan = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $divisi_arr[$key]['user_cm']);
                                                                         echo '<i class="fa-solid text-success fa-check-double"></i> ' . $dvs . " (" . $karyawan . ")<br>";
                                                                     } else {
                                                                         echo '<i class="fa-regular fa-circle"></i> ' . $dvs . '<br>';
@@ -276,7 +276,7 @@
                                                             <?php }
                                                             } else {
                                                                 if ($cancel == 0) {
-                                                                    $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $id_ambil);
+                                                                    $karyawan = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $id_ambil);
                                                                     echo '<span class="text-purple"><i class="fa-solid fa-check"></i> Ambil (' . $karyawan . ")</span>";
                                                                 }
                                                             } ?>

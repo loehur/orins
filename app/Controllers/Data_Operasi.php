@@ -47,7 +47,6 @@ class Data_Operasi extends Controller
       $data['order'] = [];
 
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-      $data['karyawan'] = $this->dKaryawan;
 
       if ($parse_2 < 2023) {
          $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0 ORDER BY id_order_data DESC";
