@@ -42,21 +42,16 @@ class Buka_Order extends Controller
    public function content($parse = "")
    {
       $data['id_jenis_pelanggan'] = $parse;
-
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
       $data_harga = $this->model('M_DB_1')->get('produk_harga');
       $data['count'] = count($data['order']);
 
       $getHarga = [];
-      $total = 0;
 
       foreach ($data['order'] as $key => $do) {
          $detail_harga = unserialize($do['detail_harga']);
          $countDH[$key] = count($detail_harga);
-
-         $total_ = $do['harga'] * $do['jumlah'];
-
          foreach ($detail_harga as $dh_o) {
             $getHarga[$key][$dh_o['c_h']] = 0;
             foreach ($data_harga as $dh) {

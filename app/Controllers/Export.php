@@ -54,7 +54,9 @@ class Export extends Controller
       $where = "insertTime LIKE '%" . $month . "%'";
       $data = $this->model('M_DB_1')->get_where("order_data", $where);
 
-      $fields = array('ID', 'NO. REF', 'KODE BARANG', 'NAMA BARANG', 'TICKET_CREATED_DATE', 'DIVISION', 'OM_ID', 'TL_ID', 'STAFF_REMARK', 'REPAY_AMOUNT', 'TRANSACTION_DATE', 'DELAY_DATE', 'DUE_DATE', 'DELAY_DATE_RESOLVE', 'CS_REMARK', 'REAL_REPAY_AMOUNT', 'CS_ID', 'RESOLVE_STATUS');
+      $fields = array('ID', 'NO. REF', 'KODE BARANG', 'NAMA 
+      
+      BARANG', 'HARGA', 'JUMLAH', 'TOTAL', 'TANGGAL', 'CS', 'CS_AFILIASI', 'PELANGGAN', 'DELAY_DATE', 'DUE_DATE', 'DELAY_DATE_RESOLVE', 'CS_REMARK', 'REAL_REPAY_AMOUNT', 'CS_ID', 'RESOLVE_STATUS');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          $lineData = array($a['id_cs_problem'], $a['emp_id'], $a['complain_date'], "'" . $a['loan_id'], $a['ticket_create_date'], $a['division'], $a['om'], $a['tl'], $a['remark'], $a['repay_amount'], $a['transaction_date'], $a['delay_date'], $a['due_date'], $a['delay_date_resolved'], $a['cs_remark'], $a['repay_amount_cs'], $a['cs_id'], $a['resolve']);

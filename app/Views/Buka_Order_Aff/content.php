@@ -66,7 +66,10 @@
                             <td>
                                 <table class="table table-sm w-100 mb-0">
                                     <tr class="bg-warning-soft">
-                                        <td class="ps-2"><span class="text-nowrap text-dark"><b><small><?= ucwords($produk) ?></small></b></span></td>
+                                        <td class="ps-2">
+                                            <span class="text-nowrap text-dark"><b><small><?= ucwords($produk) ?></small></b></span>
+                                            <small><?= $this->model('Arr')->get($this->dUser, "id_user", "nama", $do['id_user']) ?></small>
+                                        </td>
                                         <td class="text-end" style="width: 1px;white-space: nowrap;">
                                             <small>
                                                 <?php

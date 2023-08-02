@@ -36,11 +36,12 @@ class Buka_Order_Aff extends Controller
 
    public function content($parse = "")
    {
-      $where = "ref = '" . $parse . "' AND cancel = 0 AND id_user_afiliasi = 0";
+      $where = "ref = '" . $parse . "' AND cancel = 0 AND id_penerima <> 0 AND id_user_afiliasi = 0 AND id_afiliasi = " . $this->userData['id_toko'];
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
       $data_harga = $this->model('M_DB_1')->get('produk_harga');
-
       $data['count'] = count($data['order']);
+
+      $getHarga = [];
 
       foreach ($data['order'] as $key => $do) {
          $detail_harga = unserialize($do['detail_harga']);
@@ -48,10 +49,12 @@ class Buka_Order_Aff extends Controller
          foreach ($detail_harga as $dh_o) {
             $getHarga[$key][$dh_o['c_h']] = 0;
             foreach ($data_harga as $dh) {
-               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $do['id_pelanggan_jenis']] <> 0) {
-                  $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $do['id_pelanggan_jenis']];
-                  $countDH[$key] -= 1;
-                  break;
+               if (isset($dh['harga_' . $do['id_pelanggan_jenis']])) {
+                  if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $do['id_pelanggan_jenis']] <> 0) {
+                     $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $do['id_pelanggan_jenis']];
+                     $countDH[$key] -= 1;
+                     break;
+                  }
                }
             }
          }
