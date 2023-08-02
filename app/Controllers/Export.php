@@ -48,7 +48,7 @@ class Export extends Controller
       $data = $this->model('M_DB_1')->get_where("order_data", $where);
       $tanggal = date("Y-m-d");
 
-      $fields = array('ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'MAIN ORDER', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'AFILIASI', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE HARGA', 'KODE BARANG', 'MAIN ORDER', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'AFILIASI', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
@@ -80,11 +80,12 @@ class Export extends Controller
             $detail_harga = unserialize($a['detail_harga']);
             $harga = 0;
             foreach ($detail_harga as $dh) {
-               $cb =  $dh['c_b'];
+               $cb = $dh['c_b'];
+               $ch = $dh['c_h'];
                $nb = strtoupper($dh['n_v']);
                $harga = $dh['h'];
                $total = $harga * $jumlah;
-               $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+               $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $ch, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
                fputcsv($f, $lineData, $delimiter);
             }
          } else {
@@ -98,7 +99,7 @@ class Export extends Controller
             }
 
             $nb = rtrim($nb);
-            $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+            $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $cb, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
             fputcsv($f, $lineData, $delimiter);
          }
       }
