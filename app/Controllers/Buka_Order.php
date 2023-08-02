@@ -178,6 +178,9 @@ class Buka_Order extends Controller
                }
             }
 
+            $n_b = rtrim(preg_replace('/\s+/', ' ', $n_b));
+            $n_v = rtrim(preg_replace('/\s+/', ' ', $n_v));
+
             $detailHarga[$key_l] = array(
                "c_h" => $c_harga, //code harga
                "c_b" => $c_barang, // code_barang

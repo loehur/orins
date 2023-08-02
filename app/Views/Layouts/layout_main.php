@@ -301,7 +301,7 @@ $aff_c = count($aff_);
 							<div class="collapse <?= (str_contains($t, "Audit")) ? 'show' : '' ?>" id="collapseAudit" data-bs-parent="#accordionSidenav">
 								<nav class="sidenav-menu-nested nav">
 									<a class="nav-link <?= ($t == "Audit - Afiliasi") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Afiliasi">Transaksi Afiliasi</a>
-									<a class="nav-link <?= ($t == "Audit - Data Export") ? 'active' : '' ?>" href="#">Data Export</a>
+									<a class="nav-link <?= ($t == "Audit - Data Export") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Export">Data Export</a>
 								</nav>
 							</div>
 						<?php } ?>

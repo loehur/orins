@@ -1,31 +1,33 @@
 <main>
-    <div class="row me-1 mt-3" style="margin-left:0px;max-width:600px">
-        <div class="col pe-0">
-            <select class="border rounded tize" name="id_pelanggan" required>
-                <option></option>
-                <?php foreach ($this->dPelanggan as $p) { ?>
-                    <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?></option>
-                <?php } ?>
-            </select>
-        </div>
-        <?php if ($data['parse_2'] <> 0) { ?>
-            <div class="col pe-0" style="min-width: 90px; max-width: 100px">
-                <select class="border tize" name="y" required>
-                    <?php
-                    $yNow = date("Y");
-                    for ($x = 2023; $x <= $yNow; $x++) { ?>
-                        <option value="<?= $x ?>" <?= ($data['parse_2'] == $x ? "selected" : "") ?>><?= $x ?></option>
+    <?php if ($data['mode'] == 0) { ?>
+        <div class="row me-1 mt-3" style="margin-left:0px;max-width:600px">
+            <div class="col pe-0">
+                <select class="border rounded tize" name="id_pelanggan" required>
+                    <option></option>
+                    <?php foreach ($this->dPelanggan as $p) { ?>
+                        <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?></option>
                     <?php } ?>
                 </select>
             </div>
-        <?php } ?>
-        <div class="col pt-auto mt-auto pe-0">
-            <button type="submit" class="cek btn btn-light border">Cek</button>
+            <?php if ($data['parse_2'] <> 0) { ?>
+                <div class="col pe-0" style="min-width: 90px; max-width: 100px">
+                    <select class="border tize" name="y" required>
+                        <?php
+                        $yNow = date("Y");
+                        for ($x = 2023; $x <= $yNow; $x++) { ?>
+                            <option value="<?= $x ?>" <?= ($data['parse_2'] == $x ? "selected" : "") ?>><?= $x ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            <?php } ?>
+            <div class="col pt-auto mt-auto pe-0">
+                <button type="submit" class="cek btn btn-light border">Cek</button>
+            </div>
         </div>
-    </div>
+    <?php } ?>
 
     <!-- Main page content-->
-    <div class="row me-2 ps-4">
+    <div class="row mt-1 me-2 ps-4">
         <?php
         $arr_tuntas = [];
         $loadRekap = [];
@@ -118,11 +120,7 @@
                                                 $dateTime = substr($do['insertTime'], 0, 10);
                                                 $today = date("Y-m-d");
 
-                                                foreach ($this->dProdukAll as $dp) {
-                                                    if ($dp['id_produk'] == $id_produk) {
-                                                        $produk = $dp['produk'];
-                                                    }
-                                                }
+                                                $produk = strtoupper($do['produk']);
 
                                                 $divisi_arr = unserialize($do['spk_dvs']);
                                                 $divisi = [];

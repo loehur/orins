@@ -22,7 +22,7 @@ class Export extends Controller
 
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Audit - Afiliasi"
+         "title" => "Audit - Data Export"
       ]);
       $this->viewer();
    }
@@ -34,33 +34,73 @@ class Export extends Controller
 
    public function content($parse = "")
    {
-      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-      $data['_c'] = __CLASS__;
-      $where = "metode_mutasi = 3 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
-      $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
-
-      $where = "metode_mutasi = 3 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 20";
-      $data['kas_done'] = $this->model('M_DB_1')->get_where('kas', $where);
-      $this->view($this->v_content, $data);
+      $this->view($this->v_content);
    }
 
-   public function exportCSV()
+   public function export()
    {
       $month = $_POST['month'];
       $delimiter = ",";
-      $filename = $this->userData['id_toko'] . "_SALES_" . $month . ".csv";
+      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "_SALES_" . $month . ".csv";
       $f = fopen('php://memory', 'w');
 
-      $where = "insertTime LIKE '%" . $month . "%'";
+      $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
       $data = $this->model('M_DB_1')->get_where("order_data", $where);
+      $tanggal = date("Y-m-d");
 
-      $fields = array('ID', 'NO. REF', 'KODE BARANG', 'NAMA 
-      
-      BARANG', 'HARGA', 'JUMLAH', 'TOTAL', 'TANGGAL', 'CS', 'CS_AFILIASI', 'PELANGGAN', 'DELAY_DATE', 'DUE_DATE', 'DELAY_DATE_RESOLVE', 'CS_REMARK', 'REAL_REPAY_AMOUNT', 'CS_ID', 'RESOLVE_STATUS');
+      $fields = array('ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'MAIN ORDER', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'AFILIASI', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
-         $lineData = array($a['id_cs_problem'], $a['emp_id'], $a['complain_date'], "'" . $a['loan_id'], $a['ticket_create_date'], $a['division'], $a['om'], $a['tl'], $a['remark'], $a['repay_amount'], $a['transaction_date'], $a['delay_date'], $a['due_date'], $a['delay_date_resolved'], $a['cs_remark'], $a['repay_amount_cs'], $a['cs_id'], $a['resolve']);
-         fputcsv($f, $lineData, $delimiter);
+         $jumlah = $a['jumlah'];
+         $cs = strtoupper($this->model('Arr')->get($this->dKaryawan, "id_karyawan", "nama", $a['id_penerima']));
+         $pelanggan = strtoupper($this->model('Arr')->get($this->dPelanggan, "id_pelanggan", "nama", $a['id_pelanggan']));
+         $afiliasi = 0;
+         $afiliasi = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_afiliasi']));
+         $note = strtoupper($a['cancel_reason']);
+         $tgl_order = substr($a['insertTime'], 0, 10);
+         $main_order = strtoupper($a['produk']);
+
+         if ($a['cancel'] == 0) {
+            if ($a['tuntas'] == 1) {
+               $order_status = "LUNAS";
+            } else {
+               if ($a['id_ambil'] == 0) {
+                  $order_status = "AKTIF";
+               }
+               if ($a['id_ambil'] <> 0) {
+                  $order_status = "PIUTANG";
+               }
+            }
+         } else {
+            $order_status = "BATAL";
+         }
+
+         $detail_harga = @unserialize($a['detail_harga']);
+         if ($detail_harga !== false) {
+            $detail_harga = unserialize($a['detail_harga']);
+            $harga = 0;
+            foreach ($detail_harga as $dh) {
+               $cb =  $dh['c_b'];
+               $nb = strtoupper($dh['n_v']);
+               $harga = $dh['h'];
+               $total = $harga * $jumlah;
+               $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+               fputcsv($f, $lineData, $delimiter);
+            }
+         } else {
+            $detail_harga = unserialize($a['produk_detail']);
+            $cb = $a['produk_code'];
+            $harga = $a['harga'];
+            $total = $harga * $jumlah;
+            $nb = "";
+            foreach ($detail_harga as $dh) {
+               $nb .= strtoupper($dh['detail_name']) . " ";
+            }
+
+            $nb = rtrim($nb);
+            $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+            fputcsv($f, $lineData, $delimiter);
+         }
       }
 
       fseek($f, 0);
