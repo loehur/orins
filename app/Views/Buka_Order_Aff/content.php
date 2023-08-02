@@ -6,11 +6,11 @@
                 <form action="<?= $this->BASE_URL ?>Buka_Order_Aff/proses/<?= $data['parse'] ?>/<?= $data['pelanggan_jenis'] ?>" method="POST">
                     <div class="row">
                         <div class="col px-1">
-                            <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pelanggan_nama']) ?>" readonly>
-                            <input class="form-control" type="hidden" name="pelanggan" value="<?= $data['pelanggan'] ?>" readonly>
+                            <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pelanggan_nama']) ?>" required readonly>
+                            <input class="form-control" type="hidden" name="pelanggan" value="<?= $data['pelanggan'] ?>" required readonly>
                         </div>
                         <div class="col ps-0 pe-1">
-                            <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pengirim']) ?>" readonly>
+                            <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pengirim']) ?>" required readonly>
                         </div>
                         <div class="col ps-0 pe-1">
                             <select class="tize" name="id_karyawan" required>
