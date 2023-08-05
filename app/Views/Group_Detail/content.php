@@ -114,7 +114,7 @@
                         <label class="form-label">Link Kelompok Detail</label>
                         <select class="border tize" name="id_detail_group" required>
                             <option></option>
-                            <?php foreach ($data as $d) { ?>
+                            <?php foreach ($data['main'] as $d) { ?>
                                 <option value="<?= $d['id_detail_group'] ?>"><?= $d['detail_group'] ?></option>
                             <?php } ?>
                         </select>
