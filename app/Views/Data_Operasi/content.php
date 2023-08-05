@@ -70,15 +70,15 @@
                                 switch ($dk['status_mutasi']) {
                                     case 0:
                                         $statusP = "<small class='text-warning'>(Dalam Pengecekan)</small> ";
-                                        $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
+                                        $showMutasi .= "<small>" . $dk['metode_mutasi'] . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
                                         break;
                                     case 1:
                                         $statusP = '<small><i class="fa-solid fa-check text-success"></i></small> ';
-                                        $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
+                                        $showMutasi .= "<small>" . $dk['metode_mutasi'] . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
                                         break;
                                     default:
                                         $statusP = '<small><i class="fa-solid fa-xmark text-danger"></i></small> ';
-                                        $showMutasi .= "<small>#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "</del><br>";
+                                        $showMutasi .= "<small>" . $dk['metode_mutasi'] . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "</del><br>";
                                         break;
                                 }
                             }
