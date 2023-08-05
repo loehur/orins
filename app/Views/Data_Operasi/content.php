@@ -88,6 +88,7 @@
                             if ($ds['ref_transaksi'] == $ref) {
                                 $xtraDiskon += $ds['jumlah'];
                                 $dibayar += $ds['jumlah'];
+                                $verify_payment += $ds['jumlah'];
                                 $showMutasi .= "<span class='text-success'><small>Xtra Diskon</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
                             }
                         }
