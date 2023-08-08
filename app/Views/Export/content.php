@@ -5,7 +5,7 @@
                 <form action="<?php $this->BASE_URL ?>Export/export" method="POST">
                     <div class="input-group">
                         <span class="input-group-text text-primary">Penjualan</span>
-                        <input name="month" type="month" min="2023-07" class="form-control" required>
+                        <input name="month" type="month" min="2023-07" placeholder="YYYY-MM" class="form-control" required>
                         <button type="submit" class="btn btn-primary">Export</button>
                     </div>
                 </form>
@@ -13,11 +13,11 @@
         </div>
         <div class="row">
             <div class="col mb-2" style="min-width:270px;max-width:350px">
-                <form action="#" method="POST">
+                <form action="<?php $this->BASE_URL ?>Export/export_p" method="POST">
                     <div class="input-group">
                         <span class="input-group-text text-success">Payment</span>
-                        <input name="month" type="month" min="2023-07" class="form-control" required>
-                        <button type="submit" class="btn btn-primary" disabled>(Sabar Belom ya)</button>
+                        <input name="month" type="month" min="2023-07" placeholder="YYYY-MM" class="form-control" required>
+                        <button type="submit" class="btn btn-success">Export</button>
                     </div>
                 </form>
             </div>

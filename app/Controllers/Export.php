@@ -41,7 +41,7 @@ class Export extends Controller
    {
       $month = $_POST['month'];
       $delimiter = ",";
-      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "_SALES_" . $month . ".csv";
+      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-SALES-" . $month . ".csv";
       $f = fopen('php://memory', 'w');
 
       $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
@@ -102,6 +102,60 @@ class Export extends Controller
             $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $cb, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
             fputcsv($f, $lineData, $delimiter);
          }
+      }
+
+      fseek($f, 0);
+      header('Content-Type: text/csv');
+      header('Content-Disposition: attachment; filename="' . $filename . '";');
+      fpassthru($f);
+   }
+   public function export_p()
+   {
+      $month = $_POST['month'];
+      $delimiter = ",";
+      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-PAYMENT-" . $month . ".csv";
+      $f = fopen('php://memory', 'w');
+
+      $where = "insertTime LIKE '" . $month . "%' AND id_toko = " . $this->userData['id_toko'];
+      $data = $this->model('M_DB_1')->get_where("kas", $where);
+      $tanggal = date("Y-m-d");
+
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'JUMLAH', 'METODE', 'NOTE', 'STATUS', 'EXPORTED');
+      fputcsv($f, $fields, $delimiter);
+      foreach ($data as $a) {
+         $jumlah = $a['jumlah'];
+         $pelanggan = "";
+         $pelanggan = strtoupper($this->model('Arr')->get($this->dPelanggan, "id_pelanggan", "nama", $a['id_client']));
+         $note = strtoupper($a['note']);
+         $tgl_kas = substr($a['insertTime'], 0, 10);
+         $method = "";
+         $st = "";
+         switch ($a['metode_mutasi']) {
+            case 1:
+               $method = "TUNAI";
+               break;
+            case 2:
+               $method = "NON TUNAI";
+               break;
+            case 3:
+               $method = "AFILIASI";
+               break;
+         }
+
+         switch ($a['status_mutasi']) {
+            case 0:
+               $st = "PENGECEKAN";
+               break;
+            case 1:
+               $st = "SUKSES";
+               break;
+            case 2:
+               $st = "GAGAL";
+               break;
+         }
+
+         $lineData = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, $jumlah, $method, $note, $st, $tanggal);
+         fputcsv($f, $lineData, $delimiter);
       }
 
       fseek($f, 0);
