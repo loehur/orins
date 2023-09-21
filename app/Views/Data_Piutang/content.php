@@ -56,7 +56,14 @@
                     }
 
                     $dateTime = substr($do['insertTime'], 0, 10);
-                    $last[$id_pelanggan] = $dateTime;
+
+                    if (isset($last[$id_pelanggan])) {
+                        if ($last[$id_pelanggan] > $dateTime) {
+                            $last[$id_pelanggan] = $dateTime;
+                        }
+                    } else {
+                        $last[$id_pelanggan] = $dateTime;
+                    }
 
                     $cancel = $do['cancel'];
                     $jumlah = $do['harga'] * $do['jumlah'];
@@ -88,7 +95,7 @@
                             $tgl1 = new DateTime($today);
                             $tgl2 = new DateTime($last[$k]);
                             $jarak = $tgl2->diff($tgl1);
-                            $hari =  $jarak->d;
+                            $hari =  $jarak->days;
 
                             if ($hari <= 2) {
                                 continue;
