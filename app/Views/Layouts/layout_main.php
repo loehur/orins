@@ -151,7 +151,7 @@ $aff_c = count($aff_);
 								</div>
 							<?php } ?>
 						<?php } ?>
-						<?php if (in_array($this->userData['user_tipe'], $this->pCS) && in_array($this->userData['user_tipe'], $this->pOffice)) { ?>
+						<?php if (in_array($this->userData['user_tipe'], $this->pCS) || in_array($this->userData['user_tipe'], $this->pOffice)) { ?>
 							<hr class="p-0 m-0">
 							<a class="nav-link <?= (str_contains($t, "Data Order")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#dataOrder" aria-expanded="true" aria-controls="dataOrder">
 								<div class="nav-link-icon"><i data-feather="file-text"></i></div>
