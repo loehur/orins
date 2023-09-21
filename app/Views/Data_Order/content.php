@@ -1,4 +1,9 @@
 <?php $modeView = $data['parse'] ?>
+<style>
+    tr:hover {
+        background-color: ghostwhite;
+    }
+</style>
 <main>
     <div class="position-fixed bg-white w-100" style="top:0; padding-top:65px;">
         <div class="p-2 rounded bg-light ms-2 mb-2 me-1 border" style="max-width: 500px;">
@@ -106,9 +111,9 @@
                     ?>
                             <div class="col px-1">
                                 <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
-                                    <tr>
+                                    <tr data-id="<?= $do['id_pelanggan'] ?>" class="cekPLG" style="cursor: pointer;">
                                         <td class="p-1">
-                                            <span class="text-danger"><?= substr($ref, -4) ?></span> <a href="<?= $this->BASE_URL ?>Data_Operasi/index/<?= $do['id_pelanggan'] ?>"><b><?= strtoupper($pelanggan) ?></a></b>
+                                            <span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary"><b><?= strtoupper($pelanggan) ?></b></span>
                                             <br>
                                             <small><?= $cs  ?> [<?= substr($do['insertTime'], 2, -3) ?>]</small>
                                         </td>
@@ -178,5 +183,10 @@
                 nodes[i].style.display = "table";
             }
         }
+    });
+
+    $("tr.cekPLG").click(function() {
+        var id = $(this).attr("data-id");
+        window.location.href = "<?= $this->BASE_URL ?>Data_Operasi/index/" + id;
     });
 </script>

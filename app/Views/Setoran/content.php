@@ -11,7 +11,7 @@
                             <th>Referensi</th>
                             <th>Tanggal</th>
                             <th class="text-end">Jumlah</th>
-                            <th>Actioan</th>
+                            <th>Action</th>
                         </tr>
                         <?php
                         $no = 0;

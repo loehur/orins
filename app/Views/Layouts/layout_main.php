@@ -74,7 +74,7 @@ $aff_c = count($aff_);
 ?>
 
 <body class="nav-fixed">
-	<nav class="topnav navbar navbar-expand shadow-sm border-bottom-1 justify-content-between justify-content-sm-start bg-light" id="sidenavAccordion">
+	<nav class="topnav navbar navbar-expand shadow-sm border-bottom-1 justify-content-between justify-content-sm-start bg-white" id="sidenavAccordion">
 		<button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0 pt-3" id="sidebarToggle"><i data-feather="menu"></i></button>
 		<a class="navbar-brand pe-3 ps-4 ps-lg-2" id="sync" href="<?= $this->BASE_URL ?>Log/sync"><?= strtoupper($this->userData['nama_toko']) ?></a>
 		<ul class="navbar-nav align-items-center ms-auto ms">
@@ -117,7 +117,7 @@ $aff_c = count($aff_);
 	</nav>
 	<div id="layoutSidenav">
 		<div id="layoutSidenav_nav">
-			<nav class="sidenav sidenav-light bg-light border">
+			<nav class="sidenav sidenav-light border-end" style="z-index: -100;">
 				<div class="sidenav-menu">
 					<div class="nav accordion" id="accordionSidenav">
 						<!-- Sidenav Menu Heading (Account)-->
@@ -150,7 +150,9 @@ $aff_c = count($aff_);
 									</nav>
 								</div>
 							<?php } ?>
-							<!-- Sidenav Accordion (Dashboard)-->
+						<?php } ?>
+						<?php if (in_array($this->userData['user_tipe'], $this->pCS) && in_array($this->userData['user_tipe'], $this->pOffice)) { ?>
+							<hr class="p-0 m-0">
 							<a class="nav-link <?= (str_contains($t, "Data Order")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#dataOrder" aria-expanded="true" aria-controls="dataOrder">
 								<div class="nav-link-icon"><i data-feather="file-text"></i></div>
 								Data Order
@@ -159,10 +161,14 @@ $aff_c = count($aff_);
 							<div class="collapse <?= (str_contains($t, "Data Order")) ? 'show' : '' ?>" id="dataOrder" data-bs-parent="#accordionSidenav">
 								<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
 									<a class="nav-link <?= ($t == "Data Order Proses") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Data_Order/index/0">Proses</a>
+									<a class="nav-link <?= ($t == "Data Order Piutang") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Data_Piutang">Piutang</a>
 									<a class="nav-link <?= ($t == "Data Order Customer") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Data_Operasi/index/0/0">Customer</a>
 									<a class="nav-link <?= ($t == "Data Order Tuntas") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Data_Operasi/index/0/1">Tuntas</a>
 								</nav>
 							</div>
+						<?php } ?>
+						<?php if (in_array($this->userData['user_tipe'], $this->pCS)) { ?>
+							<hr class="p-0 m-0">
 							<a class="nav-link <?= (str_contains($t, "Pelanggan")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlows" aria-expanded="false" aria-controls="collapseFlows">
 								<div class="nav-link-icon"><i data-feather="user"></i></div>
 								Pelanggan
@@ -188,6 +194,7 @@ $aff_c = count($aff_);
 						<?php } ?>
 
 						<?php if (in_array($this->userData['user_tipe'], $this->pProduksi)) { ?>
+							<hr class="p-0 m-0">
 							<a class="nav-link <?= (str_contains($t, "SPK_C")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#SPK_C" aria-expanded="true" aria-controls="SPK">
 								<div class="nav-link-icon"><i data-feather="file-text"></i></div>
 								SPK - Harian
@@ -325,7 +332,7 @@ $aff_c = count($aff_);
 					</div>
 				</div>
 				<!-- Sidenav Footer-->
-				<div class="sidenav-footer">
+				<div class="sidenav-footer bg-light">
 					<div class="sidenav-footer-content">
 						<div class="sidenav-footer-subtitle">Logged in as:</div>
 						<div class="sidenav-footer-title"><?= $this->userData['nama'] ?></div>

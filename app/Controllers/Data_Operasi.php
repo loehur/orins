@@ -9,7 +9,7 @@ class Data_Operasi extends Controller
       $this->session_cek();
       $this->data();
 
-      if (!in_array($this->userData['user_tipe'], $this->pCS)) {
+      if (!in_array($this->userData['user_tipe'], $this->pCS) && !in_array($this->userData['user_tipe'], $this->pOffice)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }

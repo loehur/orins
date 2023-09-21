@@ -159,12 +159,12 @@
                                                                         <span class="text-danger"><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b>
                                                                     </td>
                                                                     <?php if ($do['id_afiliasi'] == 0 || $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
-                                                                        <td class="text-end"><small><b><?= strtoupper($cs) ?></b></span></small></td>
+                                                                        <td class="text-end text-purple"><small><b><?= strtoupper($cs) ?></b></span></small></td>
                                                                     <?php } else { ?>
-                                                                        <td class="text-end"><small><b><?= strtoupper($cs) ?> - <?= strtoupper($cs_to) ?></b></span></small></td>
+                                                                        <td class="text-end text-purple"><small><b><?= strtoupper($cs) ?> - <?= strtoupper($cs_to) ?></b></span></small></td>
                                                                     <?php }
                                                                     ?>
-                                                                    <td class="text-end ps-1" style="width: 1%; white-space:nowrap">[<?= substr($do['insertTime'], 2, -3) ?>]</td>
+                                                                    <td class="text-end ps-1" style="width: 1%; white-space:nowrap"><small><?= substr($do['insertTime'], 2, -3) ?></small></td>
                                                                 </tr>
                                                             </table>
                                                         </td>
@@ -212,15 +212,19 @@
                                                                 </td>
                                                             <tr>
                                                             <tr>
-                                                                <?php
-                                                                foreach ($detail_arr as $da) { ?>
-                                                                    <td class="pe-1" nowrap>
-                                                                        <?= "<small>" . $da['group_name'] . "</small> <br>" . strtoupper($da['detail_name']) ?>
-                                                                    </td>
-                                                                <?php } ?>
+                                                                <td>
+                                                                    <div class="row">
+                                                                        <?php
+                                                                        foreach ($detail_arr as $da) { ?>
+                                                                            <div class="col-auto mb-1" style="line-height: 100%;">
+                                                                                <?= "<small>" . $da['group_name'] . "</small> <br>" . strtoupper($da['detail_name']) ?>
+                                                                            </div>
+                                                                        <?php } ?>
+                                                                    </div>
+                                                                </td>
                                                             </tr>
                                                         </table>
-                                                        <div class="row">
+                                                        <div class="row bor">
                                                             <div class="col-auto">
                                                                 <span>
                                                                     <small>Catatan Utama<br><span class="text-danger"><?= $do['note'] ?></span></small>
@@ -243,7 +247,7 @@
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td class="text-nowrap"><small>
+                                                    <td class="text-nowrap" style="line-height: 120%;"><small>
                                                             <?php
                                                             foreach ($divisi as $key => $dvs) {
                                                                 if ($divisi_arr[$key]['status'] == 1) {
