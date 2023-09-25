@@ -5,7 +5,7 @@
                 <form action="<?php $this->BASE_URL ?>Export/export" method="POST">
                     <div class="input-group">
                         <span class="input-group-text text-primary">Sales</span>
-                        <input name="month" type="month" min="2023-07" placeholder="YYYY-MM" class="form-control" required>
+                        <input name="month" type="month" min="2023-07" max="<?= date("Y-m") ?>" placeholder="YYYY-MM" class="form-control" required>
                         <button type="submit" class="btn btn-primary">Export</button>
                     </div>
                 </form>
@@ -16,7 +16,7 @@
                 <form action="<?php $this->BASE_URL ?>Export/export_p" method="POST">
                     <div class="input-group">
                         <span class="input-group-text text-success">Payment</span>
-                        <input name="month" type="month" min="2023-07" placeholder="YYYY-MM" class="form-control" required>
+                        <input name="month" type="month" min="2023-07" max="<?= date("Y-m") ?>" placeholder="YYYY-MM" class="form-control" required>
                         <button type="submit" class="btn btn-success">Export</button>
                     </div>
                 </form>

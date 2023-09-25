@@ -1,6 +1,6 @@
 <?php
 
-class Setoran extends Controller
+class Setoran_Riwayat extends Controller
 {
    public $page = __CLASS__;
 
@@ -22,7 +22,7 @@ class Setoran extends Controller
 
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Cashier - Setoran"
+         "title" => "Cashier - Setoran Riwayat"
       ]);
       $this->viewer();
    }
@@ -34,14 +34,19 @@ class Setoran extends Controller
 
    public function content($parse = "")
    {
+      if ($parse == "") {
+         $month = date("Y-m");
+      } else {
+         $month = $parse;
+      }
+
+      $data['m'] = $month;
+
       $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
       $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
-      $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
-
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND status_setoran = 0 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 30";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND updateTime LIKE '%" . $month . "%' AND status_mutasi = 1 AND metode_mutasi = 1 AND status_setoran <> 0 AND id_client <> 0 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC";
       $data['setor'] = $this->model('M_DB_1')->get_cols_where('kas', $cols, $where, 1);
 
       $this->view($this->v_content, $data);

@@ -67,14 +67,14 @@
         </div>
     <?php } ?>
     <div class="pt-2 pe-2 pb-0 ms-3 mt-3 me-3 bg-white">
-        <div class="row border-bottom">
+        <div class="row mb-1">
             <div class="col ms-2">
                 <span class="text-purple">Riwayat Setoran Kasir</span> <small>(Last 20)</small>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <table class="table table-sm table-borderless mb-2 ms-2">
+                <table class="table table-sm mb-2 ms-2">
                     <?php foreach ($data['setor'] as $set) {
                         $st_setor = "";
                         switch ($set['status_setoran']) {
@@ -91,7 +91,7 @@
                             <td><?= $set['count'] ?> Transaksi</td>
                             <td><?= $set['ref_setoran'] ?></td>
                             <td class="text-end">Rp<?= number_format($set['jumlah']) ?></td>
-                            <td><?= $st_setor ?></td>
+                            <td style="width: 1px; white-space: nowrap;"><?= $st_setor ?></td>
                         </tr>
                     <?php } ?>
                 </table>
