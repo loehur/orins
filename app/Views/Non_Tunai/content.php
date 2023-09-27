@@ -114,7 +114,8 @@
                             <th>Toko/Ref</th>
                             <th>Customer</th>
                             <th class="text-end">Jumlah/Via</th>
-                            <th class="text-end">Updated</th>
+                            <th class="text-end">Status</th>
+                            <th class="text-end">Re-Action</th>
                         </tr>
                         <?php
                         $no = 0;
@@ -147,13 +148,28 @@
                                             echo '<span class="text-success"><i class="fa-solid fa-check-to-slot"></i> Verified</span>';
                                             break;
                                         default:
-                                            echo '<span><i class="fa-solid fa-xmark"></i> Rejected</span>';
+                                            echo '<span class="text-danger"><i class="fa-solid fa-xmark"></i> Rejected</span>';
                                             break;
                                     }
                                     ?>
                                     <br>
                                     <?= $a['updateTime'] ?>
                                 </td>
+                                <?php
+                                switch ($a['status_mutasi']) {
+                                    case 1:
+                                ?>
+                                        <td align="right">
+                                            <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary border-0">Reject</button>
+                                        </td>
+                                    <?php break;
+                                    default: ?>
+                                        <td align="right">
+                                            <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary border-0">Verify</button>
+                                        </td>
+                                <?php break;
+                                }
+                                ?>
                             </tr>
                         <?php } ?>
                     </table>

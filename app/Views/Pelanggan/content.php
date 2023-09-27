@@ -10,36 +10,32 @@ if ($id_pelanggan_jenis == 1) {
 ?>
 
 <main>
-    <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
-        <div class="container-xl px-4">
-            <div class="page-header-content pt-4">
-                <div class="row align-items-center justify-content-between">
-                    <div class="col-auto mt-4">
+    <div class="card mx-1 my-1 bg-light">
+        <div class="card-header ">Pelanggan <b><?= $pelanggan_jenis ?></b>
+            <button type="button" class="float-end btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
+        </div>
+        <div class="card-body py-1">
+            <?php
+            foreach ($data['pelanggan'] as $a) { ?>
+                <div class="row mb-1 border rounded py-1 bg-white">
+                    <div class="col col-t">
+                        <?= ucwords($a['nama']) ?><br>
+                        <small><?= ucwords($a['no_hp']) ?></small>
+                        <?php if ($id_pelanggan_jenis == 2) { ?>
+                            <br><?= ucwords($a['usaha']) ?> - <?= ucfirst($a['alamat']) ?>
+                        <?php } ?>
+                    </div>
+                    <div class="col col-t">
+                        <small>
+                            ID. <?= $a['id_pelanggan'] ?>
+                            <a class="delete" data-id="<?= $a['id_pelanggan'] ?>" data-nama="<?= $a['nama'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a>
+                        </small>
+                        <br>
+                        <small>Registered: <?= substr($a['insertTime'], 0, 10) ?></small>
                     </div>
                 </div>
-            </div>
-        </div>
-    </header>
-    <!-- Main page content-->
-    <div class="container-xl px-4">
-        <div class="card mt-n10" style="max-width: 500px;">
-            <div class="card-header ">Pelanggan <b><?= $pelanggan_jenis ?></b>
-                <button type="button" class="float-end btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
-            </div>
-            <div class="card-body">
-
-                <?php
-                foreach ($data['pelanggan'] as $a) { ?>
-                    [ <?= $a['id_pelanggan'] ?> - <?= $a['no_hp'] ?> ] <b><?= $a['nama'] ?></b>
-                    <?php
-                    if ($id_pelanggan_jenis == 2) { ?>
-                        <br><b><?= $a['usaha'] ?></b> - <?= $a['alamat'] ?>
-                    <?php }
-                    ?>
-                    <hr>
-                <?php }
-                ?>
-            </div>
+            <?php }
+            ?>
         </div>
     </div>
 </main>
@@ -100,5 +96,28 @@ if ($id_pelanggan_jenis == 1) {
                 }
             },
         });
+    });
+
+    $("a.delete").click(function() {
+        var nama = $(this).attr("data-nama");
+        if (confirm("Yakin Menonaktifkan " + nama + "?")) {
+            var id = $(this).attr("data-id");
+            $.ajax({
+                url: "<?= $this->BASE_URL . $data['_c'] ?>/delete",
+                data: {
+                    id: id
+                },
+                type: "POST",
+                success: function(res) {
+                    if (res == 0) {
+                        content();
+                    } else {
+                        alert(res);
+                    }
+                },
+            });
+        } else {
+            return false;
+        }
     });
 </script>

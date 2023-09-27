@@ -84,8 +84,13 @@ class Controller extends Public_Variables
         $_SESSION['detail_item'] = $this->model('M_DB_1')->get_where('detail_item', $whereToko . " ORDER BY detail_item ASC");
         $_SESSION['detail_item_all'] = $this->model('M_DB_1')->get_order('detail_item', "detail_item ASC");
         $_SESSION['data_user'] = $this->model('M_DB_1')->get('user', $whereToko);
-        $_SESSION['data_pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $whereToko);
-        $_SESSION['data_pelanggan_all'] = $this->model('M_DB_1')->get('pelanggan');
+
+        $wherePel = $whereToko . " AND en = 1";
+        $_SESSION['data_pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePel);
+
+        $wherePelAll = "en = 1";
+        $_SESSION['data_pelanggan_all'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelAll);
+
         $_SESSION['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereToko . " AND en = 1");
         $_SESSION['karyawan_all'] = $this->model('M_DB_1')->get_where('karyawan', "en = 1");
     }

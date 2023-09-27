@@ -38,7 +38,7 @@ if ($id_pelanggan_jenis == 1) {
                             <select class="tize" name="id_pelanggan" required>
                                 <option value=""><?= $pelanggan_jenis ?></option>
                                 <?php foreach ($data['pelanggan'] as $p) { ?>
-                                    <option value="<?= $p['id_pelanggan'] ?>"><?= strtoupper($p['nama']) ?></option>
+                                    <option value="<?= $p['id_pelanggan'] ?>"><?= strtoupper($p['nama']) ?> | <?= $p['nama'] ?></option>
                                 <?php } ?>
                             </select>
                         </div>

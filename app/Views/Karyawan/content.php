@@ -1,4 +1,7 @@
 <div class="card mx-1 my-1 bg-light">
+    <div class="card-header ">Karyawan
+        <button type="button" class="float-end btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
+    </div>
     <div class="card-body py-1">
         <?php
         foreach ($data as $a) { ?>
@@ -25,7 +28,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Menambah Karywaan</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Menambah Karyawan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= $this->BASE_URL ?>Karyawan/add" method="POST">

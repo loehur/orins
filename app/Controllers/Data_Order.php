@@ -37,7 +37,7 @@ class Data_Order extends Controller
    public function content($parse = "")
    {
       $data['parse'] = $parse;
-      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
+      $data['pelanggan'] = $this->dPelangganAll;
       $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
 
       switch ($parse) {
@@ -173,7 +173,7 @@ class Data_Order extends Controller
 
    public function print($parse = "")
    {
-      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
+      $data['pelanggan'] = $this->dPelangganAll;
       $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
       $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND ref = '" . $parse . "' AND cancel = 0";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);

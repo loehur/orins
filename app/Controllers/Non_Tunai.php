@@ -52,6 +52,14 @@ class Non_Tunai extends Controller
       $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
       $where = "id_kas = " . $id;
       $update = $this->model('M_DB_1')->update("kas", $set, $where);
+
+      if ($val == 2) {
+         $set = "tuntas = 0";
+         $ref = $this->model('M_DB_1')->get_where_row("kas", $where)['ref_transaksi'];
+         $where = "ref = '" . $ref . "'";
+         $this->model('M_DB_1')->update("order_data", $set, $where);
+      }
+
       echo $update['errno'];
    }
 

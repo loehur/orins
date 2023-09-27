@@ -68,7 +68,7 @@ class Buka_Order extends Controller
          }
       }
 
-      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'] . " AND id_pelanggan_jenis = " . $parse;
+      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse;
       $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
       $data['karyawan'] = $this->dKaryawan;
       $data['harga'] = $getHarga;
