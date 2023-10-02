@@ -1,6 +1,6 @@
 <?php
 
-class Non_Tunai extends Controller
+class Non_Tunai_Riwayat extends Controller
 {
    public $page = __CLASS__;
 
@@ -19,10 +19,9 @@ class Non_Tunai extends Controller
 
    public function index()
    {
-
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Finance - Non Tunai"
+         "title" => "Finance - Non Tunai Riwayat"
       ]);
       $this->viewer();
    }
@@ -34,14 +33,16 @@ class Non_Tunai extends Controller
 
    public function content($parse = "")
    {
+      if ($parse == "") {
+         $month = date("Y-m");
+      } else {
+         $month = $parse;
+      }
+
+      $data['m'] = $month;
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-
-      $where = "metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
-      $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
-
-      $where = "metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 10";
+      $where = "insertTime LIKE '%" . $month . "%' AND metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC";
       $data['kas_done'] = $this->model('M_DB_1')->get_where('kas', $where);
-
       $this->view($this->v_content, $data);
    }
 

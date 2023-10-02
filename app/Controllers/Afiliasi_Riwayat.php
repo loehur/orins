@@ -1,6 +1,6 @@
 <?php
 
-class Non_Tunai extends Controller
+class Afiliasi_Riwayat extends Controller
 {
    public $page = __CLASS__;
 
@@ -8,13 +8,13 @@ class Non_Tunai extends Controller
    {
       $this->session_cek();
       $this->data();
-      if (!in_array($this->userData['user_tipe'], $this->pFinance)) {
+      if (!in_array($this->userData['user_tipe'], $this->pAudit)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index()
@@ -22,7 +22,7 @@ class Non_Tunai extends Controller
 
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Finance - Non Tunai"
+         "title" => "Audit - Afiliasi Riwayat"
       ]);
       $this->viewer();
    }
@@ -34,14 +34,18 @@ class Non_Tunai extends Controller
 
    public function content($parse = "")
    {
+      if ($parse == "") {
+         $month = date("Y-m");
+      } else {
+         $month = $parse;
+      }
+
+      $data['m'] = $month;
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
+      $data['_c'] = __CLASS__;
 
-      $where = "metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
-      $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
-
-      $where = "metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 10";
+      $where = "insertTime LIKE '%" . $month . "%' AND metode_mutasi = 3 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC";
       $data['kas_done'] = $this->model('M_DB_1')->get_where('kas', $where);
-
       $this->view($this->v_content, $data);
    }
 
@@ -50,21 +54,14 @@ class Non_Tunai extends Controller
       $id = $_POST['id'];
       $val = $_POST['val'];
       $note = $_POST['note'];
-      $where_kas = "id_kas = " . $id;
-      $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
 
-      if ($val == 2) {
-         $set_ = "tuntas = 0";
-         $ref = $this->model('M_DB_1')->get_where_row("kas", $where_kas)['ref_transaksi'];
-         $where = "ref = '" . $ref . "'";
-         $this->model('M_DB_1')->update("order_data", $set_, $where);
-
-         $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
+      if ($val == 1) {
+         $set = "note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+      } else {
+         $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
       }
-
       $where = "id_kas = " . $id;
-      $update = $this->model('M_DB_1')->update("kas", $set, $where_kas);
-
+      $update = $this->model('M_DB_1')->update("kas", $set, $where);
       echo $update['errno'];
    }
 
@@ -72,9 +69,14 @@ class Non_Tunai extends Controller
    {
       $id = explode("_", $_POST['id']);
       $val = $_POST['val'];
+      $note = $_POST['note'];
 
       foreach ($id as $i) {
-         $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
+         if ($val == 1) {
+            $set = "note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+         } else {
+            $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+         }
          $where = "id_kas = " . $i;
          $update = $this->model('M_DB_1')->update("kas", $set, $where);
          if ($update['errno'] <> 0) {

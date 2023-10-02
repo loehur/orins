@@ -105,7 +105,7 @@
             <div class="col">
                 <div class="row border-bottom">
                     <div class="col ms-2">
-                        <span><b>Riwayat Pembayaran Terkonfirmasi</b></span> <small>(Last 20)</small>
+                        <span><b>Riwayat Pembayaran Terkonfirmasi</b></span> <small>(Last 10)</small>
                     </div>
                 </div>
                 <small>
@@ -125,6 +125,7 @@
 
                             $client = $a['id_client'];
                             $jumlah = $a['jumlah'];
+                            $ref = $a['ref_transaksi'];
 
                             $pelanggan = "Non";
                             foreach ($data['pelanggan'] as $dp) {
@@ -137,7 +138,7 @@
                             <tr>
                                 <td>
                                     <span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br>
-                                    <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
+                                    <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $ref ?>"><small><?= $a['ref_transaksi'] ?></small></span>
                                 </td>
                                 <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
                                 <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
@@ -155,21 +156,39 @@
                                     <br>
                                     <?= $a['updateTime'] ?>
                                 </td>
+
                                 <?php
-                                switch ($a['status_mutasi']) {
-                                    case 1:
+                                $tuntas = $this->model("M_DB_1")->get_where_row("order_data", "ref = '" . $ref . "'")['tuntas'];
+                                if ($tuntas == 0) {
+                                    switch ($a['status_mutasi']) {
+                                        case 1:
                                 ?>
-                                        <td align="right">
-                                            <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
-                                        </td>
-                                    <?php break;
-                                    default: ?>
-                                        <td align="right">
-                                            <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
-                                            <br>
-                                            <span class="pe-2"><?= $a['note_batal'] ?></span>
-                                        </td>
+                                            <td align="right">
+                                                <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
+                                            </td>
+                                        <?php break;
+                                        default: ?>
+                                            <td align="right">
+                                                <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
+                                                <br>
+                                                <span class="pe-2"><?= $a['note_batal'] ?></span>
+                                            </td>
+                                        <?php break;
+                                    }
+                                } else {
+                                    switch ($a['status_mutasi']) {
+                                        case 1:
+                                        ?>
+                                            <td align="right" class="text-secondary">
+                                                <small><span class="pe-2">Transaction Complete<br><?= $a['note_office'] ?></span></small>
+                                            </td>
+                                        <?php break;
+                                        default: ?>
+                                            <td align="right">
+                                                <small><span class="pe-2">Transaction Complete<br><?= $a['note_batal'] ?></span></small>
+                                            </td>
                                 <?php break;
+                                    }
                                 }
                                 ?>
                             </tr>

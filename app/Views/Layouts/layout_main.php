@@ -292,7 +292,8 @@ $aff_c = count($aff_);
 							</a>
 							<div class="collapse <?= (str_contains($t, "Finance")) ? 'show' : '' ?>" id="collapseFinance" data-bs-parent="#accordionSidenav">
 								<nav class="sidenav-menu-nested nav">
-									<a class="nav-link <?= ($t == "Finance - Non Tunai") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Non_Tunai">Transaksi Non Tunai</a>
+									<a class="nav-link <?= ($t == "Finance - Non Tunai") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Non_Tunai">Non Tunai Transaksi</a>
+									<a class="nav-link <?= ($t == "Finance - Non Tunai Riwayat") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Non_Tunai_Riwayat">Non Tunai Riwayat</a>
 									<a class="nav-link <?= ($t == "Finance - Setoran") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Setoran_F">Setoran Kasir</a>
 								</nav>
 							</div>
@@ -308,7 +309,8 @@ $aff_c = count($aff_);
 							</a>
 							<div class="collapse <?= (str_contains($t, "Audit")) ? 'show' : '' ?>" id="collapseAudit" data-bs-parent="#accordionSidenav">
 								<nav class="sidenav-menu-nested nav">
-									<a class="nav-link <?= ($t == "Audit - Afiliasi") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Afiliasi">Transaksi Afiliasi</a>
+									<a class="nav-link <?= ($t == "Audit - Afiliasi") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Afiliasi">Afiliasi Transaksi</a>
+									<a class="nav-link <?= ($t == "Audit - Afiliasi Riwayat") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Afiliasi_Riwayat">Afiliasi Riwayat</a>
 									<a class="nav-link <?= ($t == "Audit - Data Export") ? 'active' : '' ?>" href="<?= $this->BASE_URL ?>Export">Data Export</a>
 								</nav>
 							</div>

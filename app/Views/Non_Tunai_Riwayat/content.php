@@ -1,111 +1,19 @@
 <main>
-    <?php if (count($data['kas']) > 0) {
-        $rekap = [];
-        foreach ($data['kas'] as $a) {
-            $client = $a['id_client'];
-            $jumlah = $a['jumlah'];
-            if (isset($rekap[$client])) {
-                $rekap[$client]["c"] += 1;
-                $rekap[$client]["t"] += $jumlah;
-            } else {
-                $rekap[$client]["c"] = 1;
-                $rekap[$client]["t"] = $jumlah;
-            }
-        }
-
-    ?>
-        <div class="p-2 ms-3 mt-3 me-3 bg-white">
-            <div class="row">
-                <div class="col">
-                    <div class="row border-bottom">
-                        <div class="col ms-2">
-                            <span><b>Antrian Pengecekan Afiliasi</b></span>
-                        </div>
-                    </div>
-                    <small>
-                        <table class="table table-sm table-hover mt-2">
-                            <tr>
-                                <th>Toko/Ref</th>
-                                <th>Customer</th>
-                                <th class="text-end">Jumlah/Via</th>
-                                <th colspan="2" class="text-center"></th>
-                            </tr>
-                            <?php
-                            $no = 0;
-                            $id_multi = "";
-                            foreach ($data['kas'] as $a) {
-                                $no += 1;
-                                $id =  $a['id_kas'];
-
-                                $client = $a['id_client'];
-                                $jumlah = $a['jumlah'];
-                                $count = $rekap[$client]["c"];
-                                $total = $rekap[$client]['t'];
-
-                                if ($no == $count) {
-                                    $id_multi .= $id;
-                                } else {
-                                    $id_multi .= $id . "_";
-                                }
-
-
-                                $pelanggan = "Non";
-                                foreach ($data['pelanggan'] as $dp) {
-                                    if ($dp['id_pelanggan'] == $client) {
-                                        $pelanggan = $dp['nama'];
-                                    }
-                                }
-
-                            ?>
-                                <tr>
-                                    <td>
-                                        <span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br>
-                                        <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
-                                    </td>
-                                    <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
-                                    <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
-                                    <td align="left">
-                                        <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-success border-0">Verify</button>
-                                    </td>
-                                    <td align="right">
-                                        <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-danger border-0">Reject</button>
-                                    </td>
-                                </tr>
-                                <?php
-                                if (($no == $count)) {
-                                    $no = 0; ?>
-                                    <?php
-                                    if ($count > 1) {
-                                    ?>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="pe-0" align="right"><button data-id="<?= $id_multi ?>" data-val="1" class="border-0 actionMulti btn btn-sm btn-outline-primary">Multi Verify - <b>Rp<?= number_format($total) ?></b></button></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    <?php
-                                    }
-                                    ?>
-                                    <tr>
-                                        <td colspan="10" class="bg-secondary"></td>
-                                    </tr>
-                            <?php
-                                    $id_multi = "";
-                                }
-                            } ?>
-                        </table>
-                    </small>
+    <div class="p-2 ms-3 mt-3 me-3 bg-white">
+        <div class="row">
+            <div class="col mb-2" style="min-width:270px;max-width:350px">
+                <div class="input-group">
+                    <span class="input-group-text text-primary">Bulan</span>
+                    <input name="month" type="month" min="2023-07" max="<?= date("Y-m") ?>" value="<?= $data['m'] ?>" placeholder="YYYY-MM" class="form-control" required>
+                    <button id="cekS" class="btn btn-primary">Cek</button>
                 </div>
             </div>
         </div>
-    <?php } ?>
-    <div class="p-2 ms-3 mt-3 me-3 bg-white">
         <div class="row">
             <div class="col">
                 <div class="row border-bottom">
                     <div class="col ms-2">
-                        <span><b>Riwayat Transaksi Terkonfirmasi</b></span> <small>(Last 20)</small>
+                        <span><b>Riwayat Pembayaran Terkonfirmasi</b></span>
                     </div>
                 </div>
                 <small>
@@ -114,7 +22,7 @@
                             <th>Toko/Ref</th>
                             <th>Customer</th>
                             <th class="text-end">Jumlah/Via</th>
-                            <th class="text-end">Updated</th>
+                            <th class="text-end">Status</th>
                             <th class="text-end">Re-Action</th>
                         </tr>
                         <?php
@@ -138,7 +46,7 @@
                             <tr>
                                 <td>
                                     <span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br>
-                                    <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
+                                    <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $ref ?>"><small><?= $a['ref_transaksi'] ?></small></span>
                                 </td>
                                 <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
                                 <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
@@ -149,13 +57,14 @@
                                             echo '<span class="text-success"><i class="fa-solid fa-check-to-slot"></i> Verified</span>';
                                             break;
                                         default:
-                                            echo '<span><i class="text-danger fa-solid fa-xmark"></i> Rejected</span>';
+                                            echo '<span class="text-danger"><i class="fa-solid fa-xmark"></i> Rejected</span>';
                                             break;
                                     }
                                     ?>
                                     <br>
                                     <?= $a['updateTime'] ?>
                                 </td>
+
                                 <?php
                                 $tuntas = $this->model("M_DB_1")->get_where_row("order_data", "ref = '" . $ref . "'")['tuntas'];
                                 if ($tuntas == 0) {
@@ -164,8 +73,6 @@
                                 ?>
                                             <td align="right">
                                                 <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
-                                                <br>
-                                                <span class="pe-2"><?= $a['note_office'] ?></span>
                                             </td>
                                         <?php break;
                                         default: ?>
@@ -211,14 +118,19 @@
 
 <script>
     $("button.action").click(function() {
-        var note = prompt("Catatan", "");
-        if (note === null) {
-            return;
-        }
         var id_ = $(this).attr("data-id");
         var value = $(this).attr("data-val");
+        var note = "";
+
+        if (value == 2) {
+            var note = prompt("Catatan", "");
+            if (note === null) {
+                return;
+            }
+        }
+
         $.ajax({
-            url: "<?= $this->BASE_URL . $data['_c'] ?>/action",
+            url: "<?= $this->BASE_URL ?>Non_Tunai/action",
             data: {
                 id: id_,
                 val: value,
@@ -236,19 +148,13 @@
     });
 
     $("button.actionMulti").click(function() {
-        var note = prompt("Catatan", "");
-        if (note === null) {
-            return;
-        }
-
         var id_ = $(this).attr("data-id");
         var value = $(this).attr("data-val");
         $.ajax({
-            url: "<?= $this->BASE_URL . $data['_c'] ?>/actionMulti",
+            url: "<?= $this->BASE_URL ?>Non_Tunai/actionMulti",
             data: {
                 id: id_,
-                val: value,
-                note: note
+                val: value
             },
             type: "POST",
             success: function(result) {
@@ -263,6 +169,12 @@
 
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
-        $("div#cekOrder").load('<?= $this->BASE_URL . $data['_c'] ?>/cekOrder/' + ref);
+        $("div#cekOrder").html("");
+        $("div#cekOrder").load('<?= $this->BASE_URL ?>Non_Tunai/cekOrder/' + ref);
+    });
+
+    $("button#cekS").click(function() {
+        var mon = $("input[name=month]").val();
+        content_parse(mon);
     });
 </script>
