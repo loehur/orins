@@ -115,6 +115,7 @@
                             <th>Customer</th>
                             <th class="text-end">Jumlah/Via</th>
                             <th class="text-end">Updated</th>
+                            <th class="text-end">Re-Action</th>
                         </tr>
                         <?php
                         $no = 0;
@@ -147,13 +148,30 @@
                                             echo '<span class="text-success"><i class="fa-solid fa-check-to-slot"></i> Verified</span>';
                                             break;
                                         default:
-                                            echo '<span><i class="fa-solid fa-xmark"></i> Rejected</span>';
+                                            echo '<span><i class="text-danger fa-solid fa-xmark"></i> Rejected</span>';
                                             break;
                                     }
                                     ?>
                                     <br>
                                     <?= $a['updateTime'] ?>
                                 </td>
+                                <?php
+                                switch ($a['status_mutasi']) {
+                                    case 1:
+                                ?>
+                                        <td align="right">
+                                            <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
+                                        </td>
+                                    <?php break;
+                                    default: ?>
+                                        <td align="right">
+                                            <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
+                                            <br>
+                                            <span class="pe-2"><?= $a['note_batal'] ?></span>
+                                        </td>
+                                <?php break;
+                                }
+                                ?>
                             </tr>
                         <?php } ?>
                     </table>
@@ -173,13 +191,18 @@
 
 <script>
     $("button.action").click(function() {
+        var note = prompt("Catatan", "");
+        if (note === null) {
+            return;
+        }
         var id_ = $(this).attr("data-id");
         var value = $(this).attr("data-val");
         $.ajax({
             url: "<?= $this->BASE_URL . $data['_c'] ?>/action",
             data: {
                 id: id_,
-                val: value
+                val: value,
+                note: note
             },
             type: "POST",
             success: function(result) {
@@ -193,13 +216,19 @@
     });
 
     $("button.actionMulti").click(function() {
+        var note = prompt("Catatan", "");
+        if (note === null) {
+            return;
+        }
+
         var id_ = $(this).attr("data-id");
         var value = $(this).attr("data-val");
         $.ajax({
             url: "<?= $this->BASE_URL . $data['_c'] ?>/actionMulti",
             data: {
                 id: id_,
-                val: value
+                val: value,
+                note: note
             },
             type: "POST",
             success: function(result) {

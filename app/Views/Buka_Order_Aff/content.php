@@ -17,7 +17,6 @@
                                 <option value="">CS</option>
                                 <?php foreach ($data['karyawan'] as $k) {
                                     if ($k['id_toko'] == $this->userData['id_toko']) { ?>
-                                        ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= strtoupper($k['nama']) ?></option>
                                 <?php }
                                 } ?>

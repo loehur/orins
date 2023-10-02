@@ -160,12 +160,14 @@
                                     case 1:
                                 ?>
                                         <td align="right">
-                                            <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary border-0">Reject</button>
+                                            <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
                                         </td>
                                     <?php break;
                                     default: ?>
                                         <td align="right">
-                                            <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary border-0">Verify</button>
+                                            <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
+                                            <br>
+                                            <span class="pe-2"><?= $a['note_batal'] ?></span>
                                         </td>
                                 <?php break;
                                 }
@@ -191,11 +193,21 @@
     $("button.action").click(function() {
         var id_ = $(this).attr("data-id");
         var value = $(this).attr("data-val");
+        var note = "";
+
+        if (value == 2) {
+            var note = prompt("Catatan", "");
+            if (note === null) {
+                return;
+            }
+        }
+
         $.ajax({
             url: "<?= $this->BASE_URL ?>Non_Tunai/action",
             data: {
                 id: id_,
-                val: value
+                val: value,
+                note: note
             },
             type: "POST",
             success: function(result) {

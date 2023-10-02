@@ -67,18 +67,36 @@
                                     $verify_payment += $dk['jumlah'];
                                 }
 
+                                $metod = "";
+                                switch ($dk['metode_mutasi']) {
+                                    case 1:
+                                        $metod = "Tunai";
+                                        break;
+                                    case 2:
+                                        $n_office = $dk['note_office'];
+                                        $metod = "Non_Tunai";
+                                        break;
+                                    case 3:
+                                        $n_office = $dk['note_office'];
+                                        $metod = "Afiliasi";
+                                        if (strlen($n_office) > 0) {
+                                            $metod = "Afiliasi-" . $n_office;
+                                        }
+                                        break;
+                                }
+
                                 switch ($dk['status_mutasi']) {
                                     case 0:
-                                        $statusP = "<small class='text-warning'>(Dalam Pengecekan)</small> ";
-                                        $showMutasi .= "<small>" . $dk['metode_mutasi'] . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
+                                        $statusP = "<small class='text-warning'>Office Checking</small> ";
+                                        $showMutasi .= "<small>" . $metod . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
                                         break;
                                     case 1:
                                         $statusP = '<small><i class="fa-solid fa-check text-success"></i></small> ';
-                                        $showMutasi .= "<small>" . $dk['metode_mutasi'] . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
+                                        $showMutasi .= "<small>" . $metod . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
                                         break;
                                     default:
-                                        $statusP = '<small><i class="fa-solid fa-xmark text-danger"></i></small> ';
-                                        $showMutasi .= "<small>" . $dk['metode_mutasi'] . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "</del><br>";
+                                        $statusP = '<small><span class="text-danger">' . $dk['note_batal'] . '</span> <i class="fa-solid fa-xmark text-danger"></i></small> ';
+                                        $showMutasi .= "<small>" . $metod . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " <del>-Rp" . number_format($dk['jumlah']) . "</del><br>";
                                         break;
                                 }
                             }
