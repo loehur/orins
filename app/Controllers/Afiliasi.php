@@ -50,13 +50,20 @@ class Afiliasi extends Controller
       $val = $_POST['val'];
       $note = $_POST['note'];
 
+      $where_kas = "id_kas = " . $id;
+
       if ($val == 1) {
          $set = "note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
       } else {
          $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+
+         $set_ = "tuntas = 0";
+         $ref = $this->model('M_DB_1')->get_where_row("kas", $where_kas)['ref_transaksi'];
+         $where = "ref = '" . $ref . "'";
+         $this->model('M_DB_1')->update("order_data", $set_, $where);
       }
-      $where = "id_kas = " . $id;
-      $update = $this->model('M_DB_1')->update("kas", $set, $where);
+
+      $update = $this->model('M_DB_1')->update("kas", $set, $where_kas);
       echo $update['errno'];
    }
 
