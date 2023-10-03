@@ -3,6 +3,8 @@
 class Karyawan extends Controller
 {
    public $page = __CLASS__;
+   public $main_table = "karyawan";
+   public $id_data = "id_karyawan";
 
    public function __construct()
    {
@@ -34,8 +36,9 @@ class Karyawan extends Controller
 
    public function content($parse = "")
    {
+      $data["_c"] = __CLASS__;
       $where = "en = 1 AND id_toko = " . $this->userData['id_toko'];
-      $data = $this->model('M_DB_1')->get_where('karyawan', $where);
+      $data['main'] = $this->model('M_DB_1')->get_where('karyawan', $where);
       $this->view($this->v_content, $data);
    }
 
@@ -69,5 +72,18 @@ class Karyawan extends Controller
       $update = $this->model('M_DB_1')->update("karyawan", $set, $where);
       echo $update['errno'];
       $this->dataSynchrone();
+   }
+
+   public function updateCell()
+   {
+      $value = $_POST['value'];
+      $id = $_POST['id'];
+      $col = $_POST['col'];
+
+      $set = $col . " = '" . $value . "'";
+      $where = $this->id_data . " = " . $id;
+      $update = $this->model('M_DB_1')->update($this->main_table, $set, $where);
+      $this->dataSynchrone();
+      echo $update['errno'];
    }
 }

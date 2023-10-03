@@ -4,19 +4,21 @@
     </div>
     <div class="card-body py-1">
         <?php
-        foreach ($data as $a) { ?>
+        foreach ($data['main'] as $a) { ?>
             <div class="row mb-1 border rounded py-1 bg-white">
                 <div class="col col-t">
+                    <b><span class="edit" data-col="nama" data-id="<?= $a['id_karyawan'] ?>"><?= ucwords($a['nama']) ?></span></b>
+                    <br>
                     <small>
                         ID. <?= $a['id_karyawan'] ?>
                         <a class="delete" data-id="<?= $a['id_karyawan'] ?>" data-nama="<?= $a['nama'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a>
                     </small>
-                    <br>
-                    <?= $a['nama'] ?>
                 </div>
                 <div class="col col-t">
-                    <small>Joined</small><br>
-                    <?= substr($a['insertTime'], 0, 10) ?>
+                    <small>
+                        Registered<br>
+                        <?= substr($a['insertTime'], 0, 10) ?>
+                    </small>
                 </div>
             </div>
         <?php }
@@ -82,5 +84,46 @@
         } else {
             return false;
         }
+    });
+
+    var click = 0;
+    $("span.edit").on('dblclick', function() {
+        click = click + 1;
+        if (click != 1) {
+            return;
+        }
+
+        var id = $(this).attr('data-id');
+        var col = $(this).attr('data-col');
+        var value = $(this).html();
+        var value_before = value;
+        var span = $(this);
+        span.html("<input type='text' id='value_3313' style='text-align:center;width:200px' value='" + value + "'>");
+
+        $("#value_3313").focus();
+        $("#value_3313").focusout(function() {
+            var value_after = $(this).val();
+            if (value_after == value_before) {
+                span.html(value_before);
+                click = 0;
+            } else {
+                $.ajax({
+                    url: '<?= $this->BASE_URL . $data['_c'] ?>/updateCell',
+                    data: {
+                        'id': id,
+                        'value': value_after,
+                        'col': col
+                    },
+                    type: 'POST',
+                    success: function(res) {
+                        if (res == 0) {
+                            content();
+                        } else {
+                            alert(res);
+                        }
+                    },
+                });
+            }
+        });
     });
 </script>

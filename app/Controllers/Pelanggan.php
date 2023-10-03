@@ -3,6 +3,7 @@
 class Pelanggan extends Controller
 {
    public $page = __CLASS__;
+   public $main_table = "pelanggan";
 
    public function __construct()
    {
@@ -87,5 +88,18 @@ class Pelanggan extends Controller
       $update = $this->model('M_DB_1')->update("pelanggan", $set, $where);
       echo $update['errno'];
       $this->dataSynchrone();
+   }
+
+   public function updateCell()
+   {
+      $value = $_POST['value'];
+      $id = $_POST['id'];
+      $col = $_POST['col'];
+
+      $set = $col . " = '" . $value . "'";
+      $where = "id_pelanggan = " . $id;
+      $update = $this->model('M_DB_1')->update($this->main_table, $set, $where);
+      $this->dataSynchrone();
+      echo $update['errno'];
    }
 }

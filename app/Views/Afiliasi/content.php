@@ -105,7 +105,7 @@
             <div class="col">
                 <div class="row border-bottom">
                     <div class="col ms-2">
-                        <span><b>Riwayat Transaksi Terkonfirmasi</b></span> <small>(Last 20)</small>
+                        <span><b>Riwayat Transaksi Terkonfirmasi</b></span> <small>(Last 10)</small>
                     </div>
                 </div>
                 <small>

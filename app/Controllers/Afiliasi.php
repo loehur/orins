@@ -39,7 +39,7 @@ class Afiliasi extends Controller
       $where = "metode_mutasi = 3 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
       $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
 
-      $where = "metode_mutasi = 3 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 20";
+      $where = "metode_mutasi = 3 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 10";
       $data['kas_done'] = $this->model('M_DB_1')->get_where('kas', $where);
       $this->view($this->v_content, $data);
    }
