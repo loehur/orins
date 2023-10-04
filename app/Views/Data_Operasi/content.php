@@ -63,7 +63,7 @@
                                     $verify_payment += $dk['jumlah'];
                                 }
 
-                                if ($dk['metode_mutasi'] == 2 && $dk['status_mutasi'] == 1) {
+                                if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3) && $dk['status_mutasi'] == 1) {
                                     $verify_payment += $dk['jumlah'];
                                 }
 
