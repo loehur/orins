@@ -64,7 +64,7 @@ class Pelanggan extends Controller
          $vals = "'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "','" . $usaha . "','" . $alamat . "'," . $id_pelanggan_jenis;
       }
 
-      $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND nama = '" . $nama . "'";
+      $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND nama = '" . $nama . "' AND id_pelanggan_jenis = " . $id_pelanggan_jenis;
       $dataCount = $this->model('M_DB_1')->count_where('pelanggan', $whereCount);
       if ($dataCount < 1) {
          $do = $this->model('M_DB_1')->insertCols('pelanggan', $cols, $vals);
