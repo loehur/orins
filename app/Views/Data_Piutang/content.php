@@ -26,7 +26,8 @@
 
                 foreach ($data['order'] as $do) {
                     $id_user_afiliasi = $do['id_user_afiliasi'];
-                    if ($this->userData['id_toko'] <> $do['id_toko'] && $do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
+                    // if ($this->userData['id_toko'] <> $do['id_toko'] && $do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
+                    if ($this->userData['id_toko'] <> $do['id_toko']) {
                         continue;
                     }
 
@@ -68,11 +69,16 @@
                     $cancel = $do['cancel'];
                     $jumlah = $do['harga'] * $do['jumlah'];
 
+                    $cekSPK = $do['spk_dvs'];
+                    $cekAmbil = $do['id_ambil'];
+
                     if ($cancel == 0) {
-                        if (isset($bill[$id_pelanggan])) {
-                            $bill[$id_pelanggan] += $jumlah;
-                        } else {
-                            $bill[$id_pelanggan] = $jumlah;
+                        if ((strlen($cekSPK) > 10 && $cekAmbil > 0) || strlen($cekSPK) <= 10) {
+                            if (isset($bill[$id_pelanggan])) {
+                                $bill[$id_pelanggan] += $jumlah;
+                            } else {
+                                $bill[$id_pelanggan] = $jumlah;
+                            }
                         }
                     }
                 }
