@@ -103,10 +103,6 @@
                             $jarak = $tgl2->diff($tgl1);
                             $hari =  $jarak->days;
 
-                            if ($hari <= 2) {
-                                continue;
-                            }
-
                         ?>
                             <tr data-id="<?= $k ?>" class="cekPLG target" style="cursor: pointer;">
                                 <td class="p-1">
