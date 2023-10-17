@@ -73,13 +73,13 @@
                     $cekAmbil = $do['id_ambil'];
 
                     if ($cancel == 0) {
-                        if ((strlen($cekSPK) > 10 && $cekAmbil > 0) || strlen($cekSPK) <= 10) {
-                            if (isset($bill[$id_pelanggan])) {
-                                $bill[$id_pelanggan] += $jumlah;
-                            } else {
-                                $bill[$id_pelanggan] = $jumlah;
-                            }
+                        //if ((strlen($cekSPK) > 10 && $cekAmbil > 0) || strlen($cekSPK) <= 10) {
+                        if (isset($bill[$id_pelanggan])) {
+                            $bill[$id_pelanggan] += $jumlah;
+                        } else {
+                            $bill[$id_pelanggan] = $jumlah;
                         }
+                        //}
                     }
                 }
                 ?>
