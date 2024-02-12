@@ -161,15 +161,19 @@ class Data_Order extends Controller
 
    function cancel_diskon()
    {
-      $id = $_POST['cancel_id_diskon'];
-      $reason = $_POST['reason'];
-      $karyawan = $this->userData['id_user'];
+      if (in_array($this->userData['user_tipe'], $this->pKasir)) {
+         $id = $_POST['cancel_id_diskon'];
+         $reason = $_POST['reason'];
+         $karyawan = $this->userData['id_user'];
 
-      $where = "id_diskon = " . $id;
-      $dateNow = date("Y-m-d H:i:s");
-      $set = "cancel_id = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', cancel_date = '" . $dateNow . "'";
-      $update = $this->model('M_DB_1')->update("xtra_diskon", $set, $where);
-      echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+         $where = "id_diskon = " . $id;
+         $dateNow = date("Y-m-d H:i:s");
+         $set = "cancel_id = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', cancel_date = '" . $dateNow . "'";
+         $update = $this->model('M_DB_1')->update("xtra_diskon", $set, $where);
+         echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+      } else {
+         echo "User Forbidden";
+      }
    }
 
    function ambil_semua()
