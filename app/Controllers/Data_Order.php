@@ -159,6 +159,19 @@ class Data_Order extends Controller
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
    }
 
+   function cancel_diskon()
+   {
+      $id = $_POST['cancel_id_diskon'];
+      $reason = $_POST['reason'];
+      $karyawan = $this->userData['id_user'];
+
+      $where = "id_diskon = " . $id;
+      $dateNow = date("Y-m-d H:i:s");
+      $set = "cancel_id = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', cancel_date = '" . $dateNow . "'";
+      $update = $this->model('M_DB_1')->update("xtra_diskon", $set, $where);
+      echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+   }
+
    function ambil_semua()
    {
       $ref = $_POST['ambil_ref'];

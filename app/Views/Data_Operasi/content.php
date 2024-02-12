@@ -74,7 +74,7 @@
                                         break;
                                     case 2:
                                         $n_office = $dk['note_office'];
-                                        $metod = "Non_Tunai";
+                                        $metod = "NonTunai";
                                         break;
                                     case 3:
                                         $n_office = $dk['note_office'];
@@ -104,10 +104,14 @@
 
                         foreach ($data['diskon'] as $ds) {
                             if ($ds['ref_transaksi'] == $ref) {
-                                $xtraDiskon += $ds['jumlah'];
-                                $dibayar += $ds['jumlah'];
-                                $verify_payment += $ds['jumlah'];
-                                $showMutasi .= "<span class='text-success'><small>Xtra Diskon</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                if ($ds['cancel'] == 0) {
+                                    $xtraDiskon += $ds['jumlah'];
+                                    $dibayar += $ds['jumlah'];
+                                    $verify_payment += $ds['jumlah'];
+                                    $showMutasi .= "<i class='fa-regular fa-circle-xmark cancel_diskon' data-id='" . $ds['id_diskon'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelDiskon'></i> <span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                } else {
+                                    $showMutasi .= "<span><small>XtraDiskon#" . $ds['id_diskon'] . " <span class='text-danger'>" . $ds['cancel_reason'] . " <i class='fa-solid fa-xmark'></i></span></small> <del>-Rp" . number_format($ds['jumlah']) . "</del><br></span>";
+                                }
                             }
                         }
                     ?>
@@ -590,6 +594,34 @@
     </div>
 </form>
 
+<form action="<?= $this->BASE_URL; ?>Data_Order/cancel_diskon" method="POST">
+    <div class="modal" id="modalCancelDiskon">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title text-white">Pembatalan Diskon!</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Alasan Cancel</label>
+                                <input type="hidden" name="cancel_id_diskon">
+                                <input type="text" name="reason" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-danger">Cancel Diskon</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 <form action="<?= $this->BASE_URL; ?>Data_Operasi/xtraDiskon" method="POST">
     <div class="modal" id="exampleModalDiskon">
         <div class="modal-dialog modal-sm">
@@ -756,6 +788,11 @@
     $("a.cancel").click(function() {
         id = $(this).attr("data-id");
         $("input[name=cancel_id]").val(id);
+    })
+
+    $(".cancel_diskon").click(function() {
+        id = $(this).attr("data-id");
+        $("input[name=cancel_id_diskon]").val(id);
     })
 
     $("span.btnAmbilSemua").click(function() {
