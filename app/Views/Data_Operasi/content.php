@@ -112,10 +112,14 @@
                                     $dibayar += $ds['jumlah'];
                                     $verify_payment += $ds['jumlah'];
                                     if (in_array($this->userData['user_tipe'], $this->pKasir)) {
-                                        if ($data['order_'][0]['tuntas'] == 0) {
-                                            $showMutasi .= "<i class='fa-regular fa-circle-xmark cancel_diskon' data-id='" . $ds['id_diskon'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelDiskon'></i> <span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
-                                        } else {
-                                            $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                        foreach ($data['order_'] as $do) {
+                                            if ($do['ref'] == $ref) {
+                                                if ($do['tuntas'] == 0) {
+                                                    $showMutasi .= "<i class='fa-regular fa-circle-xmark cancel_diskon' data-id='" . $ds['id_diskon'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelDiskon'></i> <span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                                } else {
+                                                    $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                                }
+                                            }
                                         }
                                     } else {
                                         $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
