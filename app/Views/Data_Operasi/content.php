@@ -15,7 +15,11 @@
                         <?php
                         $yNow = date("Y");
                         for ($x = 2023; $x <= $yNow; $x++) { ?>
-                            <option value="<?= $x ?>" <?= ($data['parse_2'] == $x ? "selected" : "") ?>><?= $x ?></option>
+                            <option value="<?= $x ?>" <?php if ($data['parse_2'] == $x) {
+                                                            echo "selected";
+                                                        } elseif ($x == $yNow) {
+                                                            echo "selected";
+                                                        } ?>><?= $x ?></option>
                         <?php } ?>
                     </select>
                 </div>
@@ -41,7 +45,6 @@
                         $ambil = false;
                         $ambil_all = true;
 
-                        $tuntas = true;
                         $lunas = false;
                         $verify_payment = 0;
                         $pending_bayar = false;
@@ -109,7 +112,11 @@
                                     $dibayar += $ds['jumlah'];
                                     $verify_payment += $ds['jumlah'];
                                     if (in_array($this->userData['user_tipe'], $this->pKasir)) {
-                                        $showMutasi .= "<i class='fa-regular fa-circle-xmark cancel_diskon' data-id='" . $ds['id_diskon'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelDiskon'></i> <span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                        if ($data['order_'][0]['tuntas'] == 0) {
+                                            $showMutasi .= "<i class='fa-regular fa-circle-xmark cancel_diskon' data-id='" . $ds['id_diskon'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelDiskon'></i> <span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                        } else {
+                                            $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                        }
                                     } else {
                                         $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
                                     }
