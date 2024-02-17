@@ -52,6 +52,8 @@ class Buka_Order extends Controller
       foreach ($data['order'] as $key => $do) {
          array_push($order_line, $do['id_order_data']);
          $detail_harga = unserialize($do['detail_harga']);
+         print_r($detail_harga);
+         exit();
          if (is_array($detail_harga)) {
             $countDH[$key] = count($detail_harga);
             foreach ($detail_harga as $dh_o) {
@@ -66,8 +68,6 @@ class Buka_Order extends Controller
             }
 
             if ($countDH[$key] == 0) {
-               print_r($data['order']);
-               exit();
                if (isset($data['order'][$key]['harga'])) {
                   $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
                } else {
