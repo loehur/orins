@@ -13,7 +13,13 @@ if ($id_pelanggan_jenis == 1) {
     <!-- Main page content-->
     <div class="container-fluid px-2">
         <?php
-        print_r($data['line_order']) ?>
+        if (count($data['errorID']) > 0) {
+            echo "Error Transaction ID:<br>";
+            foreach ($data['errorID'] as $ei) { ?>
+                <?= $ei ?> <button class="rounded border-light">Delete</button><br>
+        <? }
+        }
+        ?>
         <div class="card mt-2 shadow-none mb-1">
             <div class="card-header"><b><?= $pelanggan_jenis ?></b>
                 <?php if ($data['count'] <= 15) { ?>
