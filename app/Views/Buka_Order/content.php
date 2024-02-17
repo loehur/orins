@@ -17,203 +17,203 @@ if ($id_pelanggan_jenis == 1) {
             echo "<br>Error! Transaction ID:<br>";
             foreach ($data['errorID'] as $ei) { ?>
                 <?= $ei ?> <button class="rounded border-light delError" data-id="<?= $ei ?>">Delete</button><br>
-        <?php }
-            exit();
-        }
-        ?>
-        <div class="card mt-2 shadow-none mb-1">
-            <div class="card-header"><b><?= $pelanggan_jenis ?></b>
-                <?php if ($data['count'] <= 15) { ?>
-                    <button type="button" class="float-end btn btn-outline-primary py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
-                    <div class="btn-group float-end me-3">
-                        <button type="button" class="border bg-white py-1 px-3 rounded dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                            Afiliasi
-                            <span class="visually-hidden">Toggle Dropdown</span>
-                        </button>
-                        <ul class="dropdown-menu p-0">
-                            <?php foreach ($this->dToko as $dt) {
-                                if ($dt['id_toko'] <> $this->userData['id_toko']) { ?>
-                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
+            <?php }
+        } else {
+            ?>
+            <div class="card mt-2 shadow-none mb-1">
+                <div class="card-header"><b><?= $pelanggan_jenis ?></b>
+                    <?php if ($data['count'] <= 15) { ?>
+                        <button type="button" class="float-end btn btn-outline-primary py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
+                        <div class="btn-group float-end me-3">
+                            <button type="button" class="border bg-white py-1 px-3 rounded dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                Afiliasi
+                                <span class="visually-hidden">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu p-0">
+                                <?php foreach ($this->dToko as $dt) {
+                                    if ($dt['id_toko'] <> $this->userData['id_toko']) { ?>
+                                        <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
+                                <?php }
+                                } ?>
+                            </ul>
+                        </div>
+                    <?php } ?>
+                </div>
+                <div class="card-body bg-warning-soft pb-0 pt-2">
+                    <form action="<?= $this->BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
+                        <div class="row">
+                            <div class="col px-1">
+                                <select class="tize" name="id_pelanggan" required>
+                                    <option value=""><?= $pelanggan_jenis ?></option>
+                                    <?php foreach ($data['pelanggan'] as $p) { ?>
+                                        <option value="<?= $p['id_pelanggan'] ?>"><?= strtoupper($p['nama']) ?> | <?= $p['no_hp'] ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                            <div class="col ps-0 pe-2">
+                                <select class="tize" name="id_karyawan" required>
+                                    <option value="">CS</option>
+                                    <?php foreach ($data['karyawan'] as $k) { ?>
+                                        <option value="<?= $k['id_karyawan'] ?>"><?= strtoupper($k['nama']) ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                            <div class="col-auto mt-auto p-0 pb-2 pe-1">
+                                <button type="submit" class="btn btn-warning w-100">Proses</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card shadow-sm mt-1">
+                <table class="table table-sm mb-0">
+                    <tbody>
+                        <?php
+                        $no = 0;
+                        foreach ($data['order'] as $keyD => $do) {
+                            $no++;
+                            $akum_diskon = 0;
+
+                            $id_order_data = $do['id_order_data'];
+                            $id_produk = $do['id_produk'];
+                            $detail_arr = unserialize($do['produk_detail']);
+                            $detail = "";
+                            $listDetail = unserialize($do['detail_harga']);
+
+                            foreach ($detail_arr as $da) {
+                                $detail .= $da['detail_name'] . ", ";
+                            }
+
+                            $produk = $do['produk'];
+
+                            $detail_harga = unserialize($do['detail_harga']);
+
+                            $harga_ok = true;
+                            $btnSetHarga = 'Uninitialized';
+
+                            foreach ($listDetail as $kl => $ld_o) {
+                                $disk = $ld_o['d'];
+                                $akum_diskon += $disk ?>
                             <?php }
-                            } ?>
-                        </ul>
-                    </div>
-                <?php } ?>
-            </div>
-            <div class="card-body bg-warning-soft pb-0 pt-2">
-                <form action="<?= $this->BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
-                    <div class="row">
-                        <div class="col px-1">
-                            <select class="tize" name="id_pelanggan" required>
-                                <option value=""><?= $pelanggan_jenis ?></option>
-                                <?php foreach ($data['pelanggan'] as $p) { ?>
-                                    <option value="<?= $p['id_pelanggan'] ?>"><?= strtoupper($p['nama']) ?> | <?= $p['no_hp'] ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                        <div class="col ps-0 pe-2">
-                            <select class="tize" name="id_karyawan" required>
-                                <option value="">CS</option>
-                                <?php foreach ($data['karyawan'] as $k) { ?>
-                                    <option value="<?= $k['id_karyawan'] ?>"><?= strtoupper($k['nama']) ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                        <div class="col-auto mt-auto p-0 pb-2 pe-1">
-                            <button type="submit" class="btn btn-warning w-100">Proses</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="card shadow-sm mt-1">
-            <table class="table table-sm mb-0">
-                <tbody>
-                    <?php
-                    $no = 0;
-                    foreach ($data['order'] as $keyD => $do) {
-                        $no++;
-                        $akum_diskon = 0;
 
-                        $id_order_data = $do['id_order_data'];
-                        $id_produk = $do['id_produk'];
-                        $detail_arr = unserialize($do['produk_detail']);
-                        $detail = "";
-                        $listDetail = unserialize($do['detail_harga']);
-
-                        foreach ($detail_arr as $da) {
-                            $detail .= $da['detail_name'] . ", ";
-                        }
-
-                        $produk = $do['produk'];
-
-                        $detail_harga = unserialize($do['detail_harga']);
-
-                        $harga_ok = true;
-                        $btnSetHarga = 'Uninitialized';
-
-                        foreach ($listDetail as $kl => $ld_o) {
-                            $disk = $ld_o['d'];
-                            $akum_diskon += $disk ?>
-                        <?php }
-
-                        ?>
-                        <tr>
-                            <td>
-                                <table class="table table-sm w-100 mb-0">
-                                    <tr class="bg-warning-soft">
-                                        <td class="ps-2"><span class="text-nowrap text-dark"><b><small><?= ucwords($produk) ?></small></b></span></td>
-                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                            <small>
-                                                <?php
-                                                if ($harga_ok == false) {
-                                                    echo $btnSetHarga;
-                                                } else {
-                                                    if ($akum_diskon > 0) {
-                                                        echo "<del>" . number_format($do['harga']) . "</del> <small>" . number_format($do['harga'] - $akum_diskon);
-                                                    } else {
-                                                        echo number_format($do['harga']);
-                                                    }
-                                                } ?>
-                                            </small>
-                                        </td>
-                                        <td class="text-end" style="width: 1px;white-space: nowrap;"><span class="edit_n" data-id="<?= $do['id_order_data'] ?>">
-                                                <small>
-                                                    <?= number_format($do['jumlah']) ?>
-                                                </small>
-                                        </td>
-                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                            <b>
+                            ?>
+                            <tr>
+                                <td>
+                                    <table class="table table-sm w-100 mb-0">
+                                        <tr class="bg-warning-soft">
+                                            <td class="ps-2"><span class="text-nowrap text-dark"><b><small><?= ucwords($produk) ?></small></b></span></td>
+                                            <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                 <small>
                                                     <?php
                                                     if ($harga_ok == false) {
                                                         echo $btnSetHarga;
                                                     } else {
                                                         if ($akum_diskon > 0) {
-                                                            echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del> " . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                                            echo "<del>" . number_format($do['harga']) . "</del> <small>" . number_format($do['harga'] - $akum_diskon);
                                                         } else {
-                                                            echo number_format($do['harga'] * $do['jumlah']);
+                                                            echo number_format($do['harga']);
                                                         }
                                                     } ?>
                                                 </small>
-                                            </b>
-                                        </td>
-                                        <td style="width: 30px;"><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="10" class="border-bottom-0">
-                                            <table class="table">
-                                                <tr>
-                                                    <td class="pe-1 border-bottom-0" nowrap>
-                                                        <div class="row">
-                                                            <?php
-                                                            foreach ($detail_arr as $da) { ?>
-                                                                <div class="col-auto" style="line-height: 80%;">
-                                                                    <small>
-                                                                        <small><u><?= $da['group_name'] ?></u></small><br> <?= strtoupper($da['detail_name']) ?>
-                                                                    </small>
-                                                                </div>
-                                                            <?php } ?>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="10" valign="top" class="p-0 border border-top-0">
-                                                        <small>
-                                                            <?php
-                                                            foreach ($listDetail as $kl => $ld_o) {
-                                                                $harga_d = $data['harga'][$keyD][$ld_o['c_h']]; ?>
-                                                                <div class="border-bottom mx-0">
-                                                                    <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
-                                                                    <div class="float-end">
-                                                                        <?php if ($disk > 0) { ?>
-                                                                            <del>Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del>
-                                                                        <?php } ?>
-                                                                        Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
-                                                                        <b><span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
-                                                                        <?php if ($harga_d > 0 && in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
-                                                                            <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
-                                                                        <?php } ?>
-                                                                    </div>
-                                                                </div>
-                                                                <br>
-                                                            <?php }
-                                                            ?>
-                                                        </small>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                            <div class="row">
-                                                <div class="col-auto">
-                                                    <span>
-                                                        <small>Catatan Utama</small><br><span class="text-danger"><?= $do['note'] ?></span>
-                                                    </span>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <span>
-                                                        <small>Catatan Produksi</small><br>
-                                                        <span class="text-primary">
-                                                            <?php
-                                                            foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                                if (strlen($ns) > 0) {
-                                                                    echo "<b>" . $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) . "</b>: " . $ns . ", ";
-                                                                }
+                                            </td>
+                                            <td class="text-end" style="width: 1px;white-space: nowrap;"><span class="edit_n" data-id="<?= $do['id_order_data'] ?>">
+                                                    <small>
+                                                        <?= number_format($do['jumlah']) ?>
+                                                    </small>
+                                            </td>
+                                            <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                                <b>
+                                                    <small>
+                                                        <?php
+                                                        if ($harga_ok == false) {
+                                                            echo $btnSetHarga;
+                                                        } else {
+                                                            if ($akum_diskon > 0) {
+                                                                echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del> " . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                                            } else {
+                                                                echo number_format($do['harga'] * $do['jumlah']);
                                                             }
-                                                            ?>
+                                                        } ?>
+                                                    </small>
+                                                </b>
+                                            </td>
+                                            <td style="width: 30px;"><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" class="border-bottom-0">
+                                                <table class="table">
+                                                    <tr>
+                                                        <td class="pe-1 border-bottom-0" nowrap>
+                                                            <div class="row">
+                                                                <?php
+                                                                foreach ($detail_arr as $da) { ?>
+                                                                    <div class="col-auto" style="line-height: 80%;">
+                                                                        <small>
+                                                                            <small><u><?= $da['group_name'] ?></u></small><br> <?= strtoupper($da['detail_name']) ?>
+                                                                        </small>
+                                                                    </div>
+                                                                <?php } ?>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="10" valign="top" class="p-0 border border-top-0">
+                                                            <small>
+                                                                <?php
+                                                                foreach ($listDetail as $kl => $ld_o) {
+                                                                    $harga_d = $data['harga'][$keyD][$ld_o['c_h']]; ?>
+                                                                    <div class="border-bottom mx-0">
+                                                                        <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
+                                                                        <div class="float-end">
+                                                                            <?php if ($disk > 0) { ?>
+                                                                                <del>Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del>
+                                                                            <?php } ?>
+                                                                            Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
+                                                                            <b><span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
+                                                                            <?php if ($harga_d > 0 && in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
+                                                                                <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
+                                                                            <?php } ?>
+                                                                        </div>
+                                                                    </div>
+                                                                    <br>
+                                                                <?php }
+                                                                ?>
+                                                            </small>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <div class="row">
+                                                    <div class="col-auto">
+                                                        <span>
+                                                            <small>Catatan Utama</small><br><span class="text-danger"><?= $do['note'] ?></span>
                                                         </span>
-                                                    </span>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <span>
+                                                            <small>Catatan Produksi</small><br>
+                                                            <span class="text-primary">
+                                                                <?php
+                                                                foreach (unserialize($do['note_spk']) as $ks => $ns) {
+                                                                    if (strlen($ns) > 0) {
+                                                                        echo "<b>" . $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) . "</b>: " . $ns . ", ";
+                                                                    }
+                                                                }
+                                                                ?>
+                                                            </span>
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    <?php }
-                    ?>
-                </tbody>
-            </table>
-        </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        <?php }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php } ?>
     </div>
 </main>
 <div class="modal fade" id="exampleModal">
@@ -301,10 +301,19 @@ if ($id_pelanggan_jenis == 1) {
 <script>
     $(document).ready(function() {
         $('select.tize').selectize();
-
         var produk = 1;
         $("div#detail").load('<?= $this->BASE_URL ?>Buka_Order/load_detail/' + produk);
     });
+
+    $("button.delError").click(function() {
+        var id_ = $(this).attr('data-id');
+        $.post("<?= $this->BASE_URL ?>Buka_Order/delete_error", {
+                id: id_
+            },
+            function() {
+                location.reload(true);
+            });
+    })
 
     $('select.loadDetail').on('change', function() {
         var produk = this.value;
@@ -367,18 +376,6 @@ if ($id_pelanggan_jenis == 1) {
             }
         });
     });
-
-    $("button.delError").click(function() {
-        var id_ = $(this).attr('data-id');
-        alert(id_);
-        return;
-        $.post("<?= $this->BASE_URL ?>Buka_Order/delete_error", {
-                id: id_
-            },
-            function() {
-                location.reload(true);
-            });
-    })
 
     var click = 0;
     $("span.edit_n").on('dblclick', function() {
