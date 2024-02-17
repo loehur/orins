@@ -51,25 +51,30 @@ class Buka_Order extends Controller
 
       foreach ($data['order'] as $key => $do) {
          $detail_harga = unserialize($do['detail_harga']);
-         $countDH[$key] = count($detail_harga);
-         foreach ($detail_harga as $dh_o) {
-            $getHarga[$key][$dh_o['c_h']] = 0;
-            foreach ($data_harga as $dh) {
-               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse] <> 0) {
-                  $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse];
-                  $countDH[$key] -= 1;
-                  break;
+         if (is_array($detail_harga)) {
+            $countDH[$key] = count($detail_harga);
+            foreach ($detail_harga as $dh_o) {
+               $getHarga[$key][$dh_o['c_h']] = 0;
+               foreach ($data_harga as $dh) {
+                  if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse] <> 0) {
+                     $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse];
+                     $countDH[$key] -= 1;
+                     break;
+                  }
                }
             }
-         }
 
-         if ($countDH[$key] == 0) {
-            if (isset($data['order'][$key]['harga'])) {
-               $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
-            } else {
-               echo "Error! Transaction ID: " . $do['id_order_data'];
-               exit();
+            if ($countDH[$key] == 0) {
+               if (isset($data['order'][$key]['harga'])) {
+                  $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
+               } else {
+                  echo "Error! Transaction ID: " . $do['id_order_data'];
+                  exit();
+               }
             }
+         } else {
+            echo "Error! Transaction ID: " . $do['id_order_data'];
+            exit();
          }
       }
 
