@@ -77,7 +77,6 @@ $aff_c = count($aff_);
 	<nav class="topnav navbar navbar-expand shadow-sm border-bottom-1 justify-content-between justify-content-sm-start bg-white" id="sidenavAccordion">
 		<button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0 pt-3" id="sidebarToggle"><i data-feather="menu"></i></button>
 		<a class="navbar-brand pe-3 ps-4 ps-lg-2" id="sync" href="<?= $this->BASE_URL ?>Log/sync"><?= strtoupper($this->userData['nama_toko']) ?></a>
-		<?php print_r($this->userData); ?>
 		<ul class="navbar-nav align-items-center ms-auto ms">
 			<!-- User Dropdown-->
 			<?php if (in_array($this->userData['user_tipe'], $this->pOffice)) { ?>
