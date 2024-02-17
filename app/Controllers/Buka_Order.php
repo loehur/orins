@@ -64,7 +64,12 @@ class Buka_Order extends Controller
          }
 
          if ($countDH[$key] == 0) {
-            $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
+            if (isset($data['order'][$key]['harga'])) {
+               $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
+            } else {
+               echo "Error! Transaction ID: " . $do['id_order_data'];
+               exit();
+            }
          }
       }
 
