@@ -41,13 +41,10 @@ class Buka_Order extends Controller
 
    public function content($parse = "")
    {
+      print_r($this->userData);
       $data['id_jenis_pelanggan'] = $parse;
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
-
-      if (is_array($data['order'])) {
-         echo "<br><br><br><br>" . print_r($data['order']);
-      }
 
       $data_harga = $this->model('M_DB_1')->get('produk_harga');
       $data['count'] = count($data['order']);
