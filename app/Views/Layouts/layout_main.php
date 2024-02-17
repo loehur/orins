@@ -336,7 +336,7 @@ $aff_c = count($aff_);
 				<!-- Sidenav Footer-->
 				<div class="sidenav-footer bg-light">
 					<div class="sidenav-footer-content">
-						<div class="sidenav-footer-subtitle">Logged in as:</div>
+						<div class="sidenav-footer-subtitle"><?= $this->userData['id_toko'] ?></div>
 						<div class="sidenav-footer-title"><?= $this->userData['nama'] ?></div>
 					</div>
 				</div>
