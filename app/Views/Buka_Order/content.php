@@ -12,6 +12,8 @@ if ($id_pelanggan_jenis == 1) {
 <main>
     <!-- Main page content-->
     <div class="container-fluid px-2">
+        <?php
+        print_r($data['line_order']) ?>
         <div class="card mt-2 shadow-none mb-1">
             <div class="card-header"><b><?= $pelanggan_jenis ?></b>
                 <?php if ($data['count'] <= 15) { ?>
