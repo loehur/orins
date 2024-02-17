@@ -48,11 +48,7 @@ class Buka_Order extends Controller
       $data_harga = $this->model('M_DB_1')->get('produk_harga');
       $data['count'] = count($data['order']);
       $getHarga = [];
-      $order_line = [];
       foreach ($data['order'] as $key => $do) {
-         array_push($order_line, $do['id_order_data']);
-         echo $do['id_order_data'];
-         exit();
          $detail_harga = unserialize($do['detail_harga']);
          if (is_array($detail_harga)) {
             $countDH[$key] = count($detail_harga);
@@ -69,7 +65,13 @@ class Buka_Order extends Controller
 
             if ($countDH[$key] == 0) {
                if (isset($data['order'][$key]['harga'])) {
-                  $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
+                  if (is_array($getHarga[$key])) {
+                     $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
+                     exit();
+                  } else {
+                     echo "Error! Transaction ID: " . $do['id_order_data'];
+                     exit();
+                  }
                } else {
                   echo "Error! Transaction ID: " . $do['id_order_data'];
                   exit();
@@ -80,8 +82,6 @@ class Buka_Order extends Controller
             exit();
          }
       }
-
-      $data['line_order'] = $order_line;
 
       $wherePelanggan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse;
       $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
