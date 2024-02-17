@@ -70,7 +70,7 @@ class Buka_Order extends Controller
                   if (isset($getHarga[$key]) && is_array($getHarga[$key])) {
                      $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
                   } else {
-                     array_push($data['errorID'], $do['id_order_data']);
+                     array_push($data['errorID'], ['id' => $do['id_order_data'], 'produk' => $do['produk']]);
                   }
                }
             }
