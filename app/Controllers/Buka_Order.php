@@ -51,6 +51,7 @@ class Buka_Order extends Controller
       $order_line = [];
       foreach ($data['order'] as $key => $do) {
          array_push($order_line, $do['id_order_data']);
+         echo $do['id_order_data'] . "-";
          $detail_harga = unserialize($do['detail_harga']);
          if (is_array($detail_harga)) {
             $countDH[$key] = count($detail_harga);
