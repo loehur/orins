@@ -85,6 +85,13 @@ class Buka_Order extends Controller
       $this->view($this->v_content, $data);
    }
 
+   function delete_error()
+   {
+      $id = $_POST['id'];
+      $where = "id_order_data = " . $id;
+      $this->model('M_DB_1')->delete_where('order_data', $where);
+   }
+
    function add($afiliasi = 0)
    {
       $this->dataSynchrone();

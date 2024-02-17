@@ -14,10 +14,11 @@ if ($id_pelanggan_jenis == 1) {
     <div class="container-fluid px-2">
         <?php
         if (count($data['errorID']) > 0) {
-            echo "Error! Transaction ID:<br>";
+            echo "<br>Error! Transaction ID:<br>";
             foreach ($data['errorID'] as $ei) { ?>
-                <?= $ei ?> <button class="rounded border-light">Delete</button><br>
+                <?= $ei ?> <button class="rounded border-light delError" data-id="<?= $ei ?>">Delete</button><br>
         <?php }
+            exit();
         }
         ?>
         <div class="card mt-2 shadow-none mb-1">
@@ -366,6 +367,15 @@ if ($id_pelanggan_jenis == 1) {
             }
         });
     });
+
+    $("button.delError").click(function() {
+        var id_ = $(this).attr("data-id");
+        $.post("<?= $this->BASE_URL ?>Buka_Order/delete_error", {
+            id: id_
+        }).done(function() {
+            location.reload(true);
+        })
+    })
 
     var click = 0;
     $("span.edit_n").on('dblclick', function() {
