@@ -369,7 +369,8 @@ if ($id_pelanggan_jenis == 1) {
     });
 
     $("button.delError").click(function() {
-        alert('halo');
+        var id_ = $(this).attr('data-id');
+        alert(id_);
         return;
         $.post("<?= $this->BASE_URL ?>Buka_Order/delete_error", {
                 id: id_
