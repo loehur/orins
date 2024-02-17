@@ -14,9 +14,9 @@ if ($id_pelanggan_jenis == 1) {
     <div class="container-fluid px-2">
         <?php
         if (count($data['errorID']) > 0) {
-            echo "<br><small class='text-danger'>Order Data Error! yang mungkin disebabkan Jaringan Terputus atau Pengaturan produk yang tidak Valid:</small><br>";
+            echo "<br><small class='text-danger'>Order Data Error! yang mungkin disebabkan jaringan terputus atau pengaturan produk yang tidak valid:</small><br>";
             foreach ($data['errorID'] as $k => $ei) { ?>
-                ID#<?= $ei['id'] ?> <?= $ei['produk'] ?> <button class="rounded border-light delError" data-id="<?= $ei['id'] ?>">Delete</button><br>
+                ID#<?= $ei['id'] ?> <?= $ei['produk'] ?> <button class="rounded border-light delError" data-id="<?= $ei['id'] ?>">Hapus</button><br>
             <?php }
         } else {
             ?>
