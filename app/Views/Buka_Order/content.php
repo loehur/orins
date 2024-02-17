@@ -14,7 +14,7 @@ if ($id_pelanggan_jenis == 1) {
     <div class="container-fluid px-2">
         <?php
         if (count($data['errorID']) > 0) {
-            echo "Error Transaction ID:<br>";
+            echo "Error! Transaction ID:<br>";
             foreach ($data['errorID'] as $ei) { ?>
                 <?= $ei ?> <button class="rounded border-light">Delete</button><br>
         <? }

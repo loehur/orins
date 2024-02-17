@@ -48,7 +48,7 @@ class Buka_Order extends Controller
       $data_harga = $this->model('M_DB_1')->get('produk_harga');
       $data['count'] = count($data['order']);
       $getHarga = [];
-      $errorID = [];
+      $data['errorID'] = [];
 
       foreach ($data['order'] as $key => $do) {
          $detail_harga = unserialize($do['detail_harga']);
@@ -71,17 +71,10 @@ class Buka_Order extends Controller
                      $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
                      exit();
                   } else {
-                     array_push($errorID, $do['id_order_data']);
-                     break;
+                     array_push($data['errorID'], $do['id_order_data']);
                   }
-               } else {
-                  echo "Error! Transaction ID: " . $do['id_order_data'];
-                  exit();
                }
             }
-         } else {
-            echo "Error! Transaction ID: " . $do['id_order_data'];
-            exit();
          }
       }
 
@@ -89,7 +82,6 @@ class Buka_Order extends Controller
       $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
       $data['karyawan'] = $this->dKaryawan;
       $data['harga'] = $getHarga;
-      $data['errorID'] = $errorID;
 
       $this->view($this->v_content, $data);
    }
