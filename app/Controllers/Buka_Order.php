@@ -20,6 +20,7 @@ class Buka_Order extends Controller
 
    public function index($jenis_pelanggan)
    {
+      print_r($this->userData);
       if ($jenis_pelanggan == 1) {
          $this->view("Layouts/layout_main", [
             "content" => $this->v_content,
@@ -41,7 +42,6 @@ class Buka_Order extends Controller
 
    public function content($parse = "")
    {
-      print_r($this->userData);
       $data['id_jenis_pelanggan'] = $parse;
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
