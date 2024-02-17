@@ -17,7 +17,7 @@ if ($id_pelanggan_jenis == 1) {
             echo "Error! Transaction ID:<br>";
             foreach ($data['errorID'] as $ei) { ?>
                 <?= $ei ?> <button class="rounded border-light">Delete</button><br>
-        <? }
+        <?php }
         }
         ?>
         <div class="card mt-2 shadow-none mb-1">

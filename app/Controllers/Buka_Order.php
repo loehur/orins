@@ -69,7 +69,6 @@ class Buka_Order extends Controller
                if (isset($data['order'][$key]['harga'])) {
                   if (is_array($getHarga[$key])) {
                      $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
-                     exit();
                   } else {
                      array_push($data['errorID'], $do['id_order_data']);
                   }
