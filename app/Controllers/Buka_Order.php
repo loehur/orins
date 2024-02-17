@@ -20,7 +20,6 @@ class Buka_Order extends Controller
 
    public function index($jenis_pelanggan)
    {
-      print_r($this->userData);
       if ($jenis_pelanggan == 1) {
          $this->view("Layouts/layout_main", [
             "content" => $this->v_content,
