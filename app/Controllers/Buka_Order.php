@@ -47,11 +47,12 @@ class Buka_Order extends Controller
       $data_harga = $this->model('M_DB_1')->get('produk_harga');
       $data['count'] = count($data['order']);
 
+      print_r($data['order']);
+
       $getHarga = [];
       $order_line = [];
       foreach ($data['order'] as $key => $do) {
          array_push($order_line, $do['id_order_data']);
-         echo $do['id_order_data'] . "-";
          $detail_harga = unserialize($do['detail_harga']);
          if (is_array($detail_harga)) {
             $countDH[$key] = count($detail_harga);
