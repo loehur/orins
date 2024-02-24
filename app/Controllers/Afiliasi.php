@@ -53,15 +53,15 @@ class Afiliasi extends Controller
       $where_kas = "id_kas = " . $id;
 
       if ($val == 1) {
-         $set = "tuntas = 0, note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+         $set = "note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
       } else {
-         $set = "tuntas = 0, note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
-
-         $set_ = "tuntas = 0";
-         $ref = $this->model('M_DB_1')->get_where_row("kas", $where_kas)['ref_transaksi'];
-         $where = "ref = '" . $ref . "'";
-         $this->model('M_DB_1')->update("order_data", $set_, $where);
+         $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
       }
+
+      $ref = $this->model('M_DB_1')->get_where_row("kas", $where_kas)['ref_transaksi'];
+      $where = "ref = '" . $ref . "'";
+      $set_ = "tuntas = 0";
+      $this->model('M_DB_1')->update("order_data", $set_, $where);
 
       $update = $this->model('M_DB_1')->update("kas", $set, $where_kas);
       echo $update['errno'];
@@ -75,10 +75,17 @@ class Afiliasi extends Controller
 
       foreach ($id as $i) {
          if ($val == 1) {
-            $set = "tuntas = 0, note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+            $set = "note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
          } else {
-            $set = "tuntas = 0, note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+            $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
          }
+
+         $where_kas = "id_kas = " . $id;
+         $ref = $this->model('M_DB_1')->get_where_row("kas", $where_kas)['ref_transaksi'];
+         $where = "ref = '" . $ref . "'";
+         $set_ = "tuntas = 0";
+         $this->model('M_DB_1')->update("order_data", $set_, $where);
+
          $where = "id_kas = " . $i;
          $update = $this->model('M_DB_1')->update("kas", $set, $where);
          if ($update['errno'] <> 0) {

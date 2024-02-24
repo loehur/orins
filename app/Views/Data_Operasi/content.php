@@ -15,11 +15,7 @@
                         <?php
                         $yNow = date("Y");
                         for ($x = 2023; $x <= $yNow; $x++) { ?>
-                            <option value="<?= $x ?>" <?php if ($data['parse_2'] == $x) {
-                                                            echo "selected";
-                                                        } elseif ($x == $yNow) {
-                                                            echo "selected";
-                                                        } ?>><?= $x ?></option>
+                            <option value="<?= $x ?>" <?= ($data['parse_2'] == $x) ? "selected" : "" ?>><?= $x ?></option>
                         <?php } ?>
                     </select>
                 </div>
