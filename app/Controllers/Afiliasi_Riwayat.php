@@ -73,9 +73,9 @@ class Afiliasi_Riwayat extends Controller
 
       foreach ($id as $i) {
          if ($val == 1) {
-            $set = "note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+            $set = "tuntas = 0, note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
          } else {
-            $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+            $set = "tuntas = 0, note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
          }
          $where = "id_kas = " . $i;
          $update = $this->model('M_DB_1')->update("kas", $set, $where);

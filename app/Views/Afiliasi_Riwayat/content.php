@@ -66,38 +66,22 @@
                                 </td>
                                 <?php
                                 $tuntas = $this->model("M_DB_1")->get_where_row("order_data", "ref = '" . $ref . "'")['tuntas'];
-                                if ($tuntas == 0) {
-                                    switch ($a['status_mutasi']) {
-                                        case 1:
+                                switch ($a['status_mutasi']) {
+                                    case 1:
                                 ?>
-                                            <td align="right">
-                                                <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
-                                                <br>
-                                                <span class="pe-2"><?= $a['note_office'] ?></span>
-                                            </td>
-                                        <?php break;
-                                        default: ?>
-                                            <td align="right">
-                                                <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
-                                                <br>
-                                                <span class="pe-2"><?= $a['note_batal'] ?></span>
-                                            </td>
-                                        <?php break;
-                                    }
-                                } else {
-                                    switch ($a['status_mutasi']) {
-                                        case 1:
-                                        ?>
-                                            <td align="right" class="text-secondary">
-                                                <small><span class="pe-2">Transaction Complete<br><?= $a['note_office'] ?></span></small>
-                                            </td>
-                                        <?php break;
-                                        default: ?>
-                                            <td align="right">
-                                                <small><span class="pe-2">Transaction Complete<br><?= $a['note_batal'] ?></span></small>
-                                            </td>
+                                        <td align="right" class="text-secondary">
+                                            <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
+                                            <br>
+                                            <small><span class="pe-2"><?= $a['note_office'] ?></span></small>
+                                        </td>
+                                    <?php break;
+                                    default: ?>
+                                        <td align="right" class="text-secondary">
+                                            <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
+                                            <br>
+                                            <small><span class="pe-2"><?= $a['note_batal'] ?></span></small>
+                                        </td>
                                 <?php break;
-                                    }
                                 }
                                 ?>
                             </tr>
