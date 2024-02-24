@@ -39,7 +39,7 @@ class Afiliasi extends Controller
       $where = "metode_mutasi = 3 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
       $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
 
-      $where = "metode_mutasi = 3 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 10";
+      $where = "metode_mutasi = 3 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 20";
       $data['kas_done'] = $this->model('M_DB_1')->get_where('kas', $where);
       $this->view($this->v_content, $data);
    }
@@ -53,9 +53,9 @@ class Afiliasi extends Controller
       $where_kas = "id_kas = " . $id;
 
       if ($val == 1) {
-         $set = "note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+         $set = "tuntas = 0, note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
       } else {
-         $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+         $set = "tuntas = 0, note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
 
          $set_ = "tuntas = 0";
          $ref = $this->model('M_DB_1')->get_where_row("kas", $where_kas)['ref_transaksi'];
@@ -75,9 +75,9 @@ class Afiliasi extends Controller
 
       foreach ($id as $i) {
          if ($val == 1) {
-            $set = "note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+            $set = "tuntas = 0, note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
          } else {
-            $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+            $set = "tuntas = 0, note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
          }
          $where = "id_kas = " . $i;
          $update = $this->model('M_DB_1')->update("kas", $set, $where);

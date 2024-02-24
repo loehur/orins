@@ -127,32 +127,6 @@
         });
     });
 
-    $("button.actionMulti").click(function() {
-        var note = prompt("Catatan", "");
-        if (note === null) {
-            return;
-        }
-
-        var id_ = $(this).attr("data-id");
-        var value = $(this).attr("data-val");
-        $.ajax({
-            url: "<?= $this->BASE_URL . $data['_c'] ?>/actionMulti",
-            data: {
-                id: id_,
-                val: value,
-                note: note
-            },
-            type: "POST",
-            success: function(result) {
-                if (result == 0) {
-                    content();
-                } else {
-                    alert(result);
-                }
-            },
-        });
-    });
-
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
         $("div#cekOrder").load('<?= $this->BASE_URL . $data['_c'] ?>/cekOrder/' + ref);

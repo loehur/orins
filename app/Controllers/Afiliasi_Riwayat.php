@@ -56,34 +56,13 @@ class Afiliasi_Riwayat extends Controller
       $note = $_POST['note'];
 
       if ($val == 1) {
-         $set = "note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+         $set = "tuntas = 0, note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
       } else {
-         $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+         $set = "tuntas = 0, note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
       }
       $where = "id_kas = " . $id;
       $update = $this->model('M_DB_1')->update("kas", $set, $where);
       echo $update['errno'];
-   }
-
-   function actionMulti()
-   {
-      $id = explode("_", $_POST['id']);
-      $val = $_POST['val'];
-      $note = $_POST['note'];
-
-      foreach ($id as $i) {
-         if ($val == 1) {
-            $set = "tuntas = 0, note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
-         } else {
-            $set = "tuntas = 0, note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
-         }
-         $where = "id_kas = " . $i;
-         $update = $this->model('M_DB_1')->update("kas", $set, $where);
-         if ($update['errno'] <> 0) {
-            echo $update['error'];
-            exit();
-         }
-      }
    }
 
    function cekOrder($ref)
