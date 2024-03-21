@@ -438,6 +438,7 @@
                                                         <option value="1">Tunai</option>
                                                     <?php } ?>
                                                     <option value="2">Non Tunai</option>
+                                                    <option value="3">Afiliasi</option>
                                                 </select>
                                             </td>
                                             <td id="clearCheck" valign="bottom" class="text-end text-info" style="cursor: pointer;">
