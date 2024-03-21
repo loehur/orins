@@ -134,6 +134,8 @@ class Data_Operasi extends Controller
 
       if (strlen($note) == 0 && $metode == 2) {
          $note = "Non_Tunai";
+      } elseif (strlen($note) == 0 && $metode == 3) {
+         $note = "Afiliasi";
       }
 
       $error = 0;
