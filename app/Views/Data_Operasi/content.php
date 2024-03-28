@@ -854,7 +854,7 @@
     });
 
     $("select.metodeBayar_multi").on("keyup change", function() {
-        if ($(this).val() == 2) {
+        if ($(this).val() == 2 || $(this).val() == 3) {
             $("tr#noteBayar_multi").show();
         } else {
             $("tr#noteBayar_multi").hide();
