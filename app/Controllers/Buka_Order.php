@@ -92,6 +92,26 @@ class Buka_Order extends Controller
       $this->model('M_DB_1')->delete_where('order_data', $where);
    }
 
+   function update_catatan()
+   {
+      $id = $_POST['id'];
+      $value = $_POST['value'];
+      $mode = $_POST['mode'];
+      $col = $_POST['col'];
+
+      if ($mode == "main") {
+         $do = $this->model("M_DB_1")->update("order_data", "note = '" . $value . "'", "id_order_data = " . $id);
+      } else {
+         $data = $this->model("M_DB_1")->get_where_row("order_data", "id_order_data = " . $id)['note_spk'];
+         $data = unserialize($data);
+         $data[$col] = $value;
+         $new_data = serialize($data);
+         $do = $this->model("M_DB_1")->update("order_data", "note_spk = '" . $new_data . "'", "id_order_data = " . $id);
+      }
+
+      echo $do['errno'] == 0 ? 1 : $do['error'];
+   }
+
    function add($afiliasi = 0)
    {
       $this->dataSynchrone();

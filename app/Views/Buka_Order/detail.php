@@ -1,4 +1,4 @@
-<div class="mb-2">
+<div class="mb-1">
     <div class="row pe-3">
         <?php foreach ($data['detail'] as $key => $d) {
         ?>
@@ -18,17 +18,24 @@
                 </select>
             </div>
         <?php  } ?>
-        <div class="col-md-6 mb-1">
-            <input type="number" min="1" value="1" name="jumlah" class="form-control" required>
-        </div>
     </div>
 </div>
-<div class="col px-0 mb-1">
-    <input type="text" name="note" placeholder="Catatan Utama" class="form-control form-control-sm">
+<div class="row mx-0 mb-3">
+    <div class="col text-center px-0 m-auto" style="max-width: 100px;">
+        <label for="qtyIn">Jumlah&nbsp;&nbsp;&nbsp;</label><br>
+        <input type="number" min="1" value="1" name="jumlah" class="form-control float-end text-center border-0 shadow-none" id="qtyIn" required>
+    </div>
+</div>
+<div class="row mx-0">
+    <div class="col px-0 mb-2" style="min-width: 200px;">
+        <input type="text" name="note" placeholder="Catatan Utama" class="form-control border-0 shadow-none form-control-sm">
+    </div>
 </div>
 <?php foreach ($data['spkNote'] as $key => $d) { ?>
-    <div class="col px-0 mb-1">
-        <input type="text" name="d-<?= $key ?>" placeholder="Catatan - <?= $this->model('Arr')->get($this->dDvsAll, "id_divisi", "divisi", $key) ?>" class="form-control form-control-sm">
+    <div class="row mx-0">
+        <div class="col px-0 mb-2" style="min-width: 200px;">
+            <input type="text" name="d-<?= $key ?>" placeholder="Catatan - <?= $this->model('Arr')->get($this->dDvsAll, "id_divisi", "divisi", $key) ?>" class="form-control border-0 shadow-none form-control-sm">
+        </div>
     </div>
 <?php  } ?>
 
