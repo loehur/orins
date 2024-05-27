@@ -296,7 +296,7 @@ if ($id_pelanggan_jenis == 1) {
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" required>Diskon Rp</label>
-                        <input type="number" min="1" name="diskon" class="form-control" required>
+                        <input type="number" min="0" name="diskon" class="form-control" required>
                         <input type="hidden" name="parse" class="form-control" required>
                     </div>
                 </div>
