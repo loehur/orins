@@ -58,18 +58,22 @@ class Data_Operasi extends Controller
       }
 
       $refs = array_column($data['order'], 'ref');
-      if (count($refs) > 0) {
-         $min_ref = min($refs);
-         $max_ref = max($refs);
+      $ref_list = "";
+      foreach ($refs as $r) {
+         $ref_list .= $r . ",";
+      }
+      $ref_list = rtrim($ref_list, ',');
 
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "')";
+      if (count($refs) > 0) {
+
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ")";
          $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
 
          $cols = "ref_bayar, sum(jumlah) as total, sum(bayar) as bayar, sum(kembali) as kembali, status_mutasi";
-         $where_2 = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "') GROUP BY ref_bayar";
+         $where_2 = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ") GROUP BY ref_bayar";
          $data['r_kas'] = $this->model('M_DB_1')->get_cols_where('kas', $cols, $where_2, 1);
 
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "')";
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
          $data['diskon'] = $this->model('M_DB_1')->get_where('xtra_diskon', $where);
       }
 
