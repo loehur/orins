@@ -44,6 +44,7 @@ class Data_Operasi extends Controller
       $data['parse'] = $parse;
       $data['parse_2'] = $parse_2;
       $data['kas'] = [];
+      $data['r_kas'] = [];
       $data['order'] = [];
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
 
@@ -63,6 +64,10 @@ class Data_Operasi extends Controller
 
          $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "')";
          $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
+
+         $cols = "ref_bayar, sum(jumlah) as total, sum(bayar) as bayar, sum(kembali) as kembali, status_mutasi";
+         $where_2 = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "') GROUP BY ref_bayar";
+         $data['r_kas'] = $this->model('M_DB_1')->get_cols_where('kas', $cols, $where_2, 1);
 
          $where = "id_toko = " . $this->userData['id_toko'] . " AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "')";
          $data['diskon'] = $this->model('M_DB_1')->get_where('xtra_diskon', $where);
@@ -123,7 +128,9 @@ class Data_Operasi extends Controller
       }
 
       $dibayar = $_POST['dibayar_multi'];
-      if (count($ref_multi) == 0) {
+
+      $count_ref = count($ref_multi);
+      if ($count_ref == 0) {
          echo "Tidak pembayaran yang di pilih";
          exit();
       }
@@ -141,6 +148,7 @@ class Data_Operasi extends Controller
       $error = 0;
       ksort($ref_multi);
       foreach ($ref_multi as $value) {
+         $count_ref -= 1;
 
          if ($dibayar == 0) {
             echo 0;
@@ -166,11 +174,19 @@ class Data_Operasi extends Controller
                break;
          }
 
+         if ($count_ref == 0) {
+            $bayarnya = $dibayar;
+            $kembalian = $dibayar - $jumlah;
+         } else {
+            $bayarnya = $jumlah;
+            $kembalian = 0;
+         }
+
          $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $metode . " AND status_mutasi = " . $status_mutasi;
          $dataCount = $this->model('M_DB_1')->count_where('kas', $whereCount);
 
-         $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar";
-         $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'";
+         $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali";
+         $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $bayarnya . "," . $kembalian;
 
          if ($dataCount < 1) {
             $do = $this->model('M_DB_1')->insertCols('kas', $cols, $vals);

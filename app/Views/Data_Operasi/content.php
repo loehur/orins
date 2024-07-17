@@ -84,20 +84,30 @@
                                         break;
                                 }
 
+                                $bayar = $dk['bayar'];
+                                $kembali = $dk['kembali'];
+                                if ($kembali > 0) {
+                                    $kembali_text = " (" . number_format($bayar) . "-" . number_format($kembali) . ")";
+                                } else {
+                                    $kembali_text = '';
+                                }
+
                                 switch ($dk['status_mutasi']) {
                                     case 0:
                                         $statusP = "<small class='text-warning'>Office Checking</small> ";
-                                        $showMutasi .= "<small>" . $metod . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
+                                        $jumlahShow = "-Rp" . number_format($dk['jumlah']) . "<br>";
                                         break;
                                     case 1:
                                         $statusP = '<small><i class="fa-solid fa-check text-success"></i></small> ';
-                                        $showMutasi .= "<small>" . $metod . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " -Rp" . number_format($dk['jumlah']) . "<br>";
+                                        $jumlahShow = "-Rp" . number_format($dk['jumlah']) . "<br>";
                                         break;
                                     default:
                                         $statusP = '<small><span class="text-danger">' . $dk['note_batal'] . '</span> <i class="fa-solid fa-xmark text-danger"></i></small> ';
-                                        $showMutasi .= "<small>" . $metod . "#" . $dk['id_kas'] . "</small> " . $dk['note'] . " " . $statusP .  " <del>-Rp" . number_format($dk['jumlah']) . "</del><br>";
+                                        $jumlahShow = "<del>-Rp" . number_format($dk['jumlah']) . "</del><br>";
                                         break;
                                 }
+
+                                $showMutasi .= "<small>" . $metod . "#" . $dk['id_kas'] . " " . $dk['note'] . " " . $statusP . $kembali_text . "</small> " . $jumlahShow;
                             }
                         }
 
@@ -418,6 +428,50 @@
         ?>
     </div>
 
+    <?php if (count($data['r_kas']) > 0) { ?>
+        <div class="row mt-2 me-2 ps-4">
+            <div class="col ps-0">
+                <div class="mb-1 text-success"><small>Riwayat Pembayaran</small></div>
+                <table class="table table-sm border">
+                    <thead>
+                        <tr class="table-light">
+                            <th>Tanggal</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-end">Dibayar</th>
+                            <th class="text-end">Kembalian</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <?php
+                    foreach ($data['r_kas'] as $rk) {
+                        $cl_tb = "";
+                        switch ($rk['status_mutasi']) {
+                            case 0:
+                                $statusP = "<small class='text-warning'>Office Checking</small> ";
+                                break;
+                            case 1:
+                                $statusP = '<small><i class="fa-solid fa-check text-success"></i></small> ';
+                                break;
+                            default:
+                                $statusP = '<small><span class="text-danger">' . $dk['note_batal'] . '</span> <i class="fa-solid fa-xmark text-danger"></i></small> ';
+                                $cl_tb = "table-secondary";
+                                break;
+                        } ?>
+                        <tr class="<?= $cl_tb ?>">
+                            <td><?= substr($rk['ref_bayar'], 0, 4) . "-" . substr($rk['ref_bayar'], 4, 2) . "-" . substr($rk['ref_bayar'], 6, 2) . " " . substr($rk['ref_bayar'], 8, 2) . ":" . substr($rk['ref_bayar'], 10, 2) ?></td>
+                            <td class="text-end"><?= number_format($rk['total']) ?></td>
+                            <td class="text-end"><?= number_format($rk['bayar']) ?></td>
+                            <td class="text-end"><?= number_format($rk['kembali']) ?></td>
+                            <td><?= $statusP ?></td>
+                        </tr>
+                    <?php }
+                    ?>
+
+                </table>
+            </div>
+        </div>
+    <?php } ?>
+
     <?php if (isset($do)) {
         if (($do['id_afiliasi'] == 0 || $do['id_afiliasi'] <> $this->userData['id_toko']) && $do['tuntas'] == 0) { ?>
             <div class="row row me-2 ps-4" id="loadMulti">
@@ -665,7 +719,7 @@
     </div>
 </form>
 
-<form action="<?= $this->BASE_URL; ?>Data_Order/bayar" method="POST">
+<form action="<?= $this->BASE_URL ?>Data_Order/bayar" method="POST">
     <div class="modal" id="exampleModal2">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -699,7 +753,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label">Kembalian (Rp)</label>
-                                <input type="number" class="form-control kembalian text-end" readonly>
+                                <input type="number" name="kembalian" class="form-control kembalian text-end" readonly>
                             </div>
                         </div>
                         <div class="row mb-2" id="noteBayar">

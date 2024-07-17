@@ -90,7 +90,12 @@ class Data_Order extends Controller
    function bayar()
    {
       $ref = $_POST['ref'];
+
       $jumlah = $_POST['jumlah'];
+
+      $dibayar = $jumlah;
+      $kembalian = $_POST['kembalian'];
+
       $bill = $_POST['bill'];
       $method = $_POST['method'];
       $client = $_POST['client'];
@@ -120,8 +125,8 @@ class Data_Order extends Controller
       $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $method . " AND status_mutasi = 0";
       $dataCount = $this->model('M_DB_1')->count_where('kas', $whereCount);
 
-      $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar";
-      $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $method . "," . $st_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'";
+      $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali";
+      $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $method . "," . $st_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $dibayar . "," . $kembalian;
 
       if ($dataCount < 1) {
          $do = $this->model('M_DB_1')->insertCols('kas', $cols, $vals);
