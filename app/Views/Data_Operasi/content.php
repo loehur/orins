@@ -428,7 +428,7 @@
         ?>
     </div>
 
-    <?php if (count($data['r_kas']) > 0) { ?>
+    <?php if (count($data['r_kas']) > 10000) { ?>
         <div class="row mt-2 me-2 ps-4">
             <div class="col ps-0">
                 <div class="mb-1 text-success"><small>Riwayat Pembayaran</small></div>
