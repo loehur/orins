@@ -389,8 +389,15 @@ class Buka_Order extends Controller
 
       $id_pelanggan = $_POST['id_pelanggan'];
       $id_karyawan = $_POST['id_karyawan'];
-      $ref = date("Ymdhis") . rand(0, 9);
 
+      $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%'";
+      $n =  $this->model('M_DB_1')->count_where('order_data', $where_n);
+      $n += 1;
+      $n = substr($n, -4);
+      $nv = str_pad($n, 4, "0", STR_PAD_LEFT);
+      $nv = $nv == '0000' ? '0001' : $nv;
+
+      $ref = date("Ym") . $nv;
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
       $data_harga = $this->model('M_DB_1')->get('produk_harga');

@@ -35,7 +35,7 @@
         <tr>
             <td><small>Pelanggan</small><br><b><?= strtoupper($pelanggan) ?></b></td>
             <td><small>CS</small><br><b><?= strtoupper($cs) ?></b></td>
-            <td style="text-align: right;"><small>Tanggal Order</small><br><b><?= $do['insertTime'] ?></b></td>
+            <td style="text-align: right;"><small>Tanggal Order</small><br><b><?= substr($do['insertTime'], 0, 16) ?></b></td>
             <td style="text-align: right;"><small>No. Referensi</small><br><b><?= substr($do['ref'], 0, -4) ?>-<span style="color: green;"><?= substr($do['ref'], -4) ?></span></b></td>
         </tr>
     </table>
