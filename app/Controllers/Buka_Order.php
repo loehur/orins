@@ -397,7 +397,7 @@ class Buka_Order extends Controller
       $nv = str_pad($n, 4, "0", STR_PAD_LEFT);
       $nv = $nv == '0000' ? '0001' : $nv;
 
-      $ref = date("Ym") . $nv;
+      $ref = $this->userData['id_toko'] . date("ym") . $nv;
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
       $data_harga = $this->model('M_DB_1')->get('produk_harga');
