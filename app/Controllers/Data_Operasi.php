@@ -69,7 +69,7 @@ class Data_Operasi extends Controller
          $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ")";
          $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
 
-         $cols = "ref_bayar, sum(jumlah) as total, sum(bayar) as bayar, sum(kembali) as kembali, status_mutasi";
+         $cols = "ref_bayar, metode_mutasi, sum(jumlah) as total, sum(bayar) as bayar, sum(kembali) as kembali, status_mutasi";
          $where_2 = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ") GROUP BY ref_bayar";
          $data['r_kas'] = $this->model('M_DB_1')->get_cols_where('kas', $cols, $where_2, 1);
 

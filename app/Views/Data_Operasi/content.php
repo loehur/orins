@@ -520,6 +520,7 @@
                     <thead>
                         <tr class="table-light">
                             <th>Tanggal</th>
+                            <th>Metode</th>
                             <th class="text-end">Total</th>
                             <th class="text-end">Dibayar</th>
                             <th class="text-end">Kembalian</th>
@@ -537,12 +538,26 @@
                                 $statusP = '<small><i class="fa-solid fa-check text-success"></i></small> ';
                                 break;
                             default:
-                                $statusP = '<small><span class="text-danger">' . $dk['note_batal'] . '</span> <i class="fa-solid fa-xmark text-danger"></i></small> ';
+                                $statusP = '<small><span class="text-danger"><i class="fa-solid fa-xmark text-danger"></i></small> ';
                                 $cl_tb = "table-secondary";
                                 break;
-                        } ?>
+                        }
+                        $metod = "";
+                        switch ($rk['metode_mutasi']) {
+                            case 1:
+                                $metod = "Tunai";
+                                break;
+                            case 2:
+                                $metod = "NonTunai";
+                                break;
+                            case 3:
+                                $metod = "Afiliasi";
+                                break;
+                        }
+                    ?>
                         <tr class="<?= $cl_tb ?>">
                             <td><?= substr($rk['ref_bayar'], 0, 4) . "-" . substr($rk['ref_bayar'], 4, 2) . "-" . substr($rk['ref_bayar'], 6, 2) . " " . substr($rk['ref_bayar'], 8, 2) . ":" . substr($rk['ref_bayar'], 10, 2) ?></td>
+                            <td><?= $metod ?></td>
                             <td class="text-end"><?= number_format($rk['total']) ?></td>
                             <td class="text-end"><?= number_format($rk['bayar']) ?></td>
                             <td class="text-end"><?= number_format($rk['kembali']) ?></td>
