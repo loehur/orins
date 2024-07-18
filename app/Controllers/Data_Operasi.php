@@ -106,6 +106,9 @@ class Data_Operasi extends Controller
       }
       $data['order'] = $data_fix;
 
+      $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC";
+      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKaryawan);
+
       $this->view($this->v_content, $data);
    }
 

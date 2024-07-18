@@ -77,9 +77,11 @@ class Buka_Order extends Controller
          }
       }
 
-      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse;
+      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse . " ORDER BY freq DESC";
       $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
-      $data['karyawan'] = $this->dKaryawan;
+
+      $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC";
+      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKaryawan);
       $data['harga'] = $getHarga;
 
       $this->view($this->v_content, $data);
@@ -118,6 +120,9 @@ class Buka_Order extends Controller
       $this->data();
 
       $id_produk = $_POST['id_produk'];
+      //update freq
+      $this->model('M_DB_1')->update("produk", "freq = freq+1", "id_produk = " . $id_produk);
+
       $jumlah = $_POST['jumlah'];
       $note = $_POST['note'];
 
@@ -156,6 +161,10 @@ class Buka_Order extends Controller
 
          $id_detail_item_ex = explode("#", $_POST['f-' . $d]);
          $id_item_ex = explode("-", $id_detail_item_ex[0]);
+
+         //update freq
+         $this->model('M_DB_1')->update("detail_item", "freq = freq+1", "id_detail_item = " . $id_item_ex[0]);
+
          $get_detail_item[$d]['id'] = $id_item_ex[0];
          $get_detail_item[$d]['name'] = $id_item_ex[1];
 
@@ -307,7 +316,7 @@ class Buka_Order extends Controller
          $groupName = "";
          foreach ($this->dDetailGroupAll as $dg) {
             if ($dg['id_index'] == $d) {
-               $where = "id_detail_group = " . $dg['id_detail_group'] . " ORDER BY detail_item ASC";
+               $where = "id_detail_group = " . $dg['id_detail_group'] . " ORDER BY freq DESC";
                $data_item = $this->model('M_DB_1')->get_where('detail_item', $where);
 
                foreach ($data_item as $di) {
@@ -386,16 +395,14 @@ class Buka_Order extends Controller
 
    function proses($id_pelanggan_jenis)
    {
-
       $id_pelanggan = $_POST['id_pelanggan'];
       $id_karyawan = $_POST['id_karyawan'];
 
       $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%'";
-      $n =  $this->model('M_DB_1')->count_where('order_data', $where_n);
+      $n =  $this->model('M_DB_1')->count_distinct_where('order_data', 'ref', $where_n);
       $n += 1;
       $n = substr($n, -4);
       $nv = str_pad($n, 4, "0", STR_PAD_LEFT);
-      $nv = $nv == '0000' ? '0001' : $nv;
 
       $ref = $this->userData['id_toko'] . date("ym") . $nv;
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
@@ -420,6 +427,11 @@ class Buka_Order extends Controller
             exit();
          }
       }
+
+      //updateFreq
+      $this->model('M_DB_1')->update("pelanggan", "freq = freq+1", "id_pelanggan = " . $id_pelanggan);
+      //updateFreqCS
+      $this->model('M_DB_1')->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
 
       $error = 0;
 

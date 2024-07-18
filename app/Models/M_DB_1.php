@@ -61,6 +61,11 @@ class M_DB_1
         return $this->db->count_where($table, $where);
     }
 
+    public function count_distinct_where($table, $distinct, $where)
+    {
+        return $this->db->count_distinct_where($table, $distinct, $where);
+    }
+
     //===========================================================
 
     public function insert($table, $values)

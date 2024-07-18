@@ -90,6 +90,9 @@ class Buka_Order_Aff extends Controller
    function proses($ref, $id_pelanggan_jenis)
    {
       $id_karyawan = $_POST['id_karyawan'];
+      //updateFreqCS
+      $this->model('M_DB_1')->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
+
       $where = "ref = '" . $ref . "' AND cancel = 0";
       $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
       $data_harga = $this->model('M_DB_1')->get('produk_harga');

@@ -77,18 +77,18 @@ class Controller extends Public_Variables
         $_SESSION['data_divisi_all'] = $this->model('M_DB_1')->get_order('divisi', "sort ASC");
         $_SESSION['spk_divisi'] = $this->model('M_DB_1')->get_where('spk_dvs', $whereToko);
         $_SESSION['spk_divisi_all'] = $this->model('M_DB_1')->get('spk_dvs');
-        $_SESSION['produk'] = $this->model('M_DB_1')->get_where('produk', $whereToko . " ORDER BY produk ASC");
-        $_SESSION['produk_all'] = $this->model('M_DB_1')->get_order('produk', 'produk ASC');
+        $_SESSION['produk'] = $this->model('M_DB_1')->get_where('produk', $whereToko . " ORDER BY freq DESC");
+        $_SESSION['produk_all'] = $this->model('M_DB_1')->get_order('produk', 'freq DESC');
         $_SESSION['detail_group'] = $this->model('M_DB_1')->get_where('detail_group', $whereToko . " ORDER BY sort ASC");
         $_SESSION['detail_group_all'] = $this->model('M_DB_1')->get_order('detail_group', "sort ASC");
         $_SESSION['detail_item'] = $this->model('M_DB_1')->get_where('detail_item', $whereToko . " ORDER BY detail_item ASC");
         $_SESSION['detail_item_all'] = $this->model('M_DB_1')->get_order('detail_item', "detail_item ASC");
         $_SESSION['data_user'] = $this->model('M_DB_1')->get('user', $whereToko);
 
-        $wherePel = $whereToko . " AND en = 1";
+        $wherePel = $whereToko . " AND en = 1 ORDER BY freq DESC";
         $_SESSION['data_pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePel);
 
-        $wherePelAll = "en = 1";
+        $wherePelAll = "en = 1 ORDER BY freq DESC";
         $_SESSION['data_pelanggan_all'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelAll);
 
         $_SESSION['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereToko . " AND en = 1");

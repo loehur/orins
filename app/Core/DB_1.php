@@ -177,6 +177,19 @@ class DB_1 extends DB_Config
         }
     }
 
+    public function count_distinct_where($table, $distinct, $where)
+    {
+        $query =  "SELECT COUNT(DISTINCT $distinct) as count FROM $table WHERE $where";
+        $result = $this->mysqli->query($query);
+
+        $reply = $result->fetch_array();
+        if ($reply) {
+            return $reply['count'];
+        } else {
+            return array('query' => $query, 'info' => $this->mysqli->error);
+        }
+    }
+
     public function query($query)
     {
         $runQuery = $this->mysqli->query($query);

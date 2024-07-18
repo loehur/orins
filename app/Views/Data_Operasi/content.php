@@ -587,7 +587,7 @@
                                 <input type="hidden" name="ambil_ref">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
-                                    <?php foreach ($this->dKaryawan as $k) { ?>
+                                    <?php foreach ($data['karyawan'] as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
                                     <?php } ?>
                                 </select>
@@ -620,7 +620,7 @@
                                 <input type="hidden" name="ambil_id">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
-                                    <?php foreach ($this->dKaryawan as $k) { ?>
+                                    <?php foreach ($data['karyawan'] as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
                                     <?php } ?>
                                 </select>

@@ -143,6 +143,8 @@ class Data_Order extends Controller
    {
       $id = $_POST['ambil_id'];
       $karyawan = $_POST['id_karyawan'];
+      //updateFreqCS
+      $this->model('M_DB_1')->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
 
       $where = "id_order_data = " . $id;
       $dateNow = date("Y-m-d H:i:s");
@@ -185,6 +187,8 @@ class Data_Order extends Controller
    {
       $ref = $_POST['ambil_ref'];
       $karyawan = $_POST['id_karyawan'];
+      //updateFreqCS
+      $this->model('M_DB_1')->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
 
       $where = "ref = '" . $ref . "' AND id_ambil = 0";
       $dateNow = date("Y-m-d H:i:s");

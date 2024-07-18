@@ -13,7 +13,7 @@ class Cron extends Controller
    function tes()
    {
       //id_toko = " . $this->userData['id_toko']
-      $where_count = "insertTime LIKE '" . date("Y") . "-%'";
+      $where_count = "insertTime LIKE '2023-%' GROUP BY ref";
       $count_order =  $this->model('M_DB_1')->count_where('order_data', $where_count);
 
       $n = $count_order;
