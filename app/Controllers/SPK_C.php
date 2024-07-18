@@ -42,7 +42,9 @@ class SPK_C extends Controller
    {
       $data['parse'] = $parse;
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-      $data['karyawan'] = $this->dKaryawan;
+
+      $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_pro DESC";
+      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKaryawan);
 
       $dvs = '"D-' . $parse . '"';
 
@@ -85,6 +87,9 @@ class SPK_C extends Controller
    function done($id_divisi)
    {
       $karyawan = $_POST['id_karyawan'];
+      //updateFreqPro
+      $this->model('M_DB_1')->update("karyawan", "freq_pro = freq_pro+1", "id_karyawan = " . $karyawan);
+
       $id = $_POST['id'];
       $tahap = $_POST['mode'];
       $date = date("Y-m-d h:i:s");

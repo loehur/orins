@@ -462,7 +462,7 @@ if ($id_pelanggan_jenis == 1) {
                 click = 0;
             } else {
                 $.ajax({
-                    url: '<?= $this->BASE_URL ?>/Buka_Order/update_catatan',
+                    url: '<?= $this->BASE_URL ?>Buka_Order/update_catatan',
                     data: {
                         'id': id,
                         'mode': mode,

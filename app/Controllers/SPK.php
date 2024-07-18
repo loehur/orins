@@ -43,7 +43,9 @@ class SPK extends Controller
       $data['id_divisi'] = $parse;
 
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
+
+      $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_pro DESC";
+      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKaryawan);
 
       $dvs = '"D-' . $parse . '"';
       $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND cancel = 0 AND spk_dvs LIKE '%" . $dvs . "%' ORDER BY id_order_data DESC";
@@ -166,7 +168,10 @@ class SPK extends Controller
 
       $data['order'] = $data_;
       $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-      $data['karyawan'] = $this->dKaryawan;
+
+      $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_pro DESC";
+      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKaryawan);
+
       $data['parse'] = $parse;
       $this->view($this->page . "/cek", $data);
    }
@@ -174,6 +179,15 @@ class SPK extends Controller
    function updateSPK($id_divisi, $tahap = 1)
    {
       $karyawan = $_POST['id_karyawan'];
+
+      if (!isset($_POST['cek'])) {
+         echo "Ceklis terlebih orderan yang ingin diselesaikan";
+         exit();
+      }
+
+      //updateFreqPro
+      $this->model('M_DB_1')->update("karyawan", "freq_pro = freq_pro+1", "id_karyawan = " . $karyawan);
+
       $cek = $_POST['cek'];
       $date = date("Y-m-d h:i:s");
 

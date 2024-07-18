@@ -69,7 +69,7 @@
                         <label class="form-label">User Produksi</label>
                         <select class="border tize" name="id_karyawan" required>
                             <option></option>
-                            <?php foreach ($this->dKaryawan as $k) { ?>
+                            <?php foreach ($data['karyawan'] as $k) { ?>
                                 <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
                             <?php } ?>
                         </select>
@@ -98,7 +98,7 @@
                         <label class="form-label">User Produksi</label>
                         <select class="form-select tize" name="id_karyawan" required>
                             <option></option>
-                            <?php foreach ($this->dKaryawan as $k) {
+                            <?php foreach ($data['karyawan'] as $k) {
                                 if ($k['id_toko'] == $this->userData['id_toko']) { ?>
                                     <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
                             <?php }
@@ -126,7 +126,6 @@
             <form action="<?= $this->BASE_URL ?>SPK/updateSPK/<?= $data['id_divisi'] ?>" method="POST">
                 <div class="modal-body">
                     <div class="col" id="cekSelesai"></div>
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
