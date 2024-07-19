@@ -24,16 +24,11 @@
                             $spkCount = 0;
                             $id_order_data = $do['id_order_data'];
                             $id_produk = $do['id_produk'];
+                            $produk = ucwords($do['produk']);
                             $detail_arr = unserialize($do['produk_detail']);
                             $detail = "";
                             foreach ($detail_arr as $da) {
                                 $detail .= $da['detail_name'] . ", ";
-                            }
-
-                            foreach ($this->dProduk as $dp) {
-                                if ($dp['id_produk'] == $id_produk) {
-                                    $produk = $dp['produk'];
-                                }
                             }
 
                             $divisi_arr = unserialize($do['spk_dvs']);
@@ -99,12 +94,13 @@
                                     <table class="float-start">
                                         <tr>
                                             <td class="pe-1">
+                                                <span class="text-success"><?= $produk ?></span><br>
                                                 <?php
                                                 foreach ($detail_arr as $da) { ?>
                                                     <?= strtoupper($da['detail_name']) ?>
                                                 <?php } ?>
                                             </td>
-                                            <td class="text-end text-purple pe-2" style="width:40px"><b><?= number_format($do['jumlah']) ?></b>pcs</td>
+                                            <td valign="bottom" class="text-end text-purple pe-2" style="width:40px"><b><?= number_format($do['jumlah']) ?></b>pcs</td>
                                         </tr>
                                         <?php
                                         if (strlen($do['note']) > 0 || strlen($do['note_spk']) > 0) { ?>

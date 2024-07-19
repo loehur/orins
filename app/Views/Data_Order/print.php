@@ -64,11 +64,7 @@
             $detail_arr = unserialize($do['produk_detail']);
             $listDetail = unserialize($do['detail_harga']);
 
-            foreach ($this->dProduk as $dp) {
-                if ($dp['id_produk'] == $id_produk) {
-                    $produk = $dp['produk'];
-                }
-            }
+            $produk = ucwords($do['produk']);
 
             if ($no == 1) {
                 foreach ($data['diskon'] as $ds) {
@@ -103,16 +99,17 @@
         ?>
 
             <tr style="border-bottom: 1px solid grey;">
-                <td style="text-align: right; vertical-align:text-top; padding-top:2px">
+                <td style="text-align: right; vertical-align:text-top;" valign="top">
                     <?= $no ?>.
                 </td>
                 <td style="padding-right: 5px;" valign='top'>
+                    <?= $produk ?><br>
                     <?php
                     foreach ($detail_arr as $da) { ?>
-                        <table class="border-bottom" style="float: left;">
+                        <table class="border-bottom" style="float: left;margin:0;padding:0">
                             <tr>
-                                <td class="pe-1" nowrap>
-                                    <?= "<small>" . $da['group_name'] . "</small> <br>" . strtoupper($da['detail_name']) ?>
+                                <td class="pe-1" nowrap style="padding:0;">
+                                    <?= "<small>" . ucwords($da['group_name']) . "</small> <br>" . strtoupper($da['detail_name']) ?>
                                 </td>
                             </tr>
                         </table>
