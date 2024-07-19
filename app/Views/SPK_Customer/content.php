@@ -32,11 +32,7 @@
                                     $detail .= $da['detail_name'] . ", ";
                                 }
 
-                                foreach ($this->dProduk as $dp) {
-                                    if ($dp['id_produk'] == $id_produk) {
-                                        $produk = $dp['produk'];
-                                    }
-                                }
+                                $produk = ucwords($do['produk']);
 
                                 $divisi_arr = unserialize($do['spk_dvs']);
                                 $divisi = [];
@@ -101,12 +97,13 @@
                                         <table class="float-start">
                                             <tr>
                                                 <td class="pe-1">
+                                                    <span class="text-success"><?= $produk ?></span><br>
                                                     <?php
                                                     foreach ($detail_arr as $da) { ?>
                                                         <?= strtoupper($da['detail_name']) ?>
                                                     <?php } ?>
                                                 </td>
-                                                <td class="text-end text-purple pe-2" style="width:40px"><b><?= number_format($do['jumlah']) ?></b>pcs</td>
+                                                <td valign="bottom" class="text-end text-purple pe-2" style="width:40px"><b><?= number_format($do['jumlah']) ?></b>pcs</td>
                                             </tr>
                                             <?php
                                             if (strlen($do['note']) > 0 || strlen($do['note_spk']) > 0) { ?>
@@ -206,6 +203,9 @@
     $('select.cek').change(function() {
         var parse = <?= $parse ?>;
         var parse_2 = $(this).val();
+        if (parse_2 == "") {
+            return;
+        }
         $("div#content").load('<?= $this->BASE_URL ?>SPK_Customer/content/' + parse + '/' + parse_2);
     });
 
