@@ -89,6 +89,9 @@ class SPK_Customer extends Controller
       $where = "id_order_data = " . $id;
       $data = unserialize($this->model('M_DB_1')->get_where_row('order_data', $where)['spk_dvs']);
 
+      //updateFreqPro
+      $this->model('M_DB_1')->update("karyawan", "freq_pro = freq_pro+1", "id_karyawan = " . $karyawan);
+
       if ($tahap == 1) {
          $data[$id_divisi]["status"] = 1;
          $data[$id_divisi]["user_produksi"] = $karyawan;
