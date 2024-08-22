@@ -81,8 +81,7 @@
                                             <td></td>
                                             <td></td>
                                             <td class="pe-0" align="right"><button data-id="<?= $id_multi ?>" data-val="1" class="border-0 actionMulti btn btn-sm btn-outline-primary">Multi Verify - <b>Rp<?= number_format($total) ?></b></button></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td colspan="2" class="pe-0" align="right"><button data-id="<?= $id_multi ?>" data-val="2" class="border-0 actionMulti btn btn-sm btn-outline-danger">Multi Reject - <b>Rp<?= number_format($total) ?></b></button></td>
                                         </tr>
                                     <?php
                                     }
