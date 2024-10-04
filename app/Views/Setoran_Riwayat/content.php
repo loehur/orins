@@ -21,6 +21,9 @@
                             case 1:
                                 $st_setor = "<span class='text-success'><i class='fa-solid fa-circle-check'></i> Verified</span>";
                                 break;
+                            default:
+                                $st_setor = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
+                                break;
                         }
                     ?>
                         <tr>

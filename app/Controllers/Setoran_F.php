@@ -39,16 +39,16 @@ class Setoran_F extends Controller
       $data['setor'] = $this->model('M_DB_1')->get_cols_where('kas', $cols, $where, 1);
 
       $cols = "id_toko, ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran = 1 GROUP BY id_toko, ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
+      $where = "status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY id_toko, ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
       $data['setor_done'] = $this->model('M_DB_1')->get_cols_where('kas', $cols, $where, 1);
 
       $this->view($this->v_content, $data);
    }
 
-   function setor()
+   function setor($status)
    {
       $ref = $_POST['ref'];
-      $set = "status_setoran = 1, id_finance_setoran = " . $this->userData['id_user'];
+      $set = "status_setoran = " . $status . ", id_finance_setoran = " . $this->userData['id_user'];
       $where = "ref_setoran = '" . $ref . "'";
       $update = $this->model('M_DB_1')->update("kas", $set, $where);
       echo $update['errno'];

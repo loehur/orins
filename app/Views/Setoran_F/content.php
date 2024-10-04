@@ -23,6 +23,9 @@
                                 <td style="width: 80px;">
                                     <button data-id="<?= $set['ref_setoran'] ?>" data-val="1" class="verify btn btn-sm shadow-sm btn-primary bg-gradient rounded-pill">Verify</button>
                                 </td>
+                                <td class="text-end">
+                                    <button data-id="<?= $set['ref_setoran'] ?>" data-val="2" class="verify btn btn-sm shadow-sm btn-outline-danger bg-gradient rounded-pill">Reject</button>
+                                </td>
                             </tr>
                         <?php } ?>
                     </table>
@@ -47,6 +50,9 @@
                                 break;
                             case 1:
                                 $st_setor = "<span class='text-success'><i class='fa-solid fa-circle-check'></i> Verified</span>";
+                                break;
+                            default:
+                                $st_setor = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
                                 break;
                         }
 
@@ -80,9 +86,10 @@
 
 <script>
     $("button.verify").click(function() {
+        var val = $(this).attr('data-val');
         var ref_ = $(this).attr('data-id');
         $.ajax({
-            url: "<?= $this->BASE_URL ?>Setoran_F/setor",
+            url: "<?= $this->BASE_URL ?>Setoran_F/setor/" + val,
             data: {
                 ref: ref_
             },
