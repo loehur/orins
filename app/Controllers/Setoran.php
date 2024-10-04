@@ -59,6 +59,15 @@ class Setoran extends Controller
       echo $update['errno'];
    }
 
+   function setor_masalah()
+   {
+      $ref = date("Ymdhis") . rand(0, 9);
+      $set = "ref_setoran = '" . $ref . "', status_setoran = 0";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND status_setoran = 2";
+      $update = $this->model('M_DB_1')->update("kas", $set, $where);
+      echo $update['errno'];
+   }
+
    function cek($ref_setor)
    {
       $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];

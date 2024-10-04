@@ -1,5 +1,6 @@
 <main>
     <?php $total = 0 ?>
+    <?php $total_masalah = 0 ?>
     <?php if (count($data['kas']) > 0) { ?>
         <div class="p-2 ms-3 mt-3 me-3 bg-white">
             <div class="row mb-1">
@@ -58,6 +59,21 @@
             </div>
         </div>
     <?php } ?>
+
+    <?php if ($total > 0) { ?>
+        <div class="pe-2 pb-0 ms-3 me-3 bg-white">
+            <div class="row">
+                <div class="col">
+                    <table class="table table-sm table-borderless mb-2">
+                        <tr>
+                            <td class="text-end text-success"><button id="setor" class="btn btn-outline-success">Buat Setoran: <b class="ms-2">Total Rp<?= number_format($total) ?></b></button></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
+
     <?php if (count($data['kas_reject']) > 0) { ?>
         <div class="p-2 ms-3 mt-3 me-3 bg-white">
             <div class="row mb-1">
@@ -84,7 +100,7 @@
                             $client = $a['id_client'];
                             $jumlah = $a['jumlah'];
                             if ($a['status_mutasi'] == 1) {
-                                $total += $jumlah;
+                                $total_masalah += $jumlah;
                             }
                             $pelanggan = "Non";
                             foreach ($data['pelanggan'] as $dp) {
@@ -116,13 +132,13 @@
             </div>
         </div>
     <?php } ?>
-    <?php if ($total > 0) { ?>
-        <div class="pt-2 pe-2 pb-0 ms-3 mt-3 me-3 bg-white">
+    <?php if ($total_masalah > 0) { ?>
+        <div class="pe-2 pb-0 ms-3 me-3 bg-white">
             <div class="row">
                 <div class="col">
                     <table class="table table-sm table-borderless mb-2">
                         <tr>
-                            <td class="text-end text-success"><button id="setor" class="btn btn-outline-success">Buat Setoran: <b class="ms-2">Total Rp<?= number_format($total) ?></b></button></td>
+                            <td class="text-end text-success"><button id="setor_masalah" class="btn btn-outline-danger">Buat Setoran Ulang: <b class="ms-2">Total Rp<?= number_format($total_masalah) ?></b></button></td>
                         </tr>
                     </table>
                 </div>
@@ -207,6 +223,21 @@
     $("button#setor").click(function() {
         $.ajax({
             url: "<?= $this->BASE_URL ?>Setoran/setor",
+            data: [],
+            type: "POST",
+            success: function(result) {
+                if (result == 0) {
+                    content();
+                } else {
+                    alert(result);
+                }
+            },
+        });
+    });
+
+    $("button#setor_masalah").click(function() {
+        $.ajax({
+            url: "<?= $this->BASE_URL ?>Setoran/setor_masalah",
             data: [],
             type: "POST",
             success: function(result) {
