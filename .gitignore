@@ -1,0 +1,6 @@
+.htaccess
+app/Config/
+*copy*
+error_log
+logs/
+*ENC_PRIVATE*
