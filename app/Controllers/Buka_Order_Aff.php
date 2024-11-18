@@ -7,7 +7,7 @@ class Buka_Order_Aff extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
 
       if (!in_array($this->userData['user_tipe'], $this->pCS)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
@@ -15,7 +15,7 @@ class Buka_Order_Aff extends Controller
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index($ref)
@@ -31,14 +31,14 @@ class Buka_Order_Aff extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["page" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
    }
 
    public function content($parse = "")
    {
       $where = "ref = '" . $parse . "' AND cancel = 0 AND id_penerima <> 0 AND id_user_afiliasi = 0 AND id_afiliasi = " . $this->userData['id_toko'];
-      $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
-      $data_harga = $this->model('M_DB_1')->get('produk_harga');
+      $data['order'] = $this->db(0)->get_where('order_data', $where);
+      $data_harga = $this->db(0)->get('produk_harga');
       $data['count'] = count($data['order']);
 
       $getHarga = [];
@@ -64,7 +64,7 @@ class Buka_Order_Aff extends Controller
          }
 
          $data['pelanggan'] = $do['id_pelanggan'];
-         $data['pelanggan_'] = $this->model('M_DB_1')->get('pelanggan');
+         $data['pelanggan_'] = $this->db(0)->get('pelanggan');
          $data['pelanggan_nama'] = "";
          foreach ($data['pelanggan_'] as $pl) {
             if ($pl['id_pelanggan'] == $data['pelanggan']) {
@@ -77,7 +77,7 @@ class Buka_Order_Aff extends Controller
 
       $data['harga'] = $getHarga;
       $data['parse'] = $parse;
-      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
+      $data['karyawan'] = $this->db(0)->get('karyawan');
       foreach ($data['karyawan'] as $dk) {
          if ($dk['id_karyawan'] == $data['pengirim']) {
             $data['pengirim'] = $dk['nama'];
@@ -91,11 +91,11 @@ class Buka_Order_Aff extends Controller
    {
       $id_karyawan = $_POST['id_karyawan'];
       //updateFreqCS
-      $this->model('M_DB_1')->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
+      $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
 
       $where = "ref = '" . $ref . "' AND cancel = 0";
-      $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
-      $data_harga = $this->model('M_DB_1')->get('produk_harga');
+      $data['order'] = $this->db(0)->get_where('order_data', $where);
+      $data_harga = $this->db(0)->get('produk_harga');
 
       $error = 0;
       foreach ($data['order'] as $do) {
@@ -112,7 +112,7 @@ class Buka_Order_Aff extends Controller
          }
          $where = "id_order_data = " . $do['id_order_data'];
          $set = "detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_user_afiliasi = " . $id_karyawan . ", status_order = 0";
-         $update = $this->model('M_DB_1')->update("order_data", $set, $where);
+         $update = $this->db(0)->update("order_data", $set, $where);
          $error = $update['errno'];
       }
 

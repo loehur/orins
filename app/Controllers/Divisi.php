@@ -7,7 +7,7 @@ class Divisi extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
 
       if (!in_array($this->userData['user_tipe'], $this->pAdmin)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
@@ -16,7 +16,7 @@ class Divisi extends Controller
 
       $this->v_load = $this->page . "/load";
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index()
@@ -31,14 +31,14 @@ class Divisi extends Controller
 
    public function viewer()
    {
-      $this->view($this->v_viewer, ["page" => $this->page]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => ""]);
    }
 
    public function content()
    {
 
       $where = "id_toko = " . $this->userData['id_toko'];
-      $data = $this->model('M_DB_1')->get_where('divisi', $where);
+      $data = $this->db(0)->get_where('divisi', $where);
       $this->view($this->v_content, $data);
    }
 
@@ -49,9 +49,9 @@ class Divisi extends Controller
       $vals = "'" . $this->userData['id_toko'] . "','" . $dvs . "'";
 
       $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND divisi = '" . $dvs . "'";
-      $dataCount = $this->model('M_DB_1')->count_where('divisi', $whereCount);
+      $dataCount = $this->db(0)->count_where('divisi', $whereCount);
       if ($dataCount <> 1) {
-         $do = $this->model('M_DB_1')->insertCols('divisi', $cols, $vals);
+         $do = $this->db(0)->insertCols('divisi', $cols, $vals);
          if ($do['errno'] == 0) {
             $this->model('Log')->write($this->userData['user'] . " Add Divisi Success!");
             echo $do['errno'];

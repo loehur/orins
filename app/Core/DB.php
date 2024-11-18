@@ -1,25 +1,27 @@
 <?php
-require_once 'app/Config/DB_Config.php';
+require_once 'app/Config/DBC.php';
 
-class DB_1 extends DB_Config
+class DB extends DBC
 {
-    private static $_instance = null;
+    private static $_instance = [0 => null];
     private $mysqli;
-    public $db_pass;
+    private $db_name, $db_user, $db_pass;
 
-    public function __construct()
+    public function __construct($db = 0)
     {
-        $this->db_pass =  $_SESSION['secure']['db_pass'];
-        $this->mysqli = new mysqli($this->db_host, $this->db_user, $this->db_pass, $this->db_name) or die('DB Error');
+        $this->db_name = DBC::dbm[$db]['db'];
+        $this->db_user = DBC::dbm[$db]['user'];
+        $this->db_pass = DBC::dbm[$db]['pass'];
+        $this->mysqli = new mysqli(DBC::db_host, $this->db_user, $this->db_pass, $this->db_name) or die('DB Error');
     }
 
-    public static function getInstance()
+    public static function getInstance($db = 0)
     {
-        if (!isset(self::$_instance)) {
-            self::$_instance = new DB_1();
+        if (!isset(self::$_instance[$db])) {
+            self::$_instance[$db] = new DB($db);
         }
 
-        return self::$_instance;
+        return self::$_instance[$db];
     }
 
     public function get($table)
@@ -40,8 +42,10 @@ class DB_1 extends DB_Config
         $query = "SELECT * FROM $table WHERE $where";
         $result = $this->mysqli->query($query);
 
-        while ($row = $result->fetch_assoc())
-            $reply[] = $row;
+        if ($result) {
+            while ($row = $result->fetch_assoc())
+                $reply[] = $row;
+        }
 
         return $reply;
     }
@@ -55,13 +59,17 @@ class DB_1 extends DB_Config
             switch ($row) {
                 case "0":
                     $reply = $result->fetch_assoc();
-                    return $reply;
                     break;
                 case "1";
                     while ($data = $result->fetch_assoc())
                         $reply[] = $data;
-                    return $reply;
                     break;
+            }
+
+            if (is_array($reply)) {
+                return $reply;
+            } else {
+                return [];
             }
         } else {
             return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
@@ -112,9 +120,13 @@ class DB_1 extends DB_Config
         $result = $this->mysqli->query($query);
         $reply = $result->fetch_assoc();
         if ($result) {
-            return $reply;
+            if (is_array($reply)) {
+                return $reply;
+            } else {
+                return [];
+            }
         } else {
-            return array('query' => $query, 'info' => $this->mysqli->error);
+            return [];
         }
     }
 
@@ -132,37 +144,23 @@ class DB_1 extends DB_Config
     public function insertCols($table, $columns, $values)
     {
         $query = "INSERT INTO $table($columns) VALUES($values)";
-        $run = $this->mysqli->query($query);
+        $this->mysqli->query($query);
         return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
     }
 
     public function delete_where($table, $where)
     {
         $query = "DELETE FROM $table WHERE $where";
-        $run = $this->mysqli->query($query);
+        $this->mysqli->query($query);
         return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
     }
 
     public function update($table, $set, $where)
     {
         $query = "UPDATE $table SET $set WHERE $where";
-        $run = $this->mysqli->query($query);
-        return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
+        $this->mysqli->query($query);
+        return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno, 'db' => $this->db_name);
     }
-
-    public function count($table)
-    {
-        $query = "SELECT COUNT(*) as count FROM $table";
-        $result = $this->mysqli->query($query);
-
-        $reply = $result->fetch_assoc();
-        if ($reply) {
-            return $reply['count'];
-        } else {
-            return array('query' => $query, 'info' => $this->mysqli->error);
-        }
-    }
-
 
     public function count_where($table, $where)
     {
@@ -280,7 +278,7 @@ class DB_1 extends DB_Config
         if ($result) {
             return $reply["Total"];
         } else {
-            return array('query' => $query, 'info' => $this->mysqli->error);
+            return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno, 'db' => $this->db_name);
         }
     }
 }

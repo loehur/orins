@@ -1,12 +1,13 @@
 <?php
 
-class M_DB_1
+class M_DB
 {
     private $db;
 
-    public function __construct()
+    public function __construct($db = 0)
     {
-        $this->db = DB_1::getInstance();
+        $this->db[$db] = DB::getInstance($db);
+        $this->db = $this->db[$db];
     }
 
     public function query($query)
@@ -51,16 +52,10 @@ class M_DB_1
     }
 
     //====================================================== COUNT//
-    public function count($table)
-    {
-        return $this->db->count($table);
-    }
-
     public function count_where($table, $where)
     {
         return $this->db->count_where($table, $where);
     }
-
     public function count_distinct_where($table, $distinct, $where)
     {
         return $this->db->count_distinct_where($table, $distinct, $where);

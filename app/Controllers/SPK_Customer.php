@@ -7,14 +7,14 @@ class SPK_Customer extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
       if (!in_array($this->userData['user_tipe'], $this->pProduksi)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index($parse)
@@ -35,7 +35,7 @@ class SPK_Customer extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["page" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
    }
 
    public function content($parse = "", $customer = "")
@@ -44,13 +44,13 @@ class SPK_Customer extends Controller
       $data['customer'] = $customer;
 
       if ($customer <> '') {
-         $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', "id_pelanggan = " . $customer);
+         $data['pelanggan'] = $this->db(0)->get_where('pelanggan', "id_pelanggan = " . $customer);
          $data['karyawan'] = $this->dKaryawan;
 
          $dvs = '"D-' . $parse . '"';
 
          $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $customer . " AND cancel = 0 AND tuntas = 0 AND spk_dvs LIKE '%" . $dvs . "%' ORDER BY id_order_data DESC";
-         $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
+         $data['order'] = $this->db(0)->get_where('order_data', $where);
 
          $data_ = [];
          foreach ($data['order'] as $key => $do) {
@@ -87,10 +87,10 @@ class SPK_Customer extends Controller
       $date = date("Y-m-d h:i:s");
 
       $where = "id_order_data = " . $id;
-      $data = unserialize($this->model('M_DB_1')->get_where_row('order_data', $where)['spk_dvs']);
+      $data = unserialize($this->db(0)->get_where_row('order_data', $where)['spk_dvs']);
 
       //updateFreqPro
-      $this->model('M_DB_1')->update("karyawan", "freq_pro = freq_pro+1", "id_karyawan = " . $karyawan);
+      $this->db(0)->update("karyawan", "freq_pro = freq_pro+1", "id_karyawan = " . $karyawan);
 
       if ($tahap == 1) {
          $data[$id_divisi]["status"] = 1;
@@ -103,7 +103,7 @@ class SPK_Customer extends Controller
       }
 
       $set = "spk_dvs = '" . serialize($data) . "'";
-      $do = $this->model('M_DB_1')->update("order_data", $set, $where);
+      $do = $this->db(0)->update("order_data", $set, $where);
       if ($do['errno'] == 0) {
          $this->model('Log')->write($this->userData['user'] . " updateSPK Success!");
          echo $do['errno'];

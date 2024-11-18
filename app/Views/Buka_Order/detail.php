@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="<?= $this->ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
 <div class="mb-1">
     <div class="row pe-3">
         <?php foreach ($data['detail'] as $key => $d) {

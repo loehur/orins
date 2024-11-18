@@ -7,10 +7,10 @@ class Home extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
       $this->v_load = $this->page . "/load";
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index()
@@ -25,7 +25,7 @@ class Home extends Controller
 
    public function viewer()
    {
-      $this->view($this->v_viewer, ["page" => $this->page]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => ""]);
    }
 
    public function content()

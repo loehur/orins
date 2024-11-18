@@ -7,7 +7,7 @@ class Toko_Daftar extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
       if (!in_array($this->userData['user_tipe'], $this->pMaster)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
@@ -15,7 +15,7 @@ class Toko_Daftar extends Controller
 
       $this->v_load = $this->page . "/load";
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index()
@@ -30,13 +30,13 @@ class Toko_Daftar extends Controller
 
    public function viewer()
    {
-      $this->view($this->v_viewer, ["page" => $this->page]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => ""]);
    }
 
    public function content()
    {
 
-      $data = $this->model('M_DB_1')->get('toko');
+      $data = $this->db(0)->get('toko');
       $this->view($this->v_content, $data);
    }
 }

@@ -80,7 +80,7 @@
 <script>
     $("button#cekS").click(function() {
         var mon = $("input[name=month]").val();
-        content_parse(mon);
+        content(mon);
     });
 
     $('span.cekTrx').click(function() {

@@ -36,11 +36,16 @@
                                 }
                             }
 
+                            $ref = $a['ref_transaksi'];
+                            if ($a['jenis_transaksi'] == 2) {
+                                $ref = "Topup Deposit";
+                            }
+
                         ?>
                             <tr class="<?= ($a['status_mutasi'] == 2) ? 'text-secondary' : '' ?>">
                                 <td align="right">#<?= $a['id_kas'] ?></td>
                                 <td><?= strtoupper($pelanggan) ?></td>
-                                <td><?= $a['ref_transaksi'] ?></td>
+                                <td><?= $ref ?></td>
                                 <td><?= $a['insertTime'] ?></td>
                                 <td align="right">Rp<?= number_format($jumlah) ?></td>
                                 <td>

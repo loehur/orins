@@ -7,14 +7,14 @@ class Export extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
       if (!in_array($this->userData['user_tipe'], $this->pAudit)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index()
@@ -29,7 +29,7 @@ class Export extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["page" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
    }
 
    public function content($parse = "")
@@ -45,7 +45,7 @@ class Export extends Controller
       $f = fopen('php://memory', 'w');
 
       $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
-      $data = $this->model('M_DB_1')->get_where("order_data", $where);
+      $data = $this->db(0)->get_where("order_data", $where);
       $tanggal = date("Y-m-d");
 
       $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE HARGA', 'KODE BARANG', 'MAIN ORDER', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'AFILIASI', 'STATUS', 'NOTE', 'EXPORTED');
@@ -118,7 +118,7 @@ class Export extends Controller
       $f = fopen('php://memory', 'w');
 
       $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
-      $data = $this->model('M_DB_1')->get_where("order_data", $where);
+      $data = $this->db(0)->get_where("order_data", $where);
       $tanggal = date("Y-m-d");
 
       $fields = array('NO. REFERENSI', 'TANGGAL', 'KODE BARANG', 'MAIN ORDER', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'STATUS', 'NOTE', 'EXPORTED');
@@ -172,7 +172,7 @@ class Export extends Controller
       $f = fopen('php://memory', 'w');
 
       $where = "insertTime LIKE '" . $month . "%' AND id_toko = " . $this->userData['id_toko'];
-      $data = $this->model('M_DB_1')->get_where("kas", $where);
+      $data = $this->db(0)->get_where("kas", $where);
       $tanggal = date("Y-m-d");
 
       $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'JUMLAH', 'METODE', 'NOTE', 'STATUS', 'EXPORTED');

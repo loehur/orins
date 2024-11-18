@@ -1,7 +1,7 @@
 <?php
-require_once 'app/Config/DB_Config.php';
+require_once 'app/Config/DBC.php';
 
-class Route extends DB_Config
+class Route extends DBC
 {
     protected $method       = 'index';
     protected $param        = [];

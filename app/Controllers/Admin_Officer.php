@@ -7,7 +7,7 @@ class Admin_Officer extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
 
       if (!in_array($this->userData['user_tipe'], $this->pMaster)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
@@ -15,7 +15,7 @@ class Admin_Officer extends Controller
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index()
@@ -30,14 +30,14 @@ class Admin_Officer extends Controller
 
    public function viewer()
    {
-      $this->view($this->v_viewer, ["page" => $this->page]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => ""]);
    }
 
    public function content()
    {
 
       $where = "user_tipe = 5 OR user_tipe = 6";
-      $data = $this->model('M_DB_1')->get_where('user', $where);
+      $data = $this->db(0)->get_where('user', $where);
       $this->view($this->v_content, $data);
    }
 
@@ -51,7 +51,7 @@ class Admin_Officer extends Controller
       $cols = 'id_toko, nama, user, password, user_tipe';
       $vals = "'" . $this->userData['id_toko'] . "','" . $nama . "','" . $user . "','" . $pass . "'," . $office;
 
-      $do = $this->model('M_DB_1')->insertCols('user', $cols, $vals);
+      $do = $this->db(0)->insertCols('user', $cols, $vals);
       if ($do['errno'] == 0) {
          $this->model('Log')->write($this->userData['user'] . " Add Admin Officer Success!");
          echo $do['errno'];

@@ -4,11 +4,13 @@
         content();
     });
 
-    function content() {
-        $("div#content").load('<?= $this->BASE_URL ?><?= $data['page'] ?>/content/<?= $data['parse'] ?>');
-    }
-
-    function content_parse(parse) {
-        $("div#content").load('<?= $this->BASE_URL ?><?= $data['page'] ?>/content/' + parse);
+    function content(new_parse = "") {
+        if (new_parse != "") {
+            parse = new_parse
+        } else {
+            parse = '<?= $data['parse'] ?>';
+        }
+        page = "<?= isset($data['page']) ? $data['page'] : 'content' ?>";
+        $("div#content").load('<?= $this->BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse);
     }
 </script>

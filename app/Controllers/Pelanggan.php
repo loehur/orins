@@ -8,14 +8,14 @@ class Pelanggan extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
       if (!in_array($this->userData['user_tipe'], $this->pCS)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index($jenis_pelanggan = 1)
@@ -24,12 +24,12 @@ class Pelanggan extends Controller
       if ($jenis_pelanggan == 1) {
          $this->view("Layouts/layout_main", [
             "content" => $this->v_content,
-            "title" => "Pelanggan Umum"
+            "title" => "Pelanggan - Umum"
          ]);
       } elseif ($jenis_pelanggan == 2) {
          $this->view("Layouts/layout_main", [
             "content" => $this->v_content,
-            "title" => "Pelanggan Rekanan"
+            "title" => "Pelanggan - Rekanan"
          ]);
       }
       $this->viewer($jenis_pelanggan);
@@ -37,13 +37,13 @@ class Pelanggan extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["page" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
    }
 
    public function content($parse = "1")
    {
       $where = "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse;
-      $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $where);
+      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $where);
       $data['id_jenis_pelanggan'] = $parse;
       $data["_c"] = __CLASS__;
       $this->view($this->v_content, $data);
@@ -65,9 +65,9 @@ class Pelanggan extends Controller
       }
 
       $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND nama = '" . $nama . "' AND id_pelanggan_jenis = " . $id_pelanggan_jenis;
-      $dataCount = $this->model('M_DB_1')->count_where('pelanggan', $whereCount);
+      $dataCount = $this->db(0)->count_where('pelanggan', $whereCount);
       if ($dataCount < 1) {
-         $do = $this->model('M_DB_1')->insertCols('pelanggan', $cols, $vals);
+         $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
          if ($do['errno'] == 0) {
             $this->model('Log')->write($this->userData['user'] . " Add Pelanggan Success!");
             echo 0;
@@ -85,7 +85,7 @@ class Pelanggan extends Controller
       $id = $_POST['id'];
       $set = "en = 0";
       $where = "id_pelanggan = " . $id;
-      $update = $this->model('M_DB_1')->update("pelanggan", $set, $where);
+      $update = $this->db(0)->update("pelanggan", $set, $where);
       echo $update['errno'];
       $this->dataSynchrone();
    }
@@ -98,7 +98,7 @@ class Pelanggan extends Controller
 
       $set = $col . " = '" . $value . "'";
       $where = "id_pelanggan = " . $id;
-      $update = $this->model('M_DB_1')->update($this->main_table, $set, $where);
+      $update = $this->db(0)->update($this->main_table, $set, $where);
       $this->dataSynchrone();
       echo $update['errno'];
    }

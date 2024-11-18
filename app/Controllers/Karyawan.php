@@ -9,14 +9,14 @@ class Karyawan extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
       if (!in_array($this->userData['user_tipe'], $this->pAdmin)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index()
@@ -31,14 +31,14 @@ class Karyawan extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["page" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
    }
 
    public function content($parse = "")
    {
       $data["_c"] = __CLASS__;
       $where = "en = 1 AND id_toko = " . $this->userData['id_toko'];
-      $data['main'] = $this->model('M_DB_1')->get_where('karyawan', $where);
+      $data['main'] = $this->db(0)->get_where('karyawan', $where);
       $this->view($this->v_content, $data);
    }
 
@@ -49,9 +49,9 @@ class Karyawan extends Controller
       $vals = "'" . $this->userData['id_toko'] . "','" . $nama . "'";
 
       $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND nama = '" . $nama . "'";
-      $dataCount = $this->model('M_DB_1')->count_where('karyawan', $whereCount);
+      $dataCount = $this->db(0)->count_where('karyawan', $whereCount);
       if ($dataCount < 1) {
-         $do = $this->model('M_DB_1')->insertCols('karyawan', $cols, $vals);
+         $do = $this->db(0)->insertCols('karyawan', $cols, $vals);
          if ($do['errno'] == 0) {
             $this->model('Log')->write($this->userData['user'] . " Add Karyawan Success!");
             echo $do['errno'];
@@ -69,7 +69,7 @@ class Karyawan extends Controller
       $id = $_POST['id'];
       $set = "en = 0";
       $where = "id_karyawan = " . $id;
-      $update = $this->model('M_DB_1')->update("karyawan", $set, $where);
+      $update = $this->db(0)->update("karyawan", $set, $where);
       echo $update['errno'];
       $this->dataSynchrone();
    }
@@ -82,7 +82,7 @@ class Karyawan extends Controller
 
       $set = $col . " = '" . $value . "'";
       $where = $this->id_data . " = " . $id;
-      $update = $this->model('M_DB_1')->update($this->main_table, $set, $where);
+      $update = $this->db(0)->update($this->main_table, $set, $where);
       $this->dataSynchrone();
       echo $update['errno'];
    }

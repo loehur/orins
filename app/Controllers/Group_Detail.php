@@ -7,14 +7,14 @@ class Group_Detail extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
       if (!in_array($this->userData['user_tipe'], $this->pAdmin)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index()
@@ -29,22 +29,22 @@ class Group_Detail extends Controller
 
    public function viewer()
    {
-      $this->view($this->v_viewer, ["page" => $this->page]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => ""]);
    }
 
    public function content()
    {
 
       $where = "id_toko = " . $this->userData['id_toko'] . " ORDER BY detail_group ASC";
-      $data['main'] = $this->model('M_DB_1')->get_where('detail_group', $where);
+      $data['main'] = $this->db(0)->get_where('detail_group', $where);
       foreach ($data['main'] as $key => $d) {
          $where = "id_detail_group = " . $d['id_detail_group'] . " ORDER BY detail_item ASC";
-         $data_item = $this->model('M_DB_1')->get_where('detail_item', $where);
+         $data_item = $this->db(0)->get_where('detail_item', $where);
          $data['main'][$key]['item'] = $data_item;
 
          foreach ($data_item as $di) {
             $where = "id_detail_item = " . $di['id_detail_item'];
-            $varian = $this->model('M_DB_1')->get_where('detail_item_varian', $where);
+            $varian = $this->db(0)->get_where('detail_item_varian', $where);
             $data['varian'][$di['id_detail_item']] = $varian;
          }
       }
@@ -58,11 +58,11 @@ class Group_Detail extends Controller
       $cols = 'id_toko, id_detail_group, detail_group';
 
       if ($link == 0) {
-         $count = $this->model('M_DB_1')->count('detail_group');
+         $count = $this->db(0)->count('detail_group');
          if ($count == 0) {
             $id_detail_group = 1;
          } else {
-            $dataD = $this->model('M_DB_1')->get('detail_group');
+            $dataD = $this->db(0)->get('detail_group');
             $ar_id = array_column($dataD, 'id_detail_group');
             $max = max($ar_id);
             $id_detail_group = $max + 1;
@@ -74,9 +74,9 @@ class Group_Detail extends Controller
       $vals = $this->userData['id_toko'] . "," . $id_detail_group . ",'" . $group . "'";
 
       $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND detail_group = '" . $group . "'";
-      $dataCount = $this->model('M_DB_1')->count_where('detail_group', $whereCount);
+      $dataCount = $this->db(0)->count_where('detail_group', $whereCount);
       if ($dataCount <> 1) {
-         $do = $this->model('M_DB_1')->insertCols('detail_group', $cols, $vals);
+         $do = $this->db(0)->insertCols('detail_group', $cols, $vals);
          if ($do['errno'] == 0) {
             $this->model('Log')->write($this->userData['user'] . " Add Detail Group Success!");
             echo $do['errno'];
@@ -98,10 +98,10 @@ class Group_Detail extends Controller
       $cols = "id_toko, id_detail_item, varian";
       foreach ($varian as $v) {
          $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_detail_item = " . $id_item . " AND varian = '" . $v . "'";
-         $dataCount = $this->model('M_DB_1')->count_where('detail_item_varian', $whereCount);
+         $dataCount = $this->db(0)->count_where('detail_item_varian', $whereCount);
          if ($dataCount == 0) {
             $vals = $this->userData['id_toko'] . "," . $id_item . ",'" . $v . "'";
-            $do = $this->model('M_DB_1')->insertCols('detail_item_varian', $cols, $vals);
+            $do = $this->db(0)->insertCols('detail_item_varian', $cols, $vals);
             if ($do['errno'] == 0) {
                $this->model('Log')->write($this->userData['user'] . " Add Varian Item Success!");
                echo $do['errno'];
@@ -121,7 +121,7 @@ class Group_Detail extends Controller
 
       $set = "detail_item = '" . $value . "'";
       $where = "id_detail_item = " . $id;
-      $update = $this->model('M_DB_1')->update("detail_item", $set, $where);
+      $update = $this->db(0)->update("detail_item", $set, $where);
       $this->dataSynchrone();
       echo $update['errno'];
    }
@@ -133,7 +133,7 @@ class Group_Detail extends Controller
 
       $set = "varian = '" . $value . "'";
       $where = "id_varian = " . $id;
-      $update = $this->model('M_DB_1')->update("detail_item_varian", $set, $where);
+      $update = $this->db(0)->update("detail_item_varian", $set, $where);
       $this->dataSynchrone();
       echo $update['errno'];
    }
@@ -145,7 +145,7 @@ class Group_Detail extends Controller
 
       $where = "id_index = " . $id;
       $set = "cs = " . $val;
-      $update = $this->model('M_DB_1')->update("detail_group", $set, $where);
+      $update = $this->db(0)->update("detail_group", $set, $where);
       $this->dataSynchrone();
       echo $update['errno'];
    }
@@ -154,10 +154,10 @@ class Group_Detail extends Controller
    {
       $id = $_POST['id'];
       $where = "id_detail_item = " . $id;
-      $delete = $this->model('M_DB_1')->delete_where("detail_item", $where);
+      $delete = $this->db(0)->delete_where("detail_item", $where);
 
       $where = "code LIKE '%#" . $id . "-%'";
-      $delete = $this->model('M_DB_1')->delete_where("produk_harga", $where);
+      $delete = $this->db(0)->delete_where("produk_harga", $where);
 
       $this->dataSynchrone();
       echo $delete['errno'];
@@ -167,7 +167,7 @@ class Group_Detail extends Controller
    {
       $id = $_POST['id'];
       $where = "id_varian = " . $id;
-      $delete = $this->model('M_DB_1')->delete_where("detail_item_varian", $where);
+      $delete = $this->db(0)->delete_where("detail_item_varian", $where);
       $this->dataSynchrone();
       echo $delete['errno'];
    }
@@ -176,7 +176,7 @@ class Group_Detail extends Controller
    {
       $id = $_POST['id'];
       $where = "id_index = " . $id;
-      $delete = $this->model('M_DB_1')->delete_where("detail_group", $where);
+      $delete = $this->db(0)->delete_where("detail_group", $where);
       $this->dataSynchrone();
       echo $delete['errno'];
    }
@@ -192,9 +192,9 @@ class Group_Detail extends Controller
          foreach ($item as $i) {
             $vals = "'" . $this->userData['id_toko'] . "','" . $id_detail_group . "','" . $i . "'";
             $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $i . "'";
-            $dataCount = $this->model('M_DB_1')->count_where('detail_item', $whereCount);
+            $dataCount = $this->db(0)->count_where('detail_item', $whereCount);
             if ($dataCount == 0) {
-               $do = $this->model('M_DB_1')->insertCols('detail_item', $cols, $vals);
+               $do = $this->db(0)->insertCols('detail_item', $cols, $vals);
                if ($do['errno'] == 0) {
                   $this->model('Log')->write($this->userData['user'] . " Add Detail Item Success!");
                   echo $do['errno'];
@@ -210,9 +210,9 @@ class Group_Detail extends Controller
          $item = $item_post;
          $vals = "'" . $this->userData['id_toko'] . "','" . $id_detail_group . "','" . $item . "'";
          $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $item . "'";
-         $dataCount = $this->model('M_DB_1')->count_where('detail_item', $whereCount);
+         $dataCount = $this->db(0)->count_where('detail_item', $whereCount);
          if ($dataCount == 0) {
-            $do = $this->model('M_DB_1')->insertCols('detail_item', $cols, $vals);
+            $do = $this->db(0)->insertCols('detail_item', $cols, $vals);
             if ($do['errno'] == 0) {
                $this->model('Log')->write($this->userData['user'] . " Add Detail Item Success!");
                echo $do['errno'];

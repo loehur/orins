@@ -1,8 +1,8 @@
 <?php
 
-require 'app/Config/Public_Variables.php';
+require 'app/Config/PV.php';
 
-class Controller extends Public_Variables
+class Controller extends PV
 {
 
     public $userData, $dToko, $dDvs, $dDvsAll, $dProduk, $dProdukAll, $dDetailGroup, $dDetailGroupAll, $dDetailItem, $dDetailItemAll, $dSPK, $dSPK_all, $dUser, $dPelanggan, $dPelangganAll, $dKaryawan, $dKaryawanAll;
@@ -30,7 +30,7 @@ class Controller extends Public_Variables
         }
     }
 
-    public function data()
+    public function data_order()
     {
         if (isset($_SESSION['login_orins'])) {
             if ($_SESSION['login_orins'] == true) {
@@ -69,30 +69,30 @@ class Controller extends Public_Variables
         $where = "id_user = '" . $this->userData["id_user"] . "'";
 
         unset($_SESSION['user_data']);
-        $_SESSION['user_data'] = $this->model('M_DB_1')->get_where_row('user', $where);
+        $_SESSION['user_data'] = $this->db(0)->get_where_row('user', $where);
 
         $whereToko = "id_toko = " . $this->userData['id_toko'];
-        $_SESSION['data_toko'] = $this->model('M_DB_1')->get('toko');
-        $_SESSION['data_divisi'] = $this->model('M_DB_1')->get_where('divisi', $whereToko . " ORDER BY sort ASC");
-        $_SESSION['data_divisi_all'] = $this->model('M_DB_1')->get_order('divisi', "sort ASC");
-        $_SESSION['spk_divisi'] = $this->model('M_DB_1')->get_where('spk_dvs', $whereToko);
-        $_SESSION['spk_divisi_all'] = $this->model('M_DB_1')->get('spk_dvs');
-        $_SESSION['produk'] = $this->model('M_DB_1')->get_where('produk', $whereToko . " ORDER BY freq DESC");
-        $_SESSION['produk_all'] = $this->model('M_DB_1')->get_order('produk', 'freq DESC');
-        $_SESSION['detail_group'] = $this->model('M_DB_1')->get_where('detail_group', $whereToko . " ORDER BY sort ASC");
-        $_SESSION['detail_group_all'] = $this->model('M_DB_1')->get_order('detail_group', "sort ASC");
-        $_SESSION['detail_item'] = $this->model('M_DB_1')->get_where('detail_item', $whereToko . " ORDER BY detail_item ASC");
-        $_SESSION['detail_item_all'] = $this->model('M_DB_1')->get_order('detail_item', "detail_item ASC");
-        $_SESSION['data_user'] = $this->model('M_DB_1')->get('user', $whereToko);
+        $_SESSION['data_toko'] = $this->db(0)->get('toko');
+        $_SESSION['data_divisi'] = $this->db(0)->get_where('divisi', $whereToko . " ORDER BY sort ASC");
+        $_SESSION['data_divisi_all'] = $this->db(0)->get_order('divisi', "sort ASC");
+        $_SESSION['spk_divisi'] = $this->db(0)->get_where('spk_dvs', $whereToko);
+        $_SESSION['spk_divisi_all'] = $this->db(0)->get('spk_dvs');
+        $_SESSION['produk'] = $this->db(0)->get_where('produk', $whereToko . " ORDER BY freq DESC");
+        $_SESSION['produk_all'] = $this->db(0)->get_order('produk', 'freq DESC');
+        $_SESSION['detail_group'] = $this->db(0)->get_where('detail_group', $whereToko . " ORDER BY sort ASC");
+        $_SESSION['detail_group_all'] = $this->db(0)->get_order('detail_group', "sort ASC");
+        $_SESSION['detail_item'] = $this->db(0)->get_where('detail_item', $whereToko . " ORDER BY detail_item ASC");
+        $_SESSION['detail_item_all'] = $this->db(0)->get_order('detail_item', "detail_item ASC");
+        $_SESSION['data_user'] = $this->db(0)->get('user', $whereToko);
 
         $wherePel = $whereToko . " AND en = 1 ORDER BY freq DESC";
-        $_SESSION['data_pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePel);
+        $_SESSION['data_pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePel);
 
         $wherePelAll = "en = 1 ORDER BY freq DESC";
-        $_SESSION['data_pelanggan_all'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelAll);
+        $_SESSION['data_pelanggan_all'] = $this->db(0)->get_where('pelanggan', $wherePelAll);
 
-        $_SESSION['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereToko . " AND en = 1");
-        $_SESSION['karyawan_all'] = $this->model('M_DB_1')->get_where('karyawan', "en = 1");
+        $_SESSION['karyawan'] = $this->db(0)->get_where('karyawan', $whereToko . " AND en = 1");
+        $_SESSION['karyawan_all'] = $this->db(0)->get_where('karyawan', "en = 1");
     }
 
     public function logout()
@@ -101,5 +101,18 @@ class Controller extends Public_Variables
         session_unset();
         session_destroy();
         header('Location: ' . $this->BASE_URL . "Login");
+    }
+
+    public function db($db = 0)
+    {
+        $file = "M_DB";
+        require_once "app/Models/" . $file . ".php";
+        return new $file($db);
+    }
+
+    public function data($file)
+    {
+        require_once "app/Data/" . $file . ".php";
+        return new $file();
     }
 }

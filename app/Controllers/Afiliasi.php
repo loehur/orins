@@ -7,14 +7,14 @@ class Afiliasi extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
       if (!in_array($this->userData['user_tipe'], $this->pAudit)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index()
@@ -29,18 +29,18 @@ class Afiliasi extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["page" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
    }
 
    public function content($parse = "")
    {
-      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
+      $data['pelanggan'] = $this->db(0)->get('pelanggan');
       $data['_c'] = __CLASS__;
       $where = "metode_mutasi = 3 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
-      $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
+      $data['kas'] = $this->db(0)->get_where('kas', $where);
 
       $where = "metode_mutasi = 3 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 20";
-      $data['kas_done'] = $this->model('M_DB_1')->get_where('kas', $where);
+      $data['kas_done'] = $this->db(0)->get_where('kas', $where);
       $this->view($this->v_content, $data);
    }
 
@@ -58,12 +58,12 @@ class Afiliasi extends Controller
          $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
       }
 
-      $ref = $this->model('M_DB_1')->get_where_row("kas", $where_kas)['ref_transaksi'];
+      $ref = $this->db(0)->get_where_row("kas", $where_kas)['ref_transaksi'];
       $where = "ref = '" . $ref . "'";
       $set_ = "tuntas = 0";
-      $this->model('M_DB_1')->update("order_data", $set_, $where);
+      $this->db(0)->update("order_data", $set_, $where);
 
-      $update = $this->model('M_DB_1')->update("kas", $set, $where_kas);
+      $update = $this->db(0)->update("kas", $set, $where_kas);
       echo $update['errno'];
    }
 
@@ -81,13 +81,13 @@ class Afiliasi extends Controller
          }
 
          $where_kas = "id_kas = " . $i;
-         $ref = $this->model('M_DB_1')->get_where_row("kas", $where_kas)['ref_transaksi'];
+         $ref = $this->db(0)->get_where_row("kas", $where_kas)['ref_transaksi'];
 
          $where_ref = "ref = '" . $ref . "'";
          $set_ = "tuntas = 0";
-         $this->model('M_DB_1')->update("order_data", $set_, $where_ref);
+         $this->db(0)->update("order_data", $set_, $where_ref);
 
-         $update = $this->model('M_DB_1')->update("kas", $set, $where_kas);
+         $update = $this->db(0)->update("kas", $set, $where_kas);
          if ($update['errno'] <> 0) {
             echo $update['error'];
             exit();
@@ -100,15 +100,15 @@ class Afiliasi extends Controller
       $data['kas'] = [];
       $data['order'] = [];
 
-      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
+      $data['pelanggan'] = $this->db(0)->get('pelanggan');
+      $data['karyawan'] = $this->db(0)->get('karyawan');
 
 
       $where = "ref = '" . $ref . "'";
-      $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
+      $data['order'] = $this->db(0)->get_where('order_data', $where);
 
       $where = "ref_transaksi = '" . $ref . "'";
-      $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
+      $data['kas'] = $this->db(0)->get_where('kas', $where);
 
 
       $this->view($this->page . "/cek", $data);

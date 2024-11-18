@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="<?= $this->ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
+
 <?php
 $pelanggan_jenis = "";
 $id_pelanggan_jenis = $data['id_jenis_pelanggan'];
@@ -24,8 +26,8 @@ if ($id_pelanggan_jenis == 1) {
             <div class="row mb-4 <?= count($data['order']) == 0 ? "d-none" : "" ?>">
                 <div class="col border-bottom">
                     <form action="<?= $this->BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
-                        <div class="row">
-                            <div class="col px-1">
+                        <div class="row pb-2">
+                            <div class="col px-1" style="max-width: 300px;">
                                 <select class="tize shadow-none" name="id_pelanggan" required>
                                     <option value="">Customer Name (<?= $pelanggan_jenis ?>)</option>
                                     <?php foreach ($data['pelanggan'] as $p) { ?>
@@ -33,7 +35,7 @@ if ($id_pelanggan_jenis == 1) {
                                     <?php } ?>
                                 </select>
                             </div>
-                            <div class="col ps-0 pe-2">
+                            <div class="col px-1" style="max-width: 300px;">
                                 <select class="tize shadow-none" name="id_karyawan" required>
                                     <option value="">CS Name</option>
                                     <?php foreach ($data['karyawan'] as $k) { ?>
@@ -41,8 +43,8 @@ if ($id_pelanggan_jenis == 1) {
                                     <?php } ?>
                                 </select>
                             </div>
-                            <div class="col-auto mt-auto p-0 pb-2">
-                                <button type="submit" class="btn shadow-none btn-success bg-gradient rounded-pill w-100">Proses</button>
+                            <div class="col-auto px-1 mt-auto p-0">
+                                <button type="submit" class="btn shadow-none btn-success bg-gradient w-100">Proses</button>
                             </div>
                         </div>
                     </form>
@@ -52,9 +54,9 @@ if ($id_pelanggan_jenis == 1) {
             <div class="row mb-2">
                 <div class="col pe-0">
                     <?php if ($data['count'] <= 15) { ?>
-                        <button type="button" class="btn me-2 shadow-none btn-sm btn-primary bg-gradient rounded-pill py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Tambah</button>
+                        <button type="button" class="btn me-2 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Tambah</button>
                         <div class="btn-group me-1">
-                            <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 rounded-pill dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                 (&#43;) Afiliasi
                                 <span class="visually-hidden">Toggle Dropdown</span>
                             </button>

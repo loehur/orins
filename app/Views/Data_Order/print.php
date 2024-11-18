@@ -79,7 +79,19 @@
                 foreach ($data['kas'] as $dk) {
                     if ($dk['ref_transaksi'] == $do['ref'] && ($dk['status_mutasi'] == 1 || $dk['status_mutasi'] == 0)) {
                         $dibayar += $dk['jumlah'];
-                        $note = ($dk['metode_mutasi'] == 1) ? "Cash" : $dk['note'];
+                        switch ($dk['metode_mutasi']) {
+                            case 1;
+                                $note = 'Cash';
+                                break;
+                            case 2:
+                            case 3:
+                                $note = $dk['note'];
+                                break;
+                            case 4:
+                                $note = 'Saldo';
+                                break;
+                        }
+
 
                         if ($dk['status_mutasi'] == 0) {
                             $showMutasi .= "<tr><td><small>* " . $note . "</small></td><td><small>" . $dk['insertTime'] . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td><td><small><b>*Dalam Pengecekan</b></small></td></tr>";

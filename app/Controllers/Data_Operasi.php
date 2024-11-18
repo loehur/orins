@@ -7,7 +7,7 @@ class Data_Operasi extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
 
       if (!in_array($this->userData['user_tipe'], $this->pCS) && !in_array($this->userData['user_tipe'], $this->pOffice)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
@@ -15,7 +15,7 @@ class Data_Operasi extends Controller
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index($parse, $parse_2 = 0)
@@ -23,12 +23,12 @@ class Data_Operasi extends Controller
       if ($parse_2 == 0) {
          $this->view("Layouts/layout_main", [
             "content" => $this->v_content,
-            "title" => "Data Order Customer"
+            "title" => "Data Order - Customer"
          ]);
       } else {
          $this->view("Layouts/layout_main", [
             "content" => $this->v_content,
-            "title" => "Data Order Tuntas"
+            "title" => "Data Order - Tuntas"
          ]);
       }
       $this->viewer($parse, $parse_2);
@@ -36,7 +36,7 @@ class Data_Operasi extends Controller
 
    public function viewer($parse = "", $parse_2)
    {
-      $this->view($this->v_viewer, ["page" => $this->page, "parse" => $parse, "parse_2" => $parse_2]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse, "parse_2" => $parse_2]);
    }
 
    public function content($parse = "", $parse_2 = 0)
@@ -46,7 +46,8 @@ class Data_Operasi extends Controller
       $data['kas'] = [];
       $data['r_kas'] = [];
       $data['order'] = [];
-      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
+      $data['pelanggan'] = $this->db(0)->get('pelanggan');
+      $data['saldo'] = $this->data("Saldo")->deposit($parse);
 
       if ($parse_2 < 2023) {
          $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0 ORDER BY id_order_data DESC";
@@ -54,7 +55,7 @@ class Data_Operasi extends Controller
          $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%' ORDER BY id_order_data DESC";
       }
       if ($parse <> "" && $parse <> 0) {
-         $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
+         $data['order'] = $this->db(0)->get_where('order_data', $where);
       }
 
       $refs = array_column($data['order'], 'ref');
@@ -67,14 +68,14 @@ class Data_Operasi extends Controller
       if (count($refs) > 0) {
 
          $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ")";
-         $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
+         $data['kas'] = $this->db(0)->get_where('kas', $where);
 
          $cols = "ref_bayar, metode_mutasi, sum(jumlah) as total, sum(bayar) as bayar, sum(kembali) as kembali, status_mutasi";
          $where_2 = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ") GROUP BY ref_bayar";
-         $data['r_kas'] = $this->model('M_DB_1')->get_cols_where('kas', $cols, $where_2, 1);
+         $data['r_kas'] = $this->db(0)->get_cols_where('kas', $cols, $where_2, 1);
 
          $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
-         $data['diskon'] = $this->model('M_DB_1')->get_where('xtra_diskon', $where);
+         $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where);
       }
 
       $data_ = [];
@@ -107,7 +108,7 @@ class Data_Operasi extends Controller
       $data['order'] = $data_fix;
 
       $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC";
-      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKaryawan);
+      $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan);
 
       $this->view($this->v_content, $data);
    }
@@ -119,11 +120,10 @@ class Data_Operasi extends Controller
          foreach ($data as $a) {
             $set = "tuntas = 1";
             $where = "ref = '" . $a . "'";
-            $this->model('M_DB_1')->update("order_data", $set, $where);
+            $this->db(0)->update("order_data", $set, $where);
          }
       }
    }
-
 
    public function bayar_multi()
    {
@@ -173,14 +173,19 @@ class Data_Operasi extends Controller
          }
 
          switch ($metode) {
-            case "1":
+            case 1:
                $status_mutasi = 1;
                break;
+            case 4:
+               $status_mutasi = 1;
+               $saldo = $this->data('Saldo')->deposit($client);
+               if ($jumlah > $saldo) {
+                  $jumlah = $saldo;
+               }
             default:
                $status_mutasi = 0;
                break;
          }
-
          if ($count_ref == 0) {
             $bayarnya = $dibayar;
             $kembalian = $dibayar - $jumlah;
@@ -190,13 +195,13 @@ class Data_Operasi extends Controller
          }
 
          $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $metode . " AND status_mutasi = " . $status_mutasi;
-         $dataCount = $this->model('M_DB_1')->count_where('kas', $whereCount);
+         $dataCount = $this->db(0)->count_where('kas', $whereCount);
 
          $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali";
          $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $bayarnya . "," . $kembalian;
 
          if ($dataCount < 1) {
-            $do = $this->model('M_DB_1')->insertCols('kas', $cols, $vals);
+            $do = $this->db(0)->insertCols('kas', $cols, $vals);
             if ($do['errno'] == 0) {
                $dibayar -= $jumlah;
                $error = $do['errno'];
@@ -222,13 +227,13 @@ class Data_Operasi extends Controller
       }
 
       $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah;
-      $dataCount = $this->model('M_DB_1')->count_where('xtra_diskon', $whereCount);
+      $dataCount = $this->db(0)->count_where('xtra_diskon', $whereCount);
 
       $cols = "id_toko, ref_transaksi, jumlah, id_user";
       $vals = $this->userData['id_toko'] . ",'" . $ref . "'," . $jumlah . "," . $this->userData['id_user'];
 
       if ($dataCount < 1) {
-         $do = $this->model('M_DB_1')->insertCols('xtra_diskon', $cols, $vals);
+         $do = $this->db(0)->insertCols('xtra_diskon', $cols, $vals);
          if ($do['errno'] == 0) {
             echo $do['errno'];
             $this->model('Log')->write($this->userData['user'] . " Extra Diskon " . $jumlah . " Success!");

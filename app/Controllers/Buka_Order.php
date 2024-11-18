@@ -7,7 +7,7 @@ class Buka_Order extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
 
       if (!in_array($this->userData['user_tipe'], $this->pCS)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
@@ -15,7 +15,7 @@ class Buka_Order extends Controller
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index($jenis_pelanggan)
@@ -36,16 +36,16 @@ class Buka_Order extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["page" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
    }
 
    public function content($parse = "")
    {
       $data['id_jenis_pelanggan'] = $parse;
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
-      $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
+      $data['order'] = $this->db(0)->get_where('order_data', $where);
 
-      $data_harga = $this->model('M_DB_1')->get('produk_harga');
+      $data_harga = $this->db(0)->get('produk_harga');
       $data['count'] = count($data['order']);
       $getHarga = [];
       $data['errorID'] = [];
@@ -78,10 +78,10 @@ class Buka_Order extends Controller
       }
 
       $wherePelanggan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse . " ORDER BY freq DESC";
-      $data['pelanggan'] = $this->model('M_DB_1')->get_where('pelanggan', $wherePelanggan);
+      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan);
 
       $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC";
-      $data['karyawan'] = $this->model('M_DB_1')->get_where('karyawan', $whereKaryawan);
+      $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan);
       $data['harga'] = $getHarga;
 
       $this->view($this->v_content, $data);
@@ -91,7 +91,7 @@ class Buka_Order extends Controller
    {
       $id = $_POST['id'];
       $where = "id_order_data = " . $id;
-      $this->model('M_DB_1')->delete_where('order_data', $where);
+      $this->db(0)->delete_where('order_data', $where);
    }
 
    function update_catatan()
@@ -102,13 +102,13 @@ class Buka_Order extends Controller
       $col = $_POST['col'];
 
       if ($mode == "main") {
-         $do = $this->model("M_DB_1")->update("order_data", "note = '" . $value . "'", "id_order_data = " . $id);
+         $do = $this->db(0)->update("order_data", "note = '" . $value . "'", "id_order_data = " . $id);
       } else {
-         $data = $this->model("M_DB_1")->get_where_row("order_data", "id_order_data = " . $id)['note_spk'];
+         $data = $this->db(0)->get_where_row("order_data", "id_order_data = " . $id)['note_spk'];
          $data = unserialize($data);
          $data[$col] = $value;
          $new_data = serialize($data);
-         $do = $this->model("M_DB_1")->update("order_data", "note_spk = '" . $new_data . "'", "id_order_data = " . $id);
+         $do = $this->db(0)->update("order_data", "note_spk = '" . $new_data . "'", "id_order_data = " . $id);
       }
 
       echo $do['errno'] == 0 ? 1 : $do['error'];
@@ -117,18 +117,18 @@ class Buka_Order extends Controller
    function add($afiliasi = 0)
    {
       $this->dataSynchrone();
-      $this->data();
+      $this->data_order();
 
       $id_produk = $_POST['id_produk'];
       //update freq
-      $this->model('M_DB_1')->update("produk", "freq = freq+1", "id_produk = " . $id_produk);
+      $this->db(0)->update("produk", "freq = freq+1", "id_produk = " . $id_produk);
 
       $jumlah = $_POST['jumlah'];
       $note = $_POST['note'];
 
       $where_idProduk = "id_produk = " . $id_produk;
       $detailHarga = [];
-      $listDetail = $this->model('M_DB_1')->get_where('produk_detail', $where_idProduk);
+      $listDetail = $this->db(0)->get_where('produk_detail', $where_idProduk);
 
       if (count($listDetail) == 0) {
          echo "Pengaturan Harga belum di setting!";
@@ -163,7 +163,7 @@ class Buka_Order extends Controller
          $id_item_ex = explode("-", $id_detail_item_ex[0]);
 
          //update freq
-         $this->model('M_DB_1')->update("detail_item", "freq = freq+1", "id_detail_item = " . $id_item_ex[0]);
+         $this->db(0)->update("detail_item", "freq = freq+1", "id_detail_item = " . $id_item_ex[0]);
 
          $get_detail_item[$d]['id'] = $id_item_ex[0];
          $get_detail_item[$d]['name'] = $id_item_ex[1];
@@ -285,7 +285,7 @@ class Buka_Order extends Controller
          $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1";
       }
 
-      $do = $this->model('M_DB_1')->insertCols('order_data', $cols, $vals);
+      $do = $this->db(0)->insertCols('order_data', $cols, $vals);
       if ($do['errno'] == 0) {
          $this->model('Log')->write($this->userData['user'] . " Add Order Success!");
          echo $do['errno'];
@@ -317,11 +317,11 @@ class Buka_Order extends Controller
          foreach ($this->dDetailGroupAll as $dg) {
             if ($dg['id_index'] == $d) {
                $where = "id_detail_group = " . $dg['id_detail_group'] . " ORDER BY freq DESC";
-               $data_item = $this->model('M_DB_1')->get_where('detail_item', $where);
+               $data_item = $this->db(0)->get_where('detail_item', $where);
 
                foreach ($data_item as $di) {
                   $where = "id_detail_item = " . $di['id_detail_item'];
-                  $varian_ = $this->model('M_DB_1')->get_where('detail_item_varian', $where);
+                  $varian_ = $this->db(0)->get_where('detail_item_varian', $where);
                   if (count($varian_) > 0) {
                      $varian[$di['id_detail_item']] = $varian_;
                   }
@@ -349,9 +349,9 @@ class Buka_Order extends Controller
       $vals = "'" . $this->userData['id_toko'] . "','" . $harga_code . "'," . $harga;
 
       $whereCount = "code = '" . $harga_code . "'";
-      $dataCount = $this->model('M_DB_1')->count_where('produk_harga', $whereCount);
+      $dataCount = $this->db(0)->count_where('produk_harga', $whereCount);
       if ($dataCount < 1) {
-         $do = $this->model('M_DB_1')->insertCols('produk_harga', $cols, $vals);
+         $do = $this->db(0)->insertCols('produk_harga', $cols, $vals);
          if ($do['errno'] == 0) {
             $this->model('Log')->write($this->userData['user'] . " Add produk_harga Success!");
             echo $do['errno'];
@@ -361,7 +361,7 @@ class Buka_Order extends Controller
       } else {
          $where = "code = '" . $harga_code . "'";
          $set = "harga_" . $id_pelanggan_jenis . " = " . $harga;
-         $update = $this->model('M_DB_1')->update("produk_harga", $set, $where);
+         $update = $this->db(0)->update("produk_harga", $set, $where);
          echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
       }
 
@@ -381,13 +381,13 @@ class Buka_Order extends Controller
 
       $cols = "detail_harga";
       $where = "id_order_data = " . $parse[0];
-      $detail = unserialize($this->model('M_DB_1')->get_cols_where('order_data', $cols, $where, 0)['detail_harga']);
+      $detail = unserialize($this->db(0)->get_cols_where('order_data', $cols, $where, 0)['detail_harga']);
 
       $detail[$parse[1]]['d'] = $diskon;
       $detail_ = serialize($detail);
 
       $set = "detail_harga = '" . $detail_ . "'";
-      $update = $this->model('M_DB_1')->update("order_data", $set, $where);
+      $update = $this->db(0)->update("order_data", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
 
       $this->dataSynchrone();
@@ -399,15 +399,15 @@ class Buka_Order extends Controller
       $id_karyawan = $_POST['id_karyawan'];
 
       $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%'";
-      $n =  $this->model('M_DB_1')->count_distinct_where('order_data', 'ref', $where_n);
+      $n =  $this->db(0)->count_distinct_where('order_data', 'ref', $where_n);
       $n += 1;
       $n = substr($n, -4);
       $nv = str_pad($n, 4, "0", STR_PAD_LEFT);
 
       $ref = $this->userData['id_toko'] . date("ymd") . $nv;
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
-      $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
-      $data_harga = $this->model('M_DB_1')->get('produk_harga');
+      $data['order'] = $this->db(0)->get_where('order_data', $where);
+      $data_harga = $this->db(0)->get('produk_harga');
 
       $detail_harga = [];
       foreach ($data['order'] as $do) {
@@ -429,9 +429,9 @@ class Buka_Order extends Controller
       }
 
       //updateFreq
-      $this->model('M_DB_1')->update("pelanggan", "freq = freq+1", "id_pelanggan = " . $id_pelanggan);
+      $this->db(0)->update("pelanggan", "freq = freq+1", "id_pelanggan = " . $id_pelanggan);
       //updateFreqCS
-      $this->model('M_DB_1')->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
+      $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
 
       $error = 0;
 
@@ -454,7 +454,7 @@ class Buka_Order extends Controller
 
          $where = "id_order_data = " . $do['id_order_data'];
          $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
-         $update = $this->model('M_DB_1')->update("order_data", $set, $where);
+         $update = $this->db(0)->update("order_data", $set, $where);
          $error = $update['errno'];
       }
 
@@ -467,7 +467,7 @@ class Buka_Order extends Controller
    {
       $id_order = $_POST['id_order'];
       $where = "id_order_data =" . $id_order;
-      $do = $this->model('M_DB_1')->delete_where('order_data', $where);
+      $do = $this->db(0)->delete_where('order_data', $where);
       if ($do['errno'] == 0) {
          $this->model('Log')->write($this->userData['user'] . " Delete Order Success!");
          echo $do['errno'];
@@ -483,7 +483,7 @@ class Buka_Order extends Controller
 
       $where = "id_order_data = '" . $id . "'";
       $set = "jumlah = " . $value;
-      $update = $this->model('M_DB_1')->update("order_data", $set, $where);
+      $update = $this->db(0)->update("order_data", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
    }
 

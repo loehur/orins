@@ -7,7 +7,7 @@ class Data_Order extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
 
       if (!in_array($this->userData['user_tipe'], $this->pCS)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
@@ -15,7 +15,7 @@ class Data_Order extends Controller
       }
 
       $this->v_content = $this->page . "/content";
-      $this->v_viewer = $this->page . "/viewer";
+      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index($parse)
@@ -23,7 +23,7 @@ class Data_Order extends Controller
 
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Data Order Proses"
+         "title" => "Data Order - Proses"
       ]);
 
       $this->viewer($parse);
@@ -31,14 +31,14 @@ class Data_Order extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["page" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
    }
 
    public function content($parse = "")
    {
       $data['parse'] = $parse;
-      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
+      $data['pelanggan'] = $this->db(0)->get('pelanggan');
+      $data['karyawan'] = $this->db(0)->get('karyawan');
 
       switch ($parse) {
          case 0:
@@ -59,14 +59,14 @@ class Data_Order extends Controller
             break;
       }
 
-      $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
+      $data['order'] = $this->db(0)->get_where('order_data', $where);
 
       $refs = array_column($data['order'], 'ref');
       if (count($refs) > 0) {
          $min_ref = min($refs);
          $max_ref = max($refs);
          $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "')";
-         $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
+         $data['kas'] = $this->db(0)->get_where('kas', $where);
       }
 
       $refs = array_column($data['order'], 'ref');
@@ -74,7 +74,7 @@ class Data_Order extends Controller
          $min_ref = min($refs);
          $max_ref = max($refs);
          $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN " . $min_ref . " AND " . $max_ref . ")";
-         $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
+         $data['kas'] = $this->db(0)->get_where('kas', $where);
       }
 
       $data_ = [];
@@ -122,14 +122,22 @@ class Data_Order extends Controller
          $st_mutasi = 0;
       }
 
+      if ($method == 4) {
+         $saldo = $this->data('Saldo')->deposit($client);
+         if ($jumlah > $saldo) {
+            $jumlah = $saldo;
+         }
+      }
+
+
       $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $method . " AND status_mutasi = 0";
-      $dataCount = $this->model('M_DB_1')->count_where('kas', $whereCount);
+      $dataCount = $this->db(0)->count_where('kas', $whereCount);
 
       $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali";
       $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $method . "," . $st_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $dibayar . "," . $kembalian;
 
       if ($dataCount < 1) {
-         $do = $this->model('M_DB_1')->insertCols('kas', $cols, $vals);
+         $do = $this->db(0)->insertCols('kas', $cols, $vals);
          if ($do['errno'] == 0) {
             echo $do['errno'];
             $this->model('Log')->write($this->userData['user'] . " Bayar Success!");
@@ -144,12 +152,12 @@ class Data_Order extends Controller
       $id = $_POST['ambil_id'];
       $karyawan = $_POST['id_karyawan'];
       //updateFreqCS
-      $this->model('M_DB_1')->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
+      $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
 
       $where = "id_order_data = " . $id;
       $dateNow = date("Y-m-d H:i:s");
       $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
-      $update = $this->model('M_DB_1')->update("order_data", $set, $where);
+      $update = $this->db(0)->update("order_data", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
    }
 
@@ -162,7 +170,7 @@ class Data_Order extends Controller
       $where = "id_order_data = " . $id;
       $dateNow = date("Y-m-d H:i:s");
       $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
-      $update = $this->model('M_DB_1')->update("order_data", $set, $where);
+      $update = $this->db(0)->update("order_data", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
    }
 
@@ -176,7 +184,7 @@ class Data_Order extends Controller
          $where = "id_diskon = " . $id;
          $dateNow = date("Y-m-d H:i:s");
          $set = "cancel_id = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', cancel_date = '" . $dateNow . "'";
-         $update = $this->model('M_DB_1')->update("xtra_diskon", $set, $where);
+         $update = $this->db(0)->update("xtra_diskon", $set, $where);
          echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
       } else {
          echo "User Forbidden";
@@ -188,31 +196,31 @@ class Data_Order extends Controller
       $ref = $_POST['ambil_ref'];
       $karyawan = $_POST['id_karyawan'];
       //updateFreqCS
-      $this->model('M_DB_1')->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
+      $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
 
       $where = "ref = '" . $ref . "' AND id_ambil = 0";
       $dateNow = date("Y-m-d H:i:s");
       $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
-      $update = $this->model('M_DB_1')->update("order_data", $set, $where);
+      $update = $this->db(0)->update("order_data", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
    }
 
    public function print($parse = "")
    {
-      $data['pelanggan'] = $this->model('M_DB_1')->get('pelanggan');
-      $data['karyawan'] = $this->model('M_DB_1')->get('karyawan');
+      $data['pelanggan'] = $this->db(0)->get('pelanggan');
+      $data['karyawan'] = $this->db(0)->get('karyawan');
       $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND ref = '" . $parse . "' AND cancel = 0";
-      $data['order'] = $this->model('M_DB_1')->get_where('order_data', $where);
+      $data['order'] = $this->db(0)->get_where('order_data', $where);
 
       $refs = array_column($data['order'], 'ref');
       if (count($refs) > 0) {
          $min_ref = min($refs);
          $max_ref = max($refs);
          $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN " . $min_ref . " AND " . $max_ref . ")";
-         $data['kas'] = $this->model('M_DB_1')->get_where('kas', $where);
+         $data['kas'] = $this->db(0)->get_where('kas', $where);
 
          $where = "id_toko = " . $this->userData['id_toko'] . " AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "')";
-         $data['diskon'] = $this->model('M_DB_1')->get_where('xtra_diskon', $where);
+         $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where);
       }
 
       $this->view($this->page . "/print", $data);

@@ -7,13 +7,13 @@ class Log extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data();
+      $this->data_order();
    }
 
    public function sync()
    {
       $this->dataSynchrone();
-      $this->data();
+      $this->data_order();
    }
 
    function change_toko($id)
@@ -25,7 +25,7 @@ class Log extends Controller
 
       $where = "id_user = " . $this->userData['id_user'];
       $set = "id_toko = " . $id;
-      $this->model('M_DB_1')->update("user", $set, $where);
+      $this->db(0)->update("user", $set, $where);
       $this->dataSynchrone();
    }
 }

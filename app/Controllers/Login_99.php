@@ -49,7 +49,7 @@ class Login_99 extends Controller
       }
 
       $where = "user = '" . $hp . "' AND password = '" . $pass . "'";
-      $userData = $this->model('M_DB_1')->get_where_row('user', $where);
+      $userData = $this->db(0)->get_where_row('user', $where);
 
       if (empty($userData)) {
          $this->view('Login/login',  ['user' => $hp, "failed" => 'Authentication Error']);
@@ -66,7 +66,7 @@ class Login_99 extends Controller
    {
       //LOGIN
       $where = "id_user = " . $userData['id_user'];
-      $userData = $this->model('M_DB_1')->get_where_row('user', $where);
+      $userData = $this->db(0)->get_where_row('user', $where);
 
       $_SESSION['login_orins'] = TRUE;
       $_SESSION['user_data'] = $userData;

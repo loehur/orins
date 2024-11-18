@@ -14,7 +14,7 @@ class Cron extends Controller
    {
       //id_toko = " . $this->userData['id_toko']
       $where_count = "insertTime LIKE '2023-%' GROUP BY ref";
-      $count_order =  $this->model('M_DB_1')->count_where('order_data', $where_count);
+      $count_order =  $this->db(0)->count_where('order_data', $where_count);
 
       $n = $count_order;
       $n = substr($n, -4);
