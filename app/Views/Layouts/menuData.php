@@ -55,7 +55,7 @@ $mdata = [
 		]
 	],
 	[
-		'access' => [$this->pCS],
+		'access' => [$this->pKasir],
 		'name' => 'Deposit',
 		'icon' => 'credit-card',
 		'sub' => [
