@@ -1,5 +1,6 @@
 <?php
 
+$yearNow = date('Y');
 $mdata = [
 	[
 		'access' => [$this->pCS],
@@ -35,7 +36,7 @@ $mdata = [
 			],
 			[
 				'name' => 'Tuntas',
-				'link' => 'Data_Operasi/index/0/1'
+				'link' => 'Data_Operasi/index/0/' . $yearNow
 			],
 		]
 	],

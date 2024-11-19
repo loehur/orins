@@ -55,6 +55,7 @@
                             <option></option>
                             <option value="5">Finance</option>
                             <option value="6">Audit</option>
+                            <option value="7">Gudang</option>
                         </select>
                     </div>
                 </div>

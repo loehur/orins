@@ -42,6 +42,7 @@ class Data_Operasi extends Controller
    public function content($parse = "", $parse_2 = 0)
    {
       $data['parse'] = $parse;
+
       $data['parse_2'] = $parse_2;
       $data['kas'] = [];
       $data['r_kas'] = [];

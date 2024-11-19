@@ -12,7 +12,7 @@
     <!-- Main page content-->
     <div class="container-fluid px-4">
         <div class="card mt-n10">
-            <div class="card-header ">Kelompok Detail
+            <div class="card-header ">Item Produksi
                 <button type="button" class="float-end btn btn-outline-primary mx-2" data-bs-toggle="modal" data-bs-target="#exampleModalLink">Tambah Link</button>
                 <button type="button" class="float-end btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
             </div>
