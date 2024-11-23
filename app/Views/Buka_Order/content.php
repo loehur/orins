@@ -55,7 +55,7 @@ if ($id_pelanggan_jenis == 1) {
                 <div class="col pe-0">
                     <?php if ($data['count'] <= 15) { ?>
                         <button type="button" class="btn me-2 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Jasa & Produksi</button>
-                        <div class="btn-group me-1">
+                        <div class="btn-group me-1 d-none">
                             <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                 (&#43;) Afiliasi
                                 <span class="visually-hidden">Toggle Dropdown</span>
