@@ -3,7 +3,7 @@
     <div class="container-fluid px-2">
         <div class="card mt-2 shadow-none mb-1">
             <div class="card-body bg-warning-soft pb-0 pt-2">
-                <form action="<?= $this->BASE_URL ?>Buka_Order_Aff/proses/<?= $data['parse'] ?>/<?= $data['pelanggan_jenis'] ?>" method="POST">
+                <form action="<?= PV::BASE_URL ?>Buka_Order_Aff/proses/<?= $data['parse'] ?>/<?= $data['pelanggan_jenis'] ?>" method="POST">
                     <div class="row">
                         <div class="col px-1">
                             <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pelanggan_nama']) ?>" required readonly>
@@ -195,7 +195,7 @@
                     content();
                 } else if (res == 1) {
                     var parse = $("input[name=pelanggan]").val();
-                    location.href = "<?= $this->BASE_URL ?>Data_Operasi/index/" + parse;
+                    location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + parse;
                 } else {
                     alert(res);
                 }

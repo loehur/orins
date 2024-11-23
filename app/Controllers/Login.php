@@ -5,7 +5,7 @@ class Login extends Controller
     {
         if (isset($_SESSION['login_orins'])) {
             if ($_SESSION['login_orins'] == TRUE) {
-                header('Location: ' . $this->BASE_URL . "Home");
+                header('Location: ' . PV::BASE_URL . "Home");
             } else {
                 $this->view('Pre_login/login');
             }
@@ -41,7 +41,7 @@ class Login extends Controller
             } else {
                 $_SESSION['pre_log'] = true;
                 $this->model('Log')->write($hp . " PRE Login Success");
-                echo "<script>window.location.href = '" . $this->BASE_URL . "Login_99/index/" . $hp . "';</script>";
+                echo "<script>window.location.href = '" . PV::BASE_URL . "Login_99/index/" . $hp . "';</script>";
             }
         } else {
             $this->model('Log')->write($hp . " PRE Login Failed, INVALID NUMBER");

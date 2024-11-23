@@ -25,7 +25,7 @@ if ($id_pelanggan_jenis == 1) {
 
             <div class="row mb-4 <?= count($data['order']) == 0 ? "d-none" : "" ?>">
                 <div class="col border-bottom">
-                    <form action="<?= $this->BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
+                    <form action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
                         <div class="row pb-2">
                             <div class="col px-1" style="max-width: 300px;">
                                 <select class="tize shadow-none" name="id_pelanggan" required>
@@ -54,7 +54,7 @@ if ($id_pelanggan_jenis == 1) {
             <div class="row mb-2">
                 <div class="col pe-0">
                     <?php if ($data['count'] <= 15) { ?>
-                        <button type="button" class="btn me-2 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Tambah</button>
+                        <button type="button" class="btn me-2 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Jasa & Produksi</button>
                         <div class="btn-group me-1">
                             <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                 (&#43;) Afiliasi
@@ -68,6 +68,7 @@ if ($id_pelanggan_jenis == 1) {
                                 } ?>
                             </ul>
                         </div>
+                        <button type="button" class="btn me-2 shadow-none btn-sm btn-success bg-gradient py-1" data-bs-toggle="modal">(&#43;) Barang</button>
                     <?php } ?>
                 </div>
             </div>
@@ -108,7 +109,7 @@ if ($id_pelanggan_jenis == 1) {
                                     <tr>
                                         <td class="">
                                             <table class="table table-sm w-100 mb-0">
-                                                <tr class="bg-primary bg-gradient bg-opacity-10">
+                                                <tr class="<?= $do['id_afiliasi'] == 0 ? 'bg-primary' : 'bg-warning' ?> bg-gradient bg-opacity-10">
                                                     <td class="ps-2"><span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span></td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                         <small>Price [
@@ -151,7 +152,7 @@ if ($id_pelanggan_jenis == 1) {
                                                 </tr>
                                                 <tr>
                                                     <td colspan="10" class="border-bottom-0">
-                                                        <table class="table table-sm table-borderless">
+                                                        <table class="table table-sm table-borderless mb-1">
                                                             <tr>
                                                                 <td class="pe-1 border-bottom-0" nowrap>
                                                                     <div class="row">
@@ -234,7 +235,7 @@ if ($id_pelanggan_jenis == 1) {
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Produk - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>Buka_Order/add" method="POST">
+            <form action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
                 <div class="modal-body bg-primary bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <select class="tize loadDetail" name="id_produk" required>
@@ -258,7 +259,7 @@ if ($id_pelanggan_jenis == 1) {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Pilih Produk - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="exampleModalLabel">Pilih Produk (Afiliasi) - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div id="aff"></div>
         </div>
@@ -272,7 +273,7 @@ if ($id_pelanggan_jenis == 1) {
                 <h5 class="modal-title" id="exampleModalLabel"><small><span class="produk_harga"></span></small></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>Buka_Order/add_price/<?= $id_pelanggan_jenis ?>" method="POST">
+            <form action="<?= PV::BASE_URL ?>Buka_Order/add_price/<?= $id_pelanggan_jenis ?>" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" required>Harga</label>
@@ -294,7 +295,7 @@ if ($id_pelanggan_jenis == 1) {
                 <h5 class="modal-title" id="exampleModalLabel"><b><span class="produk_harga"></span></b></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>Buka_Order/diskon" method="POST">
+            <form action="<?= PV::BASE_URL ?>Buka_Order/diskon" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" required>Diskon Rp</label>
@@ -314,12 +315,12 @@ if ($id_pelanggan_jenis == 1) {
     $(document).ready(function() {
         $('select.tize').selectize();
         var produk = 1;
-        $("div#detail").load('<?= $this->BASE_URL ?>Buka_Order/load_detail/' + produk);
+        $("div#detail").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
     });
 
     $("button.delError").click(function() {
         var id_ = $(this).attr('data-id');
-        $.post("<?= $this->BASE_URL ?>Buka_Order/delete_error", {
+        $.post("<?= PV::BASE_URL ?>Buka_Order/delete_error", {
                 id: id_
             },
             function() {
@@ -329,7 +330,7 @@ if ($id_pelanggan_jenis == 1) {
 
     $('select.loadDetail').on('change', function() {
         var produk = this.value;
-        $("div#detail").load('<?= $this->BASE_URL ?>Buka_Order/load_detail/' + produk);
+        $("div#detail").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
     });
 
     $("span.tetapkanHarga").click(function() {
@@ -349,13 +350,13 @@ if ($id_pelanggan_jenis == 1) {
 
     $("a.aff").click(function() {
         var target = $(this).attr("data-id");
-        $("div#aff").load('<?= $this->BASE_URL ?>Buka_Order/load_aff/' + target);
+        $("div#aff").load('<?= PV::BASE_URL ?>Buka_Order/load_aff/' + target);
     })
 
     $("a.deleteItem").click(function() {
         var id = $(this).attr("data-id_order");
         $.ajax({
-            url: "<?= $this->BASE_URL ?>Buka_Order/deleteOrder",
+            url: "<?= PV::BASE_URL ?>Buka_Order/deleteOrder",
             data: {
                 id_order: id
             },
@@ -381,7 +382,7 @@ if ($id_pelanggan_jenis == 1) {
                     content();
                 } else if (res == 1) {
                     var parse = $("select[name=id_pelanggan]").val();
-                    location.href = "<?= $this->BASE_URL ?>Data_Operasi/index/" + parse;
+                    location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + parse;
                 } else {
                     alert(res);
                 }
@@ -411,7 +412,7 @@ if ($id_pelanggan_jenis == 1) {
                 click = 0;
             } else {
                 $.ajax({
-                    url: '<?= $this->BASE_URL ?>Buka_Order/updateCell_N',
+                    url: '<?= PV::BASE_URL ?>Buka_Order/updateCell_N',
                     data: {
                         'id': id,
                         'value': value_after,
@@ -464,7 +465,7 @@ if ($id_pelanggan_jenis == 1) {
                 click = 0;
             } else {
                 $.ajax({
-                    url: '<?= $this->BASE_URL ?>Buka_Order/update_catatan',
+                    url: '<?= PV::BASE_URL ?>Buka_Order/update_catatan',
                     data: {
                         'id': id,
                         'mode': mode,

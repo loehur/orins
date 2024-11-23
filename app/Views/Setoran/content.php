@@ -193,7 +193,7 @@
     </div>
 </div>
 
-<form action="<?= $this->BASE_URL; ?>Setoran/cancel" method="POST">
+<form action="<?= PV::BASE_URL; ?>Setoran/cancel" method="POST">
     <div class="modal" id="exampleModalCancel">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -227,7 +227,7 @@
 <script>
     $("button#setor").click(function() {
         $.ajax({
-            url: "<?= $this->BASE_URL ?>Setoran/setor",
+            url: "<?= PV::BASE_URL ?>Setoran/setor",
             data: [],
             type: "POST",
             success: function(result) {
@@ -242,7 +242,7 @@
 
     $("button#setor_masalah").click(function() {
         $.ajax({
-            url: "<?= $this->BASE_URL ?>Setoran/setor_masalah",
+            url: "<?= PV::BASE_URL ?>Setoran/setor_masalah",
             data: [],
             type: "POST",
             success: function(result) {
@@ -257,7 +257,7 @@
 
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
-        $("div#cek_load").load('<?= $this->BASE_URL ?>Setoran/cek/' + ref);
+        $("div#cek_load").load('<?= PV::BASE_URL ?>Setoran/cek/' + ref);
     });
 
     $("form").on("submit", function(e) {

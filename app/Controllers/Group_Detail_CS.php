@@ -34,8 +34,7 @@ class Group_Detail_CS extends Controller
 
    public function content()
    {
-
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND cs = 1 ORDER BY detail_group ASC";
+      $where = "cs = 1 ORDER BY detail_group ASC";
       $data = $this->db(0)->get_where('detail_group', $where);
 
       foreach ($data as $key => $d) {

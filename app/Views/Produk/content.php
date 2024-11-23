@@ -73,7 +73,7 @@
                                         foreach ($spk_dvs as $sd) { ?>
                                             <span style="cursor: pointer;" data-id="<?= $sd['id_spk_dvs'] ?>" class="deleteItem text-danger"><i class=" fa-regular fa-circle-xmark"></i></span>
                                         <?php
-                                            echo "<b>" . $this->model("Arr")->get($this->dDvs, "id_divisi", "divisi", $sd['id_divisi']) . "</b> " . $sd['cm'] + 1 . " Step";
+                                            echo "<b>" . $this->model("Arr")->get($data['divisi'], "id_divisi", "divisi", $sd['id_divisi']) . "</b> " . $sd['cm'] + 1 . " Step";
                                             $detailGroups = unserialize($sd['detail_groups']);
                                             echo " - ";
                                             foreach ($detailGroups as $dg) {
@@ -101,7 +101,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah Produk</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>Produk/add" method="POST">
+            <form action="<?= PV::BASE_URL ?>Produk/add" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Nama Produk</label>
@@ -138,7 +138,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Merubah Detail Produk</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="produk_edit" action="<?= $this->BASE_URL ?>Produk/edit" method="POST">
+            <form id="produk_edit" action="<?= PV::BASE_URL ?>Produk/edit" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Nama Produk</label>
@@ -175,7 +175,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah SPK</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="addSPK" action="<?= $this->BASE_URL ?>Produk/add_spk" method="POST">
+            <form id="addSPK" action="<?= PV::BASE_URL ?>Produk/add_spk" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Divisi</label>
@@ -216,7 +216,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah Komponen Harga</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>Produk/add_componen_harga" method="POST">
+            <form action="<?= PV::BASE_URL ?>Produk/add_componen_harga" method="POST">
                 <div class="modal-body">
                     <input type="hidden" name="id_produk_harga" value="">
                     <div class="row cekDetail"></div>
@@ -238,13 +238,13 @@
     function chgAction(id_produk) {
         var newAction = addItemAction + "/" + id_produk;
         $('form#addSPK').attr('action', newAction);
-        $("div.cekDetail").load('<?= $this->BASE_URL ?>Produk/load_detail/' + id_produk);
+        $("div.cekDetail").load('<?= PV::BASE_URL ?>Produk/load_detail/' + id_produk);
     }
 
     $(".addHarga").click(function() {
         var id_produk = $(this).attr("data-id");
         $("input[name=id_produk_harga]").val(id_produk);
-        $("div.cekDetail").load('<?= $this->BASE_URL ?>Produk/load_detail/' + id_produk);
+        $("div.cekDetail").load('<?= PV::BASE_URL ?>Produk/load_detail/' + id_produk);
     })
 
     function chgActionEdit(id_produk, name) {
@@ -273,7 +273,7 @@
         if (confirm("Yakin Hapus?")) {
             var id = $(this).attr("data-id");
             $.ajax({
-                url: "<?= $this->BASE_URL ?>Produk/delete_item",
+                url: "<?= PV::BASE_URL ?>Produk/delete_item",
                 data: {
                     id: id
                 },
@@ -295,7 +295,7 @@
         if (confirm("Yakin Hapus?")) {
             var id = $(this).attr("data-id");
             $.ajax({
-                url: "<?= $this->BASE_URL ?>Produk/delete_detail",
+                url: "<?= PV::BASE_URL ?>Produk/delete_detail",
                 data: {
                     id: id
                 },
@@ -317,7 +317,7 @@
         if (confirm("Yakin Hapus?")) {
             var id = $(this).attr("data-id");
             $.ajax({
-                url: "<?= $this->BASE_URL ?>Produk/delete_produk",
+                url: "<?= PV::BASE_URL ?>Produk/delete_produk",
                 data: {
                     id: id
                 },

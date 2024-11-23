@@ -73,7 +73,7 @@ if (!is_array($data)) {
                                 <div class="card-body login-card-body">
                                     <p class="login-box-msg">ORINS PRE LOGIN</p>
                                     <div id="info" class="text-danger pb-2 float-end"><?= $failed ?></div>
-                                    <form action="<?= $this->BASE_URL ?>Login/cek_login" method="post">
+                                    <form action="<?= PV::BASE_URL ?>Login/cek_login" method="post">
                                         <div class="input-group mb-3">
                                             <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
                                             <input type="text" name="HP" class="form-control" placeholder="User Login" autocomplete="on" required>
@@ -84,7 +84,7 @@ if (!is_array($data)) {
                                         </div>
                                         <div class="input-group mb-3">
                                             <input type="text" name="c_" class="form-control" placeholder="Captcha Code" required autocomplete="off">
-                                            <span class="input-group-text" id="basic-addon2"> <img class="rounded" src="<?= $this->BASE_URL ?>Login/captcha" alt="captcha" /></span>
+                                            <span class="input-group-text" id="basic-addon2"> <img class="rounded" src="<?= PV::BASE_URL ?>Login/captcha" alt="captcha" /></span>
                                         </div>
 
                                         <div class="row">

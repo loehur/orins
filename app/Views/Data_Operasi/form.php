@@ -1,4 +1,4 @@
-<form action="<?= $this->BASE_URL; ?>Data_Order/ambil_semua" method="POST">
+<form action="<?= PV::BASE_URL; ?>Data_Order/ambil_semua" method="POST">
     <div class="modal" id="exampleModal3">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -31,7 +31,7 @@
     </div>
 </form>
 
-<form action="<?= $this->BASE_URL; ?>Data_Order/ambil" method="POST">
+<form action="<?= PV::BASE_URL; ?>Data_Order/ambil" method="POST">
     <div class="modal" id="exampleModal4">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -64,7 +64,7 @@
     </div>
 </form>
 
-<form action="<?= $this->BASE_URL; ?>Data_Order/cancel" method="POST">
+<form action="<?= PV::BASE_URL; ?>Data_Order/cancel" method="POST">
     <div class="modal" id="exampleModalCancel">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -103,7 +103,7 @@
     </div>
 </form>
 
-<form action="<?= $this->BASE_URL; ?>Data_Order/cancel_diskon" method="POST">
+<form action="<?= PV::BASE_URL; ?>Data_Order/cancel_diskon" method="POST">
     <div class="modal" id="modalCancelDiskon">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -131,7 +131,7 @@
     </div>
 </form>
 
-<form action="<?= $this->BASE_URL; ?>Data_Operasi/xtraDiskon" method="POST">
+<form action="<?= PV::BASE_URL; ?>Data_Operasi/xtraDiskon" method="POST">
     <div class="modal" id="exampleModalDiskon">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -160,7 +160,7 @@
     </div>
 </form>
 
-<form action="<?= $this->BASE_URL ?>Data_Order/bayar" method="POST">
+<form action="<?= PV::BASE_URL ?>Data_Order/bayar" method="POST">
     <div class="modal" id="exampleModal2">
         <div class="modal-dialog">
             <div class="modal-content">

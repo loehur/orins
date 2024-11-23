@@ -21,6 +21,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Divisi</th>
+                            <th>Toko</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -29,6 +30,7 @@
                             <tr>
                                 <td><?= $a['id_divisi'] ?></td>
                                 <td><?= $a['divisi'] ?></td>
+                                <td><?= $a['id_toko'] ?></td>
                             </tr>
                         <?php }
                         ?>
@@ -46,7 +48,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah Divisi Produksi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>Divisi/add" method="POST">
+            <form action="<?= PV::BASE_URL ?>Divisi/add" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Divisi</label>

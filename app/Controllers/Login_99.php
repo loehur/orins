@@ -10,7 +10,7 @@ class Login_99 extends Controller
          if ($_SESSION['pre_log'] == true && isset($hp)) {
             if (isset($_SESSION['login_orins'])) {
                if ($_SESSION['login_orins'] == TRUE) {
-                  header('Location: ' . $this->BASE_URL . "Home");
+                  header('Location: ' . PV::BASE_URL . "Home");
                } else {
                   $this->view('Login/login', ['user' => $hp]);
                }
@@ -37,7 +37,7 @@ class Login_99 extends Controller
 
       if (isset($_SESSION['login_orins'])) {
          if ($_SESSION['login_orins'] == TRUE) {
-            header('Location: ' . $this->BASE_URL . "Home");
+            header('Location: ' . PV::BASE_URL . "Home");
          }
       }
 
@@ -89,6 +89,6 @@ class Login_99 extends Controller
       }
       session_unset();
       session_destroy();
-      header('Location: ' . $this->BASE_URL . "Home");
+      header('Location: ' . PV::BASE_URL . "Home");
    }
 }

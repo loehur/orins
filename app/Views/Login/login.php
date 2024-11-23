@@ -75,7 +75,7 @@ if (is_array($data)) {
                                 <div class="card-body login-card-body">
                                     <p class="login-box-msg">ORINS LOGIN</p>
                                     <div id="info" class="text-danger pb-2 float-end"><?= $failed ?></div>
-                                    <form action="<?= $this->BASE_URL ?>Login_99/cek_login" method="post">
+                                    <form action="<?= PV::BASE_URL ?>Login_99/cek_login" method="post">
                                         <div class="input-group mb-3">
                                             <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
                                             <input type="text" name="HP" readonly value="<?= $user ?>" class="form-control" placeholder="User Login" required autocomplete="off">

@@ -143,7 +143,7 @@ class Buka_Order extends Controller
       }
 
       $data = [];
-      foreach ($this->dProdukAll as $dp) {
+      foreach ($this->dProduk as $dp) {
          if ($dp['id_produk'] == $id_produk) {
             $data = unserialize($dp['produk_detail']);
             $produk_name = $dp['produk'];
@@ -179,7 +179,7 @@ class Buka_Order extends Controller
             $detail_item = $get_detail_item[$d]['name'];
          }
 
-         foreach ($this->dDetailGroupAll as $dg) {
+         foreach ($this->dDetailGroup as $dg) {
             if ($dg['id_index'] == $d) {
                $groupName = $dg['detail_group'];
             }
@@ -297,14 +297,14 @@ class Buka_Order extends Controller
    function load_detail($produk)
    {
       $data = [];
-      foreach ($this->dProdukAll as $dp) {
+      foreach ($this->dProduk as $dp) {
          if ($dp['id_produk'] == $produk) {
             $data = unserialize($dp['produk_detail']);
          }
       }
 
       $spkNote = [];
-      foreach ($this->dSPK_all as $sd) {
+      foreach ($this->dSPK as $sd) {
          if ($sd['id_produk'] == $produk) {
             $spkNote[$sd['id_divisi']] = "";
          }
@@ -314,7 +314,7 @@ class Buka_Order extends Controller
       $varian = [];
       foreach ($data as $d) {
          $groupName = "";
-         foreach ($this->dDetailGroupAll as $dg) {
+         foreach ($this->dDetailGroup as $dg) {
             if ($dg['id_index'] == $d) {
                $where = "id_detail_group = " . $dg['id_detail_group'] . " ORDER BY freq DESC";
                $data_item = $this->db(0)->get_where('detail_item', $where);
@@ -337,6 +337,7 @@ class Buka_Order extends Controller
       $data_['detail'] = $data_;
       $data_['varian'] = $varian;
       $data_['spkNote'] = $spkNote;
+      $data_['divisi'] = $this->db(0)->get('divisi');
       $this->view($this->page . "/detail", $data_);
    }
 
@@ -345,8 +346,8 @@ class Buka_Order extends Controller
       $harga_code = $_POST['harga_code'];
       $harga = $_POST['harga'];
 
-      $cols = 'id_toko, code, harga_' . $id_pelanggan_jenis;
-      $vals = "'" . $this->userData['id_toko'] . "','" . $harga_code . "'," . $harga;
+      $cols = 'code, harga_' . $id_pelanggan_jenis;
+      $vals = "'" . $harga_code . "'," . $harga;
 
       $whereCount = "code = '" . $harga_code . "'";
       $dataCount = $this->db(0)->count_where('produk_harga', $whereCount);

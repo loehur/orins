@@ -202,7 +202,7 @@
         var id_ = $(this).attr("data-id");
         var value = $(this).attr("data-val");
         $.ajax({
-            url: "<?= $this->BASE_URL . $data['_c'] ?>/action",
+            url: "<?= PV::BASE_URL . $data['_c'] ?>/action",
             data: {
                 id: id_,
                 val: value,
@@ -228,7 +228,7 @@
         var id_ = $(this).attr("data-id");
         var value = $(this).attr("data-val");
         $.ajax({
-            url: "<?= $this->BASE_URL . $data['_c'] ?>/actionMulti",
+            url: "<?= PV::BASE_URL . $data['_c'] ?>/actionMulti",
             data: {
                 id: id_,
                 val: value,
@@ -247,6 +247,6 @@
 
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
-        $("div#cekOrder").load('<?= $this->BASE_URL . $data['_c'] ?>/cekOrder/' + ref);
+        $("div#cekOrder").load('<?= PV::BASE_URL . $data['_c'] ?>/cekOrder/' + ref);
     });
 </script>

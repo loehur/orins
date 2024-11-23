@@ -69,5 +69,51 @@ $mdata = [
 				'link' => 'Deposit/i/2'
 			],
 		]
+	],
+	[
+		'access' => [$this->pGudang],
+		'name' => 'Master Data',
+		'icon' => 'box',
+		'sub' => [
+			[
+				'name' => 'Pembelian',
+				'link' => 'Master_Mutasi'
+			],
+			[
+				'name' => 'Barang',
+				'link' => 'Master_Barang'
+			],
+			[
+				'name' => 'Riwayat',
+				'link' => 'Input'
+			],
+			[
+				'name' => 'Grup',
+				'link' => 'Master_Grup'
+			],
+		]
+	],
+	[
+		'access' => [$this->pMaster],
+		'name' => 'Managment',
+		'icon' => 'server',
+		'sub' => [
+			[
+				'name' => 'Divisi Produksi',
+				'link' => 'Divisi'
+			],
+			[
+				'name' => 'Data Toko',
+				'link' => 'Toko_Daftar'
+			],
+			[
+				'name' => 'Admin Toko',
+				'link' => 'Toko_Admin'
+			],
+			[
+				'name' => 'Admin Officer',
+				'link' => 'Admin_Officer'
+			],
+		]
 	]
 ];

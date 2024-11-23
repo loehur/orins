@@ -34,9 +34,7 @@ class Group_Detail extends Controller
 
    public function content()
    {
-
-      $where = "id_toko = " . $this->userData['id_toko'] . " ORDER BY detail_group ASC";
-      $data['main'] = $this->db(0)->get_where('detail_group', $where);
+      $data['main'] = $this->db(0)->get('detail_group');
       foreach ($data['main'] as $key => $d) {
          $where = "id_detail_group = " . $d['id_detail_group'] . " ORDER BY detail_item ASC";
          $data_item = $this->db(0)->get_where('detail_item', $where);
@@ -122,6 +120,18 @@ class Group_Detail extends Controller
       $set = "detail_item = '" . $value . "'";
       $where = "id_detail_item = " . $id;
       $update = $this->db(0)->update("detail_item", $set, $where);
+      $this->dataSynchrone();
+      echo $update['errno'];
+   }
+
+   public function updateCell_grup()
+   {
+      $value = $_POST['value'];
+      $id = $_POST['id'];
+
+      $set = "detail_group = '" . $value . "'";
+      $where = "id_index = " . $id;
+      $update = $this->db(0)->update("detail_group", $set, $where);
       $this->dataSynchrone();
       echo $update['errno'];
    }

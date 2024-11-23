@@ -371,7 +371,7 @@
                                                     <?php if (($do['id_afiliasi'] == 0 || $do['id_afiliasi'] <> $this->userData['id_toko']) && $do['tuntas'] == 0) { ?>
                                                         <table>
                                                             <tr>
-                                                                <td class="text-end pe-1"><small><a href="<?= $this->BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
+                                                                <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
                                                                 <?php
                                                                 if ($ambil_all == false) { ?>
                                                                     <td class="text-end pe-1"><small><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded border text-purple px-1" data-ref="<?= $do['ref'] ?>">Ambil</span></small></td>
@@ -401,7 +401,7 @@
                                                     <?php } else { ?>
                                                         <table>
                                                             <tr>
-                                                                <td class="text-end pe-1"><small><a href="<?= $this->BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm px-1"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
+                                                                <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm px-1"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
                                                             </tr>
                                                         </table>
                                                     <?php } ?>
@@ -435,7 +435,7 @@
         if (($do['id_afiliasi'] == 0 || $do['id_afiliasi'] <> $this->userData['id_toko']) && $do['tuntas'] == 0) { ?>
             <div class="row row me-2 ps-4" id="loadMulti">
                 <div class="col-auto ps-0 pe-2">
-                    <form action="<?= $this->BASE_URL; ?>Data_Operasi/bayar_multi" method="POST">
+                    <form action="<?= PV::BASE_URL; ?>Data_Operasi/bayar_multi" method="POST">
                         <div class="container-fluid pt-2 ps-0 pe-0">
                             <div class="rounded border p-2">
                                 <small>
@@ -615,7 +615,7 @@
 
         if (countArr > 0) {
             $.ajax({
-                url: '<?= $this->BASE_URL ?>Data_Operasi/clearTuntas',
+                url: '<?= PV::BASE_URL ?>Data_Operasi/clearTuntas',
                 data: {
                     'data': dataNya,
                 },
@@ -630,7 +630,7 @@
     $('button.cek').click(function() {
         var parse = $("select[name=id_pelanggan]").val();
         var parse_2 = $("select[name=y]").val() || 0;
-        location.href = "<?= $this->BASE_URL ?>Data_Operasi/index/" + parse + "/" + parse_2;
+        location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + parse + "/" + parse_2;
     });
 
     $("a.xtraDiskon").click(function() {

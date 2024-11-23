@@ -1,6 +1,6 @@
 <?php
 
-class Toko_Daftar extends Controller
+class Master_Barang extends Controller
 {
    public $page = __CLASS__;
 
@@ -22,7 +22,7 @@ class Toko_Daftar extends Controller
    {
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Managment - Data Toko"
+         "title" => "Master Data - Barang"
       ]);
 
       $this->viewer();
@@ -35,8 +35,27 @@ class Toko_Daftar extends Controller
 
    public function content()
    {
-
-      $data = $this->db(0)->get('toko');
+      $data['barang'] = $this->db(0)->get('master_barang');
+      $data['grup'] = $this->db(0)->get('master_grup');
       $this->view($this->v_content, $data);
+   }
+
+   function add()
+   {
+      $kode = $_POST['kode'];
+      $nama = $_POST['nama'];
+      $harga_1 = $_POST['harga_1'];
+      $harga_2 = $_POST['harga_2'];
+      $id_grup = $_POST['id_grup'];
+      $sn = isset($_POST['sn']) ? $_POST['sn'] : 0;
+
+      $cols = 'kode,nama,harga_1,harga_2,id_grup,sn';
+      $vals = "'" . $kode . "','" . $nama . "'," . $harga_1 . "," . $harga_2 . "," . $id_grup . "," . $sn;
+      $do = $this->db(0)->insertCols('master_barang', $cols, $vals);
+      if ($do['errno'] == 0) {
+         echo 0;
+      } else {
+         echo $do['error'];
+      }
    }
 }

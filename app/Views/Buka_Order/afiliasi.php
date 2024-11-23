@@ -1,14 +1,11 @@
-<form class="aff_form" action="<?= $this->BASE_URL ?>Buka_Order/add/<?= $data['id_toko'] ?>" method="POST">
-    <div class="modal-body px-2 bg-info-soft">
-        <label class="label-form">Produk <span class="text-success"><b><?= strtoupper($data['toko']) ?></b></span></label>
+<form class="aff_form" action="<?= PV::BASE_URL ?>Buka_Order/add/<?= $data['id_toko'] ?>" method="POST">
+    <div class="modal-body px-2 bg-warning-soft">
         <div class="mb-3">
             <select class="tize loadDetail" name="id_produk" required>
                 <option></option>
-                <?php foreach ($this->dProdukAll as $dp) {
-                    if ($data['id_toko'] == $dp['id_toko']) { ?>
-                        <option value="<?= $dp['id_produk'] ?>"><?= $dp['produk'] ?></option>
-                <?php }
-                } ?>
+                <?php foreach ($this->dProduk as $dp) { ?>
+                    <option value="<?= $dp['id_produk'] ?>"><?= $dp['produk'] ?></option>
+                <?php } ?>
             </select>
         </div>
         <div id="detail_aff"></div>
@@ -25,7 +22,7 @@
 
     $('select.loadDetail').on('change', function() {
         var produk = this.value;
-        $("div#detail_aff").load('<?= $this->BASE_URL ?>Buka_Order/load_detail/' + produk);
+        $("div#detail_aff").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
     });
 
     $("form.aff_form").on("submit", function(e) {
@@ -39,7 +36,7 @@
                     content();
                 } else if (res == 1) {
                     var parse = $("select[name=id_pelanggan]").val();
-                    location.href = "<?= $this->BASE_URL ?>Data_Operasi/index/" + parse;
+                    location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + parse;
                 } else {
                     alert(res);
                 }

@@ -1,6 +1,6 @@
 <nav class="topnav navbar navbar-expand shadow-sm border-bottom-1 bg-white px-2" id="sidenavAccordion">
 	<button class="border-0 bg-transparent text-secondary pt-2" id="sidebarToggle"><i class="fa-solid fa-bars"></i> Menu</button>
-	<a class="ps-lg-2 ms-auto text-end me-2 border text-success p-2 rounded text-decoration-none" id="sync" href="<?= $this->BASE_URL ?>Log/sync"><?= strtoupper($this->userData['nama_toko']) ?></a>
+	<a class="ps-lg-2 ms-auto text-end me-2 border text-success p-2 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync"><?= strtoupper($this->userData['nama_toko']) ?></a>
 	<ul class="navbar-nav align-items-center">
 		<!-- User Dropdown-->
 		<?php if (in_array($this->userData['user_tipe'], $this->pOffice)) { ?>
@@ -11,7 +11,7 @@
 				<div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownUserImage">
 					<?php
 					foreach ($this->dToko as $dt) { ?>
-						<a class="dropdown-item sync" href="<?= $this->BASE_URL ?>Log/change_toko/<?= $dt['id_toko'] ?>"><?= $dt['nama_toko'] ?></a>
+						<a class="dropdown-item sync" href="<?= PV::BASE_URL ?>Log/change_toko/<?= $dt['id_toko'] ?>"><?= $dt['nama_toko'] ?></a>
 					<?php } ?>
 				</div>
 			</li>
@@ -27,11 +27,11 @@
 					</div>
 				</h6>
 				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" href="<?= $this->BASE_URL ?>Akun">
+				<a class="dropdown-item" href="<?= PV::BASE_URL ?>Akun">
 					<div class="dropdown-item-icon"><i data-feather="settings"></i></div>
 					Account
 				</a>
-				<a class="dropdown-item" href="<?= $this->BASE_URL ?>Login_99/logout">
+				<a class="dropdown-item" href="<?= PV::BASE_URL ?>Login_99/logout">
 					<div class="dropdown-item-icon"><i data-feather="log-out"></i></div>
 					Logout
 				</a>

@@ -46,7 +46,7 @@
     </div>
 </div>
 
-<form action="<?= $this->BASE_URL; ?>Setoran/cancel" method="POST">
+<form action="<?= PV::BASE_URL; ?>Setoran/cancel" method="POST">
     <div class="modal" id="exampleModalCancel">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -85,6 +85,6 @@
 
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
-        $("div#cek_load").load('<?= $this->BASE_URL ?>Setoran/cek/' + ref);
+        $("div#cek_load").load('<?= PV::BASE_URL ?>Setoran/cek/' + ref);
     });
 </script>

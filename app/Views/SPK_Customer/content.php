@@ -161,7 +161,7 @@
     <?php } ?>
 </small>
 
-<form action="<?= $this->BASE_URL; ?>SPK_C/done/<?= $parse ?>" method="POST">
+<form action="<?= PV::BASE_URL; ?>SPK_C/done/<?= $parse ?>" method="POST">
     <div class="modal" id="done">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -206,7 +206,7 @@
         if (parse_2 == "") {
             return;
         }
-        $("div#content").load('<?= $this->BASE_URL ?>SPK_Customer/content/' + parse + '/' + parse_2);
+        $("div#content").load('<?= PV::BASE_URL ?>SPK_Customer/content/' + parse + '/' + parse_2);
     });
 
     $("span.done").click(function() {
@@ -228,7 +228,7 @@
             type: $(this).attr("method"),
             success: function(res) {
                 if (res == 0) {
-                    $("div#content").load('<?= $this->BASE_URL ?>SPK_Customer/content/' + parse + '/' + parse_2);
+                    $("div#content").load('<?= PV::BASE_URL ?>SPK_Customer/content/' + parse + '/' + parse_2);
                 } else {
                     alert(res);
                 }

@@ -27,23 +27,21 @@
                                 <td>
                                     <div class="row">
                                         <div class="col">
+                                            <span class="edit_grup pe-2 text-nowrap fw-bold text-success" data-id='<?= $a['id_index'] ?>'><?= $a['detail_group'] ?></span>
                                             <?php
                                             if ($c_item == 0) { ?>
                                                 <span style="cursor: pointer;" data-id="<?= $a['id_index'] ?>" class="deleteGrup text-danger"><i class=" fa-regular fa-circle-xmark"></i></span>
                                             <?php } ?>
-                                            <span class="text-success"><b><?= $a['detail_group'] ?></b></span>
-                                        </div>
-                                        <div class="col">
-                                            <div class="float-end">
-                                                <span class="px-1 pb-1 rounded border" onclick="toggle(<?= $a['id_index'] ?>)"><small>Fast Add: <input id="add<?= $a['id_index'] ?>" type="checkbox" <?= ($a['cs'] == 1) ? "checked" : "" ?> data-toggle="toggle" data-size="mini"></small></span>
-                                                <button onclick="chgActionMulti(<?= $a['id_detail_group'] ?>,'<?= $a['detail_group'] ?>')" type="button" class="bg-white border rounded" data-bs-toggle="modal" data-bs-target="#itemMulti"> <i class="fa-regular fa-square-plus text-primary"></i></button>
-                                            </div>
+                                            <button onclick="chgActionMulti(<?= $a['id_detail_group'] ?>,'<?= $a['detail_group'] ?>')" type="button" class="bg-white border rounded py-1" data-bs-toggle="modal" data-bs-target="#itemMulti"> <i class="fa-regular fa-square-plus text-primary"></i></button>
+                                            <span class="px-1 pb-1 rounded border" onclick="toggle(<?= $a['id_index'] ?>)">
+                                                <small>CS Add: <input class="" id="add<?= $a['id_index'] ?>" type="checkbox" <?= ($a['cs'] == 1) ? "checked" : "" ?> data-toggle="toggle" data-size="small"></small>
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="row mt-1">
                                         <?php
                                         foreach ($data['main'][$k]['item'] as $di) { ?>
-                                            <div class="col-md-4 border-end">
+                                            <div class="col rounded border mx-1 py-1 mb-1 text-nowrap">
                                                 <small>
                                                     <?php if (count($data['varian'][$di['id_detail_item']]) == 0) { ?>
                                                         <span style="cursor: pointer;" data-id="<?= $di['id_detail_item'] ?>" class="deleteItem text-danger"><i class=" fa-regular fa-circle-xmark"></i></span>
@@ -81,7 +79,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah Kelompok Detail</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>Group_Detail/add" method="POST">
+            <form action="<?= PV::BASE_URL ?>Group_Detail/add" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Kelompok Detail</label>
@@ -104,7 +102,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah LINK Kelompok Detail</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>Group_Detail/add/1" method="POST">
+            <form action="<?= PV::BASE_URL ?>Group_Detail/add/1" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Kelompok Detail</label>
@@ -136,7 +134,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah Varian <span class="text-success groupDetail"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="addItem" action="<?= $this->BASE_URL ?>Group_Detail/add_varian" method="POST">
+            <form id="addItem" action="<?= PV::BASE_URL ?>Group_Detail/add_varian" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Varian - <small>Pisahkan dengan Koma ( , )</small></label>
@@ -160,7 +158,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah MULTI <span class="text-success groupDetail"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="addItemMulti" action="<?= $this->BASE_URL ?>Group_Detail/add_item_multi" method="POST">
+            <form id="addItemMulti" action="<?= PV::BASE_URL ?>Group_Detail/add_item_multi" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Item Detail - <small>Pisahkan dengan Koma ( , )</small></label>
@@ -192,7 +190,7 @@
             val = 0;
         }
         $.ajax({
-            url: "<?= $this->BASE_URL ?>Group_Detail/update_add",
+            url: "<?= PV::BASE_URL ?>Group_Detail/update_add",
             data: {
                 id: id,
                 value: val
@@ -257,7 +255,45 @@
                 click = 0;
             } else {
                 $.ajax({
-                    url: '<?= $this->BASE_URL ?>Group_Detail/updateCell',
+                    url: '<?= PV::BASE_URL ?>Group_Detail/updateCell',
+                    data: {
+                        'id': id,
+                        'value': value_after,
+                    },
+                    type: 'POST',
+                    success: function(res) {
+                        if (res == 0) {
+                            content();
+                        } else {
+                            alert(res);
+                        }
+                    },
+                });
+            }
+        });
+    });
+
+    $("span.edit_grup").on('dblclick', function() {
+        click = click + 1;
+        if (click != 1) {
+            return;
+        }
+
+        var id = $(this).attr('data-id');
+        var value = $(this).html();
+        var value_before = value;
+        var span = $(this);
+        span.html("<input type='text' id='value_3313' style='text-align:left;width:200px;border:0' value='" + value + "'>");
+
+        $("#value_3313").focus();
+        $("#value_3313").focusout(function() {
+            var value_after = $(this).val();
+            if (value_after == value_before) {
+                span.html(value_before);
+                click = 0;
+            } else {
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>Group_Detail/updateCell_grup',
                     data: {
                         'id': id,
                         'value': value_after,
@@ -295,7 +331,7 @@
                 click = 0;
             } else {
                 $.ajax({
-                    url: '<?= $this->BASE_URL ?>Group_Detail/updateCellVarian',
+                    url: '<?= PV::BASE_URL ?>Group_Detail/updateCellVarian',
                     data: {
                         'id': id,
                         'value': value_after,
@@ -318,7 +354,7 @@
         if (confirm("Yakin Hapus?")) {
             var id = $(this).attr("data-id");
             $.ajax({
-                url: "<?= $this->BASE_URL ?>Group_Detail/delete_item",
+                url: "<?= PV::BASE_URL ?>Group_Detail/delete_item",
                 data: {
                     id: id
                 },
@@ -340,7 +376,7 @@
         if (confirm("Yakin Hapus?")) {
             var id = $(this).attr("data-id");
             $.ajax({
-                url: "<?= $this->BASE_URL ?>Group_Detail/delete_varian",
+                url: "<?= PV::BASE_URL ?>Group_Detail/delete_varian",
                 data: {
                     id: id
                 },
@@ -362,7 +398,7 @@
         if (confirm("Yakin Hapus?")) {
             var id = $(this).attr("data-id");
             $.ajax({
-                url: "<?= $this->BASE_URL ?>Group_Detail/delete_grup",
+                url: "<?= PV::BASE_URL ?>Group_Detail/delete_grup",
                 data: {
                     id: id
                 },

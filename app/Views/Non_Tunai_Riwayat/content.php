@@ -204,7 +204,7 @@
         }
 
         $.ajax({
-            url: "<?= $this->BASE_URL ?>Non_Tunai/action",
+            url: "<?= PV::BASE_URL ?>Non_Tunai/action",
             data: {
                 id: id_,
                 val: value,
@@ -225,7 +225,7 @@
         var id_ = $(this).attr("data-id");
         var value = $(this).attr("data-val");
         $.ajax({
-            url: "<?= $this->BASE_URL ?>Non_Tunai/actionMulti",
+            url: "<?= PV::BASE_URL ?>Non_Tunai/actionMulti",
             data: {
                 id: id_,
                 val: value
@@ -244,7 +244,7 @@
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
         $("div#cekOrder").html("");
-        $("div#cekOrder").load('<?= $this->BASE_URL ?>Non_Tunai/cekOrder/' + ref);
+        $("div#cekOrder").load('<?= PV::BASE_URL ?>Non_Tunai/cekOrder/' + ref);
     });
 
     $("button#cekS").click(function() {

@@ -18,9 +18,9 @@
         }
         page = "<?= isset($data['page']) ? $data['page'] : 'content' ?>";
         if (parse_2 != "") {
-            $("div#content").load('<?= $this->BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse + '/' + parse_2);
+            $("div#content").load('<?= PV::BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse + '/' + parse_2);
         } else {
-            $("div#content").load('<?= $this->BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse);
+            $("div#content").load('<?= PV::BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse);
         }
     }
 </script>

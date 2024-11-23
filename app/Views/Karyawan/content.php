@@ -33,7 +33,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah Karyawan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>Karyawan/add" method="POST">
+            <form action="<?= PV::BASE_URL ?>Karyawan/add" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label" required>Nama</label>
@@ -68,7 +68,7 @@
         if (confirm("Yakin Menonaktifkan " + nama + "?")) {
             var id = $(this).attr("data-id");
             $.ajax({
-                url: "<?= $this->BASE_URL ?>Karyawan/delete",
+                url: "<?= PV::BASE_URL ?>Karyawan/delete",
                 data: {
                     id: id
                 },
@@ -108,7 +108,7 @@
                 click = 0;
             } else {
                 $.ajax({
-                    url: '<?= $this->BASE_URL . $data['_c'] ?>/updateCell',
+                    url: '<?= PV::BASE_URL . $data['_c'] ?>/updateCell',
                     data: {
                         'id': id,
                         'value': value_after,

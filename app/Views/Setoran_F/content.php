@@ -89,7 +89,7 @@
         var val = $(this).attr('data-val');
         var ref_ = $(this).attr('data-id');
         $.ajax({
-            url: "<?= $this->BASE_URL ?>Setoran_F/setor/" + val,
+            url: "<?= PV::BASE_URL ?>Setoran_F/setor/" + val,
             data: {
                 ref: ref_
             },
@@ -106,6 +106,6 @@
 
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
-        $("div#cek_load").load('<?= $this->BASE_URL ?>Setoran_F/cek/' + ref);
+        $("div#cek_load").load('<?= PV::BASE_URL ?>Setoran_F/cek/' + ref);
     });
 </script>

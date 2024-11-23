@@ -12,51 +12,49 @@
     <!-- Main page content-->
     <div class="container-xl px-4">
         <div class="card mt-n10" style="max-width: 500px;">
-            <div class="card-header ">Admin Officer
+            <div class="card-header">
+                Master Grup
                 <button type="button" class="float-end btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
             </div>
             <div class="card-body">
-
-                <?php
-                foreach ($data as $a) { ?>
-                    ID : [ <?= $a['id_user'] ?> ]<br>
-                    <?= $a['nama'] ?><br>
-                    Username : <?= $a['user'] ?>
-                    <button type="button" class="float-end btn btn-sm btn-outline-primary">Reset Password</button> <br>
-                    <small>Default Password : 123</small>
-                    <hr>
-                <?php }
-                ?>
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Master Grup</th>
+                        </tr>
+                    </thead>
+                    <?php
+                    foreach ($data as $a) { ?>
+                        <tr>
+                            <td>
+                                <?= $a['id'] ?>
+                            </td>
+                            <td>
+                                <?= $a['nama'] ?>
+                            </td>
+                        </tr>
+                    <?php }
+                    ?>
+                </table>
             </div>
         </div>
     </div>
 </main>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+
+<div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Menambah Admin Officer</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Grup Barang</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Admin_Officer/add" method="POST">
+            <form action="<?= PV::BASE_URL ?>Master_Grup/add" method="POST">
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label" required>User</label>
-                        <input type="text" name="user" class="form-control">
-                    </div>
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label" required>Nama</label>
                         <input type="text" name="nama" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Position</label>
-                        <select class="form-select" name="office" required>
-                            <option></option>
-                            <option value="5">Finance</option>
-                            <option value="6">Audit</option>
-                            <option value="7">Gudang</option>
-                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -149,6 +149,6 @@
 
     $("tr.cekPLG").click(function() {
         var id = $(this).attr("data-id");
-        window.location.href = "<?= $this->BASE_URL ?>Data_Operasi/index/" + id;
+        window.location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + id;
     });
 </script>

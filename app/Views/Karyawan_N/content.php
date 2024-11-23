@@ -28,7 +28,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah Karywaan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>Karyawan/add" method="POST">
+            <form action="<?= PV::BASE_URL ?>Karyawan/add" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label" required>Nama</label>
@@ -63,7 +63,7 @@
         if (confirm("Yakin Mengaktifkan kembali " + nama + "?")) {
             var id = $(this).attr("data-id");
             $.ajax({
-                url: "<?= $this->BASE_URL ?>Karyawan_N/restore",
+                url: "<?= PV::BASE_URL ?>Karyawan_N/restore",
                 data: {
                     id: id
                 },

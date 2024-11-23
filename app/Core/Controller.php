@@ -26,7 +26,7 @@ class Controller extends PV
                 $this->logout();
             }
         } else {
-            header("location: " . $this->BASE_URL . "Login");
+            header("location: " . PV::BASE_URL . "Login");
         }
     }
 
@@ -46,15 +46,10 @@ class Controller extends PV
                 }
 
                 $this->dDvs = $_SESSION['data_divisi'];
-                $this->dDvsAll = $_SESSION['data_divisi_all'];
                 $this->dProduk = $_SESSION['produk'];
-                $this->dProdukAll = $_SESSION['produk_all'];
                 $this->dDetailGroup = $_SESSION['detail_group'];
                 $this->dDetailItem = $_SESSION['detail_item'];
                 $this->dSPK = $_SESSION['spk_divisi'];
-                $this->dDetailGroupAll = $_SESSION['detail_group_all'];
-                $this->dDetailItemAll = $_SESSION['detail_item_all'];
-                $this->dSPK_all = $_SESSION['spk_divisi_all'];
                 $this->dUser = $_SESSION['data_user'];
                 $this->dPelanggan = $_SESSION['data_pelanggan'];
                 $this->dPelangganAll = $_SESSION['data_pelanggan_all'];
@@ -73,16 +68,11 @@ class Controller extends PV
 
         $whereToko = "id_toko = " . $this->userData['id_toko'];
         $_SESSION['data_toko'] = $this->db(0)->get('toko');
-        $_SESSION['data_divisi'] = $this->db(0)->get_where('divisi', $whereToko . " ORDER BY sort ASC");
-        $_SESSION['data_divisi_all'] = $this->db(0)->get_order('divisi', "sort ASC");
-        $_SESSION['spk_divisi'] = $this->db(0)->get_where('spk_dvs', $whereToko);
-        $_SESSION['spk_divisi_all'] = $this->db(0)->get('spk_dvs');
-        $_SESSION['produk'] = $this->db(0)->get_where('produk', $whereToko . " ORDER BY freq DESC");
-        $_SESSION['produk_all'] = $this->db(0)->get_order('produk', 'freq DESC');
-        $_SESSION['detail_group'] = $this->db(0)->get_where('detail_group', $whereToko . " ORDER BY sort ASC");
-        $_SESSION['detail_group_all'] = $this->db(0)->get_order('detail_group', "sort ASC");
-        $_SESSION['detail_item'] = $this->db(0)->get_where('detail_item', $whereToko . " ORDER BY detail_item ASC");
-        $_SESSION['detail_item_all'] = $this->db(0)->get_order('detail_item', "detail_item ASC");
+        $_SESSION['data_divisi'] = $this->db(0)->get_where('divisi', "id_toko LIKE '%|" . $this->userData['id_toko'] . "|%'" . " ORDER BY sort ASC");
+        $_SESSION['spk_divisi'] = $this->db(0)->get('spk_dvs');
+        $_SESSION['produk'] = $this->db(0)->get_order('produk', 'freq DESC');
+        $_SESSION['detail_group'] = $this->db(0)->get_order('detail_group', "sort ASC");
+        $_SESSION['detail_item'] = $this->db(0)->get_order('detail_item', "detail_item ASC");
         $_SESSION['data_user'] = $this->db(0)->get('user', $whereToko);
 
         $wherePel = $whereToko . " AND en = 1 ORDER BY freq DESC";
@@ -100,7 +90,7 @@ class Controller extends PV
         session_start();
         session_unset();
         session_destroy();
-        header('Location: ' . $this->BASE_URL . "Login");
+        header('Location: ' . PV::BASE_URL . "Login");
     }
 
     public function db($db = 0)

@@ -23,7 +23,7 @@ class Divisi extends Controller
    {
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Set Produksi - Divisi"
+         "title" => "Managment - Divisi Produksi"
       ]);
 
       $this->viewer();
@@ -36,9 +36,7 @@ class Divisi extends Controller
 
    public function content()
    {
-
-      $where = "id_toko = " . $this->userData['id_toko'];
-      $data = $this->db(0)->get_where('divisi', $where);
+      $data = $this->db(0)->get('divisi');
       $this->view($this->v_content, $data);
    }
 

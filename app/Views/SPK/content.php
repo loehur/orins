@@ -63,7 +63,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Update SPK</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>SPK/updateSPK/<?= $data['id_divisi'] ?>/1" method="POST">
+            <form action="<?= PV::BASE_URL ?>SPK/updateSPK/<?= $data['id_divisi'] ?>/1" method="POST">
                 <div class="modal-body">
                     <div class="col mb-2">
                         <label class="form-label">User Produksi</label>
@@ -92,7 +92,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Update SPK</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>SPK/updateSPK/<?= $data['id_divisi'] ?>/2" method="POST">
+            <form action="<?= PV::BASE_URL ?>SPK/updateSPK/<?= $data['id_divisi'] ?>/2" method="POST">
                 <div class="modal-body">
                     <div class="col mb-2">
                         <label class="form-label">User Produksi</label>
@@ -123,7 +123,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">SPK Selesai</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>SPK/updateSPK/<?= $data['id_divisi'] ?>" method="POST">
+            <form action="<?= PV::BASE_URL ?>SPK/updateSPK/<?= $data['id_divisi'] ?>" method="POST">
                 <div class="modal-body">
                     <div class="col" id="cekSelesai"></div>
                 </div>
@@ -153,14 +153,14 @@
 
     $('span.updateSPK').click(function() {
         var order = $(this).attr("data-order");
-        $("div#cekUpdate").load('<?= $this->BASE_URL ?>SPK/load_update/' + order);
+        $("div#cekUpdate").load('<?= PV::BASE_URL ?>SPK/load_update/' + order);
     });
 
 
     $('span.cekSPK').click(function() {
         var order = $(this).attr("data-order");
         var parse = $(this).attr("data-parse");
-        $("div#cekOrder").load('<?= $this->BASE_URL ?>SPK/cekSPK/' + order + "/" + parse);
+        $("div#cekOrder").load('<?= PV::BASE_URL ?>SPK/cekSPK/' + order + "/" + parse);
     });
 
     $("form").on("submit", function(e) {

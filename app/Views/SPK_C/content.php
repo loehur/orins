@@ -157,7 +157,7 @@
     </div>
 </small>
 
-<form action="<?= $this->BASE_URL; ?>SPK_C/done/<?= $parse ?>" method="POST">
+<form action="<?= PV::BASE_URL; ?>SPK_C/done/<?= $parse ?>" method="POST">
     <div class="modal" id="done">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -199,7 +199,7 @@
     $('button.cek').click(function() {
         var parse = <?= $parse ?>;
         var parse_2 = $("input[name=tgl]").val();
-        $("div#content").load('<?= $this->BASE_URL ?>SPK_C/content/' + parse + '/' + parse_2);
+        $("div#content").load('<?= PV::BASE_URL ?>SPK_C/content/' + parse + '/' + parse_2);
     });
 
     $("span.done").click(function() {
@@ -221,7 +221,7 @@
             type: $(this).attr("method"),
             success: function(res) {
                 if (res == 0) {
-                    $("div#content").load('<?= $this->BASE_URL ?>SPK_C/content/' + parse + '/' + parse_2);
+                    $("div#content").load('<?= PV::BASE_URL ?>SPK_C/content/' + parse + '/' + parse_2);
                 } else {
                     alert(res);
                 }

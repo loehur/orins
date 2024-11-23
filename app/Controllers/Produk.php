@@ -35,10 +35,9 @@ class Produk extends Controller
    public function content()
    {
 
-      $where = "id_toko = " . $this->userData['id_toko'];
-      $data['produk'] = $this->db(0)->get_where('produk', $where . " ORDER BY produk ASC");
-      $data['detail'] = $this->db(0)->get_where('detail_group', $where . " ORDER BY sort ASC");
-      $data['divisi'] = $this->dDvs;
+      $data['produk'] = $this->db(0)->get('produk');
+      $data['detail'] = $this->db(0)->get('detail_group');
+      $data['divisi'] = $this->db(0)->get('divisi');
 
       foreach ($data['produk'] as $key => $d) {
          $where = "id_produk = " . $d['id_produk'];
@@ -57,10 +56,10 @@ class Produk extends Controller
       $produk = $_POST['produk'];
       $detail = serialize($_POST['detail']);
 
-      $cols = 'id_toko, produk, produk_detail';
-      $vals = "'" . $this->userData['id_toko'] . "','" . $produk . "','" . $detail . "'";
+      $cols = 'produk, produk_detail';
+      $vals = "'" . $produk . "','" . $detail . "'";
 
-      $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND UPPER(produk) = '" . strtoupper($produk) . "' AND produk_detail = '" . $detail . "'";
+      $whereCount = "UPPER(produk) = '" . strtoupper($produk) . "' AND produk_detail = '" . $detail . "'";
       $dataCount = $this->db(0)->count_where('produk', $whereCount);
       if ($dataCount == 0) {
          $do = $this->db(0)->insertCols('produk', $cols, $vals);

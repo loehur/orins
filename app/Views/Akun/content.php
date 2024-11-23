@@ -8,7 +8,7 @@
 <!-- Main page content-->
 <div class="row ms-2">
     <div class="col-auto me-auto">
-        <form id="form" action="<?= $this->BASE_URL ?>Akun/updatePass" method="post">
+        <form id="form" action="<?= PV::BASE_URL ?>Akun/updatePass" method="post">
             <div class="row mb-2">
                 <div class="col">
                     <label>Password Lama</label>

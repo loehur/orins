@@ -41,7 +41,7 @@
     </div>
 </div>
 
-<form action="<?= $this->BASE_URL ?>Deposit/topup/<?= $data['id_pelanggan'] ?>" method="POST">
+<form action="<?= PV::BASE_URL ?>Deposit/topup/<?= $data['id_pelanggan'] ?>" method="POST">
     <div class="modal" id="modal">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">

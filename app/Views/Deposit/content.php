@@ -25,7 +25,7 @@
         $('.cek').click(function() {
             id_pelanggan = $('select[name=id_pelanggan').val();
             if (id_pelanggan != '') {
-                $('#data').load('<?= $this->BASE_URL ?>Deposit/dep_data/' + id_pelanggan);
+                $('#data').load('<?= PV::BASE_URL ?>Deposit/dep_data/' + id_pelanggan);
             }
         })
     });

@@ -55,7 +55,7 @@ if ($id_pelanggan_jenis == 1) {
                 <h5 class="modal-title" id="exampleModalLabel">Menambah Pelanggan <b><?= $pelanggan_jenis ?></b></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= $this->BASE_URL ?>Pelanggan/add/<?= $id_pelanggan_jenis ?>" method="POST">
+            <form action="<?= PV::BASE_URL ?>Pelanggan/add/<?= $id_pelanggan_jenis ?>" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" required>Nama</label>
@@ -111,7 +111,7 @@ if ($id_pelanggan_jenis == 1) {
         if (confirm("Yakin Menonaktifkan " + nama + "?")) {
             var id = $(this).attr("data-id");
             $.ajax({
-                url: "<?= $this->BASE_URL . $data['_c'] ?>/delete",
+                url: "<?= PV::BASE_URL . $data['_c'] ?>/delete",
                 data: {
                     id: id
                 },
@@ -151,7 +151,7 @@ if ($id_pelanggan_jenis == 1) {
                 click = 0;
             } else {
                 $.ajax({
-                    url: '<?= $this->BASE_URL . $data['_c'] ?>/updateCell',
+                    url: '<?= PV::BASE_URL . $data['_c'] ?>/updateCell',
                     data: {
                         'id': id,
                         'value': value_after,
