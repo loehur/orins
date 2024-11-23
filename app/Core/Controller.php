@@ -5,7 +5,7 @@ require 'app/Config/PV.php';
 class Controller extends PV
 {
 
-    public $userData, $dToko, $dDvs, $dDvsAll, $dProduk, $dProdukAll, $dDetailGroup, $dDetailGroupAll, $dDetailItem, $dDetailItemAll, $dSPK, $dUser, $dPelanggan, $dPelangganAll, $dKaryawan, $dKaryawanAll;
+    public $userData, $dToko, $dDvs, $dProduk, $dProdukAll, $dDetailGroup, $dDetailGroupAll, $dDetailItem, $dDetailItemAll, $dSPK, $dUser, $dPelanggan, $dPelangganAll, $dKaryawan, $dKaryawanAll;
     public $v_viewer, $v_content, $v_load;
 
     public function view($file, $data = [])

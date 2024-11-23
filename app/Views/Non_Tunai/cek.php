@@ -82,7 +82,7 @@
                                     $divisi = [];
                                     $countSPK =  count($divisi_arr);
                                     foreach ($divisi_arr as $key => $dv) {
-                                        foreach ($this->dDvsAll as $dv_) {
+                                        foreach ($this->dDvs as $dv_) {
                                             if ($dv_['id_divisi'] == $key) {
                                                 $divisi[$key] = $dv_['divisi'];
                                             }
@@ -178,7 +178,7 @@
                                                                 <?php
                                                                 foreach (unserialize($do['note_spk']) as $ks => $ns) {
                                                                     if (strlen($ns) > 0) {
-                                                                        echo "<b>" . $this->model('Arr')->get($this->dDvsAll, "id_divisi", "divisi", $ks) . ":</b> " . $ns . ", ";
+                                                                        echo "<b>" . $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) . ":</b> " . $ns . ", ";
                                                                     }
                                                                 }
                                                                 ?>
