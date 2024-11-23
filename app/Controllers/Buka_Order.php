@@ -136,7 +136,7 @@ class Buka_Order extends Controller
       }
 
       $spkNote = [];
-      foreach ($this->dSPK_all as $sd) {
+      foreach ($this->dSPK as $sd) {
          if ($sd['id_produk'] == $id_produk) {
             $spkNote[$sd['id_divisi']] = $_POST['d-' . $sd['id_divisi']];
          }
@@ -245,7 +245,7 @@ class Buka_Order extends Controller
 
       $spkDVS = [];
 
-      foreach ($this->dSPK_all as $ds) {
+      foreach ($this->dSPK as $ds) {
          if ($id_produk == $ds['id_produk']) {
             $detailNeed = [];
             $dgr = unserialize($ds['detail_groups']);

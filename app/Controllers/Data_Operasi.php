@@ -34,7 +34,7 @@ class Data_Operasi extends Controller
       $this->viewer($parse, $parse_2);
    }
 
-   public function viewer($parse = "", $parse_2)
+   public function viewer($parse = "", $parse_2 = "")
    {
       $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse, "parse_2" => $parse_2]);
    }
