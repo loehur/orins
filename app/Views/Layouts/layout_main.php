@@ -65,6 +65,7 @@
 		input:focus,
 		.form-select:focus,
 		.btn:focus,
+		textarea,
 		input.form-control:focus {
 			outline: none !important;
 			outline-width: 0 !important;

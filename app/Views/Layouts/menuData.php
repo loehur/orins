@@ -87,10 +87,6 @@ $mdata = [
 				'name' => 'Riwayat',
 				'link' => 'Input'
 			],
-			[
-				'name' => 'Grup',
-				'link' => 'Master_Grup'
-			],
 		]
 	],
 	[

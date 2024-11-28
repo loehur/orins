@@ -16,14 +16,14 @@ class M_DB
     }
 
     //GET
-    public function get($table)
+    public function get($table, $index = "")
     {
-        return $this->db->get($table);
+        return $this->db->get($table, $index);
     }
 
-    public function get_where($table, $where)
+    public function get_where($table, $where, $index = "")
     {
-        return $this->db->get_where($table, $where);
+        return $this->db->get_where($table, $where, $index);
     }
 
     public function get_cols_where($table, $cols, $where, $row)

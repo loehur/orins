@@ -209,8 +209,6 @@ $aff_c = count($aff_);
 		</nav>
 	</div>
 	<div id="layoutSidenav_content">
-		<main>
-			<div id="content"></div>
-		</main>
+		<div style="margin-top: 50px;" id="content"></div>
 	</div>
 </div>
