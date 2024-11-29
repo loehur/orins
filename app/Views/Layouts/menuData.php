@@ -72,16 +72,20 @@ $mdata = [
 	],
 	[
 		'access' => [$this->pGudang],
-		'name' => 'Master Data',
+		'name' => 'Master Gudang',
 		'icon' => 'box',
 		'sub' => [
 			[
-				'name' => 'Pembelian',
-				'link' => 'Master_Mutasi'
+				'name' => 'Input',
+				'link' => 'Gudang_Input'
 			],
 			[
 				'name' => 'Barang',
-				'link' => 'Master_Barang'
+				'link' => 'Gudang_Barang'
+			],
+			[
+				'name' => 'Stok',
+				'link' => 'Stok'
 			],
 			[
 				'name' => 'Riwayat',

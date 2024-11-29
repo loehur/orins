@@ -57,7 +57,7 @@ class DB extends DBC
         return $reply;
     }
 
-    public function get_cols_where($table, $cols, $where, $row)
+    public function get_cols_where($table, $cols, $where, $row, $index = "")
     {
         $reply = [];
         $query = "SELECT $cols FROM $table WHERE $where";
@@ -65,11 +65,17 @@ class DB extends DBC
         if ($result) {
             switch ($row) {
                 case "0":
-                    $reply = $result->fetch_assoc();
+                    if ($index == "")
+                        $reply[$row[$index]] = $result->fetch_assoc();
+                    else
+                        $reply = $result->fetch_assoc();
                     break;
                 case "1";
-                    while ($data = $result->fetch_assoc())
-                        $reply[] = $data;
+                    while ($row = $result->fetch_assoc())
+                        if ($index == "")
+                            $reply[] = $row;
+                        else
+                            $reply[$row[$index]] = $row;
                     break;
             }
 
@@ -151,8 +157,12 @@ class DB extends DBC
     public function insertCols($table, $columns, $values)
     {
         $query = "INSERT INTO $table($columns) VALUES($values)";
-        $this->mysqli->query($query);
-        return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
+        try {
+            $this->mysqli->query($query);
+            return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
+        } catch (\Throwable $th) {
+            return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
+        }
     }
 
     public function delete_where($table, $where)

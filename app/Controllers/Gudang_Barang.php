@@ -1,6 +1,6 @@
 <?php
 
-class Master_Barang extends Controller
+class Gudang_Barang extends Controller
 {
    public $page = __CLASS__;
 
@@ -8,7 +8,7 @@ class Master_Barang extends Controller
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], $this->pMaster)) {
+      if (!in_array($this->userData['user_tipe'], $this->pGudang)) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -21,8 +21,7 @@ class Master_Barang extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "content" => $this->v_content,
-         "title" => "Master Data - Barang"
+         "title" => "Master Gudang - Barang"
       ]);
 
       $this->viewer();
@@ -36,9 +35,9 @@ class Master_Barang extends Controller
    public function content()
    {
       $data['barang'] = $this->db(0)->get_order('master_barang', 'id DESC');
-      $data['grup'] = $this->db(0)->get('master_grup', 'id');
-      $data['tipe'] = $this->db(0)->get('master_tipe', 'id');
-      $data['brand'] = $this->db(0)->get('master_brand', 'id');
+      $data['grup'] = $this->db(0)->get('master_grup');
+      $data['tipe'] = $this->db(0)->get('master_tipe');
+      $data['brand'] = $this->db(0)->get('master_brand');
       $this->view($this->v_content, $data);
    }
 
@@ -51,19 +50,20 @@ class Master_Barang extends Controller
    function add()
    {
       $code = "";
-      $grup_c = $_POST['grup_c'];
+      $grup_c = strtoupper($_POST['grup_c']);
       $grup = strtoupper($_POST['grup']);
-      $tipe_c = $_POST['tipe_c'];
+      $tipe_c = strtoupper($_POST['tipe_c']);
       $tipe = strtoupper($_POST['tipe']);
-      $brand_c = $_POST['brand_c'];
+      $brand_c = strtoupper($_POST['brand_c']);
       $brand = strtoupper($_POST['brand']);
-      $model_c = $_POST['model_c'];
+      $model_c = strtoupper($_POST['model_c']);
       $model = strtoupper($_POST['model']);
-      $varian1_c = $_POST['varian1_c'] == "" ? "00" : $_POST['varian1_c'];
+      $varian1_c = strlen($_POST['varian1_c']) == 0 && strlen($_POST['varian1']) == 0 ? "00" : strtoupper($_POST['varian1_c']);
       $varian1 = strtoupper($_POST['varian1']);
-      $varian2_c = $_POST['varian2_c'] == "" ? "00" : $_POST['varian2_c'];
+      $varian2_c = strlen($_POST['varian2_c']) == 0 && strlen($_POST['varian2']) == 0 ? "00" : strtoupper($_POST['varian2_c']);
       $varian2 = strtoupper($_POST['varian2']);
       $sn = isset($_POST['sn']) ? $_POST['sn'] : 0;
+      $pb = isset($_POST['pb']) ? $_POST['pb'] : 0;
       $code_gtb = $grup_c . $tipe_c . $brand_c;
       $code_model = $code_gtb . $model_c;
       $code_varian1 = $code_model . $varian1_c;
@@ -74,6 +74,12 @@ class Master_Barang extends Controller
          echo "Data belum lengkap";
          exit();
       }
+
+      if (strlen($grup) == 0 || strlen($tipe) == 0 || strlen($brand) == 0 || strlen($model) == 0) {
+         echo "Data belum lengkap";
+         exit();
+      }
+
       $error = 0;
 
       //GRUP
@@ -249,11 +255,11 @@ class Master_Barang extends Controller
       }
 
       //BARANG
-      $cols = 'code,code_s,grup,tipe,brand,model,varian1,varian2,sn';
-      $vals = "'" . $code . "','" . $code_s . "','" . $grup . "','" . $tipe . "','" . $brand . "','" . $model . "','" . $varian1 . "','" . $varian2 . "'," . $sn;
+      $cols = 'code,code_s,grup,tipe,brand,model,varian1,varian2,sn,pb';
+      $vals = "'" . $code . "','" . $code_s . "','" . $grup . "','" . $tipe . "','" . $brand . "','" . $model . "','" . $varian1 . "','" . $varian2 . "'," . $sn . "," . $pb;
       $do = $this->db(0)->insertCols('master_barang', $cols, $vals);
       if ($do['errno'] == 1062) {
-         $set = "sn = " . $sn;
+         $set = "sn = " . $sn . ", pb = " . $pb;
          $where = "code = '" . $code . "'";
          $up = $this->db(0)->update('master_barang', $set, $where);
          if ($up['errno'] <> 0) {

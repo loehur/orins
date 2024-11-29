@@ -16,7 +16,7 @@
         } else {
             parse_2 = '<?= isset($data['parse_2']) ? $data['parse_2'] : '' ?>';
         }
-        page = "<?= isset($data['page']) ? $data['page'] : 'content' ?>";
+        page = "<?= isset($data['page']) && $data['page'] != "" ? $data['page'] : 'content' ?>";
         if (parse_2 != "") {
             $("div#content").load('<?= PV::BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse + '/' + parse_2);
         } else {

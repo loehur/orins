@@ -12,7 +12,7 @@ class Functions extends Controller
       $set = $col . " = '" . $value . "'";
       $where = $primary . " = " . $id;
       $up = $this->db(0)->update($tb, $set, $where);
-      echo $up['errno'] == 0 ? 0 : $up['error'];
+      echo $up['errno'] == 0 ? $value : $up['error'];
    }
 
    public function deleteCell()
@@ -21,6 +21,7 @@ class Functions extends Controller
       $primary = $_POST['primary'];
       $tb = $_POST['tb'];
       $where = $primary . " = " . $id;
-      print_r($this->db(0)->delete_where($tb, $where));
+      $do = $this->db(0)->delete_where($tb, $where);
+      echo $do['errno'] == 0 ? 0 : $do['error'];
    }
 }
