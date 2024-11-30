@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?= $this->ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,13 +9,13 @@
 	<meta name="description" content="" />
 	<meta name="author" content="" />
 	<title>Orins | <?= $data['title'] ?></title>
-	<link href="<?= $this->ASSETS_URL ?>css/styles.css" rel="stylesheet" />
-	<link rel="stylesheet" href="<?= $this->ASSETS_URL ?>plugins/bootstrap-5.1/bootstrap.min.css" rel="stylesheet" />
-	<link rel="icon" type="image/x-icon" href="<?= $this->ASSETS_URL ?>assets/img/favicon.png" />
-	<script src="<?= $this->ASSETS_URL ?>js/feather.min.js" crossorigin="anonymous"></script>
+	<link href="<?= PV::ASSETS_URL ?>css/styles.css" rel="stylesheet" />
+	<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>plugins/bootstrap-5.1/bootstrap.min.css" rel="stylesheet" />
+	<link rel="icon" type="image/x-icon" href="<?= PV::ASSETS_URL ?>assets/img/favicon.png" />
+	<script src="<?= PV::ASSETS_URL ?>js/feather.min.js" crossorigin="anonymous"></script>
 
-	<link rel="stylesheet" href="<?= $this->ASSETS_URL ?>plugins/fontawesome-free-6.4.0-web/css/all.css" rel="stylesheet">
-	<link href="<?= $this->ASSETS_URL ?>plugins/toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>plugins/fontawesome-free-6.4.0-web/css/all.css" rel="stylesheet">
+	<link href="<?= PV::ASSETS_URL ?>plugins/toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
 
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -88,13 +88,13 @@ $t = $data['title'];
 <body class="nav-fixed">
 	<?php include_once('topnav.php'); ?>
 	<?php include_once('menu.php'); ?>
-	<script src="<?= $this->ASSETS_URL ?>plugins/bootstrap-5.1/bootstrap.bundle.min.js"></script>
-	<script src="<?= $this->ASSETS_URL ?>js/scripts.js"></script>
+	<script src="<?= PV::ASSETS_URL ?>plugins/bootstrap-5.1/bootstrap.bundle.min.js"></script>
+	<script src="<?= PV::ASSETS_URL ?>js/scripts.js"></script>
 </body>
 
 </html>
 
-<script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
 	$("a#sync").click(function(e) {

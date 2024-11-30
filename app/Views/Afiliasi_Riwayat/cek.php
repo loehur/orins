@@ -395,7 +395,7 @@
                             <div class="col-sm-6">
                                 <label class="form-label">Metode</label>
                                 <select name="method" class="form-select metodeBayar" required>
-                                    <?php if (in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
+                                    <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                         <option value="1">Tunai</option>
                                     <?php } ?>
                                     <option value="2">Non Tunai</option>
@@ -432,4 +432,4 @@
     </div>
 </form>
 
-<script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>

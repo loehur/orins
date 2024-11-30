@@ -120,7 +120,7 @@
                                     $xtraDiskon += $ds['jumlah'];
                                     $dibayar += $ds['jumlah'];
                                     $verify_payment += $ds['jumlah'];
-                                    if (in_array($this->userData['user_tipe'], $this->pKasir)) {
+                                    if (in_array($this->userData['user_tipe'], PV::PRIV[2])) {
                                         foreach ($data['order_'] as $do) {
                                             if ($do['ref'] == $ref) {
                                                 if ($do['tuntas'] == 0) {
@@ -387,13 +387,13 @@
                                                                     </button>
                                                                     <ul class="dropdown-menu p-0">
                                                                         <li><a data-bs-toggle="modal" data-bs-target="#exampleModalSur" class="dropdown-item surcharge" data-ref="<?= $do['ref'] ?>" href="#"><small>Surcharge</small></a></li>
-                                                                        <?php if (in_array($this->userData['user_tipe'], $this->pKasir) && $sisa > 0) { ?>
+                                                                        <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $sisa > 0) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon" data-sisa="<?= $sisa ?>" data-ref="<?= $do['ref'] ?>" href="#"><small>Extra Diskon</small></a></li>
                                                                         <?php } ?>
                                                                     </ul>
                                                                 </td>
                                                                 <?php
-                                                                if (in_array($this->userData['user_tipe'], $this->pCS) && $sisa > 0) { ?>
+                                                                if (in_array($this->userData['user_tipe'], PV::PRIV[3]) && $sisa > 0) { ?>
                                                                     <td class="text-end pe-1 ps-2"><small><span style="cursor: pointer;" data-ref="<?= $ref ?>" data-client="<?= $id_pelanggan ?>" data-bill="<?= $sisa ?>" data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btnBayar border rounded text-danger px-1">Bayar</span></small></td>
                                                                 <?php } ?>
                                                             </tr>
@@ -447,7 +447,7 @@
                                             <td>Metode</td>
                                             <td class="pb-2">
                                                 <select name="metode_multi" class="form-select metodeBayar_multi" required>
-                                                    <?php if (in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
+                                                    <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                         <option value="1">Tunai</option>
                                                     <?php } ?>
                                                     <option value="2">Non Tunai</option>
@@ -583,8 +583,8 @@
 
 <?php require_once('form.php') ?>
 
-<script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-<script src="<?= $this->ASSETS_URL ?>js/selectize.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 
 <script>
     var totalBill = 0;

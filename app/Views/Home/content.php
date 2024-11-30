@@ -20,8 +20,8 @@
     </div>
 </div>
 
-<script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-<script src="<?= $this->ASSETS_URL ?>js/cdn.jsdelivr.net_npm_chart.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/cdn.jsdelivr.net_npm_chart.js"></script>
 <script>
     $(document).ready(function() {
         const ctx = document.getElementById('myChart');

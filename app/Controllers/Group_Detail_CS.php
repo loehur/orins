@@ -2,18 +2,16 @@
 
 class Group_Detail_CS extends Controller
 {
-   public $page = __CLASS__;
-
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], $this->pCS)) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[3])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
-      $this->v_content = $this->page . "/content";
+      $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";
    }
 
@@ -29,7 +27,7 @@ class Group_Detail_CS extends Controller
 
    public function viewer()
    {
-      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => ""]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => ""]);
    }
 
    public function content()

@@ -2,18 +2,16 @@
 
 class Produk extends Controller
 {
-   public $page = __CLASS__;
-
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], $this->pAdmin)) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[1])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
-      $this->v_content = $this->page . "/content";
+      $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";
    }
 
@@ -29,12 +27,11 @@ class Produk extends Controller
 
    public function viewer()
    {
-      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => ""]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => ""]);
    }
 
    public function content()
    {
-
       $data['produk'] = $this->db(0)->get('produk');
       $data['detail'] = $this->db(0)->get('detail_group');
       $data['divisi'] = $this->db(0)->get('divisi');
@@ -238,6 +235,6 @@ class Produk extends Controller
          }
       }
 
-      $this->view($this->page . "/detail", $dg);
+      $this->view(__CLASS__ . "/detail", $dg);
    }
 }

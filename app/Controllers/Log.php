@@ -2,8 +2,6 @@
 
 class Log extends Controller
 {
-   public $page = __CLASS__;
-
    public function __construct()
    {
       $this->session_cek();
@@ -18,7 +16,7 @@ class Log extends Controller
 
    function change_toko($id)
    {
-      if (!in_array($this->userData['user_tipe'], $this->pFinance)) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[5])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }

@@ -40,7 +40,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah Admin Orins Toko</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Toko_Admin/add" method="POST">
+            <form action="<?= PV::BASE_URL ?>SPV_Toko/add" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label" required>No. Handphone</label>
@@ -56,7 +56,7 @@
     </div>
 </div>
 
-<script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
     $("form").on("submit", function(e) {

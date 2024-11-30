@@ -3,7 +3,7 @@
 	<a class="ps-lg-2 ms-auto text-end me-2 border text-success p-2 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync"><?= strtoupper($this->userData['nama_toko']) ?></a>
 	<ul class="navbar-nav align-items-center">
 		<!-- User Dropdown-->
-		<?php if (in_array($this->userData['user_tipe'], $this->pOffice)) { ?>
+		<?php if (in_array($this->userData['user_tipe'], PV::PRIV[0])) { ?>
 			<li class="nav-item dropdown no-caret dropdown-user me-2">
 				<a class="rounded bg-transparent text-decoration-none py-2 px-3 border bg-white" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<b><i class="fa-solid fa-repeat"></i></b>

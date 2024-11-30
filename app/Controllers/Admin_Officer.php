@@ -2,19 +2,17 @@
 
 class Admin_Officer extends Controller
 {
-   public $page = __CLASS__;
-
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
 
-      if (!in_array($this->userData['user_tipe'], $this->pMaster)) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[0])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
-      $this->v_content = $this->page . "/content";
+      $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";
    }
 
@@ -22,7 +20,7 @@ class Admin_Officer extends Controller
    {
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Managment - Admin Officer"
+         "title" => "Managment - Office User"
       ]);
 
       $this->viewer();
@@ -30,12 +28,11 @@ class Admin_Officer extends Controller
 
    public function viewer()
    {
-      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => ""]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => ""]);
    }
 
    public function content()
    {
-
       $where = "user_tipe IN(5,6,7)";
       $data = $this->db(0)->get_where('user', $where);
       $this->view($this->v_content, $data);

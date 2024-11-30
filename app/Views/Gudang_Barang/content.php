@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?= $this->ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
 
 <?php
 $input = ["grup", "tipe", "brand", "model", "varian1", "varian2"];
@@ -68,8 +68,8 @@ $required = ["required", "required", "required", "required", "", ""]
     </div>
 </main>
 
-<script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-<script src="<?= $this->ASSETS_URL ?>js/autocomplete.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
 
 <script>
     var grup = JSON.parse('<?= json_encode($data['grup']) ?>');
@@ -117,7 +117,6 @@ $required = ["required", "required", "required", "required", "", ""]
 
     setInterval(function() {
         $(".ac").each(function() {
-
             if ($(this).val() == "") {
                 $(this).removeAttr('data-value');
             }

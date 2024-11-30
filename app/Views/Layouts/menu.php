@@ -1,4 +1,4 @@
-<?php include_once('menuData.php');
+<?php
 $cols = "id_toko, id_pelanggan, ref";
 $where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_penerima <> 0 AND status_order = 1 AND cancel = 0 AND tuntas = 0 GROUP BY id_toko, id_pelanggan, ref";
 $aff_ = $this->db(0)->get_cols_where('order_data', $cols, $where, 1);
@@ -10,7 +10,7 @@ $aff_c = count($aff_);
 		<nav class="sidenav sidenav-light border-end" style="z-index: -100;">
 			<div class="sidenav-menu">
 				<div class="nav accordion pt-3" id="accordionSidenav">
-					<?php if (in_array($this->userData['user_tipe'], $this->pCS)) { ?>
+					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[3])) { ?>
 						<?php if ($aff_c > 0) { ?>
 							<a class="nav-link <?= (str_contains($t, "Afiliasi Order")) ? 'active' : 'collapsed' ?> py-1 href=" javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseAff" aria-expanded="true" aria-controls="collapseAff">
 								<div class="nav-link-icon"><i data-feather="plus-square"></i></div>
@@ -27,9 +27,9 @@ $aff_c = count($aff_);
 							</div>
 						<?php } ?>
 					<?php } ?>
-					<?php foreach ($mdata as $key => $md) { ?>
+					<?php foreach (Pv::MENU as $key => $md) { ?>
 						<?php foreach ($md['access'] as $mda) { ?>
-							<?php if (in_array($this->userData['user_tipe'], $mda)) { ?>
+							<?php if (in_array($this->userData['user_tipe'], PV::PRIV[$mda])) { ?>
 								<a class="nav-link <?= (str_contains($t, $md['name'])) ? 'active' : 'collapsed' ?> py-2" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse<?= $key ?>">
 									<div class="nav-link-icon"><i data-feather="<?= $md['icon'] ?>"></i></div>
 									<?= $md['name'] ?>
@@ -39,7 +39,7 @@ $aff_c = count($aff_);
 									<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
 										<?php if (isset($md['sub'])) { ?>
 											<?php foreach ($md['sub'] as $sb) { ?>
-												<a class="nav-link py-2 <?= ($t == $md['name'] . " - " . $sb['name']) ? 'active' : '' ?>" href="<?= PV::BASE_URL . $sb['link'] ?>"><?= $sb['name'] ?></a>
+												<a class="nav-link py-2 <?= str_contains($t, $sb['name']) ? 'active' : '' ?>" href="<?= PV::BASE_URL . $sb['link'] ?>"><?= $sb['name'] ?></a>
 											<?php } ?>
 										<?php } ?>
 									</nav>
@@ -49,7 +49,7 @@ $aff_c = count($aff_);
 						<?php } ?>
 					<?php } ?>
 
-					<?php if (in_array($this->userData['user_tipe'], $this->pCS)) { ?>
+					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[3])) { ?>
 						<a class="nav-link <?= (str_contains($t, "CS Fitur")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlowCSF" aria-expanded="false" aria-controls="collapseFlowCSF">
 							<div class="nav-link-icon"><i data-feather="columns"></i></div>
 							CS Fitur
@@ -62,7 +62,7 @@ $aff_c = count($aff_);
 						</div>
 					<?php } ?>
 
-					<?php if (in_array($this->userData['user_tipe'], $this->pProduksi)) { ?>
+					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[4])) { ?>
 						<hr class="p-0 m-0">
 						<a class="nav-link <?= (str_contains($t, "SPK_Search")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#SPK_Search" aria-expanded="true" aria-controls="SPK">
 							<div class="nav-link-icon"><i class="fa-solid fa-file-signature"></i></div>
@@ -108,7 +108,7 @@ $aff_c = count($aff_);
 						</div>
 					<?php } ?>
 
-					<?php if (in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
+					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
 						<hr class="p-0 m-0">
 						<!-- CASHIER PANEL -->
 						<a class="nav-link <?= (str_contains($t, "Cashier")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseCashier" aria-expanded="false" aria-controls="collapseFlows">
@@ -126,7 +126,7 @@ $aff_c = count($aff_);
 						</div>
 					<?php } ?>
 
-					<?php if (in_array($this->userData['user_tipe'], $this->pAdmin)) { ?>
+					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[1])) { ?>
 						<hr class="p-0 m-0">
 						<a class="nav-link <?= (str_contains($t, "User")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlowsUser" aria-expanded="false" aria-controls="collapseFlows">
 							<div class="nav-link-icon"><i data-feather="user"></i></div>
@@ -164,7 +164,7 @@ $aff_c = count($aff_);
 						</div>
 					<?php } ?>
 
-					<?php if (in_array($this->userData['user_tipe'], $this->pFinance)) { ?>
+					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[5])) { ?>
 						<hr class="p-0 m-0">
 						<!-- FINANCE PANEL -->
 						<a class="nav-link <?= (str_contains($t, "Finance")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFinance" aria-expanded="false" aria-controls="collapseFlows">
@@ -181,7 +181,7 @@ $aff_c = count($aff_);
 						</div>
 					<?php } ?>
 
-					<?php if (in_array($this->userData['user_tipe'], $this->pAudit)) { ?>
+					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[6])) { ?>
 						<hr class="p-0 m-0">
 						<!-- FINANCE PANEL -->
 						<a class="nav-link <?= (str_contains($t, "Audit")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseAudit" aria-expanded="false" aria-controls="collapseFlows">

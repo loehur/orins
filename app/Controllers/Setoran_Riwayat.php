@@ -2,24 +2,21 @@
 
 class Setoran_Riwayat extends Controller
 {
-   public $page = __CLASS__;
-
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], $this->pKasir)) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
-      $this->v_content = $this->page . "/content";
+      $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";
    }
 
    public function index()
    {
-
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
          "title" => "Cashier - Setoran Riwayat"
@@ -29,7 +26,7 @@ class Setoran_Riwayat extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse]);
    }
 
    public function content($parse = "")
@@ -69,7 +66,7 @@ class Setoran_Riwayat extends Controller
       $where = "metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '" . $ref_setor . "' ORDER BY id_kas DESC, id_client ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
 
-      $this->view($this->page . "/cek", $data);
+      $this->view(__CLASS__ . "/cek", $data);
    }
 
    function cancel()

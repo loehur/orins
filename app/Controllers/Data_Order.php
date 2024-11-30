@@ -2,25 +2,22 @@
 
 class Data_Order extends Controller
 {
-   public $page = __CLASS__;
-
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
 
-      if (!in_array($this->userData['user_tipe'], $this->pCS)) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[3])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
-      $this->v_content = $this->page . "/content";
+      $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";
    }
 
    public function index($parse)
    {
-
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
          "title" => "Data Order - Proses"
@@ -31,7 +28,7 @@ class Data_Order extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse]);
    }
 
    public function content($parse = "")
@@ -176,7 +173,7 @@ class Data_Order extends Controller
 
    function cancel_diskon()
    {
-      if (in_array($this->userData['user_tipe'], $this->pKasir)) {
+      if (in_array($this->userData['user_tipe'], PV::PRIV[2])) {
          $id = $_POST['cancel_id_diskon'];
          $reason = $_POST['reason'];
          $karyawan = $this->userData['id_user'];
@@ -223,6 +220,6 @@ class Data_Order extends Controller
          $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where);
       }
 
-      $this->view($this->page . "/print", $data);
+      $this->view(__CLASS__ . "/print", $data);
    }
 }

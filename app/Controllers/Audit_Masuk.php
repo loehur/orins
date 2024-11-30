@@ -18,7 +18,7 @@ class Gudang_Input extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Master Gudang - Input"
+         "title" => "Audit - Masuk"
       ]);
 
       $this->viewer();

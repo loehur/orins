@@ -2,19 +2,17 @@
 
 class Data_Operasi extends Controller
 {
-   public $page = __CLASS__;
-
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
 
-      if (!in_array($this->userData['user_tipe'], $this->pCS) && !in_array($this->userData['user_tipe'], $this->pOffice)) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[3])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
-      $this->v_content = $this->page . "/content";
+      $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";
    }
 
@@ -24,6 +22,12 @@ class Data_Operasi extends Controller
          $this->view("Layouts/layout_main", [
             "content" => $this->v_content,
             "title" => "Data Order - Customer"
+         ]);
+      } else if ($parse_2 == 1) {
+         $parse_2 = date('Y');
+         $this->view("Layouts/layout_main", [
+            "content" => $this->v_content,
+            "title" => "Data Order - Tuntas"
          ]);
       } else {
          $this->view("Layouts/layout_main", [
@@ -36,13 +40,12 @@ class Data_Operasi extends Controller
 
    public function viewer($parse = "", $parse_2 = "")
    {
-      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse, "parse_2" => $parse_2]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse, "parse_2" => $parse_2]);
    }
 
    public function content($parse = "", $parse_2 = 0)
    {
       $data['parse'] = $parse;
-
       $data['parse_2'] = $parse_2;
       $data['kas'] = [];
       $data['r_kas'] = [];
@@ -67,7 +70,6 @@ class Data_Operasi extends Controller
       $ref_list = rtrim($ref_list, ',');
 
       if (count($refs) > 0) {
-
          $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ")";
          $data['kas'] = $this->db(0)->get_where('kas', $where);
 

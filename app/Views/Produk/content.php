@@ -230,7 +230,7 @@
     </div>
 </div>
 
-<script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script>
     var addItemAction = $("form#addSPK").attr('action');
     var actionEdit = $("form#produk_edit").attr('action');

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHPMailer POP-Before-SMTP Authentication Class.
  * PHP Version 5.5.
@@ -174,9 +175,9 @@ class POP3
         $this->host = $host;
         // If no port value provided, use default
         if (false === $port) {
-            $this->port = static::DEFAULT_PORT;
+            PV::port = static::DEFAULT_PORT;
         } else {
-            $this->port = (int) $port;
+            PV::port = (int) $port;
         }
         // If no timeout value provided, use default
         if (false === $timeout) {
@@ -186,13 +187,13 @@ class POP3
         }
         $this->do_debug = $debug_level;
         $this->username = $username;
-        $this->password = $password;
+        PV::password = $password;
         //  Reset the error log
         $this->errors = [];
         //  connect
-        $result = $this->connect($this->host, $this->port, $this->tval);
+        $result = $this->connect($this->host, PV::port, $this->tval);
         if ($result) {
-            $login_result = $this->login($this->username, $this->password);
+            $login_result = $this->login($this->username, PV::password);
             if ($login_result) {
                 $this->disconnect();
 
@@ -230,7 +231,7 @@ class POP3
         }
 
         //  connect to the POP3 server
-        $this->pop_conn = fsockopen(
+        PV::pop_conn = fsockopen(
             $host, //  POP3 Host
             $port, //  Port #
             $errno, //  Error Number
@@ -241,7 +242,7 @@ class POP3
         restore_error_handler();
 
         //  Did we connect?
-        if (false === $this->pop_conn) {
+        if (false === PV::pop_conn) {
             //  It would appear not...
             $this->setError(
                 "Failed to connect to server $host on port $port. errno: $errno; errstr: $errstr"
@@ -251,7 +252,7 @@ class POP3
         }
 
         //  Increase the stream time-out
-        stream_set_timeout($this->pop_conn, $tval, 0);
+        stream_set_timeout(PV::pop_conn, $tval, 0);
 
         //  Get the POP3 server response
         $pop3_response = $this->getResponse();
@@ -284,7 +285,7 @@ class POP3
             $username = $this->username;
         }
         if (empty($password)) {
-            $password = $this->password;
+            $password = PV::password;
         }
 
         // Send the Username
@@ -311,7 +312,7 @@ class POP3
         //The QUIT command may cause the daemon to exit, which will kill our connection
         //So ignore errors here
         try {
-            @fclose($this->pop_conn);
+            @fclose(PV::pop_conn);
         } catch (Exception $e) {
             //Do nothing
         }
@@ -326,7 +327,7 @@ class POP3
      */
     protected function getResponse($size = 128)
     {
-        $response = fgets($this->pop_conn, $size);
+        $response = fgets(PV::pop_conn, $size);
         if ($this->do_debug >= 1) {
             echo 'Server -> Client: ', $response;
         }
@@ -343,12 +344,12 @@ class POP3
      */
     protected function sendString($string)
     {
-        if ($this->pop_conn) {
+        if (PV::pop_conn) {
             if ($this->do_debug >= 2) { //Show client messages when debug >= 2
                 echo 'Client -> Server: ', $string;
             }
 
-            return fwrite($this->pop_conn, $string, strlen($string));
+            return fwrite(PV::pop_conn, $string, strlen($string));
         }
 
         return 0;
@@ -413,7 +414,7 @@ class POP3
     {
         $this->setError(
             'Connecting to the POP3 server raised a PHP warning:' .
-            "errno: $errno errstr: $errstr; errfile: $errfile; errline: $errline"
+                "errno: $errno errstr: $errstr; errfile: $errfile; errline: $errline"
         );
     }
 }

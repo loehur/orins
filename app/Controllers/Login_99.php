@@ -29,10 +29,10 @@ class Login_99 extends Controller
    {
       $hp = $_POST["HP"];
 
-      if (strlen($this->db_pass) == 0) {
+      if (strlen(PV::DB_PASS) == 0) {
          $_SESSION['secure']['db_pass'] = "";
       } else {
-         $_SESSION['secure']['db_pass'] = $this->model("Enc")->dec_2($this->db_pass);
+         $_SESSION['secure']['db_pass'] = $this->model("Enc")->dec_2(PV::DB_PASS);
       }
 
       if (isset($_SESSION['login_orins'])) {

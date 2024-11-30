@@ -2,19 +2,17 @@
 
 class Buka_Order extends Controller
 {
-   public $page = __CLASS__;
-
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
 
-      if (!in_array($this->userData['user_tipe'], $this->pCS)) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[3])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
-      $this->v_content = $this->page . "/content";
+      $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";
    }
 
@@ -36,7 +34,7 @@ class Buka_Order extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse]);
    }
 
    public function content($parse = "")
@@ -155,7 +153,6 @@ class Buka_Order extends Controller
       $get_detail_item = [];
 
       foreach ($data as $d) {
-
          $groupName = "";
          $detail_item = [];
 
@@ -338,7 +335,7 @@ class Buka_Order extends Controller
       $data_['varian'] = $varian;
       $data_['spkNote'] = $spkNote;
       $data_['divisi'] = $this->db(0)->get('divisi');
-      $this->view($this->page . "/detail", $data_);
+      $this->view(__CLASS__ . "/detail", $data_);
    }
 
    function add_price($id_pelanggan_jenis)
@@ -497,6 +494,6 @@ class Buka_Order extends Controller
       }
 
       $data['id_toko'] = $target;
-      $this->view($this->page . "/afiliasi", $data);
+      $this->view(__CLASS__ . "/afiliasi", $data);
    }
 }

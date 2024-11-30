@@ -2,18 +2,16 @@
 
 class Non_Tunai_Riwayat extends Controller
 {
-   public $page = __CLASS__;
-
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], $this->pFinance)) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[5])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
 
-      $this->v_content = $this->page . "/content";
+      $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";
    }
 
@@ -28,7 +26,7 @@ class Non_Tunai_Riwayat extends Controller
 
    public function viewer($parse = "")
    {
-      $this->view($this->v_viewer, ["controller" => $this->page, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse]);
    }
 
    public function content($parse = "")
@@ -101,6 +99,6 @@ class Non_Tunai_Riwayat extends Controller
       $data['kas'] = $this->db(0)->get_where('kas', $where);
 
 
-      $this->view($this->page . "/cek", $data);
+      $this->view(__CLASS__ . "/cek", $data);
    }
 }

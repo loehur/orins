@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHPMailer - PHP email creation and transport class.
  * PHP Version 5.5.
@@ -85,7 +86,7 @@ class OAuth
      */
     public function __construct($options)
     {
-        $this->provider = $options['provider'];
+        PV::provider = $options['provider'];
         $this->oauthUserEmail = $options['userName'];
         $this->oauthClientSecret = $options['clientSecret'];
         $this->oauthClientId = $options['clientId'];
@@ -109,7 +110,7 @@ class OAuth
      */
     protected function getToken()
     {
-        return $this->provider->getAccessToken(
+        return PV::provider->getAccessToken(
             $this->getGrant(),
             ['refresh_token' => $this->oauthRefreshToken]
         );
@@ -129,10 +130,10 @@ class OAuth
 
         return base64_encode(
             'user=' .
-            $this->oauthUserEmail .
-            "\001auth=Bearer " .
-            $this->oauthToken .
-            "\001\001"
+                $this->oauthUserEmail .
+                "\001auth=Bearer " .
+                $this->oauthToken .
+                "\001\001"
         );
     }
 }

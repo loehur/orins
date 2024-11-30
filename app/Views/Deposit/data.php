@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?= $this->ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
 <div class="row mx-0 mt-4">
     <div class="col" style="max-width: 500px;">
         <div class="row border-bottom pb-2">
@@ -71,7 +71,7 @@
                             <div class="col">
                                 <label class="form-label">Metode</label>
                                 <select name="metode" class="form-select metodeBayar" required>
-                                    <?php if (in_array($this->userData['user_tipe'], $this->pKasir)) { ?>
+                                    <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                         <option value="1">Tunai</option>
                                     <?php } ?>
                                     <option value="2">Non Tunai</option>
@@ -96,8 +96,8 @@
     </div>
 </form>
 
-<script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-<script src="<?= $this->ASSETS_URL ?>js/selectize.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 
 <script>
     $("form").on("submit", function(e) {
