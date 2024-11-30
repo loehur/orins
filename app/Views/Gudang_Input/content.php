@@ -8,7 +8,7 @@
                     <label>Code Suppiler</label><br>
                     <input name="supplier_c" id="supplier_c" class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
                 </div>
-                <div class="col-auto px-1 mb-2 autocomplete">
+                <div class="col-auto px-1 mb-2">
                     <div class="autocomplete">
                         <label>Suppiler</label><br>
                         <input name="supplier" class="ac border-bottom border-0" id="supplier" style="text-transform: uppercase;">

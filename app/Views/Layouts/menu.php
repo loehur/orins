@@ -3,6 +3,7 @@ $cols = "id_toko, id_pelanggan, ref";
 $where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_penerima <> 0 AND status_order = 1 AND cancel = 0 AND tuntas = 0 GROUP BY id_toko, id_pelanggan, ref";
 $aff_ = $this->db(0)->get_cols_where('order_data', $cols, $where, 1);
 $aff_c = count($aff_);
+$yearNow = date('Y');
 ?>
 
 <div id="layoutSidenav">
@@ -30,16 +31,16 @@ $aff_c = count($aff_);
 					<?php foreach (Pv::MENU as $key => $md) { ?>
 						<?php foreach ($md['access'] as $mda) { ?>
 							<?php if (in_array($this->userData['user_tipe'], PV::PRIV[$mda])) { ?>
-								<a class="nav-link <?= (str_contains($t, $md['name'])) ? 'active' : 'collapsed' ?> py-2" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse<?= $key ?>">
+								<a class="nav-link <?= in_array($t, $md['active']) ? 'active' : 'collapsed' ?> py-2" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse<?= $key ?>">
 									<div class="nav-link-icon"><i data-feather="<?= $md['icon'] ?>"></i></div>
 									<?= $md['name'] ?>
 									<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 								</a>
-								<div class="collapse <?= (str_contains($t, $md['name'])) ? 'show' : '' ?>" id="collapse<?= $key ?>" data-bs-parent="#accordionSidenav">
+								<div class="collapse <?= in_array($t, $md['active']) ? 'show' : '' ?>" id="collapse<?= $key ?>" data-bs-parent="#accordionSidenav">
 									<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
 										<?php if (isset($md['sub'])) { ?>
 											<?php foreach ($md['sub'] as $sb) { ?>
-												<a class="nav-link py-2 <?= str_contains($t, $sb['name']) ? 'active' : '' ?>" href="<?= PV::BASE_URL . $sb['link'] ?>"><?= $sb['name'] ?></a>
+												<a class="nav-link py-2 <?= $t == $sb['active'] ? 'active' : '' ?>" href="<?= PV::BASE_URL . $sb['link'] ?>"><?= $sb['name'] ?></a>
 											<?php } ?>
 										<?php } ?>
 									</nav>

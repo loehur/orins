@@ -1,6 +1,6 @@
 <?php
 
-class Gudang_Input extends Controller
+class Audit_BMasuk extends Controller
 {
    public function __construct()
    {
@@ -18,7 +18,7 @@ class Gudang_Input extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Audit - Masuk"
+         "title" => "Audit - Barang Masuk"
       ]);
 
       $this->viewer();
@@ -31,7 +31,6 @@ class Gudang_Input extends Controller
 
    public function content()
    {
-      $data['supplier'] = $this->db(0)->get('master_supplier');
       $data['input'] = $this->db(0)->get_order('master_input', 'id DESC');
       $this->view(__CLASS__ . '/content', $data);
    }
@@ -39,7 +38,7 @@ class Gudang_Input extends Controller
    public function list($id)
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Master Gudang - Input"
+         "title" => "Audit - Barang Masuk"
       ]);
       $this->viewer($page = "list_data", $id);
    }

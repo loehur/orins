@@ -13,7 +13,7 @@
                 <label>Code Suppiler</label><br>
                 <input name="supplier_c" id="supplier_c" value="<?= $d['id_supplier'] ?>" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
             </div>
-            <div class="col-auto px-1 mb-2 autocomplete">
+            <div class="col-auto px-1 mb-2">
                 <div class="autocomplete">
                     <label>Suppiler</label><br>
                     <input name="supplier" value="<?= $d['supplier'] ?>" class="border-bottom border-0" id="supplier" readonly style="text-transform: uppercase;">
@@ -85,7 +85,11 @@
                         <?php } ?>
                     </td>
                     <td class="align-middle text-end">
-                        <span data-id="<?= $a['id'] ?>" data-primary="id" data-tb="master_mutasi" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>
+                        <?php if ($a['stat'] == 0) { ?>
+                            <span data-id="<?= $a['id'] ?>" data-primary="id" data-tb="master_mutasi" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>
+                        <?php } else { ?>
+                            <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                        <?php } ?>
                     </td>
                 </tr>
             <?php } ?>
@@ -152,7 +156,7 @@
             }
         });
         $("#value_").focusout(function() {
-            var value_after = $(this).val();
+            var value_after = $(this).val().toUpperCase();
             if (value_after === value_before) {
                 el.html(value);
                 click = 0;
@@ -170,8 +174,12 @@
                     dataType: 'html',
                     success: function(res) {
                         click = 0;
-                        if (res == "") {
-                            el.html("[ ]");
+                        if (res == 0) {
+                            if (value_after == "") {
+                                el.html("[ ]");
+                            } else {
+                                el.html(value_after);
+                            }
                         } else {
                             el.html(res);
                         }

@@ -19,7 +19,7 @@ class Gudang_Barang extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Master Gudang - Barang"
+         "title" => "Gudang - Barang"
       ]);
 
       $this->viewer();

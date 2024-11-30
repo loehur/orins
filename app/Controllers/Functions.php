@@ -12,7 +12,7 @@ class Functions extends Controller
       $set = $col . " = '" . $value . "'";
       $where = $primary . " = " . $id;
       $up = $this->db(0)->update($tb, $set, $where);
-      echo $up['errno'] == 0 ? $value : $up['error'];
+      echo $up['errno'] == 0 ? 0 : $up['error'];
    }
 
    public function deleteCell()

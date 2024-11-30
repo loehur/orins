@@ -18,7 +18,7 @@ class Gudang_Input extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Master Gudang - Input"
+         "title" => "Gudang - Input"
       ]);
 
       $this->viewer();
@@ -39,7 +39,7 @@ class Gudang_Input extends Controller
    public function list($id)
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Master Gudang - Input"
+         "title" => "Gudang - Input"
       ]);
       $this->viewer($page = "list_data", $id);
    }

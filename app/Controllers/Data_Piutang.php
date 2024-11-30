@@ -36,7 +36,7 @@ class Data_Piutang extends Controller
       $data['pelanggan'] = $this->db(0)->get('pelanggan');
       $data['karyawan'] = $this->db(0)->get('karyawan');
 
-      $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 ORDER BY id_order_data DESC";
+      $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_ambil <> 0 AND tuntas = 0 ORDER BY id_order_data DESC";
       $data['order'] = $this->db(0)->get_where('order_data', $where);
 
       $refs = array_column($data['order'], 'ref');
