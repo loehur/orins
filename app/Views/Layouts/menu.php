@@ -134,17 +134,6 @@ $yearNow = date('Y');
 								<a class="nav-link <?= ($t == "Karyawan Non Aktif") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Karyawan_N">Non Aktif</a>
 							</nav>
 						</div>
-						<a class="nav-link <?= (str_contains($t, "Set Produksi")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlows2" aria-expanded="false" aria-controls="collapseFlows">
-							<div class="nav-link-icon"><i data-feather="tool"></i></div>
-							Pengaturan Produksi
-							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-						</a>
-						<div class="collapse <?= (str_contains($t, "Set Produksi")) ? 'show' : '' ?>" id="collapseFlows2" data-bs-parent="#accordionSidenav">
-							<nav class="sidenav-menu-nested nav">
-								<a class="nav-link <?= ($t == "Set Produksi - Group Detail") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Group_Detail">Item Produksi</a>
-								<a class="nav-link <?= ($t == "Set Produksi - Produk") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Produk">Produk Produksi</a>
-							</nav>
-						</div>
 					<?php } ?>
 
 					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[6])) { ?>

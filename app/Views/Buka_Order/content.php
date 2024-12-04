@@ -232,8 +232,8 @@ if ($id_pelanggan_jenis == 1) {
                         <tr>
                             <td class="text-secondary text-end ps-2">#<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?></td>
                             <td><?= trim($dp['brand'] . " " . $dp['model'] . " " . $dp['varian1'] . " " . $dp['varian2'])  ?><br><?= $db['sn'] ?></td>
-                            <td class="text-end"><?= number_format($db['qty']) ?>x<br>@<?= number_format($db['harga_jual']) ?></td>
-                            <td class="text-end pe-2"><?= number_format($db['harga_jual'] * $db['qty']) ?></td>
+                            <td class="text-end"><?= number_format($db['qty']) ?>x<br>@<?= number_format($dp['harga_' . $id_pelanggan_jenis]) ?></td>
+                            <td class="text-end pe-2"><?= number_format($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) ?></td>
                             <td class="pt-2" style="width: 30px;"><a class="deleteItemBarang" data-id_order="<?= $db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                         </tr>
                     <?php } ?>

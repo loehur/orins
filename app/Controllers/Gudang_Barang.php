@@ -252,12 +252,14 @@ class Gudang_Barang extends Controller
          }
       }
 
+      $code_f = strtoupper($_POST['code_f']);
+
       //BARANG
-      $cols = 'code,code_s,grup,tipe,brand,model,varian1,varian2,sn,pb';
-      $vals = "'" . $code . "','" . $code_s . "','" . $grup . "','" . $tipe . "','" . $brand . "','" . $model . "','" . $varian1 . "','" . $varian2 . "'," . $sn . "," . $pb;
+      $cols = 'code,code_s,grup,tipe,brand,model,varian1,varian2,sn,pb,code_f';
+      $vals = "'" . $code . "','" . $code_s . "','" . $grup . "','" . $tipe . "','" . $brand . "','" . $model . "','" . $varian1 . "','" . $varian2 . "'," . $sn . "," . $pb . ",'" . $code_f . "'";
       $do = $this->db(0)->insertCols('master_barang', $cols, $vals);
       if ($do['errno'] == 1062) {
-         $set = "sn = " . $sn . ", pb = " . $pb;
+         $set = "sn = " . $sn . ", pb = " . $pb . ", code_f = '" . $code_f . "'";
          $where = "code = '" . $code . "'";
          $up = $this->db(0)->update('master_barang', $set, $where);
          if ($up['errno'] <> 0) {

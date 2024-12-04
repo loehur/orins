@@ -46,8 +46,7 @@ class Buka_Order extends Controller
       $whereBarang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0";
       $data['order_barang'] = $this->db(0)->get_where('master_mutasi', $whereBarang);
 
-      $where_barang = "harga_" . $parse . " > 0";
-      $data['barang'] = $this->db(0)->get_where('master_barang', $where_barang, 'code');
+      $data['barang'] = $this->db(0)->get('master_barang', 'code');
       $data['stok'] = $this->data('Barang')->stok_data_list($this->userData['id_toko']);
 
       $data_harga = $this->db(0)->get('produk_harga');
@@ -321,8 +320,8 @@ class Buka_Order extends Controller
       $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $barang_c . "'");
       $harga = $barang['harga_' . $id_jenis_pelanggan];
 
-      $cols = 'jenis, kode_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual';
-      $vals = "2,'" . $barang_c . "','" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga;
+      $cols = 'jenis, jenis_target, kode_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual';
+      $vals = "2," . $id_jenis_pelanggan . ",'" . $barang_c . "','" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }

@@ -27,6 +27,10 @@ $required = ["required", "required", "required", "required", "", ""]
                         </div>
                     </div>
                 <?php } ?>
+                <div class="col-auto mt-auto px-1 mb-2">
+                    <label class="mb-2 text-sm">KODE BARANG PABRIK</label><br>
+                    <input name="code_f" id="<?= $i ?>" class="border-bottom border-0 mb-1" style="text-transform:uppercase">
+                </div>
                 <div class="col mb-2 mt-auto">
                     <div class="mb-2">
                         <input name="sn" class="form-check-input" type="checkbox" value="1">

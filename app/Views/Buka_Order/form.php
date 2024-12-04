@@ -38,9 +38,9 @@
                             <?php
                             foreach ($data['stok'] as $dps) {
                                 $dp = $data['barang'][$dps['kode_barang']];
-                                if (isset($dp['harga_' . $id_pelanggan_jenis])) { ?>
-                                    <option value="<?= $dps['kode_barang'] ?>"><?= trim($dp['brand'] . " " . $dp['model'] . " " . $dp['varian1'] . " " . $dp['varian2'])  ?> <small>Rp</small><?= number_format($dp['harga_' . $id_pelanggan_jenis]) ?> #<?= $dps['kode_barang'] ?><?= strlen($dp['code_f']) > 0 ? "#" . $dp['code_f'] : "" ?></option>
-                            <?php }
+                                $harga = $dp['harga_' . $id_pelanggan_jenis] ?>
+                                <option value="<?= $dps['kode_barang'] ?>"><?= trim($dp['brand'] . " " . $dp['model'] . " " . $dp['varian1'] . " " . $dp['varian2'])  ?> Rp<?= number_format($harga) ?> #<?= $dps['kode_barang'] ?><?= strlen($dp['code_f']) > 0 ? "#" . $dp['code_f'] : "" ?></option>
+                            <?php
                             }
                             ?>
                         </select>
