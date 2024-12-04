@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
 
 <?php $d = $data['input']; ?>
 
@@ -11,13 +11,7 @@
             </div>
             <div class="col-auto text-center px-1 mb-2">
                 <label>Code Suppiler</label><br>
-                <input name="supplier_c" id="supplier_c" value="<?= $d['id_supplier'] ?>" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
-            </div>
-            <div class="col-auto px-1 mb-2">
-                <div class="autocomplete">
-                    <label>Suppiler</label><br>
-                    <input name="supplier" value="<?= $d['supplier'] ?>" class="border-bottom border-0" id="supplier" readonly style="text-transform: uppercase;">
-                </div>
+                <input name="supplier_c" id="supplier_c" value="<?= $d['id_sumber'] ?>" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
             </div>
             <div class="col-auto px-1 mb-2 text-center">
                 <label>Tanggal</label><br>
@@ -41,28 +35,32 @@
             </div>
         </div>
         <hr>
-        <form action="<?= PV::BASE_URL ?>Gudang_Input/add_mutasi" method="POST">
-            <div class="row mb-2 mx-0">
-                <input type="hidden" name="head_id" value="<?= $data['id'] ?>">
-                <div class="col-auto text-center px-1 mb-2">
-                    <label>Kode Barang</label><br>
-                    <input readonly name="barang_" id="barang_c" required class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
-                </div>
-                <div class="col px-1 mb-2 autocomplete">
-                    <div class="autocomplete w-100" style="width: 100%;">
+        <?php if ($d['cek'] == 0) { ?>
+            <form action="<?= PV::BASE_URL ?>Gudang_Input/add_mutasi" method="POST">
+                <div class="row mb-2 mx-0">
+                    <div class="col-auto text-center px-1 mb-2">
+                        <label>Kode Barang</label><br>
+                        <input readonly name="barang_" id="barang_c" required class="text-center rounded border" style="text-transform: uppercase;">
+                    </div>
+                    <div class="col px-1 mb-2">
                         <label>Barang</label><br>
-                        <input name="barang" class="ac border-bottom border-0 w-100" required id="barang" style="text-transform: uppercase;">
+                        <select name="barang" class="ac tize border-0 w-100" required id="barang">
+                            <option></option>
+                            <?php foreach ($data['barang'] as $br) { ?>
+                                <option value="<?= $br['id'] ?>"><?= $br['nama'] ?> <?= $br['code'] ?><?= $br['code_f'] <> "" ? "#" . $br['code_f'] : "" ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div class="col-auto px-1 mb-2 text-end" id="col_qty">
+                        <label>Qty</label><br>
+                        <input id="qty" required type="number" min="1" class="text-end border-bottom border-0" name="qty" style="text-transform: uppercase;">
+                    </div>
+                    <div class="col mt-auto mb-2">
+                        <button type="submit" class="btn btn-outline-success">Add</button>
                     </div>
                 </div>
-                <div class="col-auto px-1 mb-2 text-end" id="col_qty">
-                    <label>Qty</label><br>
-                    <input id="qty" required type="number" min="1" class="text-end border-bottom border-0" name="qty" style="text-transform: uppercase;">
-                </div>
-                <div class="col mt-auto mb-2">
-                    <button type="submit" class="btn btn-outline-success">Add</button>
-                </div>
-            </div>
-        </form>
+            </form>
+        <?php } ?>
 
         <table class="table table-sm mx-1">
             <?php
@@ -74,7 +72,7 @@
                         <?= $no ?>
                     </td>
                     <td class="">
-                        <?= $a['nama'] ?>
+                        <?= $data['barang_code'][$a['kode_barang']]['nama'] ?>
                     </td>
                     <td class="text-end">
                         <?= $a['qty'] ?>
@@ -98,12 +96,12 @@
 </main>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-<script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 
 <script>
     var barang = JSON.parse('<?= json_encode($data['barang']) ?>');
     $(document).ready(function() {
-        autocomplete(document.getElementById("barang"), barang);
+        $('select.tize').selectize();
     });
 
     $("form").on("submit", function(e) {
@@ -213,15 +211,14 @@
         });
     });
 
-    setInterval(function() {
-        $(".ac").each(function() {
-            var get = $(this).attr('data-value');
-            if (typeof barang[get] != "undefined") {
-                var val = barang[get].code;
-                $("#" + this.id + "_c").val(val);
-            } else {
-                $("#" + this.id + "_c").val("");
-            }
-        })
-    }, 200);
+    $("#barang").change(function() {
+        var get = $(this).val();
+        if (typeof barang[get] != "undefined") {
+            var val = barang[get].code;
+            $("#" + this.id + "_c").val(val);
+            $('#stok_data').load('<?= PV::BASE_URL ?>Stok_Transfer/stok_data/' + val + '/' + '<?= $d['id'] ?>');
+        } else {
+            $("#" + this.id + "_c").val("");
+        }
+    })
 </script>

@@ -32,7 +32,7 @@ class Non_Tunai_Riwayat extends Controller
    public function content($parse = "")
    {
       if ($parse == "") {
-         $month = date("Y-m");
+         $month = date("Y-m-d");
       } else {
          $month = $parse;
       }

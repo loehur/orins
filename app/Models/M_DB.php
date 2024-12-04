@@ -26,7 +26,7 @@ class M_DB
         return $this->db->get_where($table, $where, $index);
     }
 
-    public function get_cols_where($table, $cols, $where, $row, $index = "")
+    public function get_cols_where($table, $cols, $where, $row = 1, $index = "")
     {
         return $this->db->get_cols_where($table, $cols, $where, $row, $index);
     }

@@ -190,6 +190,7 @@
                                                         }
                                                     }
 
+                                                    $cs_to = "?";
                                                     foreach ($this->dKaryawanAll as $dp) {
                                                         if ($dp['id_karyawan'] == $do['id_penerima']) {
                                                             $cs = $dp['nama'];
@@ -321,9 +322,9 @@
                                                                 $ambil = true;
                                                                 if ($countSPK > 0 && $cancel == 0) {
                                                                     $ambil_all = false;
-                                                            ?>
-                                                                    <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
-
+                                                                    if ($do['id_afiliasi'] == 0) { ?>
+                                                                        <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
+                                                                    <?php } ?>
                                                             <?php }
                                                             } else {
                                                                 if ($cancel == 0) {

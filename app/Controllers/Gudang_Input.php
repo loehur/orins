@@ -31,8 +31,8 @@ class Gudang_Input extends Controller
 
    public function content()
    {
-      $data['supplier'] = $this->db(0)->get('master_supplier');
-      $data['input'] = $this->db(0)->get_order('master_input', 'id DESC');
+      $data['supplier'] = $this->db(0)->get('master_supplier', 'id');
+      $data['input'] = $this->db(0)->get_where('master_input', 'tipe = 0 ORDER BY id DESC');
       $this->view(__CLASS__ . '/content', $data);
    }
 
@@ -47,8 +47,9 @@ class Gudang_Input extends Controller
    function list_data($id)
    {
       $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
-      $cols = "id, code, CONCAT(brand,' ',model,' ',varian1,' ',varian2) as nama";
+      $cols = "id, code, CONCAT(brand,' ',model,' ',varian1,' ',varian2) as nama, code_f";
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
+      $data['barang_code'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'code');
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");
       $data['id'] = $id;
       $this->view(__CLASS__ . '/list_data', $data);
@@ -94,8 +95,8 @@ class Gudang_Input extends Controller
       }
 
       $id = date('ymdHi');
-      $cols = 'id, id_supplier,supplier,no_faktur,no_po,tanggal,sds';
-      $vals = $id . ",'" . $supplier_c . "','" . $supplier . "','" . $no_fak . "','" . $no_po . "','" . $tanggal . "'," . $sds;
+      $cols = 'id, id_sumber,no_faktur,no_po,tanggal,sds';
+      $vals = $id . ",'" . $supplier_c . "','" . $no_fak . "','" . $no_po . "','" . $tanggal . "'," . $sds;
       $do = $this->db(0)->insertCols('master_input', $cols, $vals);
       if ($do['errno'] <> 0) {
          $error .= $do['error'];
@@ -114,19 +115,19 @@ class Gudang_Input extends Controller
       $qty = $_POST['qty'];
       $sds = $head['sds'];
       $sn =  $barang['sn'];
-      $id_sumber = $head['id_supplier'];
+      $id_sumber = $head['id_sumber'];
       $h_beli = $barang['harga'];
       $nama = trim($barang['brand'] . " " . $barang['model'] . " " . $barang['varian1'] . " " . $barang['varian2']);
 
-      $cols = 'ref,jenis,kode_barang,nama,id_sumber,id_target,harga_beli,qty,sds,sn_c';
+      $cols = 'ref,jenis,kode_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
 
       if ($sn == 1) {
-         $vals = "'" . $ref . "',0,'" . $barang_ . "','" . $nama . "','" . $id_sumber . "',0," . $h_beli . ",1," . $sds . "," . $sn;
+         $vals = "'" . $ref . "',0,'" . $barang_ . "','" . $id_sumber . "',0," . $h_beli . ",1," . $sds . "," . $sn;
          for ($x = 1; $x <= $qty; $x++) {
             $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
          }
       } else {
-         $vals = "'" . $ref . "',0,'" . $barang_ . "','" . $nama . "','" . $id_sumber . "',0," . $h_beli . "," . $qty . "," . $sds . "," . $sn;
+         $vals = "'" . $ref . "',0,'" . $barang_ . "','" . $id_sumber . "',0," . $h_beli . "," . $qty . "," . $sds . "," . $sn;
          $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       }
       echo $do['errno'] == 0 ? 0 : $do['error'];

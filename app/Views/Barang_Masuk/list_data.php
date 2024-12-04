@@ -13,31 +13,19 @@
     <div class="container">
         <div class="row mb-2">
             <div class="col-auto mt-auto px-1 mb-2">
-                <a href="<?= PV::BASE_URL ?>Audit_BMasuk"><button class="btn btn-outline pb-0 border-0"><i class="fa-solid fa-chevron-left"></i> <small>Back</small></button></a>
+                <a href="<?= PV::BASE_URL ?>Barang_Masuk"><button class="btn btn-outline pb-0 border-0"><i class="fa-solid fa-chevron-left"></i> <small>Back</small></button></a>
             </div>
             <div class="col-auto text-center px-1 mb-2">
-                <label>Code Suppiler</label><br>
-                <input name="supplier_c" id="supplier_c" value="<?= $d['id_sumber'] ?>" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
+                <label>Sumber</label><br>
+                <input name="sumber" value="<?= isset($data['toko'][$d['id_sumber']]['nama_toko']) ? $data['toko'][$d['id_sumber']]['nama_toko'] : "Gudang" ?>" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
+            </div>
+            <div class="col-auto text-center px-1 mb-2">
+                <label>No. Ref</label><br>
+                <input name="supplier_c" id="supplier_c" value="<?= $d['id'] ?>" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
             </div>
             <div class="col-auto px-1 mb-2 text-center">
                 <label>Tanggal</label><br>
                 <input type="date" name="tanggal" readonly class="text-center border-bottom border-0" value="<?= $d['tanggal'] ?>">
-            </div>
-            <div class="col-auto px-1 mb-2 text-end">
-                <label>No. Faktur</label><br>
-                <input class="text-end border-bottom border-0" value="<?= $d['no_faktur'] ?>" name="no_fak" readonly style="text-transform: uppercase;">
-            </div>
-            <div class="col-auto px-1 mb-2 text-end">
-                <label>No. PO</label><br>
-                <input class="text-end border-bottom border-0" value="<?= $d['no_po'] ?>" name="no_po" readonly style="text-transform: uppercase;">
-            </div>
-            <div class="col-auto px-1 mb-2">
-                <div class="pt-4">
-                    <input name="sds" class="form-check-input" type="checkbox" <?= $d['sds'] == 1 ? "checked" : "" ?> disabled>
-                    <label class="form-check-label" for="flexCheckDefault">
-                        SDS
-                    </label>
-                </div>
             </div>
             <div class="col text-end mt-auto">
                 <?php if ($d['cek'] == 0) { ?>
@@ -61,19 +49,16 @@
                         <?= $a['kode_barang'] ?>
                     </td>
                     <td class="">
-                        <?= $data['barang_code'][$a['kode_barang']]['nama'] ?>
-                    </td>
-                    <td>
-                        <?php
-                        if ($a['sn_c'] == 1) {
-                            if ($a['sn'] == "") { ?>
-                                <span class="text-danger">Menunggu SN</span>
-                        <?php }
-                        } ?>
-                        <?= $a['sn'] ?>
+                        <?= $data['barang'][$a['kode_barang']]['nama'] ?>
                     </td>
                     <td class="text-end">
                         <?= $a['qty'] ?>
+                    </td>
+                    <td>
+                        <?= $a['sn'] ?>
+                    </td>
+                    <td>
+                        <?= $a['sds'] == 1 ? "SDS-YES" : "SDS-NO" ?>
                     </td>
                 </tr>
             <?php } ?>
@@ -88,7 +73,7 @@
     $(".update_bol").on('click', function() {
         var ref = $(this).attr('data-ref');
         $.ajax({
-            url: '<?= PV::BASE_URL ?>Audit_BMasuk/update',
+            url: '<?= PV::BASE_URL ?>Barang_Masuk/update',
             data: {
                 ref: ref
             },

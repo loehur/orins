@@ -1,11 +1,11 @@
 <?php $parse = $data['parse']; ?>
-<small>
-    <div class="row mx-0 mt-3 px-0">
+<main class="container">
+    <div class="row mx-0 px-0">
         <div class="col pe-0 ps-2" style="max-width: 250px;">
             <select class="border rounded tize cek" name="customer" required>
                 <option></option>
-                <?php foreach ($this->dPelanggan as $p) { ?>
-                    <option <?= $data['customer'] == $p['id_pelanggan'] ? 'selected' : '' ?> value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?></option>
+                <?php foreach ($data['dPelanggan'] as $p) { ?>
+                    <option <?= $data['customer'] == $p['id_pelanggan'] ? 'selected' : '' ?> value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= $p['id_toko'] ?> - <?= strtoupper($p['nama']) ?></option>
                 <?php } ?>
             </select>
         </div>
@@ -79,13 +79,15 @@
                                         if ($dp['id_karyawan'] == $do['id_penerima']) {
                                             $cs = $dp['nama'];
                                         }
-                                    } ?>
+                                    }
+                                    $cs = "Checking"
+                            ?>
                                     <tr>
                                         <td colspan="5" class="table-secondary">
                                             <table class="w-100 p-0 m-0">
                                                 <tr>
                                                     <td><span><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
-                                                    <td valign="top" style="width: 180px;" class="text-end"><small><?= $cs  ?> [<?= substr($do['insertTime'], 2, -3) ?>]</span></small></td>
+                                                    <td valign="top" class="text-end"><small><?= $cs  ?> <?= substr($do['insertTime'], 2, -3) ?></span></small></td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -132,7 +134,9 @@
                                                             $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
                                                             echo '<i class="fa-solid fa-check text-success"></i> ' . $karyawan;
                                                         } else {
-                                                            echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="1"> <i class="fa-regular fa-circle"></i> Tahap 1';
+                                                            if ($do['id_afiliasi'] == 0 || $do['id_afiliasi'] == $this->userData['id_toko']) {
+                                                                echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="1"> <i class="fa-regular fa-circle"></i> Tahap 1';
+                                                            }
                                                         }
                                                         echo "</td>";
                                                         if ($divisi_arr[$key]['cm'] == 1) {
@@ -141,7 +145,9 @@
                                                                 $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_cm']);
                                                                 echo '<i class="fa-solid text-success fa-check-double"></i> ' . $karyawan;
                                                             } else {
-                                                                echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="2"> <i class="fa-regular fa-circle"></i> Tahap 2';
+                                                                if ($do['id_afiliasi'] == 0 || $do['id_afiliasi'] == $this->userData['id_toko']) {
+                                                                    echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="2"> <i class="fa-regular fa-circle"></i> Tahap 2';
+                                                                }
                                                             }
                                                             echo "</td>";
                                                         }
@@ -159,80 +165,80 @@
             <?php } ?>
         </div>
     <?php } ?>
-</small>
+    </small>
 
-<form action="<?= PV::BASE_URL; ?>SPK_C/done/<?= $parse ?>" method="POST">
-    <div class="modal" id="done">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="container">
-                        <div class="row mb-2">
-                            <div class="col">
-                                <label class=" form-label">Karyawan</label>
-                                <input type="hidden" name="id">
-                                <input type="hidden" name="mode">
-                                <select class="border tize" name="id_karyawan" required>
-                                    <option></option>
-                                    <?php foreach ($this->dKaryawan as $k) {
-                                        if ($k['id_toko'] == $this->userData['id_toko']) { ?>
-                                            <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
-                                    <?php }
-                                    } ?>
-                                </select>
+    <form action="<?= PV::BASE_URL; ?>SPK_C/done/<?= $parse ?>" method="POST">
+        <div class="modal" id="done">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="container">
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <label class=" form-label">Karyawan</label>
+                                    <input type="hidden" name="id">
+                                    <input type="hidden" name="mode">
+                                    <select class="border tize" name="id_karyawan" required>
+                                        <option></option>
+                                        <?php foreach ($data['karyawan'] as $k) {
+                                            if ($k['id_toko'] == $this->userData['id_toko']) { ?>
+                                                <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
+                                        <?php }
+                                        } ?>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-sm-6">
-                                <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Selesai</button>
+                            <div class="row mb-2">
+                                <div class="col-sm-6">
+                                    <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Selesai</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 
-<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('select.tize').selectize();
-    });
-    $('select.cek').change(function() {
-        var parse = <?= $parse ?>;
-        var parse_2 = $(this).val();
-        if (parse_2 == "") {
-            return;
-        }
-        $("div#content").load('<?= PV::BASE_URL ?>SPK_Customer/content/' + parse + '/' + parse_2);
-    });
-
-    $("span.done").click(function() {
-        id = $(this).attr("data-id");
-        mode = $(this).attr("data-mode");
-        $("input[name=id]").val(id);
-        $("input[name=mode]").val(mode);
-    })
-
-    $("form").on("submit", function(e) {
-        e.preventDefault();
-
-        var parse = <?= $parse ?>;
-        var parse_2 = $("select[name=customer]").val();
-
-        $.ajax({
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            type: $(this).attr("method"),
-            success: function(res) {
-                if (res == 0) {
-                    $("div#content").load('<?= PV::BASE_URL ?>SPK_Customer/content/' + parse + '/' + parse_2);
-                } else {
-                    alert(res);
-                }
-            }
+    <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+    <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('select.tize').selectize();
         });
-    });
-</script>
+        $('select.cek').change(function() {
+            var parse = <?= $parse ?>;
+            var parse_2 = $(this).val();
+            if (parse_2 == "") {
+                return;
+            }
+            $("div#content").load('<?= PV::BASE_URL ?>SPK_Customer/content/' + parse + '/' + parse_2);
+        });
+
+        $("span.done").click(function() {
+            id = $(this).attr("data-id");
+            mode = $(this).attr("data-mode");
+            $("input[name=id]").val(id);
+            $("input[name=mode]").val(mode);
+        })
+
+        $("form").on("submit", function(e) {
+            e.preventDefault();
+
+            var parse = <?= $parse ?>;
+            var parse_2 = $("select[name=customer]").val();
+
+            $.ajax({
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                type: $(this).attr("method"),
+                success: function(res) {
+                    if (res == 0) {
+                        $("div#content").load('<?= PV::BASE_URL ?>SPK_Customer/content/' + parse + '/' + parse_2);
+                    } else {
+                        alert(res);
+                    }
+                }
+            });
+        });
+    </script>

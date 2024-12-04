@@ -1,7 +1,7 @@
 <main>
     <!-- Main page content-->
-    <div class="container-fluid px-2">
-        <div class="card mt-2 shadow-none mb-1">
+    <div class="container px-2">
+        <div class="card shadow-none mb-1">
             <div class="card-body bg-warning-soft pb-0 pt-2">
                 <form action="<?= PV::BASE_URL ?>Buka_Order_Aff/proses/<?= $data['parse'] ?>/<?= $data['pelanggan_jenis'] ?>" method="POST">
                     <div class="row">

@@ -1,12 +1,13 @@
 <?php
 
-class Audit_BMasuk extends Controller
+class Barang_Masuk extends Controller
 {
+   public $title = "Barang - Masuk";
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[7])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -18,7 +19,7 @@ class Audit_BMasuk extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Audit - Barang Masuk"
+         "title" => $this->title
       ]);
 
       $this->viewer();
@@ -31,15 +32,15 @@ class Audit_BMasuk extends Controller
 
    public function content()
    {
-      $data['input'] = $this->db(0)->get_where('master_input', 'tipe = 0 ORDER BY id DESC');
-      $data['supplier'] = $this->db(0)->get('master_supplier', 'id');
+      $data['input'] = $this->db(0)->get_where('master_input', "tipe = 1 AND id_target = '" . $this->userData['id_toko'] . "' ORDER BY id DESC");
+      $data['toko'] = $this->db(0)->get_where('toko', "en = 1", "id_toko");
       $this->view(__CLASS__ . '/content', $data);
    }
 
    public function list($id)
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Audit - Barang Masuk"
+         "title" => $this->title
       ]);
       $this->viewer($page = "list_data", $id);
    }
@@ -47,11 +48,12 @@ class Audit_BMasuk extends Controller
    function list_data($id)
    {
       $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
+      $data['toko'] = $this->db(0)->get_where('toko', "en = 1", "id_toko");
+
       $cols = "id, code, CONCAT(brand,' ',model,' ',varian1,' ',varian2) as nama";
-      $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
-      $data['barang_code'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'code');
+      $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'code');
+
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");
-      $data['id'] = $id;
       $this->view(__CLASS__ . '/list_data', $data);
    }
 

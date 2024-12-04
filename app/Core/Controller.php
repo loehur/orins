@@ -72,7 +72,7 @@ class Controller extends PV
         $_SESSION['produk'] = $this->db(0)->get_order('produk', 'freq DESC');
         $_SESSION['detail_group'] = $this->db(0)->get_order('detail_group', "sort ASC");
         $_SESSION['detail_item'] = $this->db(0)->get_order('detail_item', "detail_item ASC");
-        $_SESSION['data_user'] = $this->db(0)->get('user', $whereToko);
+        $_SESSION['data_user'] = $this->db(0)->get_where('user', $whereToko);
 
         $wherePel = $whereToko . " AND en = 1 ORDER BY freq DESC";
         $_SESSION['data_pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePel);

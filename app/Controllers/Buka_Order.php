@@ -43,6 +43,13 @@ class Buka_Order extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->db(0)->get_where('order_data', $where);
 
+      $whereBarang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0";
+      $data['order_barang'] = $this->db(0)->get_where('master_mutasi', $whereBarang);
+
+      $where_barang = "harga_" . $parse . " > 0";
+      $data['barang'] = $this->db(0)->get_where('master_barang', $where_barang, 'code');
+      $data['stok'] = $this->data('Barang')->stok_data_list($this->userData['id_toko']);
+
       $data_harga = $this->db(0)->get('produk_harga');
       $data['count'] = count($data['order']);
       $getHarga = [];
@@ -76,10 +83,10 @@ class Buka_Order extends Controller
       }
 
       $wherePelanggan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse . " ORDER BY freq DESC";
-      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan);
+      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan, 'id_pelanggan');
 
       $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC";
-      $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan);
+      $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan, 'id_karyawan');
       $data['harga'] = $getHarga;
 
       $this->view($this->v_content, $data);
@@ -288,7 +295,36 @@ class Buka_Order extends Controller
          echo $do['errno'];
       } else {
          print_r($do['error']);
+         exit();
       }
+   }
+
+   function add_barang($id_jenis_pelanggan)
+   {
+      $barang_c = $_POST['kode'];
+      $qty = $_POST['qty'];
+      $sds = $_POST['sds'];
+      $sn =  $_POST['sn'];
+      $sn_c = 0;
+      if (strlen($sn) > 0) {
+         $sn_c = 1;
+      }
+
+      $id_sumber = $this->userData['id_toko'];
+
+      $cek = $this->data('Barang')->cek($barang_c, $id_sumber, $sn, $sds, $qty);
+      if ($cek == false) {
+         echo "Stok ter-update tidak tersedia";
+         exit();
+      }
+
+      $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $barang_c . "'");
+      $harga = $barang['harga_' . $id_jenis_pelanggan];
+
+      $cols = 'jenis, kode_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual';
+      $vals = "2,'" . $barang_c . "','" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga;
+      $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
+      echo $do['errno'] == 0 ? 0 : $do['error'];
    }
 
    function load_detail($produk)
@@ -336,6 +372,15 @@ class Buka_Order extends Controller
       $data_['spkNote'] = $spkNote;
       $data_['divisi'] = $this->db(0)->get('divisi');
       $this->view(__CLASS__ . "/detail", $data_);
+   }
+
+   function load_detail_barang($produk, $id_pelanggan_jenis)
+   {
+      $data['stok'] = $this->data('Barang')->stok_data($produk, $this->userData['id_toko']);
+      $data['id_pelanggan_jenis'] = $id_pelanggan_jenis;
+
+      $cols = "id, code, CONCAT(brand,' ',model,' ',varian1,' ',varian2) as nama";
+      $this->view(__CLASS__ . "/detail_barang", $data);
    }
 
    function add_price($id_pelanggan_jenis)

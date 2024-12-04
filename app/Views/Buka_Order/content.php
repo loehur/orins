@@ -11,9 +11,9 @@ if ($id_pelanggan_jenis == 1) {
 }
 ?>
 
-<main class="container mt-4">
+<main class="container">
     <!-- Main page content-->
-    <div class="container-fluid px-2">
+    <div class="container px-2">
         <?php
         if (count($data['errorID']) > 0) {
             echo "<br><small class='text-danger'>Order Data Error! yang mungkin disebabkan oleh jaringan terputus atau pengaturan produk yang tidak valid:</small><br><hr class='my-1'>";
@@ -22,9 +22,8 @@ if ($id_pelanggan_jenis == 1) {
             <?php }
         } else {
             ?>
-
             <div class="row mb-4 <?= count($data['order']) == 0 ? "d-none" : "" ?>">
-                <div class="col border-bottom">
+                <div class="col">
                     <form action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
                         <div class="row pb-2">
                             <div class="col px-1" style="max-width: 300px;">
@@ -55,9 +54,10 @@ if ($id_pelanggan_jenis == 1) {
                 <div class="col pe-0">
                     <?php if ($data['count'] <= 15) { ?>
                         <button type="button" class="btn me-2 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Jasa & Produksi</button>
-                        <div class="btn-group me-1 d-none">
+                        <button type="button" class="btn me-2 shadow-none btn-sm btn-success bg-gradient py-1" data-bs-target="#exampleModalB" data-bs-toggle="modal">(&#43;) Barang</button>
+                        <div class="btn-group me-1">
                             <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                (&#43;) Afiliasi
+                                (&#43;) Produksi Afiliasi
                                 <span class="visually-hidden">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
@@ -68,13 +68,12 @@ if ($id_pelanggan_jenis == 1) {
                                 } ?>
                             </ul>
                         </div>
-                        <button type="button" class="btn me-2 shadow-none btn-sm btn-success bg-gradient py-1" data-bs-toggle="modal">(&#43;) Barang</button>
                     <?php } ?>
                 </div>
             </div>
             <?php if (count($data['order']) > 0) { ?>
                 <div class="row">
-                    <div class="col border px-0">
+                    <div class="col border-start border-end border-top px-0">
                         <table class="table table-sm mb-0">
                             <tbody>
                                 <?php
@@ -112,28 +111,26 @@ if ($id_pelanggan_jenis == 1) {
                                                 <tr class="<?= $do['id_afiliasi'] == 0 ? 'bg-primary' : 'bg-warning' ?> bg-gradient bg-opacity-10">
                                                     <td class="ps-2"><span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span></td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                                        <small>Price [
-                                                            <?php
-                                                            if ($harga_ok == false) {
-                                                                echo $btnSetHarga;
-                                                            } else {
-                                                                if ($akum_diskon > 0) {
-                                                                    echo "<del>" . number_format($do['harga']) . "</del> <small>" . number_format($do['harga'] - $akum_diskon);
-                                                                } else {
-                                                                    echo number_format($do['harga']);
-                                                                }
-                                                            } ?>
-                                                            ]
+                                                        <small>
+                                                            <span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= $do['jumlah'] ?></span>x
                                                         </small>
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                                        <small>Qty [
-                                                            <span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= $do['jumlah'] ?></span>
-                                                            ]</small>
+                                                        <small>@<?php
+                                                                if ($harga_ok == false) {
+                                                                    echo $btnSetHarga;
+                                                                } else {
+                                                                    if ($akum_diskon > 0) {
+                                                                        echo "<del>" . number_format($do['harga']) . "</del> <small>" . number_format($do['harga'] - $akum_diskon);
+                                                                    } else {
+                                                                        echo number_format($do['harga']);
+                                                                    }
+                                                                } ?>
+                                                        </small>
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                         <b>
-                                                            <small>Total [
+                                                            <small>
                                                                 <?php
                                                                 if ($harga_ok == false) {
                                                                     echo $btnSetHarga;
@@ -144,11 +141,10 @@ if ($id_pelanggan_jenis == 1) {
                                                                         echo number_format($do['harga'] * $do['jumlah']);
                                                                     }
                                                                 } ?>
-                                                                ]
                                                             </small>
                                                         </b>
                                                     </td>
-                                                    <td style="width: 30px;"><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
+                                                    <td class="align-middle" style="width: 30px;"><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="10" class="border-bottom-0">
@@ -177,9 +173,9 @@ if ($id_pelanggan_jenis == 1) {
                                                                                 <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
                                                                                 <div class="float-end">
                                                                                     <?php if ($disk > 0) { ?>
-                                                                                        <del>Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del>
+                                                                                        <del><?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del>
                                                                                     <?php } ?>
-                                                                                    Rp<?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
+                                                                                    <?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
                                                                                     <b><span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
                                                                                     <?php if ($harga_d > 0 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                                         <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
@@ -227,89 +223,36 @@ if ($id_pelanggan_jenis == 1) {
                 </div>
         <?php }
         } ?>
+
+        <div class="row mt-2">
+            <div class="col border border-bottom-0 px-0">
+                <table class="table table-sm m-0 text-sm">
+                    <?php foreach ($data['order_barang'] as $db) {
+                        $dp = $data['barang'][$db['kode_barang']]; ?>
+                        <tr>
+                            <td class="text-secondary text-end ps-2">#<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?></td>
+                            <td><?= trim($dp['brand'] . " " . $dp['model'] . " " . $dp['varian1'] . " " . $dp['varian2'])  ?><br><?= $db['sn'] ?></td>
+                            <td class="text-end"><?= number_format($db['qty']) ?>x<br>@<?= number_format($db['harga_jual']) ?></td>
+                            <td class="text-end pe-2"><?= number_format($db['harga_jual'] * $db['qty']) ?></td>
+                            <td class="pt-2" style="width: 30px;"><a class="deleteItemBarang" data-id_order="<?= $db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
+                        </tr>
+                    <?php } ?>
+                </table>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col text-end border">
+                .. Items
+            </div>
+            <div class="col text-end border">
+                Total 56.000.000
+            </div>
+        </div>
     </div>
 </main>
-<div class="modal fade" id="exampleModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Pilih Produk - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
-                <div class="modal-body bg-primary bg-gradient bg-opacity-10 px-2">
-                    <div class="mb-2">
-                        <select class="tize loadDetail" name="id_produk" required>
-                            <option></option>
-                            <?php foreach ($this->dProduk as $dp) { ?>
-                                <option value="<?= $dp['id_produk'] ?>"><?= $dp['produk'] ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                    <div id="detail"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill" data-bs-dismiss="modal">Tambah</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
-<div class="modal fade" id="exampleModalAff" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Pilih Produk (Afiliasi) - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div id="aff"></div>
-        </div>
-    </div>
-</div>
+<?php require_once('form.php') ?>
 
-<div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"><small><span class="produk_harga"></span></small></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add_price/<?= $id_pelanggan_jenis ?>" method="POST">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label" required>Harga</label>
-                        <input type="number" min="1" name="harga" class="form-control" required>
-                        <input type="hidden" name="harga_code" class="form-control" required>
-                    </div>
-                </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Tetapkan HARGA</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="modalDiskon" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"><b><span class="produk_harga"></span></b></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/diskon" method="POST">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label" required>Diskon Rp</label>
-                        <input type="number" min="0" name="diskon" class="form-control" required>
-                        <input type="hidden" name="parse" class="form-control" required>
-                    </div>
-                </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn text-purple border-purple" data-bs-dismiss="modal">Tetapkan Diskon</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -331,6 +274,11 @@ if ($id_pelanggan_jenis == 1) {
     $('select.loadDetail').on('change', function() {
         var produk = this.value;
         $("div#detail").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+    });
+
+    $('select.loadDetail_Barang').on('change', function() {
+        var produk = this.value;
+        $("div#detail_barang").load('<?= PV::BASE_URL ?>Buka_Order/load_detail_barang/' + produk + '/<?= $id_pelanggan_jenis ?>');
     });
 
     $("span.tetapkanHarga").click(function() {
@@ -359,6 +307,24 @@ if ($id_pelanggan_jenis == 1) {
             url: "<?= PV::BASE_URL ?>Buka_Order/deleteOrder",
             data: {
                 id_order: id
+            },
+            type: "POST",
+            success: function(res) {
+                if (res == 0) {
+                    content();
+                } else {
+                    alert(res);
+                }
+            }
+        });
+    })
+
+    $("a.deleteItemBarang").click(function() {
+        var id_order = $(this).attr("data-id_order");
+        $.ajax({
+            url: "<?= PV::BASE_URL ?>Buka_Order/deleteOrderBarang",
+            data: {
+                id: id_order
             },
             type: "POST",
             success: function(res) {

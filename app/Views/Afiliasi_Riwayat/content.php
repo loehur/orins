@@ -4,7 +4,7 @@
             <div class="col mb-2" style="min-width:270px;max-width:350px">
                 <div class="input-group">
                     <span class="input-group-text text-primary">Bulan</span>
-                    <input name="month" type="month" min="2023-07" max="<?= date("Y-m") ?>" value="<?= $data['m'] ?>" placeholder="YYYY-MM" class="form-control" required>
+                    <input name="month" type="date" min="2023-07-01" max="<?= date("Y-m-d") ?>" value="<?= $data['m'] ?>" placeholder="YYYY-MM-DD" class="form-control" required>
                     <button id="cekS" class="btn btn-primary">Cek</button>
                 </div>
             </div>

@@ -109,24 +109,6 @@ $yearNow = date('Y');
 						</div>
 					<?php } ?>
 
-					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
-						<hr class="p-0 m-0">
-						<!-- CASHIER PANEL -->
-						<a class="nav-link <?= (str_contains($t, "Cashier")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseCashier" aria-expanded="false" aria-controls="collapseFlows">
-							<div class="nav-link-icon"><i data-feather="archive"></i></div>
-							Cashier
-							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-						</a>
-						<div class="collapse <?= (str_contains($t, "Cashier")) ? 'show' : '' ?>" id="collapseCashier" data-bs-parent="#accordionSidenav">
-							<nav class="sidenav-menu-nested nav">
-								<a class="nav-link <?= ($t == "Cashier - Setoran") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Setoran">Setoran</a>
-								<a class="nav-link <?= ($t == "Cashier - Setoran Riwayat") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Setoran_Riwayat">Setoran Riwayat</a>
-								<a class="nav-link <?= ($t == "Cashier - Non Tunai") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Non_Tunai_C">Transaksi Non Tunai</a>
-								<a class="nav-link <?= ($t == "Cashier - Afiliasi") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Afiliasi_C">Transaksi Afiliasi</a>
-							</nav>
-						</div>
-					<?php } ?>
-
 					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[1])) { ?>
 						<hr class="p-0 m-0">
 						<a class="nav-link <?= (str_contains($t, "User")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlowsUser" aria-expanded="false" aria-controls="collapseFlows">
@@ -161,23 +143,6 @@ $yearNow = date('Y');
 							<nav class="sidenav-menu-nested nav">
 								<a class="nav-link <?= ($t == "Set Produksi - Group Detail") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Group_Detail">Item Produksi</a>
 								<a class="nav-link <?= ($t == "Set Produksi - Produk") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Produk">Produk Produksi</a>
-							</nav>
-						</div>
-					<?php } ?>
-
-					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[5])) { ?>
-						<hr class="p-0 m-0">
-						<!-- FINANCE PANEL -->
-						<a class="nav-link <?= (str_contains($t, "Finance")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFinance" aria-expanded="false" aria-controls="collapseFlows">
-							<div class="nav-link-icon"><i data-feather="dollar-sign"></i></div>
-							Finance
-							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-						</a>
-						<div class="collapse <?= (str_contains($t, "Finance")) ? 'show' : '' ?>" id="collapseFinance" data-bs-parent="#accordionSidenav">
-							<nav class="sidenav-menu-nested nav">
-								<a class="nav-link <?= ($t == "Finance - Non Tunai") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Non_Tunai">Non Tunai Transaksi</a>
-								<a class="nav-link <?= ($t == "Finance - Non Tunai Riwayat") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Non_Tunai_Riwayat">Non Tunai Riwayat</a>
-								<a class="nav-link <?= ($t == "Finance - Setoran") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Setoran_F">Setoran Kasir</a>
 							</nav>
 						</div>
 					<?php } ?>

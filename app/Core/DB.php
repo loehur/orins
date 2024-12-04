@@ -25,14 +25,14 @@ class DB extends DBC
         return self::$_instance[$db];
     }
 
-    public function get($table, $index = "")
+    public function get($table, $index = null)
     {
         $reply = [];
         $query = "SELECT * FROM $table";
         $result = $this->mysqli->query($query);
 
         while ($row = $result->fetch_assoc())
-            if ($index == "")
+            if ($index == null)
                 $reply[] = $row;
             else
                 $reply[$row[$index]] = $row;
@@ -57,7 +57,7 @@ class DB extends DBC
         return $reply;
     }
 
-    public function get_cols_where($table, $cols, $where, $row, $index = "")
+    public function get_cols_where($table, $cols, $where, $row = 1, $index = "")
     {
         $reply = [];
         $query = "SELECT $cols FROM $table WHERE $where";
@@ -65,11 +65,7 @@ class DB extends DBC
         if ($result) {
             switch ($row) {
                 case "0":
-                    if ($index == "")
-                        $reply[$row[$index]] = $result->fetch_assoc();
-                    else
-                        $reply = $result->fetch_assoc();
-                    break;
+                    $reply = $result->fetch_assoc();
                 case "1";
                     while ($row = $result->fetch_assoc())
                         if ($index == "")

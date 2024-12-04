@@ -6,12 +6,12 @@
             <div class="row mb-2">
                 <div class="col-auto text-center px-1 mb-2">
                     <label>Code Suppiler</label><br>
-                    <input name="supplier_c" id="supplier_c" class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
+                    <input name="supplier_c" id="supplier_c" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
                 </div>
                 <div class="col-auto px-1 mb-2">
                     <div class="autocomplete">
                         <label>Suppiler</label><br>
-                        <input name="supplier" class="ac border-bottom border-0" id="supplier" style="text-transform: uppercase;">
+                        <input name="supplier" required class="ac border-bottom border-0" id="supplier" style="text-transform: uppercase;">
                     </div>
                 </div>
                 <div class="col-auto px-1 mb-2 text-center">
@@ -20,11 +20,11 @@
                 </div>
                 <div class="col-auto px-1 mb-2 text-end">
                     <label>No. Faktur</label><br>
-                    <input class="text-end border-bottom border-0" name="no_fak" style="text-transform: uppercase;">
+                    <input class="text-end border-bottom border-0" required name="no_fak" style="text-transform: uppercase;">
                 </div>
                 <div class="col-auto px-1 mb-2 text-end">
                     <label>No. PO</label><br>
-                    <input class="text-end border-bottom border-0" name="no_po" style="text-transform: uppercase;">
+                    <input class="text-end border-bottom border-0" required name="no_po" style="text-transform: uppercase;">
                 </div>
                 <div class="col-auto px-1 mb-2">
                     <div class="pt-4">
@@ -50,10 +50,7 @@
                         <?= $a['id'] ?>
                     </td>
                     <td class="">
-                        <?= $a['tanggal'] ?>
-                    </td>
-                    <td class="">
-                        <?= strtoupper($a['supplier']) ?>
+                        <?= $data['supplier'][$a['id_sumber']]['nama'] ?>
                     </td>
                     <td>
                         <?= $a['no_faktur'] ?>
