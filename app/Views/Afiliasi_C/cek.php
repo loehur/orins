@@ -72,7 +72,7 @@
                                     $dateTime = substr($do['insertTime'], 0, 10);
                                     $today = date("Y-m-d");
 
-                                    foreach ($this->dProduk as $dp) {
+                                    foreach ($data['produk'] as $dp) {
                                         if ($dp['id_produk'] == $id_produk) {
                                             $produk = $dp['produk'];
                                         }

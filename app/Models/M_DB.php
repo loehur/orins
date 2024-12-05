@@ -52,6 +52,12 @@ class M_DB
     }
 
     //====================================================== COUNT//
+
+    public function count($table)
+    {
+        return $this->db->count($table);
+    }
+
     public function count_where($table, $where)
     {
         return $this->db->count_where($table, $where);

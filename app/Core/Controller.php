@@ -45,7 +45,6 @@ class Controller extends PV
                 }
 
                 $this->dDvs = $_SESSION['data_divisi'];
-                $this->dProduk = $_SESSION['produk'];
                 $this->dDetailGroup = $_SESSION['detail_group'];
                 $this->dDetailItem = $_SESSION['detail_item'];
                 $this->dSPK = $_SESSION['spk_divisi'];
@@ -67,10 +66,9 @@ class Controller extends PV
 
         $whereToko = "id_toko = " . $this->userData['id_toko'];
         $_SESSION['data_toko'] = $this->db(0)->get('toko');
-        $_SESSION['data_divisi'] = $this->db(0)->get_where('divisi', "id_toko LIKE '%|" . $this->userData['id_toko'] . "|%'" . " ORDER BY sort ASC");
+        $_SESSION['data_divisi'] = $this->db(0)->get_where('divisi', "id_toko LIKE '%|" . $this->userData['id_toko'] . "|%'");
         $_SESSION['spk_divisi'] = $this->db(0)->get('spk_dvs');
-        $_SESSION['produk'] = $this->db(0)->get_order('produk', 'freq DESC');
-        $_SESSION['detail_group'] = $this->db(0)->get_order('detail_group', "sort ASC");
+        $_SESSION['detail_group'] = $this->db(0)->get('detail_group');
         $_SESSION['detail_item'] = $this->db(0)->get_order('detail_item', "detail_item ASC");
         $_SESSION['data_user'] = $this->db(0)->get_where('user', $whereToko);
 

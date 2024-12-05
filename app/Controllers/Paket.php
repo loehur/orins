@@ -1,6 +1,6 @@
 <?php
 
-class Buka_Order extends Controller
+class Paket extends Controller
 {
    public function __construct()
    {
@@ -21,17 +21,17 @@ class Buka_Order extends Controller
       if ($jenis_pelanggan == 1) {
          $this->view("Layouts/layout_main", [
             "content" => $this->v_content,
-            "title" => "Buka Order - Umum"
+            "title" => "Paket - Umum"
          ]);
       } elseif ($jenis_pelanggan == 2) {
          $this->view("Layouts/layout_main", [
             "content" => $this->v_content,
-            "title" => "Buka Order - Rekanan"
+            "title" => "Paket - Rekanan"
          ]);
       } elseif ($jenis_pelanggan == 3) {
          $this->view("Layouts/layout_main", [
             "content" => $this->v_content,
-            "title" => "Buka Order - Online"
+            "title" => "Paket - Online"
          ]);
       }
       $this->viewer($jenis_pelanggan);

@@ -175,6 +175,19 @@ class DB extends DBC
         return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno, 'db' => $this->db_name);
     }
 
+    public function count($table)
+    {
+        $query = "SELECT COUNT(*) FROM $table";
+        $result = $this->mysqli->query($query);
+
+        $reply = $result->fetch_array();
+        if ($reply) {
+            return $reply[0];
+        } else {
+            return array('query' => $query, 'info' => $this->mysqli->error);
+        }
+    }
+
     public function count_where($table, $where)
     {
         $query = "SELECT COUNT(*) FROM $table WHERE $where";

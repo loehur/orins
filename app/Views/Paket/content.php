@@ -53,7 +53,6 @@ if ($id_pelanggan_jenis == 1) {
             <div class="row mb-2">
                 <div class="col pe-0">
                     <?php if ($data['count'] <= 15) { ?>
-                        <button type="button" class="btn me-2 shadow-none btn-sm btn-danger bg-gradient py-1" data-bs-target="#exampleModalB" data-bs-toggle="modal">(&#43;) Paket</button>
                         <button type="button" class="btn me-2 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
                         <button type="button" class="btn me-2 shadow-none btn-sm btn-dark bg-gradient py-1" data-bs-target="#exampleModalJasa" data-bs-toggle="modal">(&#43;) Jasa</button>
                         <button type="button" class="btn me-2 shadow-none btn-sm btn-success bg-gradient py-1" data-bs-target="#exampleModalB" data-bs-toggle="modal">(&#43;) Barang</button>

@@ -72,11 +72,8 @@
                                     $dateTime = substr($do['insertTime'], 0, 10);
                                     $today = date("Y-m-d");
 
-                                    foreach ($this->dProduk as $dp) {
-                                        if ($dp['id_produk'] == $id_produk) {
-                                            $produk = $dp['produk'];
-                                        }
-                                    }
+                                    $dp = $data['produk'][$id_produk];
+                                    $produk = $dp['produk'];
 
                                     $divisi_arr = unserialize($do['spk_dvs']);
                                     $divisi = [];

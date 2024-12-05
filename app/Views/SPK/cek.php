@@ -19,7 +19,7 @@
                                 $detail .= $da['detail_name'] . ", ";
                             }
 
-                            foreach ($this->dProduk as $dp) {
+                            foreach ($data['produk'] as $dp) {
                                 if ($dp['id_produk'] == $id_produk) {
                                     $produk = $dp['produk'];
                                 }

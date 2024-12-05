@@ -1,10 +1,11 @@
+<?php $CONT = "Paket" ?>
 <div class="modal" id="exampleModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Produk - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
+            <form action="<?= PV::BASE_URL . $CONT ?>/add" method="POST">
                 <div class="modal-body bg-primary bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <select class="tize loadDetail" name="id_produk" required>
@@ -30,8 +31,8 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Jasa - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
-                <div class="modal-body bg-secondary bg-gradient bg-opacity-10 px-2">
+            <form action="<?= PV::BASE_URL . $CONT ?>/add" method="POST">
+                <div class="modal-body bg-primary bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <select class="tize loadDetail_Jasa" name="id_produk" required>
                             <option></option>
@@ -56,7 +57,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Barang - <b><?= $id_pelanggan_jenis == 1 ? "Umum" : "Dealer" ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add_barang" method="POST">
+            <form action="<?= PV::BASE_URL . $CONT ?>/add_barang" method="POST">
                 <div class="modal-body bg-success bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <select class="tize loadDetail_Barang" name="id_produk" required>
@@ -96,7 +97,7 @@
                 <h5 class="modal-title" id="exampleModalLabel"><small><span class="produk_harga"></span></small></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add_price/<?= $id_pelanggan_jenis ?>" method="POST">
+            <form action="<?= PV::BASE_URL . $CONT ?>/add_price/<?= $id_pelanggan_jenis ?>" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" required>Harga</label>
@@ -119,7 +120,7 @@
                 <h5 class="modal-title" id="exampleModalLabel"><b><span class="produk_harga"></span></b></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/diskon" method="POST">
+            <form action="<?= PV::BASE_URL . $CONT ?>/diskon" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" required>Diskon Rp</label>

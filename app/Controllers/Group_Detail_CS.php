@@ -36,7 +36,7 @@ class Group_Detail_CS extends Controller
       $data = $this->db(0)->get_where('detail_group', $where);
 
       foreach ($data as $key => $d) {
-         $where = "id_detail_group = " . $d['id_detail_group'] . " ORDER BY detail_item ASC";
+         $where = "id_detail_group = " . $d['id_detail_group'] . " ORDER BY id_detail_item DESC LIMIT 10";
          $data_item = $this->db(0)->get_where('detail_item', $where);
          $data[$key]['item'] = $data_item;
       }

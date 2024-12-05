@@ -15,43 +15,54 @@ class Group_Detail extends Controller
       $this->v_viewer = "Layouts/viewer";
    }
 
-   public function index()
+   public function index($parse)
    {
+      $title = "Produk - Detail Produksi";
+      if ($parse == 1) {
+         $title = "Produk - Detail Jasa";
+      }
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Set Produksi - Group Detail"
+         "title" => $title
       ]);
 
-      $this->viewer();
+      $this->viewer($parse);
    }
 
-   public function viewer()
+   public function viewer($parse)
    {
-      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => ""]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse]);
    }
 
-   public function content()
+   public function content($parse)
    {
-      $data['main'] = $this->db(0)->get('detail_group');
-      foreach ($data['main'] as $key => $d) {
-         $where = "id_detail_group = " . $d['id_detail_group'] . " ORDER BY detail_item ASC";
-         $data_item = $this->db(0)->get_where('detail_item', $where);
-         $data['main'][$key]['item'] = $data_item;
-
-         foreach ($data_item as $di) {
-            $where = "id_detail_item = " . $di['id_detail_item'];
-            $varian = $this->db(0)->get_where('detail_item_varian', $where);
-            $data['varian'][$di['id_detail_item']] = $varian;
-         }
+      if ($parse == 0) {
+         $data['main'] = $this->db(0)->get_where('detail_group', 'pj = ' . $parse . " ORDER BY id_index DESC");
+      } else {
+         $data['main'] = $this->db(0)->get_where('detail_group', 'pj = ' . $this->userData['id_toko'] . " ORDER BY id_index DESC");
       }
 
       $this->view($this->v_content, $data);
    }
 
-   function add($link = 0)
+   public function load($parse)
+   {
+      $data['parse'] = $parse;
+      $data['main'] = $this->db(0)->get_where_row('detail_group', "id_index = " . $parse);
+      $where = "id_detail_group = " . $data['main']['id_detail_group'];
+      $data['item'] = $this->db(0)->get_where('detail_item', $where);
+
+      $this->view(__CLASS__ . "/load", $data);
+   }
+
+   function add($link = 0, $pj = 0)
    {
       $group = $_POST['group'];
-      $cols = 'id_toko, id_detail_group, detail_group';
+      $cols = 'id_detail_group, detail_group, pj';
+
+      if ($pj <> 1) {
+         $pj = $this->userData['id_toko'];
+      }
 
       if ($link == 0) {
          $count = $this->db(0)->count('detail_group');
@@ -67,9 +78,9 @@ class Group_Detail extends Controller
          $id_detail_group = $_POST['id_detail_group'];
       }
 
-      $vals = $this->userData['id_toko'] . "," . $id_detail_group . ",'" . $group . "'";
+      $vals = $id_detail_group . ",'" . $group . "'," . $pj;
 
-      $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND detail_group = '" . $group . "'";
+      $whereCount = "detail_group = '" . $group . "'";
       $dataCount = $this->db(0)->count_where('detail_group', $whereCount);
       if ($dataCount <> 1) {
          $do = $this->db(0)->insertCols('detail_group', $cols, $vals);
@@ -85,27 +96,31 @@ class Group_Detail extends Controller
       }
    }
 
-   function add_varian()
+   function add_varian($parse)
    {
       $id_item = $_POST['id_item'];
       $varian = $_POST['varian'];
       $varian = explode(",", $varian);
 
-      $cols = "id_toko, id_detail_item, varian";
+      $cols = "id_detail_item, varian";
       foreach ($varian as $v) {
-         $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_detail_item = " . $id_item . " AND varian = '" . $v . "'";
+         $whereCount = "id_detail_item = " . $id_item . " AND varian = '" . $v . "'";
          $dataCount = $this->db(0)->count_where('detail_item_varian', $whereCount);
          if ($dataCount == 0) {
-            $vals = $this->userData['id_toko'] . "," . $id_item . ",'" . $v . "'";
+            $vals = $id_item . ",'" . $v . "'";
             $do = $this->db(0)->insertCols('detail_item_varian', $cols, $vals);
             if ($do['errno'] == 0) {
                $this->model('Log')->write($this->userData['user'] . " Add Varian Item Success!");
                echo $do['errno'];
+               exit();
             } else {
                print_r($do['error']);
+               exit();
             }
          } else {
+            echo "Varian sudah ada";
             $this->model('Log')->write($this->userData['user'] . " Add Varian Failed, Double Forbidden!");
+            exit();
          }
       }
    }
@@ -190,46 +205,55 @@ class Group_Detail extends Controller
    }
 
 
-   function add_item_multi($id_detail_group)
+   function add_item_multi($id_index)
    {
       $item_post = $_POST['item'];
-      $cols = 'id_toko, id_detail_group, detail_item';
+
+      $grup = $this->db(0)->get_where_row('detail_group', 'id_index = ' . $id_index);
+      $id_detail_group = $grup['id_detail_group'];
+      $cols = 'id_detail_group, detail_item';
 
       if (strlen($item_post) > 0) {
          $item = explode(",", $item_post);
          foreach ($item as $i) {
-            $vals = "'" . $this->userData['id_toko'] . "','" . $id_detail_group . "','" . $i . "'";
-            $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $i . "'";
+            $vals = "'" . $id_detail_group . "','" . $i . "'";
+            $whereCount = "id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $i . "'";
             $dataCount = $this->db(0)->count_where('detail_item', $whereCount);
             if ($dataCount == 0) {
                $do = $this->db(0)->insertCols('detail_item', $cols, $vals);
                if ($do['errno'] == 0) {
                   $this->model('Log')->write($this->userData['user'] . " Add Detail Item Success!");
                   echo $do['errno'];
+                  exit();
                } else {
                   print_r($do['error']);
+                  exit();
                }
             } else {
                $this->model('Log')->write($this->userData['user'] . " Add Detail Item Failed, Double Forbidden!");
                echo "Double Entry!";
+               exit();
             }
          }
       } else {
          $item = $item_post;
-         $vals = "'" . $this->userData['id_toko'] . "','" . $id_detail_group . "','" . $item . "'";
-         $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $item . "'";
+         $vals = "'" . $id_detail_group . "','" . $item . "'";
+         $whereCount = "id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $item . "'";
          $dataCount = $this->db(0)->count_where('detail_item', $whereCount);
          if ($dataCount == 0) {
             $do = $this->db(0)->insertCols('detail_item', $cols, $vals);
             if ($do['errno'] == 0) {
                $this->model('Log')->write($this->userData['user'] . " Add Detail Item Success!");
                echo $do['errno'];
+               exit();
             } else {
                print_r($do['error']);
+               exit();
             }
          } else {
             $this->model('Log')->write($this->userData['user'] . " Add Detail Item Failed, Double Forbidden!");
             echo "Double Entry!";
+            exit();
          }
       }
    }

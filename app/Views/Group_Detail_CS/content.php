@@ -1,52 +1,44 @@
-<main>
-    <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-4">
-        <div class="container-fluid px-4">
-            <div class="page-header-content pt-4">
-                <div class="row align-items-center justify-content-between">
-                    <div class="col-auto mt-4">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-    <!-- Main page content-->
-    <div class="container-fluid px-4">
-        <div class="card mt-n10">
-            <div class="card-body">
-                <table class="table">
-                    <tbody>
-                        <?php
-                        foreach ($data as $k => $a) {
-                            $c_item = count($a['item']);
-                        ?>
-                            <tr>
-                                <td>
-                                    <div class="row mb-3">
-                                        <div class="col-auto">
-                                            <span class="text-success fw-bold"><?= $a['detail_group'] ?></span>
-                                        </div>
-                                        <div class="col">
-                                            <button onclick="chgActionMulti(<?= $a['id_detail_group'] ?>,'<?= $a['detail_group'] ?>')" type="button" class="btn btn-sm btn-success bg-gradient" data-bs-toggle="modal" data-bs-target="#itemMulti">Tambah</button>
-                                        </div>
+<main class="container">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table">
+                <tbody>
+                    <?php
+                    foreach ($data as $k => $a) {
+                        $c_item = count($a['item']);
+                    ?>
+                        <tr>
+                            <td>
+                                <div class="row mb-3">
+                                    <div class="col-auto">
+                                        <span class="text-success fw-bold"><?= $a['detail_group'] ?></span>
                                     </div>
-                                    <div class="row mt-1">
-                                        <?php
-                                        foreach ($data[$k]['item'] as $di) { ?>
-                                            <div class="col mb-1">
-                                                <small>
-                                                    <span class="border edit px-1 text-nowrap rounded" data-id='<?= $di['id_detail_item'] ?>'><?= strtoupper($di['detail_item']) ?></span>
-                                                </small>
-                                            </div>
-                                        <?php }
-                                        ?>
+                                    <div class="col">
+                                        <button onclick="chgActionMulti(<?= $a['id_detail_group'] ?>,'<?= $a['detail_group'] ?>')" type="button" class="btn btn-sm btn-success bg-gradient" data-bs-toggle="modal" data-bs-target="#itemMulti">Tambah</button>
                                     </div>
-                                </td>
-                            </tr>
-                        <?php }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
+                                </div>
+                                <div class="row mt-1">
+                                    <?php
+                                    foreach ($data[$k]['item'] as $di) { ?>
+                                        <div class="col-auto mb-1 px-1">
+                                            <small>
+                                                <span class="border edit px-1 text-nowrap rounded" data-id='<?= $di['id_detail_item'] ?>'><?= strtoupper($di['detail_item']) ?></span>
+                                            </small>
+                                        </div>
+                                    <?php }
+                                    ?>
+                                    <div class="col mb-1">
+                                        <small>
+                                            ... dst
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php }
+                    ?>
+                </tbody>
+            </table>
         </div>
     </div>
 </main>

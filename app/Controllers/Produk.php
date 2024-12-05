@@ -15,32 +15,43 @@ class Produk extends Controller
       $this->v_viewer = "Layouts/viewer";
    }
 
-   public function index()
+   public function index($parse)
    {
+      $title = "Produk - Produksi";
+      if ($parse == 1) {
+         $title = "Produk - Jasa";
+      }
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Set Produksi - Produk"
+         "title" => $title
       ]);
 
-      $this->viewer();
+      $this->viewer($parse);
    }
 
-   public function viewer()
+   public function viewer($parse)
    {
-      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => ""]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse]);
    }
 
-   public function content()
+   public function content($parse)
    {
-      $data['produk'] = $this->db(0)->get('produk');
-      $data['detail'] = $this->db(0)->get('detail_group');
+      if ($parse == 0) {
+         $pj = $parse;
+      } else {
+         $pj = $this->userData['id_toko'];
+      }
+
+      $data['parse'] = $pj;
+      $data['produk'] = $this->db(0)->get_where('produk', 'pj = ' . $pj . ' ORDER BY freq DESC, id_produk');
+
+      $data['detail'] = $this->db(0)->get_where('detail_group', 'pj = ' . $pj);
       $data['divisi'] = $this->db(0)->get('divisi');
 
       foreach ($data['produk'] as $key => $d) {
          $where = "id_produk = " . $d['id_produk'];
          $data_item = $this->db(0)->get_where('spk_dvs', $where);
          $data['produk'][$key]['spk_dvs'] = $data_item;
-
          $data_detail = $this->db(0)->get_where('produk_detail', $where);
          $data['produk'][$key]['detail'] = $data_detail;
       }
@@ -48,13 +59,13 @@ class Produk extends Controller
       $this->view($this->v_content, $data);
    }
 
-   function add()
+   function add($parse)
    {
       $produk = $_POST['produk'];
       $detail = serialize($_POST['detail']);
 
-      $cols = 'produk, produk_detail';
-      $vals = "'" . $produk . "','" . $detail . "'";
+      $cols = 'produk, produk_detail, pj';
+      $vals = "'" . $produk . "','" . $detail . "', " . $parse;
 
       $whereCount = "UPPER(produk) = '" . strtoupper($produk) . "' AND produk_detail = '" . $detail . "'";
       $dataCount = $this->db(0)->count_where('produk', $whereCount);
@@ -79,10 +90,10 @@ class Produk extends Controller
       $id_produk = $_POST['id_produk_harga'];
       $detail = serialize($_POST['detail_group']);
 
-      $cols = 'id_toko, id_produk, detail';
-      $vals = "'" . $this->userData['id_toko'] . "','" . $id_produk . "','" . $detail . "'";
+      $cols = 'id_produk, detail';
+      $vals = "'" . $id_produk . "','" . $detail . "'";
 
-      $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_produk = " . $id_produk . " AND detail = '" . $detail . "'";
+      $whereCount = "id_produk = " . $id_produk . " AND detail = '" . $detail . "'";
       $dataCount = $this->db(0)->count_where('produk_detail', $whereCount);
       if ($dataCount == 0) {
          $do = $this->db(0)->insertCols('produk_detail', $cols, $vals);
@@ -115,7 +126,7 @@ class Produk extends Controller
 
    function add_spk($id_produk)
    {
-      $cols = 'id_toko, id_produk, id_divisi, detail_groups, cm';
+      $cols = 'id_produk, id_divisi, detail_groups, cm';
       $divisi = $_POST['divisi'];
       $cm = (isset($_POST['cm'])) ? $_POST['cm'] : 0;
       $detail_groups = serialize($_POST['detail_group']);
@@ -123,8 +134,8 @@ class Produk extends Controller
       $result = 0;
 
       if (count($_POST['detail_group']) > 0) {
-         $vals = "'" . $this->userData['id_toko'] . "','" . $id_produk . "','" . $divisi . "','" . $detail_groups . "'," . $cm;
-         $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_produk = '" . $id_produk . "' AND id_divisi = '" . $divisi . "'";
+         $vals = $id_produk . ",'" . $divisi . "','" . $detail_groups . "'," . $cm;
+         $whereCount = "id_produk = '" . $id_produk . "' AND id_divisi = '" . $divisi . "'";
          $dataCount = $this->db(0)->count_where('spk_dvs', $whereCount);
          if ($dataCount == 0) {
             $do = $this->db(0)->insertCols('spk_dvs', $cols, $vals);
@@ -136,7 +147,7 @@ class Produk extends Controller
             }
          } else {
             $set = "detail_groups = '" . $detail_groups . "', cm = " . $cm;
-            $where = "id_toko = '" . $this->userData['id_toko'] . "' AND id_produk = '" . $id_produk . "' AND id_divisi = '" . $divisi . "'";
+            $where = "id_produk = '" . $id_produk . "' AND id_divisi = '" . $divisi . "'";
             $update = $this->db(0)->update("spk_dvs", $set, $where);
             $result = $update['errno'];
          }
@@ -222,8 +233,7 @@ class Produk extends Controller
 
    function load_detail($id_produk)
    {
-      $data['produk'] = $this->db(0)->get_where_row('produk', "id_produk =" . $id_produk);
-      $dp = $data['produk'];
+      $dp = $this->db(0)->get_where_row('produk', 'id_produk = ' . $id_produk);
       $detail = unserialize($dp['produk_detail']);
       $dg = [];
 
