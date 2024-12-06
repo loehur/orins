@@ -11,15 +11,10 @@
                 <?php foreach ($data['stok'] as $ds) {
                     if ($ds['qty'] > 0) { ?>
                         <tr>
-                            <td class="fw-bold"><?= $ds['qty'] ?></td>
-                            <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?></td>
-                            <td><?= $ds['sn'] ?></td>
                             <td class="text-end">
-                                <form action="<?= PV::BASE_URL ?>Buka_Order/add_barang/<?= $data['id_pelanggan_jenis'] ?>" class="mb-0" method="POST">
-                                    <input type="hidden" name="sds" value="<?= $ds['sds'] ?>">
-                                    <input type="hidden" name="sn" value="<?= $ds['sn'] ?>">
+                                <form action="<?= PV::BASE_URL ?>Paket/add_barang" class="mb-0" method="POST">
                                     <input type="hidden" name="kode" value="<?= $ds['kode_barang'] ?>">
-                                    <input type="number" style="width: 50px;" max="<?= $ds['qty'] ?>" value="1" name="qty" class="border-0 h-100 rounded text-center"> <button data-bs-dismiss="modal" type="submit" class="btn btn-sm btn-primary">Tambah</button>
+                                    <input type="number" style="width: 50px;" value="1" name="qty" class="border-0 h-100 rounded text-center"> <button data-bs-dismiss="modal" type="submit" class="btn btn-sm btn-primary">Tambah</button>
                                 </form>
                             </td>
                         </tr>

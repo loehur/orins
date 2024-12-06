@@ -1,4 +1,4 @@
-<form class="aff_form" action="<?= PV::BASE_URL ?>Buka_Order/add/<?= $data['id_toko'] ?>" method="POST">
+<form class="aff_form" action="<?= PV::BASE_URL ?>Paket/add/<?= $data['id_toko'] ?>" method="POST">
     <div class="modal-body px-2 bg-warning-soft">
         <div class="mb-3">
             <select class="tize loadDetail" name="id_produk" required>

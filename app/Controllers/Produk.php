@@ -240,7 +240,7 @@ class Produk extends Controller
       foreach ($this->dDetailGroup as $ddg) {
          foreach ($detail as $dt) {
             if ($dt == $ddg['id_index']) {
-               array_push($dg, ["id" => $dt, "detail" => $ddg['detail_group']]);
+               array_push($dg, ["id" => $dt, "detail" => $ddg['detail_group'], "note" => $ddg['note']]);
             }
          }
       }

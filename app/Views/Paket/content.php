@@ -4,16 +4,33 @@
 $pelanggan_jenis = "";
 $id_pelanggan_jenis = $data['id_jenis_pelanggan'];
 
-if ($id_pelanggan_jenis == 1) {
-    $pelanggan_jenis = "Umum";
-} else {
-    $pelanggan_jenis = "Rekanan";
+switch ($id_pelanggan_jenis) {
+    case 1:
+        $pelanggan_jenis = "Umum";
+        break;
+    case 2:
+        $pelanggan_jenis = "R/D";
+        break;
+    default:
+        $pelanggan_jenis = "Online";
+        break;
 }
 ?>
 
 <main class="container">
     <!-- Main page content-->
     <div class="container px-2">
+        <div class="row mb-2">
+            <div class="col px-0">
+                <select name="paket" class="tize border-0" required id="paket">
+                    <option value=""></option>
+                    <?php foreach ($data['main'] as $k => $a) { ?>
+                        <option value="<?= $k ?>" <?= $data['ref'] == $k ? 'selected' : '' ?>><?= $a['nama'] ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+
         <?php
         if (count($data['errorID']) > 0) {
             echo "<br><small class='text-danger'>Order Data Error! yang mungkin disebabkan oleh jaringan terputus atau pengaturan produk yang tidak valid:</small><br><hr class='my-1'>";
@@ -21,29 +38,21 @@ if ($id_pelanggan_jenis == 1) {
                 - ID#<?= $ei['id'] ?> <?= $ei['produk'] ?> <button class="btn btn-sm btn-outline-danger delError border-0 shadow-sm py-1 mb-1 ms-1" data-id="<?= $ei['id'] ?>"><b>Hapus</b></button><br>
             <?php }
         } else {
+            $nama_paket = isset($data['main'][$data['ref']]['nama']) ? $data['main'][$data['ref']]['nama'] : "";
+            $harga_paket = isset($data['main'][$data['ref']]['harga_' . $id_pelanggan_jenis]) ? $data['main'][$data['ref']]['harga_' . $id_pelanggan_jenis] : "";
             ?>
             <div class="row <?= count($data['order']) == 0 ? "d-none" : "" ?>">
                 <div class="col px-2">
-                    <form action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
+                    <form action="<?= PV::BASE_URL ?>Paket/save/<?= $id_pelanggan_jenis ?>/<?= $data['ref'] ?>" method="POST">
                         <div class="row pb-2">
                             <div class="col px-1" style="max-width: 300px;">
-                                <select class="tize shadow-none" name="id_pelanggan" required>
-                                    <option value="">Customer Name (<?= $pelanggan_jenis ?>)</option>
-                                    <?php foreach ($data['pelanggan'] as $p) { ?>
-                                        <option value="<?= $p['id_pelanggan'] ?>"><?= strtoupper($p['nama']) ?> | <?= $p['no_hp'] ?></option>
-                                    <?php } ?>
-                                </select>
+                                <input class="form-control form-control-sm" value="<?= $nama_paket ?>" required name="paket" placeholder="Nama Paket">
                             </div>
                             <div class="col px-1" style="max-width: 300px;">
-                                <select class="tize shadow-none" name="id_karyawan" required>
-                                    <option value="">CS Name</option>
-                                    <?php foreach ($data['karyawan'] as $k) { ?>
-                                        <option value="<?= $k['id_karyawan'] ?>"><?= strtoupper($k['nama']) ?></option>
-                                    <?php } ?>
-                                </select>
+                                <input type="number" required class="form-control form-control-sm text-end" value="<?= $harga_paket ?>" name="harga_paket" placeholder="Harga">
                             </div>
                             <div class="col-auto px-1 mt-auto p-0">
-                                <button type="submit" class="btn shadow-none btn-success bg-gradient w-100">Proses</button>
+                                <button type="submit" class="btn btn-sm shadow-none btn-danger bg-gradient w-100">Simpan</button>
                             </div>
                         </div>
                     </form>
@@ -105,12 +114,16 @@ if ($id_pelanggan_jenis == 1) {
                                         $akum_diskon += $disk ?>
                                     <?php }
 
+                                    $classKeyPrice = 'text-secondary';
+                                    if ($do['price_locker'] == 1) {
+                                        $classKeyPrice = 'text-danger';
+                                    }
                                     ?>
                                     <tr>
                                         <td class="">
                                             <table class="table table-sm w-100 mb-0">
                                                 <tr class="<?= $do['id_afiliasi'] == 0 ? 'bg-primary' : 'bg-warning' ?> bg-gradient bg-opacity-10">
-                                                    <td class="ps-2"><span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span></td>
+                                                    <td class="ps-2"><span class="text-nowrap"><span data-id="<?= $id_order_data ?>" data-primary="id_order_data" data-tb="paket_order" data-ref="<?= $data['ref'] ?>" class="price_key <?= $classKeyPrice ?>" style="cursor: pointer;"><i class="fa-solid fa-key"></i></span> <small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span></td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                         <small>
                                                             <span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= $do['jumlah'] ?></span>x
@@ -227,11 +240,15 @@ if ($id_pelanggan_jenis == 1) {
 
         <div class="row mt-2">
             <div class="col border border-bottom-0 px-0">
-                <table class="table table-sm m-0 text-sm">
+                <table class="table table-sm m-0">
                     <?php foreach ($data['order_barang'] as $db) {
+                        $classKeyPrice = 'text-secondary';
+                        if ($db['price_locker'] == 1) {
+                            $classKeyPrice = 'text-danger';
+                        }
                         $dp = $data['barang'][$db['kode_barang']]; ?>
                         <tr>
-                            <td class="text-secondary text-end ps-2">#<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?></td>
+                            <td class="text-secondary text-end ps-2"><span data-id="<?= $db['id'] ?>" data-primary="id" data-tb="paket_mutasi" data-ref="<?= $data['ref'] ?>" class="price_key <?= $classKeyPrice ?>" style="cursor: pointer;"><i class="fa-solid fa-key"></i></span> #<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger fw-bold'>S</span>" : "" ?></td>
                             <td><?= trim($dp['brand'] . " " . $dp['model'] . " " . $dp['varian1'] . " " . $dp['varian2'])  ?><br><?= $db['sn'] ?></td>
                             <td class="text-end"><?= number_format($db['qty']) ?>x<br>@<?= number_format($dp['harga_' . $id_pelanggan_jenis]) ?></td>
                             <td class="text-end pe-2"><?= number_format($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) ?></td>
@@ -262,7 +279,7 @@ if ($id_pelanggan_jenis == 1) {
 
     $("button.delError").click(function() {
         var id_ = $(this).attr('data-id');
-        $.post("<?= PV::BASE_URL ?>Buka_Order/delete_error", {
+        $.post("<?= PV::BASE_URL ?>Paket/delete_error", {
                 id: id_
             },
             function() {
@@ -272,18 +289,44 @@ if ($id_pelanggan_jenis == 1) {
 
     $('select.loadDetail').on('change', function() {
         var produk = this.value;
-        $("div#detail").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+        if (produk != "") {
+            $("div#detail").load('<?= PV::BASE_URL ?>Paket/load_detail/' + produk);
+        }
     });
+
+    $('.price_key').click(function() {
+        var tb_ = $(this).attr('data-tb');
+        var id_ = $(this).attr('data-id');
+        var ref_ = $(this).attr('data-ref');
+        var primary_ = $(this).attr('data-primary');
+        $.post("<?= PV::BASE_URL ?>Paket/price_key", {
+                id: id_,
+                tb: tb_,
+                ref: ref_,
+                primary: primary_
+            },
+            function(res) {
+                if (res == 0) {
+                    content(<?= $id_pelanggan_jenis ?>, ref_);
+                } else {
+                    alert(res);
+                }
+            });
+    })
 
     $('select.loadDetail_Jasa').on('change', function() {
         var produk = this.value;
-        $("div#detail_Jasa").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+        if (produk != "") {
+            $("div#detail_Jasa").load('<?= PV::BASE_URL ?>Paket/load_detail/' + produk);
+        }
     });
 
 
     $('select.loadDetail_Barang').on('change', function() {
         var produk = this.value;
-        $("div#detail_barang").load('<?= PV::BASE_URL ?>Buka_Order/load_detail_barang/' + produk + '/<?= $id_pelanggan_jenis ?>');
+        if (produk != "") {
+            $("div#detail_barang").load('<?= PV::BASE_URL ?>Paket/load_detail_barang/' + produk + '/<?= $id_pelanggan_jenis ?>');
+        }
     });
 
     $("span.tetapkanHarga").click(function() {
@@ -303,20 +346,20 @@ if ($id_pelanggan_jenis == 1) {
 
     $("a.aff").click(function() {
         var target = $(this).attr("data-id");
-        $("div#aff").load('<?= PV::BASE_URL ?>Buka_Order/load_aff/' + target);
+        $("div#aff").load('<?= PV::BASE_URL ?>Paket/load_aff/' + target);
     })
 
     $("a.deleteItem").click(function() {
         var id = $(this).attr("data-id_order");
         $.ajax({
-            url: "<?= PV::BASE_URL ?>Buka_Order/deleteOrder",
+            url: "<?= PV::BASE_URL ?>Paket/deleteOrder",
             data: {
                 id_order: id
             },
             type: "POST",
             success: function(res) {
                 if (res == 0) {
-                    content();
+                    content(<?= $id_pelanggan_jenis ?>, <?= $data['ref'] ?>);
                 } else {
                     alert(res);
                 }
@@ -327,14 +370,14 @@ if ($id_pelanggan_jenis == 1) {
     $("a.deleteItemBarang").click(function() {
         var id = $(this).attr("data-id");
         $.ajax({
-            url: "<?= PV::BASE_URL ?>Buka_Order/deleteOrderBarang",
+            url: "<?= PV::BASE_URL ?>Paket/deleteOrderBarang",
             data: {
                 id: id
             },
             type: "POST",
             success: function(res) {
                 if (res == 0) {
-                    content();
+                    content(<?= $id_pelanggan_jenis ?>, <?= $data['ref'] ?>);
                 } else {
                     alert(res);
                 }
@@ -350,7 +393,7 @@ if ($id_pelanggan_jenis == 1) {
             type: $(this).attr("method"),
             success: function(res) {
                 if (res == 0) {
-                    content();
+                    content(<?= $id_pelanggan_jenis ?>, <?= $data['ref'] ?>);
                 } else if (res == 1) {
                     var parse = $("select[name=id_pelanggan]").val();
                     location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + parse;
@@ -383,7 +426,7 @@ if ($id_pelanggan_jenis == 1) {
                 click = 0;
             } else {
                 $.ajax({
-                    url: '<?= PV::BASE_URL ?>Buka_Order/updateCell_N',
+                    url: '<?= PV::BASE_URL ?>Paket/updateCell_N',
                     data: {
                         'id': id,
                         'value': value_after,
@@ -391,7 +434,7 @@ if ($id_pelanggan_jenis == 1) {
                     type: 'POST',
                     success: function(res) {
                         if (res == 0) {
-                            content();
+                            content(<?= $id_pelanggan_jenis ?>, <?= $data['ref'] ?>);
                         } else {
                             alert(res);
                         }
@@ -400,6 +443,15 @@ if ($id_pelanggan_jenis == 1) {
             }
         });
     });
+
+    $("#paket").change(function() {
+        var get = $(this).val();
+        if (get != "") {
+            content(<?= $id_pelanggan_jenis ?>, get);
+        } else {
+            content(<?= $id_pelanggan_jenis ?>, '');
+        }
+    })
 
     $(".cell_edit").on('dblclick', function() {
         click = click + 1;
@@ -436,7 +488,7 @@ if ($id_pelanggan_jenis == 1) {
                 click = 0;
             } else {
                 $.ajax({
-                    url: '<?= PV::BASE_URL ?>Buka_Order/update_catatan',
+                    url: '<?= PV::BASE_URL ?>Paket/update_catatan',
                     data: {
                         'id': id,
                         'mode': mode,

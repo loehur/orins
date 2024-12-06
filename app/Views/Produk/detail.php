@@ -3,7 +3,7 @@
     <select name="detail_group[]" multiple class="tize border-0 w-100" required id="barang">
         <option></option>
         <?php foreach ($data as $gd) { ?>
-            <option value="<?= $gd['id'] ?>"> <?= $gd['detail'] ?></option>
+            <option value="<?= $gd['id'] ?>"> <?= $gd['detail'] ?> <?= $gd['note'] <> "" ? "(" . $gd['note'] . ")" : "" ?></option>
         <?php } ?>
     </select>
 </div>

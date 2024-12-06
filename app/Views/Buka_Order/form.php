@@ -24,6 +24,39 @@
     </div>
 </div>
 
+<div class="modal" id="exampleModalPaket">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Pilih Paket - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= PV::BASE_URL ?>Buka_Order/add_paket/<?= $id_pelanggan_jenis ?>" method="POST">
+                <div class="modal-body bg-danger bg-gradient bg-opacity-10 px-2">
+                    <div class="row mb-2">
+                        <div class="col">
+                            <select class="tize" name="id" required>
+                                <option></option>
+                                <?php foreach ($data['paket'] as $dp) { ?>
+                                    <option value="<?= $dp['id'] ?>"><?= $dp['nama'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mx-0 mb-3">
+                        <div class="col text-center px-0 m-auto" style="max-width: 100px;">
+                            <label>Jumlah</label><br>
+                            <input type="number" min="1" value="1" name="jumlah" class="form-control float-end text-center border-0 shadow-none" id="qtyIn" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill" data-bs-dismiss="modal">Tambah</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal" id="exampleModalJasa">
     <div class="modal-dialog">
         <div class="modal-content">

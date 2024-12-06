@@ -8,7 +8,7 @@
                     <select name="item_group" class="tize border-0" required id="item_group">
                         <option value=""></option>
                         <?php foreach ($data['main'] as $k => $a) { ?>
-                            <option value="<?= $a['id_index'] ?>"><?= $a['detail_group'] ?></option>
+                            <option value="<?= $a['id_index'] ?>" <?= $a['id_index'] == $data['id_index'] ? "selected" : "" ?>><?= $a['detail_group'] ?> <?= $a['note'] <> "" ? "(" . $a['note'] . ")" : "" ?> </option>
                         <?php } ?>
                     </select>
                 </div>
@@ -31,11 +31,17 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah Kelompok Detail</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Group_Detail/add" method="POST">
+            <form class="ajax" action="<?= PV::BASE_URL ?>Group_Detail/add/0/<?= $data['pj'] ?>" method="POST">
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Kelompok Detail</label>
-                        <input type="text" name="group" required class="form-control">
+                    <div class="row">
+                        <div class="col">
+                            <label class="form-label">Kelompok Detail</label>
+                            <input type="text" name="group" required class="form-control">
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Keterangan</label>
+                            <input type="text" name="note" required class="form-control">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -54,11 +60,19 @@
                 <h5 class="modal-title" id="exampleModalLabel">Menambah LINK Kelompok Detail</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Group_Detail/add/1" method="POST">
+            <form class="ajax" action="<?= PV::BASE_URL ?>Group_Detail/add/1/<?= $data['pj'] ?>" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Kelompok Detail</label>
-                        <input type="text" name="group" required class="form-control">
+                        <div class="row">
+                            <div class="col">
+                                <label class="form-label">Kelompok Detail</label>
+                                <input type="text" name="group" required class="form-control">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Keterangan</label>
+                                <input type="text" name="note" required class="form-control">
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Link Kelompok Detail</label>
@@ -85,9 +99,13 @@
 <script>
     $(document).ready(function() {
         $('select.tize').selectize();
+        var id_index = $data['id_index'];
+        if (typeof id_index != "undefined") {
+            load(<?= $data['id_index'] ?>);
+        }
     });
 
-    $("form").on("submit", function(e) {
+    $("form.ajax").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
             url: $(this).attr('action'),
@@ -95,7 +113,7 @@
             type: $(this).attr("method"),
             success: function(result) {
                 if (result == 0) {
-                    content();
+                    content(<?= $data['pj'] ?>);
                 } else {
                     alert(result);
                 }
@@ -107,6 +125,8 @@
         var get = $(this).val();
         if (get != "") {
             load(get);
+        } else {
+            content(<?= $data['pj'] ?>);
         }
     })
 

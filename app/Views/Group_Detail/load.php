@@ -8,6 +8,9 @@ $c_item = count($data['item']);
             <span class="edit_grup pe-2 text-nowrap fw-bold text-success" data-id='<?= $a['id_index'] ?>'><?= $a['detail_group'] ?></span>
         </td>
         <td class="align-middle">
+            <span class="cell_edit pe-2 text-nowrap" data-id='<?= $a['id_index'] ?>' data-tb="detail_group" data-primary="id_index" data-col="note"><?= $a['note'] == "" ? "[ ]" : $a['note'] ?></span>
+        </td>
+        <td class="align-middle">
             <?php
             if ($c_item == 0) { ?>
                 <span style="cursor: pointer;" data-id="<?= $a['id_index'] ?>" class="deleteGrup text-danger"><i class=" fa-regular fa-circle-xmark"></i></span>
@@ -317,6 +320,73 @@ $c_item = count($data['item']);
                             load(<?= $data['parse'] ?>);
                         } else {
                             alert(res);
+                        }
+                    },
+                });
+            }
+        });
+    });
+
+    var click = 0;
+    $(".cell_edit").on('dblclick', function() {
+        click = click + 1;
+        if (click != 1) {
+            return;
+        }
+
+        var id = $(this).attr('data-id');
+        var primary = $(this).attr('data-primary');
+        var col = $(this).attr('data-col');
+        var tb = $(this).attr('data-tb');
+        var tipe = $(this).attr('data-tipe');
+        var value = $(this).html();
+        var value_before = value;
+        if (value == "[ ]") {
+            value = "";
+        }
+        var el = $(this);
+        var width = el.parent().width();
+        var align = "left";
+        if (tipe == "number") {
+            align = "right";
+        }
+
+        el.parent().css("width", width);
+        el.html("<input required type=" + tipe + " style='outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value='" + value + "'>");
+
+        $("#value_").focus();
+        $('#value_').keypress(function(e) {
+            if (e.which == 13) {
+                $(this).blur();
+            }
+        });
+        $("#value_").focusout(function() {
+            var value_after = $(this).val();
+            if (value_after === value_before) {
+                el.html(value);
+                click = 0;
+            } else {
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>Functions/updateCell',
+                    data: {
+                        'id': id,
+                        'value': value_after,
+                        'col': col,
+                        'primary': primary,
+                        'tb': tb
+                    },
+                    type: 'POST',
+                    dataType: 'html',
+                    success: function(res) {
+                        click = 0;
+                        if (res == 0) {
+                            if (value_after == "") {
+                                el.html("[ ]");
+                            } else {
+                                el.html(value_after);
+                            }
+                        } else {
+                            el.html(res);
                         }
                     },
                 });

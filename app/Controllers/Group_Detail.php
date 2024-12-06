@@ -15,7 +15,7 @@ class Group_Detail extends Controller
       $this->v_viewer = "Layouts/viewer";
    }
 
-   public function index($parse)
+   public function index($parse, $id_index = "")
    {
       $title = "Produk - Detail Produksi";
       if ($parse == 1) {
@@ -26,16 +26,19 @@ class Group_Detail extends Controller
          "title" => $title
       ]);
 
-      $this->viewer($parse);
+      $this->viewer($parse, $id_index);
    }
 
-   public function viewer($parse)
+   public function viewer($parse, $id_index)
    {
-      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse, "parse_2" => $id_index]);
    }
 
-   public function content($parse)
+   public function content($parse, $id_index = "")
    {
+      $data['pj'] = $parse;
+      $data['id_index'] = $id_index;
+
       if ($parse == 0) {
          $data['main'] = $this->db(0)->get_where('detail_group', 'pj = ' . $parse . " ORDER BY id_index DESC");
       } else {
@@ -58,9 +61,10 @@ class Group_Detail extends Controller
    function add($link = 0, $pj = 0)
    {
       $group = $_POST['group'];
-      $cols = 'id_detail_group, detail_group, pj';
+      $note = $_POST['note'];
+      $cols = 'id_detail_group, detail_group, pj, note';
 
-      if ($pj <> 1) {
+      if ($pj == 1) {
          $pj = $this->userData['id_toko'];
       }
 
@@ -77,22 +81,13 @@ class Group_Detail extends Controller
       } else {
          $id_detail_group = $_POST['id_detail_group'];
       }
-
-      $vals = $id_detail_group . ",'" . $group . "'," . $pj;
-
-      $whereCount = "detail_group = '" . $group . "'";
-      $dataCount = $this->db(0)->count_where('detail_group', $whereCount);
-      if ($dataCount <> 1) {
-         $do = $this->db(0)->insertCols('detail_group', $cols, $vals);
-         if ($do['errno'] == 0) {
-            $this->model('Log')->write($this->userData['user'] . " Add Detail Group Success!");
-            echo $do['errno'];
-         } else {
-            print_r($do['error']);
-         }
+      $vals = $id_detail_group . ",'" . $group . "'," . $pj . ",'" . $note . "'";
+      $do = $this->db(0)->insertCols('detail_group', $cols, $vals);
+      if ($do['errno'] == 0) {
+         $this->model('Log')->write($this->userData['user'] . " Add Detail Group Success!");
+         die($do['errno']);
       } else {
-         $this->model('Log')->write($this->userData['user'] . " Add Detail Group Failed, Double Forbidden!");
-         echo "Double Entry!";
+         die($do['error']);
       }
    }
 

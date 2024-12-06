@@ -46,6 +46,7 @@ class Buka_Order extends Controller
    {
       $data['produk'] = $this->db(0)->get_where('produk', 'pj = 0 ORDER BY freq DESC, id_produk');
       $data['produk_jasa'] = $this->db(0)->get_where('produk', "pj = " . $this->userData['id_toko'] . " ORDER BY freq DESC, id_produk");
+      $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
 
       $data['id_jenis_pelanggan'] = $parse;
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
@@ -126,17 +127,44 @@ class Buka_Order extends Controller
       echo $do['errno'] == 0 ? 1 : $do['error'];
    }
 
-   function add($afiliasi = 0)
+   function add_paket($id_pelanggan_jenis)
+   {
+      $id = $_POST['id'];
+      $paket_group = $this->userData['id_toko'] . date("ymdHis") . rand(0, 9);
+      $data['order'] = $this->db(0)->get_where("paket_order", "paket_ref = '" . $id . "'");
+      $data['mutasi'] = $this->db(0)->get_where("paket_mutasi", "paket_ref = '" . $id . "'");
+
+      foreach ($data['order'] as $do) {
+         $_POST['id_produk'] = $do['id_produk'];
+         $_POST['note'] = $do['note'];
+         $_POST['note_spk'] = $do['note_spk'];
+         $_POST['detail_harga'] = $do['detail_harga'];
+         $_POST['produk_code'] = $do['produk_code'];
+         $_POST['produk_detail'] = $do['produk_detail'];
+         $this->add($do['id_afiliasi'], $id, $paket_group, $do['price_locker']);
+      }
+
+      foreach ($data['mutasi'] as $dm) {
+         $_POST['kode'] = $dm['kode_barang'];
+         $_POST['qty'] = $dm['qty'];
+         $_POST['sds'] = $dm['sds'];
+         $_POST['sn'] = $dm['sn'];
+
+         $this->add_barang($id_pelanggan_jenis, $dm['price_locker'], $id);
+      }
+   }
+
+   function add($afiliasi = 0, $paket_ref = '', $paket_group = '', $price_locker = 0)
    {
       $this->dataSynchrone();
       $this->data_order();
 
       $id_produk = $_POST['id_produk'];
-      //update freq
-      $this->db(0)->update("produk", "freq = freq+1", "id_produk = " . $id_produk);
-
       $jumlah = $_POST['jumlah'];
       $note = $_POST['note'];
+
+      //update freq
+      $this->db(0)->update("produk", "freq = freq+1", "id_produk = " . $id_produk);
 
       $where_idProduk = "id_produk = " . $id_produk;
       $detailHarga = [];
@@ -147,10 +175,14 @@ class Buka_Order extends Controller
          exit();
       }
 
-      $spkNote = [];
-      foreach ($this->dSPK as $sd) {
-         if ($sd['id_produk'] == $id_produk) {
-            $spkNote[$sd['id_divisi']] = $_POST['d-' . $sd['id_divisi']];
+      if (isset($_POST['note_spk'])) {
+         $spkNote = unserialize($_POST['note_spk']);
+      } else {
+         $spkNote = [];
+         foreach ($this->dSPK as $sd) {
+            if ($sd['id_produk'] == $id_produk) {
+               $spkNote[$sd['id_divisi']] = $_POST['d-' . $sd['id_divisi']];
+            }
          }
       }
 
@@ -163,92 +195,104 @@ class Buka_Order extends Controller
       $detail_code = "";
       $get_detail_item = [];
 
-      foreach ($data as $d) {
-         $groupName = "";
-         $detail_item = [];
+      if (isset($_POST['produk_detail'])) {
+         $produk_detail_ = unserialize($_POST['produk_detail']);
+      } else {
+         foreach ($data as $d) {
+            $groupName = "";
+            $detail_item = [];
 
-         $id_detail_item_ex = explode("#", $_POST['f-' . $d]);
-         $id_item_ex = explode("-", $id_detail_item_ex[0]);
+            $id_detail_item_ex = explode("#", $_POST['f-' . $d]);
+            $id_item_ex = explode("-", $id_detail_item_ex[0]);
 
-         //update freq
-         $this->db(0)->update("detail_item", "freq = freq+1", "id_detail_item = " . $id_item_ex[0]);
+            //update freq
+            $this->db(0)->update("detail_item", "freq = freq+1", "id_detail_item = " . $id_item_ex[0]);
 
-         $get_detail_item[$d]['id'] = $id_item_ex[0];
-         $get_detail_item[$d]['name'] = $id_item_ex[1];
+            $get_detail_item[$d]['id'] = $id_item_ex[0];
+            $get_detail_item[$d]['name'] = $id_item_ex[1];
 
-         if ($id_detail_item_ex[1] <> "") {
-            $varian_ex = explode("-", $id_detail_item_ex[1]);
-            $get_detail_item[$d]['id_varian'] = $varian_ex[0];
-            $get_detail_item[$d]['varian'] = $varian_ex[1];
-            $detail_item = $get_detail_item[$d]['name'] . "-" . $get_detail_item[$d]['varian'];
-         } else {
-            $get_detail_item[$d]['id_varian'] = "";
-            $get_detail_item[$d]['varian'] = "";
-            $detail_item = $get_detail_item[$d]['name'];
-         }
-
-         foreach ($this->dDetailGroup as $dg) {
-            if ($dg['id_index'] == $d) {
-               $groupName = $dg['detail_group'];
+            if ($id_detail_item_ex[1] <> "") {
+               $varian_ex = explode("-", $id_detail_item_ex[1]);
+               $get_detail_item[$d]['id_varian'] = $varian_ex[0];
+               $get_detail_item[$d]['varian'] = $varian_ex[1];
+               $detail_item = $get_detail_item[$d]['name'] . "-" . $get_detail_item[$d]['varian'];
+            } else {
+               $get_detail_item[$d]['id_varian'] = "";
+               $get_detail_item[$d]['varian'] = "";
+               $detail_item = $get_detail_item[$d]['name'];
             }
-         }
 
-         if ($groupName == "" || $detail_item == "") {
-            echo "Error! diperlukan Synchrone Data!";
-            exit();
-         }
-
-         $produk_detail_[$d] = array(
-            "group_name" => $groupName,
-            "detail_id" =>   $get_detail_item[$d]['id'] . "_" .  $get_detail_item[$d]['id_varian'],
-            "detail_name" => $detail_item,
-         );
-
-         $detail_code .= "-" .  $get_detail_item[$d]['id'] . "&" .  $get_detail_item[$d]['id_varian'];
-      }
-
-      foreach ($listDetail as $key_l => $ldt) {
-         $c_harga = "";
-         $c_barang = "";
-         $g = "";
-         $n_b = "";
-         $n_v = "";
-
-         $detail__ = unserialize($ldt['detail']);
-         foreach ($detail__ as $d_L) {
-            foreach ($data as $d) {
-               if ($d_L == $d) {
-                  $c_harga .= "#" . $get_detail_item[$d]['id'] . "-";
-                  $c_barang .= "#" . $get_detail_item[$d]['id'] . "&" . $get_detail_item[$d]['id_varian'] . "-";
-                  $n_b .= $get_detail_item[$d]['name'] . " ";
-
-                  if (strlen($get_detail_item[$d]['varian']) > 0) {
-                     $n_v .= $get_detail_item[$d]['name'] . "-" . $get_detail_item[$d]['varian'] . " ";
-                  } else {
-                     $n_v .= $get_detail_item[$d]['name'] . " ";
-                  }
-                  $g .= "#" . $d . "-";
+            foreach ($this->dDetailGroup as $dg) {
+               if ($dg['id_index'] == $d) {
+                  $groupName = $dg['detail_group'];
                }
             }
 
+            if ($groupName == "" || $detail_item == "") {
+               echo "Error! diperlukan Synchrone Data!";
+               exit();
+            }
 
-            $n_b = preg_replace('!\s+!', ' ', $n_b);
-            $n_v = preg_replace('!\s+!', ' ', $n_v);
-
-            $detailHarga[$key_l] = array(
-               "c_h" => $c_harga, //code harga
-               "c_b" => $c_barang, // code_barang
-               "n_b" => $n_b, // nama barang
-               "n_v" => $n_v, // nama barang varian
-               "g" => $g, // group komponen
-               "h" => 0, // harga
-               "d" => 0, // diskon
+            $produk_detail_[$d] = array(
+               "group_name" => $groupName,
+               "detail_id" =>   $get_detail_item[$d]['id'] . "_" .  $get_detail_item[$d]['id_varian'],
+               "detail_name" => $detail_item,
             );
+
+            $detail_code .= "-" .  $get_detail_item[$d]['id'] . "&" .  $get_detail_item[$d]['id_varian'];
          }
       }
 
+      if (isset($_POST['detail_harga'])) {
+         $detailHarga = unserialize($_POST['detail_harga']);
+      } else {
+         foreach ($listDetail as $key_l => $ldt) {
+            $c_harga = "";
+            $c_barang = "";
+            $g = "";
+            $n_b = "";
+            $n_v = "";
 
-      $produk_code .= $detail_code;
+            $detail__ = unserialize($ldt['detail']);
+            foreach ($detail__ as $d_L) {
+               foreach ($data as $d) {
+                  if ($d_L == $d) {
+                     $c_harga .= "#" . $get_detail_item[$d]['id'] . "-";
+                     $c_barang .= "#" . $get_detail_item[$d]['id'] . "&" . $get_detail_item[$d]['id_varian'] . "-";
+                     $n_b .= $get_detail_item[$d]['name'] . " ";
+
+                     if (strlen($get_detail_item[$d]['varian']) > 0) {
+                        $n_v .= $get_detail_item[$d]['name'] . "-" . $get_detail_item[$d]['varian'] . " ";
+                     } else {
+                        $n_v .= $get_detail_item[$d]['name'] . " ";
+                     }
+                     $g .= "#" . $d . "-";
+                  }
+               }
+
+
+               $n_b = preg_replace('!\s+!', ' ', $n_b);
+               $n_v = preg_replace('!\s+!', ' ', $n_v);
+
+               $detailHarga[$key_l] = array(
+                  "c_h" => $c_harga, //code harga
+                  "c_b" => $c_barang, // code_barang
+                  "n_b" => $n_b, // nama barang
+                  "n_v" => $n_v, // nama barang varian
+                  "g" => $g, // group komponen
+                  "h" => 0, // harga
+                  "d" => 0, // diskon
+               );
+            }
+         }
+      }
+
+      if (isset($_POST['produk_code'])) {
+         $produk_code = $_POST['produk_code'];
+      } else {
+         $produk_code .= $detail_code;
+      }
+
       $produk_detail = serialize($produk_detail_);
 
       $spkDVS = [];
@@ -286,11 +330,11 @@ class Buka_Order extends Controller
       $detailHarga_ = serialize($detailHarga);
 
       if ($afiliasi == 0) {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'";
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker;
       } else {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1";
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker;
       }
 
       $do = $this->db(0)->insertCols('order_data', $cols, $vals);
@@ -303,7 +347,7 @@ class Buka_Order extends Controller
       }
    }
 
-   function add_barang($id_jenis_pelanggan)
+   function add_barang($id_jenis_pelanggan, $price_locker = 0, $paket_ref = "")
    {
       $barang_c = $_POST['kode'];
       $qty = $_POST['qty'];
@@ -318,15 +362,15 @@ class Buka_Order extends Controller
 
       $cek = $this->data('Barang')->cek($barang_c, $id_sumber, $sn, $sds, $qty);
       if ($cek == false) {
-         echo "Stok ter-update tidak tersedia";
+         echo "Stok [" . $barang_c . "] kosong";
          exit();
       }
 
       $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $barang_c . "'");
       $harga = $barang['harga_' . $id_jenis_pelanggan];
 
-      $cols = 'jenis, jenis_target, kode_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual';
-      $vals = "2," . $id_jenis_pelanggan . ",'" . $barang_c . "','" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga;
+      $cols = 'jenis, jenis_target, kode_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual, price_locker, paket_ref';
+      $vals = "2," . $id_jenis_pelanggan . ",'" . $barang_c . "','" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "'";
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
@@ -466,7 +510,7 @@ class Buka_Order extends Controller
          }
 
          if ($countDH <> 0) {
-            echo "Tetapkan Harga terlebih dahulu!";
+            echo "Lengkapi Harga " . $do['produk'] . " terlebih dahulu!";
             exit();
          }
       }

@@ -53,7 +53,7 @@ if ($id_pelanggan_jenis == 1) {
             <div class="row mb-2">
                 <div class="col pe-0">
                     <?php if ($data['count'] <= 15) { ?>
-                        <button type="button" class="btn me-2 shadow-none btn-sm btn-danger bg-gradient py-1" data-bs-target="#exampleModalB" data-bs-toggle="modal">(&#43;) Paket</button>
+                        <button type="button" class="btn me-2 shadow-none btn-sm btn-danger bg-gradient py-1" data-bs-target="#exampleModalPaket" data-bs-toggle="modal">(&#43;) Paket</button>
                         <button type="button" class="btn me-2 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
                         <button type="button" class="btn me-2 shadow-none btn-sm btn-dark bg-gradient py-1" data-bs-target="#exampleModalJasa" data-bs-toggle="modal">(&#43;) Jasa</button>
                         <button type="button" class="btn me-2 shadow-none btn-sm btn-success bg-gradient py-1" data-bs-target="#exampleModalB" data-bs-toggle="modal">(&#43;) Barang</button>
@@ -273,18 +273,24 @@ if ($id_pelanggan_jenis == 1) {
 
     $('select.loadDetail').on('change', function() {
         var produk = this.value;
-        $("div#detail").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+        if (produk != "") {
+            $("div#detail").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+        }
     });
 
     $('select.loadDetail_Jasa').on('change', function() {
         var produk = this.value;
-        $("div#detail_Jasa").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+        if (produk != "") {
+            $("div#detail_Jasa").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+        }
     });
 
 
     $('select.loadDetail_Barang').on('change', function() {
         var produk = this.value;
-        $("div#detail_barang").load('<?= PV::BASE_URL ?>Buka_Order/load_detail_barang/' + produk + '/<?= $id_pelanggan_jenis ?>');
+        if (produk != "") {
+            $("div#detail_barang").load('<?= PV::BASE_URL ?>Buka_Order/load_detail_barang/' + produk + '/<?= $id_pelanggan_jenis ?>');
+        }
     });
 
     $("span.tetapkanHarga").click(function() {
