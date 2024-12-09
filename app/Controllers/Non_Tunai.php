@@ -80,23 +80,4 @@ class Non_Tunai extends Controller
          }
       }
    }
-
-   function cekOrder($ref)
-   {
-      $data['kas'] = [];
-      $data['order'] = [];
-
-      $data['pelanggan'] = $this->db(0)->get('pelanggan');
-      $data['karyawan'] = $this->db(0)->get('karyawan');
-
-
-      $where = "ref = '" . $ref . "'";
-      $data['order'] = $this->db(0)->get_where('order_data', $where);
-
-      $where = "ref_transaksi = '" . $ref . "'";
-      $data['kas'] = $this->db(0)->get_where('kas', $where);
-
-
-      $this->view(__CLASS__ . "/cek", $data);
-   }
 }

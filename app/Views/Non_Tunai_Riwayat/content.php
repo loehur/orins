@@ -120,7 +120,7 @@
                             <tr>
                                 <td>
                                     <span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br>
-                                    <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $ref ?>"><small><?= $a['ref_transaksi'] ?></small></span>
+                                    <small><?= $a['ref_transaksi'] ?></small>
                                 </td>
                                 <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
                                 <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>

@@ -106,6 +106,7 @@ class Data_Operasi extends Controller
          $data_m[$do['ref']][$key] = $do;
       }
 
+      rsort($refs);
       $data['refs'] = $refs;
       $data['order'] = $data_;
       $data['mutasi'] = $data_m;

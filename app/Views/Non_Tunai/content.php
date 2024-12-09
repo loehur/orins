@@ -60,7 +60,7 @@
                                     <td>
                                         <span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br>
                                         <?php if ($a['jenis_transaksi'] == 1) { ?>
-                                            <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
+                                            <small><?= $a['ref_transaksi'] ?></small>
                                         <?php } ?>
                                         <?php if ($a['jenis_transaksi'] == 2) { ?>
                                             <small>Topup Deposit</small>

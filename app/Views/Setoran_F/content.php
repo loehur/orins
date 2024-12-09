@@ -15,7 +15,7 @@
                             $setor = date('d/m/Y', $time);
                         ?>
                             <tr>
-                                <td class="text-primary" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
+                                <td class="text-primary align-middle" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
                                 <td class="text-success"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $set['id_toko']) ?></td>
                                 <td><?= $setor ?><small class="text-secondary">-<?= substr($set['ref_setoran'], 8) ?></small></td>
                                 <td><?= $set['count'] ?> Transaksi</td>
