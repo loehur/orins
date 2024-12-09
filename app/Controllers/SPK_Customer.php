@@ -31,12 +31,12 @@ class SPK_Customer extends Controller
       $this->viewer($parse, $parse_2);
    }
 
-   public function viewer($parse = "", $parse_2 = 0)
+   public function viewer($parse = 0, $parse_2 = 0)
    {
       $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse, "parse2" => $parse_2]);
    }
 
-   public function content($parse = "", $customer = "")
+   public function content($parse = 0, $customer = 0)
    {
       $data['parse'] = $parse;
       $data['customer'] = $customer;
