@@ -49,20 +49,31 @@ class Data_Operasi extends Controller
       $data['parse_2'] = $parse_2;
       $data['kas'] = [];
       $data['r_kas'] = [];
-      $data['order'] = [];
-      $data['pelanggan'] = $this->db(0)->get('pelanggan');
+      $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $data['saldo'] = $this->data("Saldo")->deposit($parse);
+      $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
+
+      $data['barang'] = $this->db(0)->get('master_barang', 'code');
 
       if ($parse_2 < 2023) {
-         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0 ORDER BY id_order_data DESC";
+         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0";
+         $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND id_target = " . $parse . " AND tuntas = 0";
       } else {
-         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%' ORDER BY id_order_data DESC";
-      }
-      if ($parse <> "" && $parse <> 0) {
-         $data['order'] = $this->db(0)->get_where('order_data', $where);
+         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%'";
+         $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND id_target = " . $parse . " AND tuntas = 0 AND insertTime LIKE '%" . $parse_2 . "%'";
       }
 
-      $refs = array_column($data['order'], 'ref');
+      $data['order'] = [];
+      $data['mutasi'] = [];
+      if ($parse <> "" && $parse <> 0) {
+         $data['order'] = $this->db(0)->get_where('order_data', $where);
+         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_mutasi);
+      }
+
+      $ref1 = array_unique(array_column($data['order'], 'ref'));
+      $ref2 = array_unique(array_column($data['mutasi'], 'ref'));
+      $refs = array_unique(array_merge($ref1, $ref2));
+
       $ref_list = "";
       foreach ($refs as $r) {
          $ref_list .= $r . ",";
@@ -90,40 +101,55 @@ class Data_Operasi extends Controller
          $data_[$do['ref']][$key] = $do;
       }
 
-      $col = [];
-      $actif_col = 1;
-      $col[1] = 0;
-      $col[2] = 0;
-
-      $data_fix[1] = [];
-      $data_fix[2] = [];
-
-      foreach ($data_ as $key => $d) {
-         if ($col[1] <= $col[2] + 1) {
-            $actif_col = 1;
-         } else {
-            $actif_col = 2;
-         }
-         $col[$actif_col] += count($data_[$key]);
-
-         $data_fix[$actif_col][$key] = $d;
+      $data_m = [];
+      foreach ($data['mutasi'] as $key => $do) {
+         $data_m[$do['ref']][$key] = $do;
       }
-      $data['order'] = $data_fix;
 
+      $data['refs'] = $refs;
+      $data['order'] = $data_;
+      $data['mutasi'] = $data_m;
       $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC";
       $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan);
+
+      foreach ($refs as $r) {
+         $data['head'][$r]['cs_to'] = 0;
+         $data['head'][$r]['id_afiliasi'] = 0;
+      }
+
+      foreach ($data['order'] as $ref => $do) {
+         foreach ($do as $dd) {
+            $data['head'][$ref]['cs'] = $dd['id_penerima'];
+            $data['head'][$ref]['cs_to'] = $dd['id_user_afiliasi'];
+            $data['head'][$ref]['id_afiliasi'] = $dd['id_afiliasi'];
+            $data['head'][$ref]['insertTime'] = $dd['insertTime'];
+            $data['head'][$ref]['tuntas'] = $dd['tuntas'];
+            break;
+         }
+      }
+
+      foreach ($data['mutasi'] as $ref => $do) {
+         foreach ($do as $dd) {
+            $data['head'][$ref]['cs'] = $dd['cs_id'];
+            $data['head'][$ref]['insertTime'] = $dd['insertTime'];
+            $data['head'][$ref]['tuntas'] = $dd['tuntas'];
+            break;
+         }
+      }
 
       $this->view($this->v_content, $data);
    }
 
    public function clearTuntas()
    {
+      $today = date("Y-m-d");
       if (isset($_POST['data'])) {
          $data = unserialize($_POST['data']);
          foreach ($data as $a) {
-            $set = "tuntas = 1";
+            $set = "tuntas = 1, tuntas_date = '" . $today . "'";
             $where = "ref = '" . $a . "'";
             $this->db(0)->update("order_data", $set, $where);
+            $this->db(0)->update("master_mutasi", $set, $where);
          }
       }
    }

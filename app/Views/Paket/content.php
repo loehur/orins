@@ -15,6 +15,9 @@ switch ($id_pelanggan_jenis) {
         $pelanggan_jenis = "Online";
         break;
 }
+
+$total_order = 0;
+$total_item = 0;
 ?>
 
 <main class="container">
@@ -91,7 +94,7 @@ switch ($id_pelanggan_jenis) {
                                 foreach ($data['order'] as $keyD => $do) {
                                     $no++;
                                     $akum_diskon = 0;
-
+                                    $total_item += 1;
                                     $id_order_data = $do['id_order_data'];
                                     $id_produk = $do['id_produk'];
                                     $detail_arr = unserialize($do['produk_detail']);
@@ -130,14 +133,16 @@ switch ($id_pelanggan_jenis) {
                                                         </small>
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                                        <small>@<?php
+                                                        <small><?php
                                                                 if ($harga_ok == false) {
                                                                     echo $btnSetHarga;
                                                                 } else {
-                                                                    if ($akum_diskon > 0) {
-                                                                        echo "<del>" . number_format($do['harga']) . "</del> <small>" . number_format($do['harga'] - $akum_diskon);
-                                                                    } else {
-                                                                        echo number_format($do['harga']);
+                                                                    if ($do['price_locker'] == 0) {
+                                                                        if ($akum_diskon > 0) {
+                                                                            echo "<del>" . number_format($do['harga']) . "</del> <small>@" . number_format($do['harga'] - $akum_diskon);
+                                                                        } else {
+                                                                            echo number_format($do['harga']);
+                                                                        }
                                                                     }
                                                                 } ?>
                                                         </small>
@@ -149,10 +154,16 @@ switch ($id_pelanggan_jenis) {
                                                                 if ($harga_ok == false) {
                                                                     echo $btnSetHarga;
                                                                 } else {
-                                                                    if ($akum_diskon > 0) {
-                                                                        echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del> " . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                                                    if ($do['price_locker'] == 0) {
+                                                                        if ($akum_diskon > 0) {
+                                                                            echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del> " . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                                                        } else {
+                                                                            echo number_format($do['harga'] * $do['jumlah']);
+                                                                        }
+                                                                        $total_order += ($do['harga'] * $do['jumlah']);
                                                                     } else {
-                                                                        echo number_format($do['harga'] * $do['jumlah']);
+                                                                        echo number_format(($do['harga'] * $do['jumlah']) + $do['margin_paket']);
+                                                                        $total_order += (($do['harga'] * $do['jumlah']) + $do['margin_paket']);
                                                                     }
                                                                 } ?>
                                                             </small>
@@ -186,10 +197,15 @@ switch ($id_pelanggan_jenis) {
                                                                             <div class="border-bottom mx-0">
                                                                                 <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
                                                                                 <div class="float-end">
-                                                                                    <?php if ($disk > 0) { ?>
-                                                                                        <del><?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del>
-                                                                                    <?php } ?>
-                                                                                    <?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
+
+                                                                                    <?php
+                                                                                    if ($do['price_locker'] == 0) {
+                                                                                        if ($disk > 0) { ?>
+                                                                                            <del><?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del>
+                                                                                        <?php } ?>
+                                                                                        <?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
+                                                                                    <?php }  ?>
+
                                                                                     <b><span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
                                                                                     <?php if ($harga_d > 0 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                                         <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
@@ -243,15 +259,22 @@ switch ($id_pelanggan_jenis) {
                 <table class="table table-sm m-0">
                     <?php foreach ($data['order_barang'] as $db) {
                         $classKeyPrice = 'text-secondary';
+                        $total_item += 1;
+                        $dp = $data['barang'][$db['kode_barang']];
+
                         if ($db['price_locker'] == 1) {
                             $classKeyPrice = 'text-danger';
-                        }
-                        $dp = $data['barang'][$db['kode_barang']]; ?>
+                            $total_order += (($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $db['margin_paket']);
+                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $do['margin_paket'];
+                        } else {
+                            $total_order += ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
+                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
+                        } ?>
                         <tr>
                             <td class="text-secondary text-end ps-2"><span data-id="<?= $db['id'] ?>" data-primary="id" data-tb="paket_mutasi" data-ref="<?= $data['ref'] ?>" class="price_key <?= $classKeyPrice ?>" style="cursor: pointer;"><i class="fa-solid fa-key"></i></span> #<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger fw-bold'>S</span>" : "" ?></td>
                             <td><?= trim($dp['brand'] . " " . $dp['model'] . " " . $dp['varian1'] . " " . $dp['varian2'])  ?><br><?= $db['sn'] ?></td>
-                            <td class="text-end"><?= number_format($db['qty']) ?>x<br>@<?= number_format($dp['harga_' . $id_pelanggan_jenis]) ?></td>
-                            <td class="text-end pe-2"><?= number_format($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) ?></td>
+                            <td class="text-end"><?= number_format($db['qty']) ?>x<br><?= $db['price_locker'] == 0 ? "@" . number_format($dp['harga_' . $id_pelanggan_jenis]) : "" ?></td>
+                            <td class="text-end pe-2"><?= number_format($totalnya) ?></td>
                             <td class="pt-2" style="width: 30px;"><a class="deleteItemBarang" data-id="<?= $db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                         </tr>
                     <?php } ?>
@@ -260,10 +283,10 @@ switch ($id_pelanggan_jenis) {
         </div>
         <div class="row mt-2">
             <div class="col text-end border">
-                .. Items
+                <?= number_format($total_item) ?> Items
             </div>
-            <div class="col text-end border">
-                Total 0
+            <div class="col text-end border fw-bold">
+                Total <?= number_format($total_order) ?>
             </div>
         </div>
     </div>
@@ -325,7 +348,7 @@ switch ($id_pelanggan_jenis) {
     $('select.loadDetail_Barang').on('change', function() {
         var produk = this.value;
         if (produk != "") {
-            $("div#detail_barang").load('<?= PV::BASE_URL ?>Paket/load_detail_barang/' + produk + '/<?= $id_pelanggan_jenis ?>');
+            $("div#detail_barang").load("<?= PV::BASE_URL ?>Paket/load_detail_barang/" + produk + "/<?= $id_pelanggan_jenis ?>/<?= $data['ref'] ?>");
         }
     });
 

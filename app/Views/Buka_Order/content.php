@@ -9,6 +9,11 @@ if ($id_pelanggan_jenis == 1) {
 } else {
     $pelanggan_jenis = "Rekanan";
 }
+
+$total_order = 0;
+$total_item = 0;
+
+$paket = false;
 ?>
 
 <main class="container">
@@ -22,7 +27,7 @@ if ($id_pelanggan_jenis == 1) {
             <?php }
         } else {
             ?>
-            <div class="row <?= count($data['order']) == 0 ? "d-none" : "" ?>">
+            <div class="row <?= count($data['order']) == 0 && count($data['order_barang']) == 0 ? "d-none" : "" ?>">
                 <div class="col px-2">
                     <form action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
                         <div class="row pb-2">
@@ -82,6 +87,7 @@ if ($id_pelanggan_jenis == 1) {
                                 $no = 0;
                                 foreach ($data['order'] as $keyD => $do) {
                                     $no++;
+                                    $total_item += 1;
                                     $akum_diskon = 0;
 
                                     $id_order_data = $do['id_order_data'];
@@ -111,21 +117,26 @@ if ($id_pelanggan_jenis == 1) {
                                         <td class="">
                                             <table class="table table-sm w-100 mb-0">
                                                 <tr class="<?= $do['id_afiliasi'] == 0 ? 'bg-primary' : 'bg-warning' ?> bg-gradient bg-opacity-10">
-                                                    <td class="ps-2"><span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span></td>
+                                                    <td class="ps-2 align-middle">
+                                                        <span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span>
+                                                        <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span>
+                                                    </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                         <small>
                                                             <span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= $do['jumlah'] ?></span>x
                                                         </small>
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                                        <small>@<?php
+                                                        <small><?php
                                                                 if ($harga_ok == false) {
                                                                     echo $btnSetHarga;
                                                                 } else {
-                                                                    if ($akum_diskon > 0) {
-                                                                        echo "<del>" . number_format($do['harga']) . "</del> <small>" . number_format($do['harga'] - $akum_diskon);
-                                                                    } else {
-                                                                        echo number_format($do['harga']);
+                                                                    if ($do['price_locker'] == 0) {
+                                                                        if ($akum_diskon > 0) {
+                                                                            echo "<del>" . number_format($do['harga']) . "</del> <small>@" . number_format($do['harga'] - $akum_diskon);
+                                                                        } else {
+                                                                            echo "@" . number_format($do['harga']);
+                                                                        }
                                                                     }
                                                                 } ?>
                                                         </small>
@@ -137,10 +148,16 @@ if ($id_pelanggan_jenis == 1) {
                                                                 if ($harga_ok == false) {
                                                                     echo $btnSetHarga;
                                                                 } else {
-                                                                    if ($akum_diskon > 0) {
-                                                                        echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del> " . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                                                    if ($do['price_locker'] == 0) {
+                                                                        if ($akum_diskon > 0) {
+                                                                            echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del> " . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                                                        } else {
+                                                                            echo number_format($do['harga'] * $do['jumlah']);
+                                                                        }
+                                                                        $total_order += ($do['harga'] * $do['jumlah']);
                                                                     } else {
-                                                                        echo number_format($do['harga'] * $do['jumlah']);
+                                                                        echo number_format(($do['harga'] * $do['jumlah']) + $do['margin_paket']);
+                                                                        $total_order += (($do['harga'] * $do['jumlah']) + $do['margin_paket']);
                                                                     }
                                                                 } ?>
                                                             </small>
@@ -174,10 +191,15 @@ if ($id_pelanggan_jenis == 1) {
                                                                             <div class="border-bottom mx-0">
                                                                                 <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
                                                                                 <div class="float-end">
-                                                                                    <?php if ($disk > 0) { ?>
-                                                                                        <del><?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del>
+
+                                                                                    <?php
+                                                                                    if ($do['price_locker'] == 0) {
+                                                                                        if ($disk > 0) { ?>
+                                                                                            <del><?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del>
+                                                                                        <?php } ?>
+                                                                                        <?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
                                                                                     <?php } ?>
-                                                                                    <?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
+
                                                                                     <b><span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
                                                                                     <?php if ($harga_d > 0 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                                         <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
@@ -230,12 +252,27 @@ if ($id_pelanggan_jenis == 1) {
             <div class="col border border-bottom-0 px-0">
                 <table class="table table-sm m-0 text-sm">
                     <?php foreach ($data['order_barang'] as $db) {
-                        $dp = $data['barang'][$db['kode_barang']]; ?>
+                        $total_item += 1;
+                        $dp = $data['barang'][$db['kode_barang']];
+
+                        if ($db['price_locker'] == 1) {
+                            $classKeyPrice = 'text-danger';
+                            $total_order += (($dp['harga'] * $db['jumlah']) + $db['margin_paket']);
+                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $db['margin_paket'];
+                        } else {
+                            $total_order += ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
+                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
+                        }
+
+                    ?>
                         <tr>
-                            <td class="text-secondary text-end ps-2">#<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?></td>
+                            <td class="text-secondary text-end ps-2">
+                                <span class="badge bg-danger"><?= $db['paket_ref'] <> "" ? $data['paket'][$db['paket_ref']]['nama'] : "" ?></span>
+                                #<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?>
+                            </td>
                             <td><?= trim($dp['brand'] . " " . $dp['model'] . " " . $dp['varian1'] . " " . $dp['varian2'])  ?><br><?= $db['sn'] ?></td>
-                            <td class="text-end"><?= number_format($db['qty']) ?>x<br>@<?= number_format($dp['harga_' . $id_pelanggan_jenis]) ?></td>
-                            <td class="text-end pe-2"><?= number_format($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) ?></td>
+                            <td class="text-end"><?= number_format($db['qty']) ?>x<br><?= $db['price_locker'] == 0 ? "@" . number_format($dp['harga_' . $id_pelanggan_jenis]) : "" ?></td>
+                            <td class="text-end pe-2"><?= number_format($totalnya) ?></td>
                             <td class="pt-2" style="width: 30px;"><a class="deleteItemBarang" data-id="<?= $db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                         </tr>
                     <?php } ?>
@@ -244,10 +281,10 @@ if ($id_pelanggan_jenis == 1) {
         </div>
         <div class="row mt-2">
             <div class="col text-end border">
-                .. Items
+                <?= $total_item ?> Items
             </div>
             <div class="col text-end border">
-                Total 0
+                <span class="fw-bold">Total Rp<?= number_format($total_order) ?></span>
             </div>
         </div>
     </div>

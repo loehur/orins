@@ -204,12 +204,55 @@ class Data_Order extends Controller
 
    public function print($parse = "")
    {
-      $data['pelanggan'] = $this->db(0)->get('pelanggan');
-      $data['karyawan'] = $this->db(0)->get('karyawan');
-      $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND ref = '" . $parse . "' AND cancel = 0";
-      $data['order'] = $this->db(0)->get_where('order_data', $where);
+      $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
+      $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
+      $data['barang'] = $this->db(0)->get('master_barang', 'code');
+      $data['parse'] = $parse;
 
-      $refs = array_column($data['order'], 'ref');
+      $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND ref = '" . $parse . "' AND cancel = 0";
+      $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND ref = '" . $parse . "'";
+
+      $data['order'] = [];
+      $data['mutasi'] = [];
+      if ($parse <> "" && $parse <> 0) {
+         $data['order'] = $this->db(0)->get_where('order_data', $where);
+         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_mutasi);
+      }
+
+      $data['paket'] = [];
+      $data['list_paket'] = $this->db(0)->get_where('paket_main', 'id_toko = ' . $this->userData['id_toko'], 'id');
+      foreach ($data['order'] as $do) {
+         if ($do['paket_ref'] <> "") {
+            if (isset($data['paket'][$do['paket_ref']]['harga'])) {
+               $data['paket'][$do['paket_ref']]['harga'] += ($do['harga'] + $do['margin_paket']);
+            } else {
+               $data['paket'][$do['paket_ref']]['harga'] = ($do['harga'] + $do['margin_paket']);
+            }
+            if (!isset($data['paket'][$do['paket_ref']]['order'])) {
+               $data['paket'][$do['paket_ref']]['order'] = [];
+            }
+            array_push($data['paket'][$do['paket_ref']]['order'], $do);
+         }
+      }
+      foreach ($data['mutasi'] as $do) {
+         if ($do['paket_ref'] <> "") {
+            if (isset($data['paket'][$do['paket_ref']]['harga'])) {
+               $data['paket'][$do['paket_ref']]['harga'] += ($do['harga_jual'] + $do['margin_paket']);
+            } else {
+               $data['paket'][$do['paket_ref']]['harga'] = ($do['harga_jual'] + $do['margin_paket']);
+            }
+            if (!isset($data['paket'][$do['paket_ref']]['order'])) {
+               $data['paket'][$do['paket_ref']]['order'] = [];
+            }
+            array_push($data['paket'][$do['paket_ref']]['barang'], $do);
+         }
+      }
+
+
+      $ref1 = array_unique(array_column($data['order'], 'ref'));
+      $ref2 = array_unique(array_column($data['mutasi'], 'ref'));
+      $refs = array_unique(array_merge($ref1, $ref2));
+
       if (count($refs) > 0) {
          $min_ref = min($refs);
          $max_ref = max($refs);

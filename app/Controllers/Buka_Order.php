@@ -134,6 +134,22 @@ class Buka_Order extends Controller
       $data['order'] = $this->db(0)->get_where("paket_order", "paket_ref = '" . $id . "'");
       $data['mutasi'] = $this->db(0)->get_where("paket_mutasi", "paket_ref = '" . $id . "'");
 
+      foreach ($data['mutasi'] as $dm) {
+         $_POST['kode'] = $dm['kode_barang'];
+         $_POST['qty'] = $_POST['jumlah'] * $dm['qty'];
+         $_POST['sds'] = $dm['sds'];
+         $_POST['sn'] = $dm['sn'];
+         $id_sumber = $dm['id_sumber'];
+
+         $cek = $this->data('Barang')->cek($_POST['kode'], $dm['id_sumber'], $dm['sn'], $dm['sds'], $dm['qty']);
+         if ($cek == false) {
+            echo "Stok (" . $_POST['kode'] . ") kosong";
+            exit();
+         }
+
+         $this->add_barang($id_pelanggan_jenis, $dm['price_locker'], $id, $id_sumber, $dm['margin_paket']);
+      }
+
       foreach ($data['order'] as $do) {
          $_POST['id_produk'] = $do['id_produk'];
          $_POST['note'] = $do['note'];
@@ -141,20 +157,12 @@ class Buka_Order extends Controller
          $_POST['detail_harga'] = $do['detail_harga'];
          $_POST['produk_code'] = $do['produk_code'];
          $_POST['produk_detail'] = $do['produk_detail'];
-         $this->add($do['id_afiliasi'], $id, $paket_group, $do['price_locker']);
-      }
-
-      foreach ($data['mutasi'] as $dm) {
-         $_POST['kode'] = $dm['kode_barang'];
-         $_POST['qty'] = $dm['qty'];
-         $_POST['sds'] = $dm['sds'];
-         $_POST['sn'] = $dm['sn'];
-
-         $this->add_barang($id_pelanggan_jenis, $dm['price_locker'], $id);
+         $_POST['jumlah'] = $_POST['jumlah'] * $do['jumlah'];
+         $this->add($do['id_afiliasi'], $id, $paket_group, $do['price_locker'], $do['margin_paket'], $do['pj']);
       }
    }
 
-   function add($afiliasi = 0, $paket_ref = '', $paket_group = '', $price_locker = 0)
+   function add($afiliasi = 0, $paket_ref = '', $paket_group = '', $price_locker = 0, $margin_paket = 0, $pj = 0)
    {
       $this->dataSynchrone();
       $this->data_order();
@@ -330,11 +338,11 @@ class Buka_Order extends Controller
       $detailHarga_ = serialize($detailHarga);
 
       if ($afiliasi == 0) {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker;
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, margin_paket, pj';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $margin_paket . "," . $pj;
       } else {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker;
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, margin_paket, pj';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $margin_paket . "," . $pj;
       }
 
       $do = $this->db(0)->insertCols('order_data', $cols, $vals);
@@ -347,7 +355,7 @@ class Buka_Order extends Controller
       }
    }
 
-   function add_barang($id_jenis_pelanggan, $price_locker = 0, $paket_ref = "")
+   function add_barang($id_jenis_pelanggan, $price_locker = 0, $paket_ref = "", $id_sumber = 0, $margin_paket = 0)
    {
       $barang_c = $_POST['kode'];
       $qty = $_POST['qty'];
@@ -358,19 +366,21 @@ class Buka_Order extends Controller
          $sn_c = 1;
       }
 
-      $id_sumber = $this->userData['id_toko'];
+      if ($id_sumber == 0) {
+         $id_sumber = $this->userData['id_toko'];
+      }
 
       $cek = $this->data('Barang')->cek($barang_c, $id_sumber, $sn, $sds, $qty);
       if ($cek == false) {
-         echo "Stok [" . $barang_c . "] kosong";
+         echo "Stok (" . $barang_c . ") kosong";
          exit();
       }
 
       $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $barang_c . "'");
       $harga = $barang['harga_' . $id_jenis_pelanggan];
 
-      $cols = 'jenis, jenis_target, kode_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual, price_locker, paket_ref';
-      $vals = "2," . $id_jenis_pelanggan . ",'" . $barang_c . "','" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "'";
+      $cols = 'jenis, jenis_target, kode_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual, price_locker, paket_ref, margin_paket';
+      $vals = "2," . $id_jenis_pelanggan . ",'" . $barang_c . "','" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "'," . $margin_paket;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
@@ -487,15 +497,44 @@ class Buka_Order extends Controller
 
       $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%'";
       $n =  $this->db(0)->count_distinct_where('order_data', 'ref', $where_n);
-      $n += 1;
-      $n = substr($n, -4);
-      $nv = str_pad($n, 4, "0", STR_PAD_LEFT);
 
+      $where_n2 = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%'";
+      $n2 = $this->db(0)->count_distinct_where('master_mutasi', 'ref', $where_n2);
+      $n_ref = $n + $n2;
+
+      $n_ref += 1;
+      $n_ref = substr($n_ref, -5);
+      $nv = str_pad($n_ref, 5, "0", STR_PAD_LEFT);
       $ref = $this->userData['id_toko'] . date("ymd") . $nv;
+
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->db(0)->get_where('order_data', $where);
-      $data_harga = $this->db(0)->get('produk_harga');
 
+      //cek barang dan validasi
+      $where_barang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND id_target = 0 AND jenis = 2";
+      $data['barang'] = $this->db(0)->get_where('master_mutasi', $where_barang);
+
+      foreach ($data['barang'] as $dbr) {
+         $id_sumber = $dbr['id_sumber'];
+         $barang_c = $dbr['kode_barang'];
+         $qty = $dbr['qty'];
+         $sds = $dbr['sds'];
+         $sn =  $dbr['sn'];
+
+         if ($id_sumber == 0) {
+            $id_sumber = $this->userData['id_toko'];
+         }
+
+         $cek = $this->data('Barang')->cek_proses($barang_c, $id_sumber, $sn, $sds, $qty);
+         if ($cek == false) {
+            echo "Stok (" . $barang_c . ") kosong";
+            exit();
+         }
+      }
+      //===========================
+
+
+      $data_harga = $this->db(0)->get('produk_harga');
       $detail_harga = [];
       foreach ($data['order'] as $do) {
          $detail_harga = unserialize($do['detail_harga']);
@@ -510,7 +549,7 @@ class Buka_Order extends Controller
          }
 
          if ($countDH <> 0) {
-            echo "Lengkapi Harga " . $do['produk'] . " terlebih dahulu!";
+            echo "Lengkapi harga (" . $do['produk'] . ") terlebih dahulu!";
             exit();
          }
       }
@@ -542,7 +581,33 @@ class Buka_Order extends Controller
          $where = "id_order_data = " . $do['id_order_data'];
          $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
          $update = $this->db(0)->update("order_data", $set, $where);
-         $error = $update['errno'];
+         if ($update['errno'] <> 0) {
+            $error = $update['error'];
+            break;
+         }
+      }
+
+      foreach ($data['barang'] as $dbr) {
+         $barang_c = $dbr['kode_barang'];
+         $harga = $this->db(0)->get_where_row('master_barang', "code ='" . $barang_c . "'")['harga_' . $id_pelanggan_jenis];
+
+         $id_sumber = $dbr['id_sumber'];
+         $qty = $dbr['qty'];
+         $sds = $dbr['sds'];
+         $sn =  $dbr['sn'];
+         $sn_c = 0;
+         if (strlen($sn) > 0) {
+            $sn_c = 1;
+         }
+
+
+         $where = "id = " . $dbr['id'];
+         $set = "stat = 1, harga_jual = " . $harga . ", sn_c = " . $sn_c . ", cs_id = " . $id_karyawan . ", id_target = " . $id_pelanggan . ", jenis_target = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
+         $update = $this->db(0)->update("master_mutasi", $set, $where);
+         if ($update['errno'] <> 0) {
+            $error = $update['error'];
+            break;
+         }
       }
 
       if ($error == 0) {

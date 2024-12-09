@@ -5,7 +5,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Produk - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL . $CONT ?>/add" method="POST">
+            <form action="<?= PV::BASE_URL . $CONT ?>/add/0/0/<?= $data['ref'] ?>" method="POST">
                 <div class="modal-body bg-primary bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <select class="tize loadDetail" name="id_produk" required>
@@ -31,7 +31,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Jasa - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL . $CONT ?>/add" method="POST">
+            <form action="<?= PV::BASE_URL . $CONT ?>/add/0/1/<?= $data['ref'] ?>" method="POST">
                 <div class="modal-body bg-primary bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <select class="tize loadDetail_Jasa" name="id_produk" required>
@@ -57,7 +57,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Barang - <b><?= $id_pelanggan_jenis == 1 ? "Umum" : "Dealer" ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL . $CONT ?>/add_barang" method="POST">
+            <form action="<?= PV::BASE_URL . $CONT ?>/add_barang/<?= $data['ref'] ?>" method="POST">
                 <div class="modal-body bg-success bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <select class="tize loadDetail_Barang" name="id_produk" required>

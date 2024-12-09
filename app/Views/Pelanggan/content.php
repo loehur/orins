@@ -63,7 +63,7 @@ if ($id_pelanggan_jenis == 1) {
                     </div>
                     <div class="mb-3">
                         <label class="form-label" required>Nomor Handphone</label>
-                        <input type="text" name="hp" class="form-control" required>
+                        <input type="text" name="hp" class="form-control">
                     </div>
                     <?php
                     if ($id_pelanggan_jenis == 2) { ?>

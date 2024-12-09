@@ -145,7 +145,7 @@ class Paket extends Controller
       echo $do['errno'] == 0 ? 1 : $do['error'];
    }
 
-   function add($afiliasi = 0)
+   function add($afiliasi = 0, $pj = 0, $ref = '')
    {
       $this->dataSynchrone();
       $this->data_order();
@@ -305,11 +305,11 @@ class Paket extends Controller
       $detailHarga_ = serialize($detailHarga);
 
       if ($afiliasi == 0) {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, note, note_spk';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . ",'" . $note . "','" . $spkNote_ . "'";
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, note, note_spk, pj, paket_ref';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . ",'" . $note . "','" . $spkNote_ . "'," . $pj . ",'" . $ref . "'";
       } else {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, note, note_spk, id_afiliasi';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi;
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, note, note_spk, id_afiliasi, pj, paket_ref';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . "," . $pj . ",'" . $ref . "'";;
       }
 
       $do = $this->db(0)->insertCols('paket_order', $cols, $vals);
@@ -322,14 +322,14 @@ class Paket extends Controller
       }
    }
 
-   function add_barang()
+   function add_barang($ref = "")
    {
       $barang_c = $_POST['kode'];
       $qty = $_POST['qty'];
       $id_sumber = $this->userData['id_toko'];
 
-      $cols = 'jenis, kode_barang, id_sumber, qty';
-      $vals = "2,'" . $barang_c . "','" . $id_sumber . "'," . $qty;
+      $cols = 'jenis, kode_barang, id_sumber, qty, paket_ref';
+      $vals = "2,'" . $barang_c . "','" . $id_sumber . "'," . $qty . ",'" . $ref . "'";
       $do = $this->db(0)->insertCols('paket_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
@@ -377,12 +377,11 @@ class Paket extends Controller
       $this->view(__CLASS__ . "/detail", $data_);
    }
 
-   function load_detail_barang($produk, $id_pelanggan_jenis)
+   function load_detail_barang($produk, $id_pelanggan_jenis, $ref = "")
    {
       $data['stok'] = $this->data('Barang')->stok_data_all($produk, $this->userData['id_toko']);
       $data['id_pelanggan_jenis'] = $id_pelanggan_jenis;
-
-      $cols = "id, code, CONCAT(brand,' ',model,' ',varian1,' ',varian2) as nama";
+      $data['ref'] = $ref;
       $this->view(__CLASS__ . "/detail_barang", $data);
    }
 
@@ -441,8 +440,15 @@ class Paket extends Controller
 
    function save($id_pelanggan_jenis, $ref_s)
    {
+      $margin_paket = 0;
       $paket = $_POST['paket'];
       $harga_paket = $_POST['harga_paket'];
+
+      $count_price_locker = 0;
+      $tb_margin = "";
+      $id_margin = "";
+      $primary_margin = 0;
+      $total_harga = 0;
 
       if ($ref_s == '') {
          $ref = $this->userData['id_toko'] . date("ymdHi");
@@ -450,7 +456,7 @@ class Paket extends Controller
          $ref = $ref_s;
       }
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND paket_ref = '" . $ref . "'";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND paket_ref = '" . $ref_s . "'";
       $data['order'] = $this->db(0)->get_where('paket_order', $where);
       $data_harga = $this->db(0)->get('produk_harga');
 
@@ -459,11 +465,25 @@ class Paket extends Controller
          $detail_harga = unserialize($do['detail_harga']);
          $countDH = count($detail_harga);
          if ($do['price_locker'] == 1) {
+            $count_price_locker += 1;
+            $id_margin = $do['id_order_data'];
+            $tb_margin = "paket_order";
+            $primary_margin = 'id_order_data';
             $countDH -= 1;
+
+            foreach ($detail_harga as $kH => $dh_o) {
+               foreach ($data_harga as $dh) {
+                  if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
+                     $total_harga += ($dh['harga_' . $id_pelanggan_jenis] * $do['jumlah']);
+                     break;
+                  }
+               }
+            }
          } else {
             foreach ($detail_harga as $kH => $dh_o) {
                foreach ($data_harga as $dh) {
                   if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
+                     $total_harga += ($dh['harga_' . $id_pelanggan_jenis] * $do['jumlah']);
                      $countDH -= 1;
                      break;
                   }
@@ -484,11 +504,30 @@ class Paket extends Controller
       foreach ($data['mutasi'] as $dm) {
          $db = $data['barang'][$dm['kode_barang']];
          $harga = $db['harga_' . $id_pelanggan_jenis];
-
+         $total_harga += ($db['harga_' . $id_pelanggan_jenis] * $dm['qty']);
          if ($harga == 0 && $dm['price_locker'] == 0) {
             echo "Lengkapi harga " . trim($db['brand'] . " " . $db['model'] . " " . $db['varian1'] . " " . $db['varian2']) .  " terlebih dahulu!";
             exit();
+         } else {
+            if ($dm['price_locker'] == 1) {
+               $count_price_locker += 1;
+               $id_margin = $dm['id'];
+               $tb_margin = "paket_mutasi";
+               $primary_margin = "id";
+            }
          }
+      }
+
+      if ($count_price_locker == 1) {
+         $margin_paket = $harga_paket - $total_harga;
+         $set = "margin_paket = " . $margin_paket;
+         $up = $this->db(0)->update($tb_margin, $set, $primary_margin . " = " . $id_margin);
+         if ($up['errno'] <> 0) {
+            echo $up['error'];
+            exit();
+         }
+      } else {
+         die("Price Lock tidak Valid " . $count_price_locker);
       }
 
       if ($ref_s == '') {

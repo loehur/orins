@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
 <div class="mb-1">
     <div class="row px-2">
         <div class="col">
@@ -12,7 +11,7 @@
                     if ($ds['qty'] > 0) { ?>
                         <tr>
                             <td class="text-end">
-                                <form action="<?= PV::BASE_URL ?>Paket/add_barang" class="mb-0" method="POST">
+                                <form action="<?= PV::BASE_URL ?>Paket/add_barang/<?= $data['ref'] ?>" class="mb-0" method="POST">
                                     <input type="hidden" name="kode" value="<?= $ds['kode_barang'] ?>">
                                     <input type="number" style="width: 50px;" value="1" name="qty" class="border-0 h-100 rounded text-center"> <button data-bs-dismiss="modal" type="submit" class="btn btn-sm btn-primary">Tambah</button>
                                 </form>
@@ -38,10 +37,6 @@
 <?php  } ?>
 
 <script>
-    $(document).ready(function() {
-        $('select.tize').selectize();
-    });
-
     $("form").on("submit", function(e) {
         $(".modal").hide();
         e.preventDefault();
@@ -51,7 +46,7 @@
             type: $(this).attr("method"),
             success: function(res) {
                 if (res == 0) {
-                    content();
+                    content(<?= $data['id_pelanggan_jenis'] ?>, <?= $data['ref'] ?>);
                 } else {
                     alert(res);
                 }

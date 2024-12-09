@@ -79,7 +79,7 @@ class Controller extends PV
         $_SESSION['data_pelanggan_all'] = $this->db(0)->get_where('pelanggan', $wherePelAll);
 
         $_SESSION['karyawan'] = $this->db(0)->get_where('karyawan', $whereToko . " AND en = 1");
-        $_SESSION['karyawan_all'] = $this->db(0)->get_where('karyawan', "en = 1");
+        $_SESSION['karyawan_all'] = $this->db(0)->get_where('karyawan', "en = 1", "id_karyawan");
     }
 
     public function logout()
