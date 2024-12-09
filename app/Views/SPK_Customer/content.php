@@ -1,5 +1,4 @@
 <?php $parse = $data['parse'];
-echo $data['customer'];
 ?>
 <main class="container">
     <div class="row mx-0 px-0">
@@ -7,7 +6,7 @@ echo $data['customer'];
             <select class="border rounded tize cek" name="customer" required>
                 <option></option>
                 <?php foreach ($data['dPelanggan'] as $p) { ?>
-                    <option <?= $data['customer'] == $p['id_pelanggan'] ? 'selected' : '' ?> value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= $p['id_toko'] ?> - <?= strtoupper($p['nama']) ?></option>
+                    <option <?= $data['customer'] == $p['id_pelanggan'] ? 'selected' : '' ?> value="<?= $p['id_pelanggan'] ?>"><?= $p['id_toko'] ?> - <?= strtoupper($p['nama']) ?></option>
                 <?php } ?>
             </select>
         </div>
