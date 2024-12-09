@@ -1,6 +1,10 @@
 <nav class="topnav navbar navbar-expand shadow-sm border-bottom-1 bg-white px-2" id="sidenavAccordion">
 	<button class="border-0 bg-transparent text-secondary pt-2" id="sidebarToggle"><i class="fa-solid fa-bars"></i> Menu</button>
-	<a class="ps-lg-2 ms-auto text-end me-2 border text-success p-2 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync"><?= strtoupper($this->userData['nama_toko']) ?></a>
+	<?php if (in_array($this->userData['user_tipe'], PV::OFFICE)) { ?>
+		<a class="ps-lg-2 ms-auto text-end me-2 border text-success p-2 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync">SYNC</a>
+	<?php } else { ?>
+		<a class="ps-lg-2 ms-auto text-end me-2 border text-success p-2 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync"><?= strtoupper($this->userData['nama_toko']) ?></a>
+	<?php } ?>
 	<ul class="navbar-nav align-items-center">
 		<!-- User Dropdown-->
 		<?php if (in_array($this->userData['user_tipe'], PV::PRIV[0])) { ?>
@@ -10,13 +14,9 @@
 				</a>
 				<div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownUserImage">
 					<?php
-					if (in_array($this->userData['user_tipe'], PV::OFFICE)) { ?>
-						<a class="dropdown-item sync" href="<?= PV::BASE_URL ?>Log/change_toko/<?= $dt['id_toko'] ?>">SYNC</a>
-						<?php } else {
-						foreach ($this->dToko as $dt) { ?>
-							<a class="dropdown-item sync" href="<?= PV::BASE_URL ?>Log/change_toko/<?= $dt['id_toko'] ?>"><?= $dt['nama_toko'] ?></a>
-					<?php }
-					} ?>
+					foreach ($this->dToko as $dt) { ?>
+						<a class="dropdown-item sync" href="<?= PV::BASE_URL ?>Log/change_toko/<?= $dt['id_toko'] ?>"><?= $dt['nama_toko'] ?></a>
+					<?php } ?>
 				</div>
 			</li>
 		<?php } ?>
