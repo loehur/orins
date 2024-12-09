@@ -33,7 +33,7 @@ class Admin_Officer extends Controller
 
    public function content()
    {
-      $where = "user_tipe IN(5,6,7)";
+      $where = "user_tipe IN(5,6,7,8)";
       $data = $this->db(0)->get_where('user', $where);
       $this->view($this->v_content, $data);
    }
