@@ -15,6 +15,19 @@ class Functions extends Controller
       echo $up['errno'] == 0 ? 0 : $up['error'];
    }
 
+   public function updatePass()
+   {
+      $id = $_POST['id'];
+      $value = $this->model('Enc')->enc("123");
+      $col = 'password';
+      $primary = 'id_user';
+      $tb = 'user';
+      $set = $col . " = '" . $value . "'";
+      $where = $primary . " = " . $id;
+      $up = $this->db(0)->update($tb, $set, $where);
+      echo $up['errno'] == 0 ? 0 : $up['error'];
+   }
+
    public function deleteCell()
    {
       $id = $_POST['id'];

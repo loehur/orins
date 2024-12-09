@@ -24,7 +24,7 @@
                     <?= $this->userData['nama_toko'] ?><br>
                     <?= $a['nama'] ?> ID : [ <?= $a['id_user'] ?> ]<br>
                     No. HP : <?= $a['user'] ?>
-                    <button type="button" class="float-end btn btn-sm btn-outline-primary">Reset Password</button> <br>
+                    <button type="button" data-id="<?= $a['id_user'] ?>" class="float-end btn btn-sm btn-outline-primary resetPass">Reset Password</button> <br>
                     <small>Default Password : 123</small>
                 <?php }
                 ?>
@@ -70,4 +70,24 @@
             },
         });
     });
+
+    $(".resetPass").click(function() {
+        var id = $(this).attr('data-id');
+
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Functions/resetPass',
+            data: {
+                'id': id,
+            },
+            type: 'POST',
+            dataType: 'html',
+            success: function(res) {
+                if (res == 0) {
+                    alert("Reset password success");
+                } else {
+                    alert(res);
+                }
+            },
+        });
+    })
 </script>
