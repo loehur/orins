@@ -15,7 +15,7 @@ class SPK_Customer extends Controller
       $this->v_viewer = "Layouts/viewer";
    }
 
-   public function index($parse)
+   public function index($parse, $parse_2 = 0)
    {
       foreach ($this->dDvs as $dv) {
          if ($dv['id_divisi'] == $parse) {
@@ -28,12 +28,12 @@ class SPK_Customer extends Controller
          "title" => "SPK_Search - " . $t
       ]);
 
-      $this->viewer($parse);
+      $this->viewer($parse, $parse_2);
    }
 
-   public function viewer($parse = "")
+   public function viewer($parse = "", $parse_2 = 0)
    {
-      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse, "parse2" => $parse_2]);
    }
 
    public function content($parse = "", $customer = "")
