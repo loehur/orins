@@ -10,9 +10,13 @@
 				</a>
 				<div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownUserImage">
 					<?php
-					foreach ($this->dToko as $dt) { ?>
-						<a class="dropdown-item sync" href="<?= PV::BASE_URL ?>Log/change_toko/<?= $dt['id_toko'] ?>"><?= $dt['nama_toko'] ?></a>
-					<?php } ?>
+					if (in_array($this->userData['user_tipe'], PV::OFFICE)) { ?>
+						<a class="dropdown-item sync" href="<?= PV::BASE_URL ?>Log/change_toko/<?= $dt['id_toko'] ?>">SYNC</a>
+						<?php } else {
+						foreach ($this->dToko as $dt) { ?>
+							<a class="dropdown-item sync" href="<?= PV::BASE_URL ?>Log/change_toko/<?= $dt['id_toko'] ?>"><?= $dt['nama_toko'] ?></a>
+					<?php }
+					} ?>
 				</div>
 			</li>
 		<?php } ?>
