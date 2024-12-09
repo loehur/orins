@@ -74,7 +74,7 @@ $yearNow = date('Y');
 							<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
 								<?php foreach ($this->dDvs as $dv) {
 									if ($dv['viewer'] <> 0) { ?>
-										<a class="nav-link <?= ($t == "SPK_Search - " . $dv['divisi']) ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>SPK_Customer/index/<?= $dv['id_divisi'] ?>"><?= $dv['divisi'] ?></a>
+										<a class="nav-link <?= ($t == "SPK_Search - " . $dv['divisi']) ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>SPK_Customer/index/<?= $dv['id_divisi'] ?>/0"><?= $dv['divisi'] ?></a>
 								<?php }
 								} ?>
 							</nav>
