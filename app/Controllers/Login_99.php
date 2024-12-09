@@ -42,7 +42,7 @@ class Login_99 extends Controller
       }
 
       $pass = $this->model('Enc')->enc($_POST["PASS"]);
-      if (strlen($hp) < 5 || strlen($pass) < 6) {
+      if (strlen($hp) < 3 || strlen($pass) < 3) {
          $this->model('Log')->write($hp . " Login Failed, Validate");
          $this->view('Login/login',  ['user' => $hp, "failed" => 'Authentication Error']);
          exit();
