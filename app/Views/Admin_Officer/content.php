@@ -56,6 +56,7 @@
                             <option value="5">Finance</option>
                             <option value="6">Audit</option>
                             <option value="7">Gudang</option>
+                            <option value="8">Tax</option>
                         </select>
                     </div>
                 </div>
