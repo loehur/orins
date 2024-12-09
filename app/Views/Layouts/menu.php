@@ -135,23 +135,6 @@ $yearNow = date('Y');
 							</nav>
 						</div>
 					<?php } ?>
-
-					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[6])) { ?>
-						<hr class="p-0 m-0">
-						<!-- FINANCE PANEL -->
-						<a class="nav-link <?= (str_contains($t, "Audit")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseAudit" aria-expanded="false" aria-controls="collapseFlows">
-							<div class="nav-link-icon"><i data-feather="check-square"></i></div>
-							Audit
-							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-						</a>
-						<div class="collapse <?= (str_contains($t, "Audit")) ? 'show' : '' ?>" id="collapseAudit" data-bs-parent="#accordionSidenav">
-							<nav class="sidenav-menu-nested nav">
-								<a class="nav-link <?= ($t == "Audit - Afiliasi") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Afiliasi">Afiliasi Transaksi</a>
-								<a class="nav-link <?= ($t == "Audit - Afiliasi Riwayat") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Afiliasi_Riwayat">Afiliasi Riwayat</a>
-								<a class="nav-link <?= ($t == "Audit - Data Export") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Export">Data Export</a>
-							</nav>
-						</div>
-					<?php } ?>
 				</div>
 			</div>
 			<!-- Sidenav Footer-->

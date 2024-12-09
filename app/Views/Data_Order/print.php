@@ -298,11 +298,10 @@
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        // window.print();
+        window.print();
 
-        // setTimeout(function() {
-        //     self.close();
-        // }, 20000);
-
+        setTimeout(function() {
+            self.close();
+        }, 20000);
     });
 </script>
