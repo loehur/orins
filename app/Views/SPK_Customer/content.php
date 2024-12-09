@@ -1,4 +1,6 @@
-<?php $parse = $data['parse']; ?>
+<?php $parse = $data['parse'];
+echo $data['customer'];
+?>
 <main class="container">
     <div class="row mx-0 px-0">
         <div class="col pe-0 ps-2" style="max-width: 250px;">
