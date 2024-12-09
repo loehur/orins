@@ -86,11 +86,10 @@
 
     $(".resetPass").click(function() {
         var id = $(this).attr('data-id');
-
         $.ajax({
             url: '<?= PV::BASE_URL ?>Functions/resetPass',
             data: {
-                'id': id,
+                id: id,
             },
             type: 'POST',
             dataType: 'html',
