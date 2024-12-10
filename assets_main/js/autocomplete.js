@@ -72,6 +72,8 @@ function autocomplete(inp, arr) {
 
           b.innerHTML = textInject.trim();
 
+          console.log(txtValue.length + " " + filter.length);
+
           if (allMatch == true && txtValue.length == filter.length) {
             inp.setAttribute("data-value", this.getAttribute("data-value"));
           } else {
