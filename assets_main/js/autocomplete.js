@@ -72,7 +72,7 @@ function autocomplete(inp, arr) {
 
           b.innerHTML = textInject.trim();
 
-          if (allMatch == true) {
+          if (allMatch == true && txtValue.length == filter.length) {
             this.setAttribute("data-value", arr[key].id);
           } else {
             this.setAttribute("data-value", "");
