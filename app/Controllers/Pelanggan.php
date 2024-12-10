@@ -57,14 +57,14 @@ class Pelanggan extends Controller
       $hp = $_POST['hp'];
       $nama = $_POST['nama'];
 
-      if ($id_pelanggan_jenis == 1) {
-         $cols = 'id_toko, nama, no_hp, id_pelanggan_jenis';
-         $vals = "'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "'," . $id_pelanggan_jenis;
-      } else {
+      if ($id_pelanggan_jenis == 2) {
          $usaha = $_POST['usaha'];
          $alamat = $_POST['alamat'];
          $cols = 'id_toko, nama, no_hp, usaha, alamat, id_pelanggan_jenis';
          $vals = "'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "','" . $usaha . "','" . $alamat . "'," . $id_pelanggan_jenis;
+      } else {
+         $cols = 'id_toko, nama, no_hp, id_pelanggan_jenis';
+         $vals = "'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "'," . $id_pelanggan_jenis;
       }
 
       $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND nama = '" . $nama . "' AND id_pelanggan_jenis = " . $id_pelanggan_jenis;
