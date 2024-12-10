@@ -53,6 +53,8 @@ function autocomplete(inp, arr) {
         }
       }
 
+      console.log(filter.length + " ".txtValue.length);
+
       if (filter.length == 0) {
         closeAllLists();
       } else {
