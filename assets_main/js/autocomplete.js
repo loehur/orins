@@ -26,6 +26,11 @@ function autocomplete(inp, arr) {
 
     for (key in arr) {
       txtValue = arr[key].nama.toUpperCase().trim();
+
+      if (txtValue == filter) {
+        this.setAttribute("data-value", arr[key].id);
+      }
+
       var match = false;
       var cekFind = [];
       var sortCek = 0;
