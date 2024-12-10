@@ -53,10 +53,18 @@
                         <?= $data['supplier'][$a['id_sumber']]['nama'] ?>
                     </td>
                     <td>
-                        <span data-id="<?= $a['id'] ?>" data-col="no_faktur" data-tipe="text" data-primary="id" data-tb="master_input" class="cell_edit"><?= $a['no_faktur'] ?></span>
+                        <?php if ($a['cek'] == 0) { ?>
+                            <span data-id="<?= $a['id'] ?>" data-col="no_faktur" data-tipe="text" data-primary="id" data-tb="master_input" class="cell_edit"><?= $a['no_faktur'] ?></span>
+                        <?php } else { ?>
+                            <?= $a['no_faktur'] ?>
+                        <?php } ?>
                     </td>
                     <td>
-                        <span data-id="<?= $a['id'] ?>" data-col="no_po" data-tipe="text" data-primary="id" data-tb="master_input" class="cell_edit"><?= $a['no_po'] ?></span>
+                        <?php if ($a['cek'] == 0) { ?>
+                            <span data-id="<?= $a['id'] ?>" data-col="no_po" data-tipe="text" data-primary="id" data-tb="master_input" class="cell_edit"><?= $a['no_po'] ?></span>
+                        <?php } else { ?>
+                            <?= $a['no_po'] ?>
+                        <?php } ?>
                     </td>
                     <td>
                         <?= $a['sds'] == 1 ? "SDS-<b>YES</b>" : "SDS-NO" ?>
