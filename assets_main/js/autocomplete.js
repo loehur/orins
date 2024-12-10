@@ -53,6 +53,8 @@ function autocomplete(inp, arr) {
         }
       }
 
+      console.log(filter.length + " ".txtValue.length);
+
       if (filter.length == 0) {
         closeAllLists();
       } else {
@@ -75,7 +77,7 @@ function autocomplete(inp, arr) {
           if (allMatch == true && txtValue.length == filter.length) {
             inp.setAttribute("data-value", this.getAttribute("data-value"));
           } else {
-            inp.setAttribute("data-value", "");
+            this.setAttribute("data-value", "");
           }
 
           b.innerHTML += "<input type='hidden' value='" + arr[key].nama + "'>";
@@ -86,7 +88,7 @@ function autocomplete(inp, arr) {
           });
           a.appendChild(b);
         } else {
-          inp.setAttribute("data-value", "");
+          this.setAttribute("data-value", "");
         }
       }
     }
