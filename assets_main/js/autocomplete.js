@@ -58,9 +58,8 @@ function autocomplete(inp, arr) {
       } else {
         if (match == true) {
           b = document.createElement("div");
-          if (filter.length == txtValue.length) {
-            b.setAttribute("data-value", arr[key].id);
-          }
+          b.setAttribute("data-value", arr[key].id);
+
           var textInject = "";
           var allMatch = true;
           for (let j = 0; j < txtValue.length; j++) {
