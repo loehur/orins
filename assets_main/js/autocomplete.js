@@ -83,6 +83,7 @@ function autocomplete(inp, arr) {
             inp.value = this.getElementsByTagName("input")[0].value.trim();
             if (txtValue == filter) {
               inp.setAttribute("data-value", this.getAttribute("data-value"));
+              console.log(txtValue);
             }
             closeAllLists();
           });
