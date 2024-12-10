@@ -86,6 +86,8 @@ function autocomplete(inp, arr) {
             closeAllLists();
           });
           a.appendChild(b);
+        } else {
+          this.setAttribute("data-value", "");
         }
       }
     }
