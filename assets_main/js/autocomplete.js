@@ -81,7 +81,9 @@ function autocomplete(inp, arr) {
           b.innerHTML += "<input type='hidden' value='" + arr[key].nama + "'>";
           b.addEventListener("click", function (e) {
             inp.value = this.getElementsByTagName("input")[0].value.trim();
-            inp.setAttribute("data-value", this.getAttribute("data-value"));
+            if (txtValue == filter) {
+              inp.setAttribute("data-value", this.getAttribute("data-value"));
+            }
             closeAllLists();
           });
           a.appendChild(b);
