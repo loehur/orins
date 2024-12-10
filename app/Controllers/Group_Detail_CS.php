@@ -70,7 +70,7 @@ class Group_Detail_CS extends Controller
          }
       } else {
          $item = $item_post;
-         $vals = "'" . $this->userData['id_toko'] . "','" . $id_detail_group . "','" . $item . "'";
+         $vals = "'" . $id_detail_group . "','" . $item . "'";
          $whereCount = "id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $item . "'";
          $dataCount = $this->db(0)->count_where('detail_item', $whereCount);
          if ($dataCount == 0) {
