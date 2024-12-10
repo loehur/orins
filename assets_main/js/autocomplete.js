@@ -78,8 +78,6 @@ function autocomplete(inp, arr) {
             this.setAttribute("data-value", "");
           }
 
-          console.log(filter, txtValue);
-
           b.innerHTML += "<input type='hidden' value='" + arr[key].nama + "'>";
           b.addEventListener("click", function (e) {
             inp.value = this.getElementsByTagName("input")[0].value.trim();
@@ -88,6 +86,8 @@ function autocomplete(inp, arr) {
             closeAllLists();
           });
           a.appendChild(b);
+        } else {
+          this.setAttribute("data-value", "");
         }
       }
     }
