@@ -29,6 +29,11 @@ class Pelanggan extends Controller
             "content" => $this->v_content,
             "title" => "Pelanggan - Rekanan"
          ]);
+      } elseif ($jenis_pelanggan == 3) {
+         $this->view("Layouts/layout_main", [
+            "content" => $this->v_content,
+            "title" => "Pelanggan - Online"
+         ]);
       }
       $this->viewer($jenis_pelanggan);
    }
