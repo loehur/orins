@@ -43,6 +43,8 @@
                         <input type="hidden" name="head_id" value="<?= $data['id'] ?>">
                         <input readonly name="barang_" id="barang_c" required class="text-center rounded border" style="text-transform: uppercase;">
                     </div>
+                </div>
+                <div class="row mx-0">
                     <div class="col px-1 mb-2">
                         <label>Barang</label><br>
                         <select name="barang" class="ac tize border-0 w-100" required id="barang">
@@ -54,9 +56,9 @@
                     </div>
                     <div class="col-auto px-1 mb-2 text-end" id="col_qty">
                         <label>Qty</label><br>
-                        <input id="qty" required type="number" min="1" class="text-end border-bottom border-0" name="qty" style="text-transform: uppercase;">
+                        <input id="qty" required type="number" min="1" class="text-end border-bottom border-0" name="qty" style="text-transform: uppercase;width:60px">
                     </div>
-                    <div class="col mt-auto mb-2">
+                    <div class="col-auto mt-auto mb-2">
                         <button type="submit" class="btn btn-outline-success">Add</button>
                     </div>
                 </div>
