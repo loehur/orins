@@ -78,13 +78,13 @@ function autocomplete(inp, arr) {
             this.setAttribute("data-value", "");
           }
 
+          console.log(filter, txtValue);
+
           b.innerHTML += "<input type='hidden' value='" + arr[key].nama + "'>";
           b.addEventListener("click", function (e) {
             inp.value = this.getElementsByTagName("input")[0].value.trim();
-            if (txtValue == filter) {
-              inp.setAttribute("data-value", this.getAttribute("data-value"));
-              console.log(txtValue);
-            }
+            inp.setAttribute("data-value", this.getAttribute("data-value"));
+            console.log(txtValue);
             closeAllLists();
           });
           a.appendChild(b);
