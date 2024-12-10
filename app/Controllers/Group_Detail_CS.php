@@ -47,7 +47,7 @@ class Group_Detail_CS extends Controller
    function add_item_multi($id_detail_group)
    {
       $item_post = $_POST['item'];
-      $cols = 'id_toko, id_detail_group, detail_item';
+      $cols = 'id_detail_group, detail_item';
 
       if (strlen($item_post) > 0) {
          $item = explode(",", $item_post);
