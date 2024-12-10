@@ -117,7 +117,6 @@ class Gudang_Input extends Controller
       $sn =  $barang['sn'];
       $id_sumber = $head['id_sumber'];
       $h_beli = $barang['harga'];
-      $nama = trim($barang['brand'] . " " . $barang['model'] . " " . $barang['varian1'] . " " . $barang['varian2']);
 
       $cols = 'ref,jenis,kode_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
 

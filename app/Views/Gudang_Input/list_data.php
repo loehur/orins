@@ -40,6 +40,7 @@
                 <div class="row mb-2 mx-0">
                     <div class="col-auto text-center px-1 mb-2">
                         <label>Kode Barang</label><br>
+                        <input type="hidden" name="head_id" value="<?= $data['id'] ?>">
                         <input readonly name="barang_" id="barang_c" required class="text-center rounded border" style="text-transform: uppercase;">
                     </div>
                     <div class="col px-1 mb-2">
