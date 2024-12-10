@@ -56,9 +56,11 @@ function autocomplete(inp, arr) {
       if (filter.length == 0) {
         closeAllLists();
       } else {
-        if (match == true && filter.length == txtValue.length) {
+        if (match == true) {
           b = document.createElement("div");
-          b.setAttribute("data-value", arr[key].id);
+          if (filter.length == txtValue.length) {
+            b.setAttribute("data-value", arr[key].id);
+          }
           var textInject = "";
           var allMatch = true;
           for (let j = 0; j < txtValue.length; j++) {
