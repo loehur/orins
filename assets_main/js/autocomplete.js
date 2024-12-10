@@ -53,8 +53,6 @@ function autocomplete(inp, arr) {
         }
       }
 
-      console.log(filter.length + " ".txtValue.length);
-
       if (filter.length == 0) {
         closeAllLists();
       } else {
@@ -74,8 +72,8 @@ function autocomplete(inp, arr) {
 
           b.innerHTML = textInject.trim();
 
-          if (allMatch == true && txtValue.length == filter.length) {
-            inp.setAttribute("data-value", this.getAttribute("data-value"));
+          if (allMatch == true && filter.length == txtValue.length) {
+            this.setAttribute("data-value", arr[key].id);
           } else {
             this.setAttribute("data-value", "");
           }
@@ -87,8 +85,6 @@ function autocomplete(inp, arr) {
             closeAllLists();
           });
           a.appendChild(b);
-        } else {
-          this.setAttribute("data-value", "");
         }
       }
     }
