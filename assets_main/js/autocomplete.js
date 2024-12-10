@@ -75,21 +75,20 @@ function autocomplete(inp, arr) {
           b.innerHTML = textInject.trim();
 
           if (allMatch == true && txtValue.length == filter.length) {
-            this.setAttribute("data-value", arr[key].id);
+            inp.setAttribute("data-value", this.getAttribute("data-value"));
           } else {
-            this.setAttribute("data-value", "");
+            inp.setAttribute("data-value", "");
           }
 
           b.innerHTML += "<input type='hidden' value='" + arr[key].nama + "'>";
           b.addEventListener("click", function (e) {
             inp.value = this.getElementsByTagName("input")[0].value.trim();
             inp.setAttribute("data-value", this.getAttribute("data-value"));
-            console.log(txtValue);
             closeAllLists();
           });
           a.appendChild(b);
         } else {
-          this.setAttribute("data-value", "");
+          inp.setAttribute("data-value", "");
         }
       }
     }
