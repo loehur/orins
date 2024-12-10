@@ -52,7 +52,7 @@ class Group_Detail_CS extends Controller
       if (strlen($item_post) > 0) {
          $item = explode(",", $item_post);
          foreach ($item as $i) {
-            $vals = "'" . $this->userData['id_toko'] . "','" . $id_detail_group . "','" . $i . "'";
+            $vals = $id_detail_group . ",'" . $i . "'";
             $whereCount = "id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $i . "'";
             $dataCount = $this->db(0)->count_where('detail_item', $whereCount);
             if ($dataCount == 0) {
