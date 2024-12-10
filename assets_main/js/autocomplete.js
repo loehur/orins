@@ -72,10 +72,8 @@ function autocomplete(inp, arr) {
 
           b.innerHTML = textInject.trim();
 
-          console.log(allMatch);
-
           if (allMatch == true && txtValue.length == filter.length) {
-            inp.setAttribute("data-value", arr[key].id);
+            inp.setAttribute("data-value", this.getAttribute("data-value"));
           } else {
             inp.setAttribute("data-value", "");
           }
@@ -83,7 +81,7 @@ function autocomplete(inp, arr) {
           b.innerHTML += "<input type='hidden' value='" + arr[key].nama + "'>";
           b.addEventListener("click", function (e) {
             inp.value = this.getElementsByTagName("input")[0].value.trim();
-            inp.setAttribute("data-value", arr[key].id);
+            inp.setAttribute("data-value", this.getAttribute("data-value"));
             closeAllLists();
           });
           a.appendChild(b);
