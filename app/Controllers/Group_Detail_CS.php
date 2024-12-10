@@ -53,7 +53,7 @@ class Group_Detail_CS extends Controller
          $item = explode(",", $item_post);
          foreach ($item as $i) {
             $vals = "'" . $this->userData['id_toko'] . "','" . $id_detail_group . "','" . $i . "'";
-            $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $i . "'";
+            $whereCount = "id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $i . "'";
             $dataCount = $this->db(0)->count_where('detail_item', $whereCount);
             if ($dataCount == 0) {
                $do = $this->db(0)->insertCols('detail_item', $cols, $vals);
@@ -71,7 +71,7 @@ class Group_Detail_CS extends Controller
       } else {
          $item = $item_post;
          $vals = "'" . $this->userData['id_toko'] . "','" . $id_detail_group . "','" . $item . "'";
-         $whereCount = "id_toko = '" . $this->userData['id_toko'] . "' AND id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $item . "'";
+         $whereCount = "id_detail_group = '" . $id_detail_group . "' AND detail_item = '" . $item . "'";
          $dataCount = $this->db(0)->count_where('detail_item', $whereCount);
          if ($dataCount == 0) {
             $do = $this->db(0)->insertCols('detail_item', $cols, $vals);
