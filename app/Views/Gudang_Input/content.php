@@ -53,10 +53,10 @@
                         <?= $data['supplier'][$a['id_sumber']]['nama'] ?>
                     </td>
                     <td>
-                        <?= $a['no_faktur'] ?>
+                        <span data-id="<?= $a['id'] ?>" data-col="no_faktur" data-tipe="text" data-primary="id" data-tb="master_input" class="cell_edit"><?= $a['no_faktur'] ?></span>
                     </td>
                     <td>
-                        <?= $a['no_po'] ?>
+                        <span data-id="<?= $a['id'] ?>" data-col="no_po" data-tipe="text" data-primary="id" data-tb="master_input" class="cell_edit"><?= $a['no_po'] ?></span>
                     </td>
                     <td>
                         <?= $a['sds'] == 1 ? "SDS-<b>YES</b>" : "SDS-NO" ?>
@@ -108,4 +108,71 @@
             }
         })
     }, 200);
+
+    var click = 0;
+    $(".cell_edit").on('dblclick', function() {
+        click = click + 1;
+        if (click != 1) {
+            return;
+        }
+
+        var id = $(this).attr('data-id');
+        var primary = $(this).attr('data-primary');
+        var col = $(this).attr('data-col');
+        var tb = $(this).attr('data-tb');
+        var tipe = $(this).attr('data-tipe');
+        var value = $(this).html();
+        var value_before = value;
+        if (value == "[ ]") {
+            value = "";
+        }
+        var el = $(this);
+        var width = el.parent().width();
+        var align = "left";
+        if (tipe == "number") {
+            align = "right";
+        }
+
+        el.parent().css("width", width);
+        el.html("<input required type=" + tipe + " style='text-transform:uppercase;outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value='" + value + "'>");
+
+        $("#value_").focus();
+        $('#value_').keypress(function(e) {
+            if (e.which == 13) {
+                $(this).blur();
+            }
+        });
+        $("#value_").focusout(function() {
+            var value_after = $(this).val().toUpperCase();
+            if (value_after === value_before) {
+                el.html(value);
+                click = 0;
+            } else {
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>Functions/updateCell',
+                    data: {
+                        'id': id,
+                        'value': value_after,
+                        'col': col,
+                        'primary': primary,
+                        'tb': tb
+                    },
+                    type: 'POST',
+                    dataType: 'html',
+                    success: function(res) {
+                        click = 0;
+                        if (res == 0) {
+                            if (value_after == "") {
+                                el.html("[ ]");
+                            } else {
+                                el.html(value_after);
+                            }
+                        } else {
+                            el.html(res);
+                        }
+                    },
+                });
+            }
+        });
+    });
 </script>
