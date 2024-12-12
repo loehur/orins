@@ -84,7 +84,7 @@ $max_length = [2, 2, 2, 3];
                         <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span>
                         <br>
                         <?= strtoupper($a['brand']) ?>
-                        <span class="cell_edit_name" data-id="<?= $a['id'] ?>" data-col="model" data-tb="master_barang"><?= strtoupper($a['model']) ?></span>
+                        <span class="cell_edit_name" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
                         <br>
                         <?= $a['code_f'] ?>
                     </td>
@@ -98,6 +98,64 @@ $max_length = [2, 2, 2, 3];
 <script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
 
 <script>
+    $(".cell_edit_name").on('dblclick', function() {
+        click = click + 1;
+        if (click != 1) {
+            return;
+        }
+
+        var id = $(this).attr('data-id');
+        var mode = $(this).attr('data-mode');
+        var code = $(this).attr('data-code');
+
+        var value = $(this).html();
+        var value_before = value;
+        if (value == "[ ]") {
+            value = "";
+        }
+        var el = $(this);
+        var width = el.parent().width();
+        var align = "left";
+
+        el.css("width", width);
+        el.html("<input required type=" + tipe + " style='text-transform:uppercase;outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value='" + value + "'>");
+
+        $("#value_").focus();
+        $('#value_').keypress(function(e) {
+            if (e.which == 13) {
+                $(this).blur();
+            }
+        });
+        $("#value_").focusout(function() {
+            var value_after = $(this).val().toUpperCase();
+            if (value_after === value_before || value_after == "") {
+                el.html(value);
+                click = 0;
+            } else {
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>Gudang_Barang/update_name',
+                    data: {
+                        'id': id,
+                        'value': value_after,
+                        'mode': mode,
+                        'code': code
+                    },
+                    type: 'POST',
+                    dataType: 'html',
+                    success: function(res) {
+                        click = 0;
+                        if (res == 0) {
+                            content();
+                        } else {
+                            alert(res);
+                            content();
+                        }
+                    },
+                });
+            }
+        });
+    });
+
     var grup = JSON.parse('<?= json_encode($data['grup']) ?>');
     var tipe = JSON.parse('<?= json_encode($data['tipe']) ?>');
     var brand = JSON.parse('<?= json_encode($data['brand']) ?>');
@@ -242,61 +300,6 @@ $max_length = [2, 2, 2, 3];
                         'value_before': value_before,
                         'col': col,
                         'parent': parent,
-                    },
-                    type: 'POST',
-                    dataType: 'html',
-                    success: function(res) {
-                        click = 0;
-                        if (res == 0) {
-                            content();
-                        } else {
-                            alert(res);
-                            content();
-                        }
-                    },
-                });
-            }
-        });
-    });
-
-    $(".cell_edit_name").on('dblclick', function() {
-        click = click + 1;
-        if (click != 1) {
-            return;
-        }
-
-        var id = $(this).attr('data-id');
-        var col = $(this).attr('data-col');
-        var value = $(this).html();
-        var value_before = value;
-        if (value == "[ ]") {
-            value = "";
-        }
-        var el = $(this);
-        var width = el.parent().width() + 5;
-        var align = "left";
-
-        el.css("width", width);
-        el.html("<input required type=" + tipe + " style='text-transform:uppercase;outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value='" + value + "'>");
-
-        $("#value_").focus();
-        $('#value_').keypress(function(e) {
-            if (e.which == 13) {
-                $(this).blur();
-            }
-        });
-        $("#value_").focusout(function() {
-            var value_after = $(this).val().toUpperCase();
-            if (value_after === value_before || value_after == "") {
-                el.html(value);
-                click = 0;
-            } else {
-                $.ajax({
-                    url: '<?= PV::BASE_URL ?>Gudang_Barang/update_name',
-                    data: {
-                        'id': id,
-                        'value': value_after,
-                        'col': col,
                     },
                     type: 'POST',
                     dataType: 'html',

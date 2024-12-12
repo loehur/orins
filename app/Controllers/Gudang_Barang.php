@@ -84,23 +84,7 @@ class Gudang_Barang extends Controller
       $cols = 'id,nama';
       $vals = "'" . $grup_c . "','" . $grup . "'";
       $do = $this->db(0)->insertCols('master_grup', $cols, $vals);
-      if ($do['errno'] == 1062) {
-         // $set = "nama = '" . $grup . "'";
-         // $where_grup = "id = '" . $grup_c . "'";
-         // $up = $this->db(0)->update('master_grup', $set, $where_grup);
-         // if ($up['errno'] <> 0) {
-         //    echo $up['error'];
-         //    exit();
-         // }
-         // //BARANG
-         // $set = "grup = '" . $grup . "'";
-         // $where = "code_s LIKE '%G-" . $grup_c . "%'";
-         // $up = $this->db(0)->update('master_barang', $set, $where);
-         // if ($up['errno'] <> 0) {
-         //    echo $up['error'];
-         //    exit();
-         // }
-      } else if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
+      if ($do['errno'] <> 0) {
          echo $do['error'];
          exit();
       }
@@ -109,23 +93,7 @@ class Gudang_Barang extends Controller
       $cols = 'id,nama';
       $vals = "'" . $tipe_c . "','" . $tipe . "'";
       $do = $this->db(0)->insertCols('master_tipe', $cols, $vals);
-      if ($do['errno'] == 1062) {
-         // $set = "nama = '" . $tipe . "'";
-         // $where_tipe = "id = '" . $tipe_c . "'";
-         // $up = $this->db(0)->update('master_tipe', $set, $where_tipe);
-         // if ($up['errno'] <> 0) {
-         //    echo $up['error'];
-         //    exit();
-         // }
-         // //BARANG
-         // $set = "tipe = '" . $tipe . "'";
-         // $where = "code_s LIKE '%T-" . $tipe_c . "%'";
-         // $up = $this->db(0)->update('master_barang', $set, $where);
-         // if ($up['errno'] <> 0) {
-         //    echo $up['error'];
-         //    exit();
-         // }
-      } else if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
+      if ($do['errno'] <> 0) {
          echo $do['error'];
          exit();
       }
@@ -134,23 +102,7 @@ class Gudang_Barang extends Controller
       $cols = 'id,nama';
       $vals = "'" . $brand_c . "','" . $brand . "'";
       $do = $this->db(0)->insertCols('master_brand', $cols, $vals);
-      if ($do['errno'] == 1062) {
-         // $set = "nama = '" . $brand . "'";
-         // $where_brand = "id = '" . $brand_c . "'";
-         // $up = $this->db(0)->update('master_brand', $set, $where_brand);
-         // if ($up['errno'] <> 0) {
-         //    echo $up['error'];
-         //    exit();
-         // }
-         // //BARANG
-         // $set = "brand = '" . $brand . "'";
-         // $where = "code_s LIKE '%B-" . $brand_c . "%'";
-         // $up = $this->db(0)->update('master_barang', $set, $where);
-         // if ($up['errno'] <> 0) {
-         //    echo $up['error'];
-         //    exit();
-         // }
-      } else if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
+      if ($do['errno'] <> 0) {
          echo $do['error'];
          exit();
       }
@@ -159,23 +111,7 @@ class Gudang_Barang extends Controller
       $cols = 'id,nama,code_gtb,code';
       $vals = "'" . $model_c . "','" . $model . "','" . $code_gtb . "','" . $code_model . "'";
       $do = $this->db(0)->insertCols('master_model', $cols, $vals);
-      if ($do['errno'] == 1062) {
-         // $set = "nama = '" . $model . "'";
-         // $where_brand = "code = '" . $code_model . "'";
-         // $up = $this->db(0)->update('master_model', $set, $where_brand);
-         // if ($up['errno'] <> 0) {
-         //    echo $up['error'];
-         //    exit();
-         // }
-         // //BARANG
-         // $set = "model = '" . $model . "'";
-         // $where = "code_s LIKE '%M-" . $model_c . "%'";
-         // $up = $this->db(0)->update('master_barang', $set, $where);
-         // if ($up['errno'] <> 0) {
-         //    echo $up['error'];
-         //    exit();
-         // }
-      } else if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
+      if ($do['errno'] <> 0) {
          echo $do['error'];
          exit();
       }
@@ -186,17 +122,7 @@ class Gudang_Barang extends Controller
       $cols = 'code,code_s,grup,tipe,brand,model,sn,pb,code_f';
       $vals = "'" . $code . "','" . $code_s . "','" . $grup . "','" . $tipe . "','" . $brand . "','" . $model . "','" . $sn . "'," . $pb . ",'" . $code_f . "'";
       $do = $this->db(0)->insertCols('master_barang', $cols, $vals);
-      if ($do['errno'] == 1062) {
-         echo $do['error'];
-         exit();
-         $set = "sn = " . $sn . ", pb = " . $pb . ", code_f = '" . $code_f . "'";
-         $where = "code = '" . $code . "'";
-         $up = $this->db(0)->update('master_barang', $set, $where);
-         if ($up['errno'] <> 0) {
-            echo $up['error'];
-            exit();
-         }
-      } else if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
+      if ($do['errno'] <> 0) {
          echo $do['error'];
          exit();
       }
@@ -280,6 +206,36 @@ class Gudang_Barang extends Controller
          }
       }
 
+      echo 0;
+   }
+
+   function update_name()
+   {
+      //cek dulu
+      $id = $_POST['id'];
+      $mode = $_POST['mode'];
+      $value = $_POST['value'];
+      $code = $_POST['code'];
+
+      switch ($mode) {
+         case 'M':
+            $set = "nama = '" . $value . "'";
+            $where_model = "code = '" . $code . "'";
+            $up = $this->db(0)->update('master_model', $set, $where_model);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+            break;
+      }
+
+      $set = "model = '" . $value . "'";
+      $where = "id = '" . $id . "'";
+      $up = $this->db(0)->update('master_barang', $set, $where);
+      if ($up['errno'] <> 0) {
+         echo $up['error'];
+         exit();
+      }
       echo 0;
    }
 }
