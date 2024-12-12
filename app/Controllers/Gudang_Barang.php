@@ -84,7 +84,7 @@ class Gudang_Barang extends Controller
       $cols = 'id,nama';
       $vals = "'" . $grup_c . "','" . $grup . "'";
       $do = $this->db(0)->insertCols('master_grup', $cols, $vals);
-      if ($do['errno'] <> 0) {
+      if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
          echo $do['error'];
          exit();
       }
@@ -93,7 +93,7 @@ class Gudang_Barang extends Controller
       $cols = 'id,nama';
       $vals = "'" . $tipe_c . "','" . $tipe . "'";
       $do = $this->db(0)->insertCols('master_tipe', $cols, $vals);
-      if ($do['errno'] <> 0) {
+      if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
          echo $do['error'];
          exit();
       }
@@ -102,7 +102,7 @@ class Gudang_Barang extends Controller
       $cols = 'id,nama';
       $vals = "'" . $brand_c . "','" . $brand . "'";
       $do = $this->db(0)->insertCols('master_brand', $cols, $vals);
-      if ($do['errno'] <> 0) {
+      if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
          echo $do['error'];
          exit();
       }
@@ -111,7 +111,7 @@ class Gudang_Barang extends Controller
       $cols = 'id,nama,code_gtb,code';
       $vals = "'" . $model_c . "','" . $model . "','" . $code_gtb . "','" . $code_model . "'";
       $do = $this->db(0)->insertCols('master_model', $cols, $vals);
-      if ($do['errno'] <> 0) {
+      if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
          echo $do['error'];
          exit();
       }
