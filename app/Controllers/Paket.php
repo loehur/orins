@@ -440,14 +440,12 @@ class Paket extends Controller
 
    function save($id_pelanggan_jenis, $ref_s)
    {
-      $margin_paket = 0;
+
       $paket = $_POST['paket'];
       $harga_paket = $_POST['harga_paket'];
 
       $count_price_locker = 0;
-      $tb_margin = "";
-      $id_margin = "";
-      $primary_margin = 0;
+
       $total_harga = 0;
 
       if ($ref_s == '') {
@@ -466,9 +464,6 @@ class Paket extends Controller
          $countDH = count($detail_harga);
          if ($do['price_locker'] == 1) {
             $count_price_locker += 1;
-            $id_margin = $do['id_order_data'];
-            $tb_margin = "paket_order";
-            $primary_margin = 'id_order_data';
             $countDH -= 1;
 
             foreach ($detail_harga as $kH => $dh_o) {
@@ -511,22 +506,11 @@ class Paket extends Controller
          } else {
             if ($dm['price_locker'] == 1) {
                $count_price_locker += 1;
-               $id_margin = $dm['id'];
-               $tb_margin = "paket_mutasi";
-               $primary_margin = "id";
             }
          }
       }
 
-      if ($count_price_locker == 1) {
-         $margin_paket = $harga_paket - $total_harga;
-         $set = "margin_paket = " . $margin_paket;
-         $up = $this->db(0)->update($tb_margin, $set, $primary_margin . " = " . $id_margin);
-         if ($up['errno'] <> 0) {
-            echo $up['error'];
-            exit();
-         }
-      } else {
+      if ($count_price_locker <> 1) {
          die("Price Lock tidak Valid " . $count_price_locker);
       }
 

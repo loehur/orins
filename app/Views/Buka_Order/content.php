@@ -14,6 +14,8 @@ $total_order = 0;
 $total_item = 0;
 
 $paket = false;
+
+$mgpaket = $data['margin_paket'];
 ?>
 
 <main class="container">
@@ -120,6 +122,19 @@ $paket = false;
                                                     <td class="ps-2 align-middle">
                                                         <span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span>
                                                         <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span>
+
+                                                        <?php if ($do['paket_ref'] <> "") { ?>
+                                                            <div class="btn-group me-1 d-none">
+                                                                <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    (&#43;) Afiliasi
+                                                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
+                                                                </ul>
+                                                            </div>
+                                                        <?php } ?>
+
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                         <small>
@@ -156,8 +171,8 @@ $paket = false;
                                                                         }
                                                                         $total_order += ($do['harga'] * $do['jumlah']);
                                                                     } else {
-                                                                        echo number_format(($do['harga'] * $do['jumlah']) + $do['margin_paket']);
-                                                                        $total_order += (($do['harga'] * $do['jumlah']) + $do['margin_paket']);
+                                                                        echo number_format(($do['harga'] * $do['jumlah']) + $mgpaket[$do['paket_ref']]['margin_paket']);
+                                                                        $total_order += (($do['harga'] * $do['jumlah']) + $mgpaket[$do['paket_ref']]['margin_paket']);
                                                                     }
                                                                 } ?>
                                                             </small>
@@ -257,8 +272,8 @@ $paket = false;
 
                         if ($db['price_locker'] == 1) {
                             $classKeyPrice = 'text-danger';
-                            $total_order += (($dp['harga'] * $db['jumlah']) + $db['margin_paket']);
-                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $db['margin_paket'];
+                            $total_order += (($dp['harga'] * $db['jumlah']) + $mgpaket[$db['paket_ref']]['margin_paket']);
+                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $mgpaket[$db['paket_ref']]['margin_paket'];
                         } else {
                             $total_order += ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
                             $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);

@@ -63,7 +63,20 @@ class Buka_Order extends Controller
       $getHarga = [];
       $data['errorID'] = [];
 
+      $count_price_locker = 0;
+      $id_margin = [];
+      $total_per_paket = [];
+      $harga_paket = [];
+
       foreach ($data['order'] as $key => $do) {
+         if (strlen($do['paket_ref']) > 0) {
+            if ($do['price_locker'] == 1) {
+               $count_price_locker += 1;
+               $harga_paket[$do['paket_ref']] = $data['paket'][$do['paket_ref']]['harga_' . $parse];
+               $id_margin[$do['paket_ref']]['id'] = $do['id_order_data'];
+            }
+         }
+
          $detail_harga = unserialize($do['detail_harga']);
          if (is_array($detail_harga)) {
             $countDH[$key] = count($detail_harga);
@@ -72,6 +85,13 @@ class Buka_Order extends Controller
                foreach ($data_harga as $dh) {
                   if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse] <> 0) {
                      $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse];
+                     if (strlen($do['paket_ref']) > 0) {
+                        if (isset($total_per_paket[$do['paket_ref']])) {
+                           $total_per_paket[$do['paket_ref']] += ($getHarga[$key][$dh_o['c_h']] * $do['jumlah']);
+                        } else {
+                           $total_per_paket[$do['paket_ref']] = ($getHarga[$key][$dh_o['c_h']] * $do['jumlah']);
+                        }
+                     }
                      $countDH[$key] -= 1;
                      break;
                   }
@@ -90,6 +110,29 @@ class Buka_Order extends Controller
          }
       }
 
+      foreach ($data['order_barang'] as $dm) {
+         if ($dm['price_locker'] == 1) {
+            $count_price_locker += 1;
+            $harga_paket[$dm['paket_ref']] = $data['paket'][$dm['paket_ref']]['harga_' . $parse];
+            $id_margin[$dm['paket_ref']]['id'] = $dm['id'];
+
+            if (strlen($dm['paket_ref']) > 0) {
+               $db = $data['barang'][$dm['kode_barang']];
+               if (isset($total_per_paket[$dm['paket_ref']])) {
+                  $total_per_paket[$dm['paket_ref']] += ($db['harga_' . $parse] * $dm['qty']);
+               } else {
+                  $total_per_paket[$dm['paket_ref']] = ($db['harga_' . $parse] * $dm['qty']);
+               }
+            }
+         }
+      }
+
+      $adjuster = [];
+      foreach ($total_per_paket as $key => $tpp) {
+         $adjuster[$key] = $data['paket'][$key]['harga_' . $parse] - $tpp;
+         $id_margin[$key]['margin_paket'] = $adjuster[$key];
+      }
+
       $wherePelanggan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse . " ORDER BY freq DESC";
       $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan, 'id_pelanggan');
 
@@ -97,6 +140,7 @@ class Buka_Order extends Controller
       $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan, 'id_karyawan');
       $data['harga'] = $getHarga;
 
+      $data['margin_paket'] = $id_margin;
       $this->view($this->v_content, $data);
    }
 
@@ -147,10 +191,11 @@ class Buka_Order extends Controller
             exit();
          }
 
-         $this->add_barang($id_pelanggan_jenis, $dm['price_locker'], $id, $id_sumber, $dm['margin_paket']);
+         $this->add_barang($id_pelanggan_jenis, $dm['price_locker'], $id, $id_sumber);
       }
 
       foreach ($data['order'] as $do) {
+
          $_POST['id_produk'] = $do['id_produk'];
          $_POST['note'] = $do['note'];
          $_POST['note_spk'] = $do['note_spk'];
@@ -158,7 +203,7 @@ class Buka_Order extends Controller
          $_POST['produk_code'] = $do['produk_code'];
          $_POST['produk_detail'] = $do['produk_detail'];
          $_POST['jumlah'] = $_POST['jumlah'] * $do['jumlah'];
-         $this->add($do['id_afiliasi'], $id, $paket_group, $do['price_locker'], $do['margin_paket'], $do['pj']);
+         $this->add($do['id_afiliasi'], $id, $paket_group, $do['price_locker'], $do['pj']);
       }
    }
 
@@ -432,8 +477,6 @@ class Buka_Order extends Controller
    {
       $data['stok'] = $this->data('Barang')->stok_data($produk, $this->userData['id_toko']);
       $data['id_pelanggan_jenis'] = $id_pelanggan_jenis;
-
-      $cols = "id, code, CONCAT(brand,' ',model) as nama";
       $this->view(__CLASS__ . "/detail_barang", $data);
    }
 
@@ -510,6 +553,11 @@ class Buka_Order extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->db(0)->get_where('order_data', $where);
 
+      $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
+      $id_margin = [];
+      $total_per_paket = [];
+      $harga_paket = [];
+
       //cek barang dan validasi
       $where_barang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND id_target = 0 AND jenis = 2";
       $data['barang'] = $this->db(0)->get_where('master_mutasi', $where_barang);
@@ -520,6 +568,22 @@ class Buka_Order extends Controller
          $qty = $dbr['qty'];
          $sds = $dbr['sds'];
          $sn =  $dbr['sn'];
+
+         if ($dbr['price_locker'] == 1) {
+            $harga_paket[$dbr['paket_ref']] = $data['paket'][$dbr['paket_ref']]['harga_' . $id_pelanggan_jenis];
+            $id_margin[$dbr['paket_ref']]['id'] = $dbr['id'];
+            $id_margin[$dbr['paket_ref']]['primary'] = 'id';
+            $id_margin[$dbr['paket_ref']]['tb'] = 'master_mutasi';
+
+            if (strlen($dbr['paket_ref']) > 0) {
+               $db = $data['barang'][$dbr['kode_barang']];
+               if (isset($total_per_paket[$dbr['paket_ref']])) {
+                  $total_per_paket[$dbr['paket_ref']] += ($db['harga_' . $id_pelanggan_jenis] * $dbr['qty']);
+               } else {
+                  $total_per_paket[$dbr['paket_ref']] = ($db['harga_' . $id_pelanggan_jenis] * $dbr['qty']);
+               }
+            }
+         }
 
          if ($id_sumber == 0) {
             $id_sumber = $this->userData['id_toko'];
@@ -537,6 +601,15 @@ class Buka_Order extends Controller
       $data_harga = $this->db(0)->get('produk_harga');
       $detail_harga = [];
       foreach ($data['order'] as $do) {
+         if (strlen($do['paket_ref']) > 0) {
+            if ($do['price_locker'] == 1) {
+               $harga_paket[$do['paket_ref']] = $data['paket'][$do['paket_ref']]['harga_' . $id_pelanggan_jenis];
+               $id_margin[$do['paket_ref']]['id'] = $do['id_order_data'];
+               $id_margin[$do['paket_ref']]['primary'] = 'id_order_data';
+               $id_margin[$do['paket_ref']]['tb'] = 'order_data';
+            }
+         }
+
          $detail_harga = unserialize($do['detail_harga']);
          $countDH = count($detail_harga);
          foreach ($detail_harga as $kH => $dh_o) {
@@ -573,6 +646,15 @@ class Buka_Order extends Controller
                if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
                   $harga +=  $dh['harga_' . $id_pelanggan_jenis];
                   $detail_harga[$key]['h'] = $dh['harga_' . $id_pelanggan_jenis];
+
+                  if (strlen($do['paket_ref']) > 0) {
+                     if (isset($total_per_paket[$do['paket_ref']])) {
+                        $total_per_paket[$do['paket_ref']] += ($detail_harga[$key]['h'] * $do['jumlah']);
+                     } else {
+                        $total_per_paket[$do['paket_ref']] = ($detail_harga[$key]['h'] * $do['jumlah']);
+                     }
+                  }
+
                   break;
                }
             }
@@ -604,6 +686,22 @@ class Buka_Order extends Controller
          $where = "id = " . $dbr['id'];
          $set = "stat = 1, harga_jual = " . $harga . ", sn_c = " . $sn_c . ", cs_id = " . $id_karyawan . ", id_target = " . $id_pelanggan . ", jenis_target = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
          $update = $this->db(0)->update("master_mutasi", $set, $where);
+         if ($update['errno'] <> 0) {
+            $error = $update['error'];
+            break;
+         }
+      }
+
+      $adjuster = [];
+      foreach ($total_per_paket as $key => $tpp) {
+         $adjuster[$key] = $data['paket'][$key]['harga_' . $id_pelanggan_jenis] - $tpp;
+         $id_margin[$key]['margin_paket'] = $adjuster[$key];
+      }
+
+      foreach ($id_margin as $key => $val) {
+         $where = $val['primary'] . " = " . $val['id'];
+         $set = "margin_paket = " . $val['margin_paket'];
+         $update = $this->db(0)->update($val['tb'], $set, $where);
          if ($update['errno'] <> 0) {
             $error = $update['error'];
             break;
