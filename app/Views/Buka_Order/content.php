@@ -120,9 +120,8 @@ $mgpaket = $data['margin_paket'];
                                             <table class="table table-sm w-100 mb-0">
                                                 <tr class="<?= $do['id_afiliasi'] == 0 ? 'bg-primary' : 'bg-warning' ?> bg-gradient bg-opacity-10">
                                                     <td class="ps-2 align-middle">
-                                                        <span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span>
+                                                        <span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?> <?= $do['price_locker'] == 1 ? '<i class="fa-solid fa-key"></i>' : '' ?></span>
                                                         <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span>
-
                                                         <?php if ($do['paket_ref'] <> "") { ?>
                                                             <div class="btn-group me-1 d-none">
                                                                 <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">

@@ -74,6 +74,11 @@ class Buka_Order extends Controller
                $count_price_locker += 1;
                $harga_paket[$do['paket_ref']] = $data['paket'][$do['paket_ref']]['harga_' . $parse];
                $id_margin[$do['paket_ref']]['id'] = $do['id_order_data'];
+               $get = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $do['paket_ref'] . "' AND price_locker = 1");
+               if (isset($get['jumlah'])) {
+                  $paket_qty = $do['jumlah'] / $get['jumlah'];
+                  $id_margin[$do['paket_ref']]['qty'] = $paket_qty;
+               }
             }
          }
 
@@ -115,6 +120,11 @@ class Buka_Order extends Controller
             $count_price_locker += 1;
             $harga_paket[$dm['paket_ref']] = $data['paket'][$dm['paket_ref']]['harga_' . $parse];
             $id_margin[$dm['paket_ref']]['id'] = $dm['id'];
+            $get = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $dm['paket_ref'] . "' AND price_locker = 1");
+            if (isset($get['jumlah'])) {
+               $paket_qty = $dm['jumlah'] / $get['jumlah'];
+               $id_margin[$dm['paket_ref']]['qty'] = $paket_qty;
+            }
 
             if (strlen($dm['paket_ref']) > 0) {
                $db = $data['barang'][$dm['kode_barang']];
@@ -129,7 +139,7 @@ class Buka_Order extends Controller
 
       $adjuster = [];
       foreach ($total_per_paket as $key => $tpp) {
-         $adjuster[$key] = $data['paket'][$key]['harga_' . $parse] - $tpp;
+         $adjuster[$key] = ($data['paket'][$key]['harga_' . $parse] * $id_margin[$key]['qty']) - $tpp;
          $id_margin[$key]['margin_paket'] = $adjuster[$key];
       }
 
@@ -558,6 +568,7 @@ class Buka_Order extends Controller
       $total_per_paket = [];
       $harga_paket = [];
 
+      $paket_qty = [];
       //cek barang dan validasi
       $where_barang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND id_target = 0 AND jenis = 2";
       $data['barang'] = $this->db(0)->get_where('master_mutasi', $where_barang);
@@ -574,6 +585,12 @@ class Buka_Order extends Controller
             $id_margin[$dbr['paket_ref']]['id'] = $dbr['id'];
             $id_margin[$dbr['paket_ref']]['primary'] = 'id';
             $id_margin[$dbr['paket_ref']]['tb'] = 'master_mutasi';
+
+            $get = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $dbr['paket_ref'] . "' AND price_locker = 1");
+            if (isset($get['jumlah'])) {
+               $paket_qty = $dbr['jumlah'] / $get['jumlah'];
+               $id_margin[$dbr['paket_ref']]['qty'] = $paket_qty;
+            }
 
             if (strlen($dbr['paket_ref']) > 0) {
                $db = $data['barang'][$dbr['kode_barang']];
@@ -607,6 +624,12 @@ class Buka_Order extends Controller
                $id_margin[$do['paket_ref']]['id'] = $do['id_order_data'];
                $id_margin[$do['paket_ref']]['primary'] = 'id_order_data';
                $id_margin[$do['paket_ref']]['tb'] = 'order_data';
+
+               $get = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $do['paket_ref'] . "' AND price_locker = 1");
+               if (isset($get['jumlah'])) {
+                  $paket_qty = $do['jumlah'] / $get['jumlah'];
+                  $id_margin[$do['paket_ref']]['qty'] = $paket_qty;
+               }
             }
          }
 
@@ -694,7 +717,7 @@ class Buka_Order extends Controller
 
       $adjuster = [];
       foreach ($total_per_paket as $key => $tpp) {
-         $adjuster[$key] = $data['paket'][$key]['harga_' . $id_pelanggan_jenis] - $tpp;
+         $adjuster[$key] = ($data['paket'][$key]['harga_' . $id_pelanggan_jenis] * $id_margin[$key]['qty']) - $tpp;
          $id_margin[$key]['margin_paket'] = $adjuster[$key];
       }
 
