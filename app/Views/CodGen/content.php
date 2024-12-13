@@ -50,9 +50,9 @@ $max_length = [2, 2, 3, 3, 2];
                                         foreach ($max_length as $ml) {
                                             $no += 1;
                                             if ($i == 6) { ?>
-                                                <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span><br>
+                                                <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span>
                                             <?php } else { ?>
-                                                <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span><br>
+                                                <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span>
                                             <?php } ?>
                                         <?php
                                             $i += $ml;
