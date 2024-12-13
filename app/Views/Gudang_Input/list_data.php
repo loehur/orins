@@ -164,13 +164,14 @@
                 click = 0;
             } else {
                 $.ajax({
-                    url: '<?= PV::BASE_URL ?>Functions/updateCell',
+                    url: '<?= PV::BASE_URL ?>Gudang_Input/update_pbsn',
                     data: {
                         'id': id,
                         'value': value_after,
                         'col': col,
                         'primary': primary,
-                        'tb': tb
+                        'tb': tb,
+                        'kode': kode
                     },
                     type: 'POST',
                     dataType: 'html',
@@ -183,7 +184,7 @@
                                 el.html(value_after);
                             }
                         } else {
-                            el.html(res);
+                            alert(res);
                         }
                     },
                 });

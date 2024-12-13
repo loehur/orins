@@ -93,7 +93,7 @@ class Stok_Transfer extends Controller
    {
       $barang_c = $_POST['kode'];
       $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $barang_c . "'");
-      $id_barang = $barang['id_barang'];
+      $id_barang = $barang['id'];
 
       $head = $this->db(0)->get_where_row('master_input', "id = '" . $ref . "'");
       $target = $head['id_target'];

@@ -116,7 +116,7 @@ class Gudang_Input extends Controller
       $sds = $head['sds'];
       $sn =  $barang['sn'];
       $id_sumber = $head['id_sumber'];
-      $id_barang = $barang['id_barang'];
+      $id_barang = $barang['id'];
       $h_beli = $barang['harga'];
 
       $cols = 'ref,jenis,id_barang,kode_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
@@ -133,7 +133,7 @@ class Gudang_Input extends Controller
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
 
-   function update_sn()
+   function update_pbsn()
    {
       $kode = $_POST['kode'];
       $id = $_POST['id'];
@@ -141,7 +141,7 @@ class Gudang_Input extends Controller
       $col = $_POST['col'];
       $primary = $_POST['primary'];
       $tb = $_POST['tb'];
-      $set = $col . " = '" . $value . "'";
+      $set = $col . " = '" . $value . "', sn_unic = '" . $kode . $value . "'";
       $where = $primary . " = " . $id;
 
       $cek_sn = $this->db(0)->count_where('master_mutasi', "sn_unic = '" . $kode . $value . "'");

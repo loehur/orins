@@ -432,7 +432,7 @@ class Buka_Order extends Controller
       }
 
       $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $barang_c . "'");
-      $id_barang = $barang['id_barang'];
+      $id_barang = $barang['id'];
       $harga = $barang['harga_' . $id_jenis_pelanggan];
 
       $cols = 'jenis, jenis_target, id_barang, kode_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual, price_locker, paket_ref, margin_paket';
