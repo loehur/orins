@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
 
 <?php
-$input = ["grup", "tipe", "brand", "model", "c5"];
+$input = ["grup", "tipe", "brand", "c4", "model"];
 $required = ["required", "required", "required", "required", "required"];
 $name = ["Akun", "Grup", "Merk", "Tipe", "Detail"];
 $max_length = [2, 2, 3, 3, 2];
@@ -45,34 +45,28 @@ $max_length = [2, 2, 3, 3, 2];
                                 <tr>
                                     <?php
                                     $no = 0;
-                                    for ($i = 0; $i <= 6; $i += 2) {
+                                    $i = 0;
+                                    foreach ($max_length as $ml) {
                                         $no += 1;
                                         if ($i == 6) { ?>
                                             <td>
-                                                <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 3) ?></span><br>
+                                                <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span><br>
                                             </td>
                                         <?php } else { ?>
                                             <td>
-                                                <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 2) ?></span><br>
+                                                <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span><br>
                                             </td>
                                         <?php } ?>
                                     <?php
+                                        $i += $ml;
                                     }
                                     ?>
-                                </tr>
-                                <tr>
-                                    <td><?= $a['pb'] == 1 ? "<b>PB</b>" : "" ?> </td>
-                                    <td><?= $a['sn'] == 1 ? "<b>SN</b>" : "" ?></td>
                                 </tr>
                             </table>
                         </td>
                         <td class="">
-                            <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span>
-                            <br>
-                            <?= strtoupper($a['brand']) ?>
+                            <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span> <span class="text-sm"><?= strtoupper($a['brand']) ?> <?= strtoupper($a['brand']) ?></span><br>
                             <span class="cell_edit_name" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
-                            <br>
-                            <?= $a['code_f'] ?>
                         </td>
                     </tr>
                 <?php } ?>

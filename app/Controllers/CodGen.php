@@ -58,7 +58,7 @@ class CodGen extends Controller
       $c4 = strtoupper($_POST['c4']);
       $model_c = strtoupper($_POST['model_c']);
       $model = strtoupper($_POST['model']);
-      $code_gtbc = $grup_c . $tipe_c . $brand_c;
+      $code_gtbc = $grup_c . $tipe_c . $brand_c . $c4_c;
       $code_model = $code_gtbc . $model_c;
       $code = $code_model;
       $code_s = "G-" . $grup_c . "#T-" . $tipe_c . "#B-" . $brand_c . "#C4-" . $c4_c . "#M-" . $model_c . "#";
@@ -186,12 +186,6 @@ class CodGen extends Controller
    {
       //cek dulu
       $id = $_POST['id'];
-      $count = $this->db(1)->count_where('master_mutasi', "kode_barang = '" . $id . "'");
-
-      if ($count > 0) {
-         echo "Barang sudah bermutasi, kode barang tidak dapat dirubah";
-         exit();
-      }
 
       $value = $_POST['value'];
       $col = $_POST['col'];
@@ -205,7 +199,7 @@ class CodGen extends Controller
             $where_grup = "id = '" . $value_before . "'";
             $up = $this->db(1)->update('master_grup', $set, $where_grup);
             if ($up['errno'] <> 0) {
-               echo $up['error'];
+               echo $col . $up['error'];
                exit();
             }
 
@@ -216,7 +210,7 @@ class CodGen extends Controller
             $where_tipe = "id = '" . $value_before . "'";
             $up = $this->db(1)->update('master_tipe', $set, $where_tipe);
             if ($up['errno'] <> 0) {
-               echo $up['error'];
+               echo $col . $up['error'];
                exit();
             }
 
@@ -227,17 +221,27 @@ class CodGen extends Controller
             $where_brand = "id = '" . $value_before . "'";
             $up = $this->db(1)->update('master_brand', $set, $where_brand);
             if ($up['errno'] <> 0) {
-               echo $up['error'];
+               echo $col . $up['error'];
                exit();
             }
             $mode = 'B';
             break;
          case 4:
+            $set = "id = '" . $value . "'";
+            $where_c4 = "id = '" . $value_before . "'";
+            $up = $this->db(1)->update('master_c4', $set, $where_c4);
+            if ($up['errno'] <> 0) {
+               echo $col . $up['error'];
+               exit();
+            }
+            $mode = 'C4';
+            break;
+         case 5:
             $set = "id = '" . $value . "', code = '" . $parent . $value . "'";
             $where_brand = "code = '" . $parent . $value_before . "'";
             $up = $this->db(1)->update('master_model', $set, $where_brand);
             if ($up['errno'] <> 0) {
-               echo $up['error'];
+               echo $col . $up['error'];
                exit();
             }
             $mode = 'M';
@@ -247,13 +251,13 @@ class CodGen extends Controller
       $data = $this->db(1)->get_where('master_barang', "code LIKE '" . $parent . $value_before . "%' AND code_s LIKE '%" . $mode . "-" . $value_before . "#%'");
       foreach ($data as $d) {
          $new_code_s = str_replace($mode . "-" . $value_before . "#", $mode . "-" . $value . "#", $d['code_s']);
-         $new_code = str_replace(['G-', 'T-', 'B-', 'M-', '#'], '', $new_code_s);
+         $new_code = str_replace(['G-', 'T-', 'B-', 'C4-', 'M-', '#'], '', $new_code_s);
 
          $set = "code_s = '" . $new_code_s . "', code = '" . $new_code . "'";
          $where = "code_s = '" . $d['code_s'] . "'";
          $up = $this->db(1)->update('master_barang', $set, $where);
          if ($up['errno'] <> 0) {
-            echo $up['error'];
+            echo "Barang" . $up['error'];
             exit();
          }
       }
