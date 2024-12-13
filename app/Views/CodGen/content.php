@@ -40,7 +40,8 @@ $max_length = [2, 2, 3, 3, 2];
             <table class="table table-sm">
                 <?php foreach ($data['barang'] as $a) { ?>
                     <tr>
-                        <td>D<table class="p-0 m-0">
+                        <td><span class="float-left">D</span>
+                            <table class="p-0 m-0">
                                 <tr>
                                     <?php
                                     $no = 0;
