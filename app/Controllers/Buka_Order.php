@@ -78,6 +78,9 @@ class Buka_Order extends Controller
                if (isset($get['jumlah'])) {
                   $paket_qty = $do['jumlah'] / $get['jumlah'];
                   $id_margin[$do['paket_ref']]['qty'] = $paket_qty;
+                  $id_margin[$do['paket_ref']]['nama'] =  $data['paket'][$do['paket_ref']]['nama'];
+                  $id_margin[$do['paket_ref']]['tb'] = "order_data";
+                  $id_margin[$do['paket_ref']]['primary'] =  "id_order_data";
                }
             }
          }
@@ -124,6 +127,9 @@ class Buka_Order extends Controller
             if (isset($get['jumlah'])) {
                $paket_qty = $dm['jumlah'] / $get['jumlah'];
                $id_margin[$dm['paket_ref']]['qty'] = $paket_qty;
+               $id_margin[$do['paket_ref']]['nama'] =  $data['paket'][$dm['paket_ref']]['nama'];
+               $id_margin[$do['paket_ref']]['tb'] = "master_mutasi";
+               $id_margin[$do['paket_ref']]['primary'] =  "id";
             }
 
             if (strlen($dm['paket_ref']) > 0) {
@@ -221,6 +227,10 @@ class Buka_Order extends Controller
    {
       $this->dataSynchrone();
       $this->data_order();
+
+      if ($afiliasi == 0 && isset($_POST['aff_target'])) {
+         $afiliasi = $_POST['aff_target'];
+      }
 
       $id_produk = $_POST['id_produk'];
       $jumlah = $_POST['jumlah'];
@@ -391,6 +401,15 @@ class Buka_Order extends Controller
       $spkDVS_ = serialize($spkDVS);
       $spkNote_ = serialize($spkNote);
       $detailHarga_ = serialize($detailHarga);
+
+      if (isset($_POST['id_paket'])) {
+         $paketGet = explode("-", $_POST['id_paket']);
+
+         $where = $paketGet[1] . " = " . $paketGet[0];
+         $link_paket = $this->db(0)->get_where_row($paketGet[2], $where);
+         $paket_ref = $link_paket['paket_ref'];
+         $paket_group = $link_paket['paket_group'];
+      }
 
       if ($afiliasi == 0) {
          $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, margin_paket, pj';
@@ -785,18 +804,5 @@ class Buka_Order extends Controller
       $set = "jumlah = " . $value;
       $update = $this->db(0)->update("order_data", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
-   }
-
-   function load_aff($target)
-   {
-      foreach ($this->dToko as $dt) {
-         if ($dt['id_toko'] == $target) {
-            $data['toko'] = $dt['nama_toko'];
-         }
-      }
-
-      $data['produk'] = $this->db(0)->get_where('produk', 'pj = 0 ORDER BY freq DESC, id_produk');
-      $data['id_toko'] = $target;
-      $this->view(__CLASS__ . "/afiliasi", $data);
    }
 }

@@ -41,6 +41,7 @@ class Controller extends PV
                         $this->userData['nama_toko'] = $dt['nama_toko'];
                         $this->userData['sub_nama'] = $dt['sub_nama'];
                         $this->userData['alamat'] = $dt['alamat'];
+                        $this->userData['color'] = $dt['color'];
                     }
                 }
 

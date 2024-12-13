@@ -15,6 +15,17 @@
                         </select>
                     </div>
                     <div id="detail"></div>
+                    <?php if (count($mgpaket) > 0) { ?>
+                        <div class="mb-2 mt-5">
+                            <label class="text-sm fw-bold text-danger ps-1">Link to Package</label>
+                            <select class="tize" name="id_paket">
+                                <option></option>
+                                <?php foreach ($mgpaket as $dp) { ?>
+                                    <option value="<?= $dp['id'] . "-" . $dp['primary'] . "-" . $dp['tb'] ?>"><?= $dp['nama'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    <?php } ?>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill" data-bs-dismiss="modal">Tambah</button>
@@ -37,7 +48,7 @@
                             <select class="tize" name="id" required>
                                 <option></option>
                                 <?php foreach ($data['paket'] as $dp) { ?>
-                                    <option value="<?= $dp['id'] ?>"><?= $dp['nama'] ?></option>
+                                    <option value="<?= $dp['id'] . "-" . $dp['primary'] . "-" . $dp['tb'] ?>"><?= $dp['nama'] ?></option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -74,6 +85,17 @@
                         </select>
                     </div>
                     <div id="detail_jasa"></div>
+                    <?php if (count($mgpaket) > 0) { ?>
+                        <div class="mb-2 mt-5">
+                            <label class="text-sm fw-bold text-danger ps-1">Link to Package</label>
+                            <select class="tize" name="id_paket">
+                                <option></option>
+                                <?php foreach ($mgpaket as $dp) { ?>
+                                    <option value="<?= $dp['id'] . "-" . $dp['primary'] . "-" . $dp['tb'] ?>"><?= $dp['nama'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    <?php } ?>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill" data-bs-dismiss="modal">Tambah</button>
@@ -104,6 +126,17 @@
                             ?>
                         </select>
                     </div>
+                    <?php if (count($mgpaket) > 0) { ?>
+                        <div class="mb-2 mt-5">
+                            <label class="text-sm fw-bold text-danger ps-1">Link to Package</label>
+                            <select class="tize" name="id_paket">
+                                <option></option>
+                                <?php foreach ($mgpaket as $dp) { ?>
+                                    <option value="<?= $dp['id'] . "-" . $dp['primary'] . "-" . $dp['tb'] ?>"><?= $dp['nama'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    <?php } ?>
                     <div id="detail_barang" style="min-height: 300px;"></div>
                 </div>
             </form>
@@ -117,7 +150,34 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Produk (Afiliasi) - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div id="aff"></div>
+            <form action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
+                <div class="modal-body bg-primary bg-gradient bg-opacity-10 px-2">
+                    <div class="mb-2">
+                        <input type="" name="aff_target" id="aff_target">
+                        <select class="tize loadDetail_aff" name="id_produk" required>
+                            <option></option>
+                            <?php foreach ($data['produk'] as $dp) { ?>
+                                <option value="<?= $dp['id_produk'] ?>"><?= $dp['produk'] ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div id="detail_aff"></div>
+                    <?php if (count($mgpaket) > 0) { ?>
+                        <div class="mb-2 mt-5">
+                            <label class="text-sm fw-bold text-danger ps-1">Link to Package</label>
+                            <select class="tize" name="id_paket">
+                                <option></option>
+                                <?php foreach ($mgpaket as $dp) { ?>
+                                    <option value="<?= $dp['id'] . "-" . $dp['primary'] . "-" . $dp['tb'] ?>"><?= $dp['nama'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    <?php } ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill" data-bs-dismiss="modal">Tambah</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

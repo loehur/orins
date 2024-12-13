@@ -332,6 +332,14 @@ $mgpaket = $data['margin_paket'];
         }
     });
 
+
+    $('select.loadDetail_aff').on('change', function() {
+        var produk = this.value;
+        if (produk != "") {
+            $("div#detail_aff").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+        }
+    });
+
     $('select.loadDetail_Jasa').on('change', function() {
         var produk = this.value;
         if (produk != "") {
@@ -361,10 +369,8 @@ $mgpaket = $data['margin_paket'];
         $("input[name=parse").val(parse);
     })
 
-
     $("a.aff").click(function() {
-        var target = $(this).attr("data-id");
-        $("div#aff").load('<?= PV::BASE_URL ?>Buka_Order/load_aff/' + target);
+        $('input#aff_target').val($(this).attr("data-id"));
     })
 
     $("a.deleteItem").click(function() {
