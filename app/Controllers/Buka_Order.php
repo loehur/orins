@@ -402,7 +402,7 @@ class Buka_Order extends Controller
       $spkNote_ = serialize($spkNote);
       $detailHarga_ = serialize($detailHarga);
 
-      if (isset($_POST['id_paket'])) {
+      if (isset($_POST['id_paket']) && $_POST['id_paket'] <> "") {
          $paketGet = explode("-", $_POST['id_paket']);
 
          $where = $paketGet[1] . " = " . $paketGet[0];
