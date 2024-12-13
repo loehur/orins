@@ -43,24 +43,22 @@ $max_length = [2, 2, 3, 3, 2];
                         <td>
                             <table class="p-0 m-0">
                                 <tr>
-                                    <?php
-                                    $no = 0;
-                                    $i = 0;
-                                    foreach ($max_length as $ml) {
-                                        $no += 1;
-                                        if ($i == 6) { ?>
-                                            <td>
+                                    <td>
+                                        <?php
+                                        $no = 0;
+                                        $i = 0;
+                                        foreach ($max_length as $ml) {
+                                            $no += 1;
+                                            if ($i == 6) { ?>
                                                 <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span><br>
-                                            </td>
-                                        <?php } else { ?>
-                                            <td>
+                                            <?php } else { ?>
                                                 <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span><br>
-                                            </td>
-                                        <?php } ?>
-                                    <?php
-                                        $i += $ml;
-                                    }
-                                    ?>
+                                            <?php } ?>
+                                        <?php
+                                            $i += $ml;
+                                        }
+                                        ?>
+                                    </td>
                                 </tr>
                             </table>
                         </td>
