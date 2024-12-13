@@ -48,7 +48,7 @@
                             <select class="tize" name="id" required>
                                 <option></option>
                                 <?php foreach ($data['paket'] as $dp) { ?>
-                                    <option value="<?= $dp['id'] . "-" . $dp['primary'] . "-" . $dp['tb'] ?>"><?= $dp['nama'] ?></option>
+                                    <option value="<?= $dp['id'] ?>"><?= $dp['nama'] ?></option>
                                 <?php } ?>
                             </select>
                         </div>
