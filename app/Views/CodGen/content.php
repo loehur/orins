@@ -140,15 +140,17 @@ $max_length = [2, 2, 3, 3, 2];
     var grup = JSON.parse('<?= json_encode($data['grup']) ?>');
     var tipe = JSON.parse('<?= json_encode($data['tipe']) ?>');
     var brand = JSON.parse('<?= json_encode($data['brand']) ?>');
+    var c4 = JSON.parse('<?= json_encode($data['c4']) ?>');
 
     $(document).ready(function() {
         autocomplete(document.getElementById("grup"), grup);
         autocomplete(document.getElementById("tipe"), tipe);
         autocomplete(document.getElementById("brand"), brand);
+        autocomplete(document.getElementById("c4"), c4);
         list_gtb();
     });
 
-    var grup_name, tipe_name, brand_name, model_name;
+    var grup_name, tipe_name, brand_name, c4_name, model_name;
     var gtb, model_c;
     var model = [];
 
@@ -176,6 +178,14 @@ $max_length = [2, 2, 3, 3, 2];
             }
         }
         $('#brand_t').html(brand_t);
+
+        var c4_t = "";
+        for (var key in c4) {
+            if (c4.hasOwnProperty(key)) {
+                c4_t += c4[key].id + ' ' + c4[key].nama + "<br>";
+            }
+        }
+        $('#c4_t').html(c4_t);
     }
 
     setInterval(function() {
@@ -194,11 +204,11 @@ $max_length = [2, 2, 3, 3, 2];
     }, 200);
 
     setInterval(function() {
-        var new_gtb = $('#grup_c').val() + $('#tipe_c').val() + $('#brand_c').val();
+        var new_gtb = $('#grup_c').val() + $('#tipe_c').val() + $('#brand_c').val() + $('#c4_c').val();
 
         if (new_gtb != gtb) {
             gtb = new_gtb;
-            if (gtb.length == 6) {
+            if (gtb.length == 10) {
                 $.ajax({
                     url: '<?= PV::BASE_URL ?>CodGen/load/' + gtb + '/master_model/code_gtb',
                     dataType: "json",
