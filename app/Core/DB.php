@@ -11,7 +11,7 @@ class DB extends DBC
     {
         $this->db_name = DBC::dbm[$db]['db'];
         $this->db_user = DBC::dbm[$db]['user'];
-        $this->dbpass = $_SESSION['secure']['db_pass'];
+        $this->dbpass = DBC::dbm[$db]['pass'];
 
         $this->mysqli = new mysqli(DBC::db_host, $this->db_user, $this->dbpass, $this->db_name) or die('DB Error');
     }
