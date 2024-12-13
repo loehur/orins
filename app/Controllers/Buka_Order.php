@@ -739,7 +739,14 @@ class Buka_Order extends Controller
    function deleteOrder()
    {
       $id_order = $_POST['id_order'];
-      $where = "id_order_data =" . $id_order;
+
+      $cek_price_lock = $this->db(0)->get_where_row('order_data', 'id_order_data = ' . $id_order);
+      if ($cek_price_lock['price_locker'] == 1) {
+         $where = "paket_group = '" . $cek_price_lock['paket_group'] . "' AND paket_ref = '" . $cek_price_lock['paket_ref'] . "'";
+      } else {
+         $where = "id_order_data =" . $id_order;
+      }
+
       $do = $this->db(0)->delete_where('order_data', $where);
       if ($do['errno'] == 0) {
          $this->model('Log')->write($this->userData['user'] . " Delete Order Produksi Success!");
@@ -752,7 +759,13 @@ class Buka_Order extends Controller
    function deleteOrderBarang()
    {
       $id = $_POST['id'];
-      $where = "id =" . $id;
+      $cek_price_lock = $this->db(0)->get_where_row('master_mutasi', 'id = ' . $id);
+      if ($cek_price_lock['price_locker'] == 1) {
+         $where = "paket_group = '" . $cek_price_lock['paket_group'] . "' AND paket_ref = '" . $cek_price_lock['paket_ref'] . "'";
+      } else {
+         $where = "id =" . $id;
+      }
+
       $do = $this->db(0)->delete_where('master_mutasi', $where);
       if ($do['errno'] == 0) {
          $this->model('Log')->write($this->userData['user'] . " Delete Order Barang Success!");
