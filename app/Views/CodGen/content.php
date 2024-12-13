@@ -18,7 +18,7 @@ $max_length = [2, 2, 3, 3, 2];
                                 <div id="<?= $i ?>_t" class="text-sm text-secondary border-0 w-100" style="height: 105px;"></div>
                             </div>
                         </div>
-                        <div class="row mx-0">
+                        <div class="row mx-0 mt-2">
                             <div class="col px-0">
                                 <div style="min-width: 100px;">
                                     <label class="text-sm"><?= strtoupper($name[$k]) ?></label>

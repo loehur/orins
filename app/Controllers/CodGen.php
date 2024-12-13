@@ -36,6 +36,7 @@ class CodGen extends Controller
       $data['grup'] = $this->db(1)->get('master_grup');
       $data['tipe'] = $this->db(1)->get('master_tipe');
       $data['brand'] = $this->db(1)->get('master_brand');
+      $data['c4'] = $this->db(1)->get('master_c4');
       $this->view($this->v_content, $data);
    }
 
