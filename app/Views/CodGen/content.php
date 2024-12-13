@@ -43,17 +43,18 @@ $max_length = [2, 2, 3, 3, 2];
                         <td>
                             <table class="p-0 m-0">
                                 <tr>
-                                    <td><?php
-                                        $no = 0;
-                                        $i = 0;
-                                        foreach ($max_length as $ml) {
-                                            $no += 1; ?>
-                                            <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span>
-                                        <?php
-                                            $i += $ml;
-                                        }
-                                        ?>
-                                    </td>
+                                    <?php
+                                    $no = 0;
+                                    $i = 0;
+                                    foreach ($max_length as $ml) {
+                                        $no += 1; ?>
+                                        <td class="px-0">
+                                            <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span><br>
+                                        </td>
+                                    <?php
+                                        $i += $ml;
+                                    }
+                                    ?>
                                 </tr>
                             </table>
                         </td>
