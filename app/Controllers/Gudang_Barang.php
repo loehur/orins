@@ -81,39 +81,75 @@ class Gudang_Barang extends Controller
       }
 
       //GRUP
+      $tb = "master_grup";
       $cols = 'id,nama';
       $vals = "'" . $grup_c . "','" . $grup . "'";
-      $do = $this->db(0)->insertCols('master_grup', $cols, $vals);
-      if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
-         echo $do['error'];
-         exit();
+      $do = $this->db(0)->insertCols($tb, $cols, $vals);
+      if ($do['errno'] <> 0) {
+         if ($do['errno'] == 1062) {
+            $cek = $this->db(0)->count_where($tb, "id = '" . $grup_c . "' AND nama = '" . $grup . "'");
+            if ($cek == 0) {
+               echo "Kode Grup: " . $grup_c . " sudah digunakan";
+               exit();
+            }
+         } else {
+            echo $do['error'];
+            exit();
+         }
       }
 
       //TIPE
+      $tb = "master_tipe";
       $cols = 'id,nama';
       $vals = "'" . $tipe_c . "','" . $tipe . "'";
-      $do = $this->db(0)->insertCols('master_tipe', $cols, $vals);
-      if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
-         echo $do['error'];
-         exit();
+      $do = $this->db(0)->insertCols($tb, $cols, $vals);
+      if ($do['errno'] <> 0) {
+         if ($do['errno'] == 1062) {
+            $cek = $this->db(0)->count_where($tb, "id = '" . $tipe_c . "' AND nama = '" . $tipe . "'");
+            if ($cek == 0) {
+               echo "Kode Tipe: " . $tipe_c . " sudah digunakan";
+               exit();
+            }
+         } else {
+            echo $do['error'];
+            exit();
+         }
       }
 
       //BRAND
+      $tb = "master_brand";
       $cols = 'id,nama';
       $vals = "'" . $brand_c . "','" . $brand . "'";
       $do = $this->db(0)->insertCols('master_brand', $cols, $vals);
-      if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
-         echo $do['error'];
-         exit();
+      if ($do['errno'] <> 0) {
+         if ($do['errno'] == 1062) {
+            $cek = $this->db(0)->count_where($tb, "id = '" . $brand_c . "' AND nama = '" . $brand . "'");
+            if ($cek == 0) {
+               echo "Kode Brand: " . $brand_c . " sudah digunakan";
+               exit();
+            }
+         } else {
+            echo $do['error'];
+            exit();
+         }
       }
 
       //MODEL
+      $tb = "master_model";
       $cols = 'id,nama,code_gtb,code';
       $vals = "'" . $model_c . "','" . $model . "','" . $code_gtb . "','" . $code_model . "'";
       $do = $this->db(0)->insertCols('master_model', $cols, $vals);
-      if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
-         echo $do['error'];
-         exit();
+      if ($do['errno'] <> 0) {
+         if ($do['errno'] == 1062) {
+            $cek = $this->db(0)->count_where($tb, "code = '" . $grup_c . $tipe_c . $brand_c . $model_c . "' AND nama = '" . $brand . "'");
+            if ($cek == 0) {
+               echo "Kode Model: " . $grup_c . $tipe_c . $brand_c . $model_c . " sudah digunakan";
+               exit();
+            }
+         } else {
+            echo $do['error'];
+            exit();
+         }
       }
 
       $code_f = strtoupper($_POST['code_f']);
