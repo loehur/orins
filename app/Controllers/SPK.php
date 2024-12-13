@@ -150,7 +150,7 @@ class SPK extends Controller
 
    function cekSPK($order, $parse)
    {
-      $data['produk'] = $this->db(0)->get_where('produk', 'pj = 0 ORDER BY freq DESC, id_produk');
+      $data['produk'] = $this->db(0)->get_where('produk', 'pj >= 0 ORDER BY freq DESC, id_produk');
       $data_get = explode(",", $order);
 
       $data['order'] = [];
