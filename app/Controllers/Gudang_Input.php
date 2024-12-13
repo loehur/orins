@@ -110,23 +110,24 @@ class Gudang_Input extends Controller
       $ref = $_POST['head_id'];
       $barang_ = $_POST['barang_'];
       $head = $this->db(0)->get_where_row('master_input', "id = '" . $ref . "'");
-      $barang =  $this->db(0)->get_where_row('master_barang', "code = '" . $barang_ . "'");
+      $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $barang_ . "'");
 
       $qty = $_POST['qty'];
       $sds = $head['sds'];
       $sn =  $barang['sn'];
       $id_sumber = $head['id_sumber'];
+      $id_barang = $barang['id_barang'];
       $h_beli = $barang['harga'];
 
-      $cols = 'ref,jenis,kode_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
+      $cols = 'ref,jenis,id_barang,kode_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
 
       if ($sn == 1) {
-         $vals = "'" . $ref . "',0,'" . $barang_ . "','" . $id_sumber . "',0," . $h_beli . ",1," . $sds . "," . $sn;
+         $vals = "'" . $ref . "',0," . $id_barang . ",'" . $barang_ . "','" . $id_sumber . "',0," . $h_beli . ",1," . $sds . "," . $sn;
          for ($x = 1; $x <= $qty; $x++) {
             $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
          }
       } else {
-         $vals = "'" . $ref . "',0,'" . $barang_ . "','" . $id_sumber . "',0," . $h_beli . "," . $qty . "," . $sds . "," . $sn;
+         $vals = "'" . $ref . "',0," . $id_barang . ",'" . $barang_ . "','" . $id_sumber . "',0," . $h_beli . "," . $qty . "," . $sds . "," . $sn;
          $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       }
       echo $do['errno'] == 0 ? 0 : $do['error'];
