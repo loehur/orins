@@ -49,7 +49,7 @@ $max_length = [2, 2, 3, 3, 2];
                                     foreach ($max_length as $ml) {
                                         $no += 1; ?>
                                         <td class="px-0">
-                                            <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span><br>
+                                            D<span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span><br>
                                         </td>
                                     <?php
                                         $i += $ml;
