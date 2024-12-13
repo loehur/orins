@@ -102,7 +102,7 @@
                             <select name="detail[]" multiple class="tize border-0 w-100" required id="barang">
                                 <option></option>
                                 <?php foreach ($data['detail'] as $br) { ?>
-                                    <option value="<?= $br['id_index'] ?>"><?= $br['detail_group'] ?></option>
+                                    <option value="<?= $br['id_index'] ?>"><?= $br['detail_group'] ?> <?= $br['note'] <> "" ? "(" . $br['note'] . ")" : "" ?></option>
                                 <?php } ?>
                             </select>
                         </div>

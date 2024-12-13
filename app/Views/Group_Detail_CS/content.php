@@ -11,7 +11,7 @@
                             <td>
                                 <div class="row mb-3">
                                     <div class="col-auto">
-                                        <span class="text-success fw-bold"><?= $a['detail_group'] ?></span>
+                                        <span class="text-success fw-bold"><?= $a['detail_group'] ?> <?= $a['note'] == "" ? "" : "(" . $a['note'] . ")" ?></span>
                                     </div>
                                     <div class="col">
                                         <button onclick="chgActionMulti(<?= $a['id_detail_group'] ?>,'<?= $a['detail_group'] ?>')" type="button" class="btn btn-sm btn-success bg-gradient" data-bs-toggle="modal" data-bs-target="#itemMulti">Tambah</button>
