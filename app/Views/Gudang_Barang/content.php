@@ -36,13 +36,13 @@ $max_length = [2, 2, 2, 3];
                 </div>
                 <div class="col mb-2 mt-auto">
                     <div class="mb-2">
-                        <input name="sn" class="form-check-input" type="checkbox" checked value="1">
+                        <input name="sn" class="form-check-input" type="checkbox" value="1">
                         <label class="form-check-label" for="flexCheckDefault">
                             SN
                         </label>
                     </div>
                     <div class="mb-2">
-                        <input name="pb" class="form-check-input" type="checkbox" checked value="1">
+                        <input name="pb" class="form-check-input" type="checkbox" value="1">
                         <label class="form-check-label" for="flexCheckDefault">
                             Publish
                         </label>
@@ -75,11 +75,15 @@ $max_length = [2, 2, 2, 3];
                                     }
                                     ?>
                                 </tr>
-                                <tr>
-                                    <td><?= $a['pb'] == 1 ? "<b>PB</b>" : "" ?> </td>
-                                    <td><?= $a['sn'] == 1 ? "<b>SN</b>" : "" ?></td>
-                                </tr>
                             </table>
+                            <input name="pb" class="form-check-input check" type="checkbox" data-id="<?= $a['id'] ?>" data-col="pb" value="1" <?= $a['pb'] == 1 ? "checked" : '' ?>>
+                            <label class="form-check-label" for="flexCheckDefault">
+                                PB
+                            </label>
+                            <input name="pb" class="form-check-input check" type="checkbox" data-id="<?= $a['id'] ?>" data-col="sn" value="1" <?= $a['sn'] == 1 ? "checked" : '' ?>>
+                            <label class="form-check-label" for="flexCheckDefault">
+                                SN
+                            </label>
                         </td>
                         <td class="">
                             <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span>
@@ -100,6 +104,31 @@ $max_length = [2, 2, 2, 3];
 <script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
 
 <script>
+    $('.check').change(function() {
+        var id = $(this).attr('data-id');
+        var col = $(this).attr('data-col');
+        if ($(this).is(':checked')) {
+            val = 1;
+        } else {
+            val = 0;
+        }
+
+        $.ajax({
+            url: "<?= PV::BASE_URL ?>Gudang_Barang/update_pbsn",
+            data: {
+                id: id,
+                col: col,
+                val: val
+            },
+            type: "POST",
+            success: function(res) {
+                if (res != 0) {
+                    alert(res);
+                }
+            },
+        });
+    })
+
     $(".cell_edit_name").on('dblclick', function() {
         click = click + 1;
         if (click != 1) {

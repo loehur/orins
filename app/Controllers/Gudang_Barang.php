@@ -274,4 +274,16 @@ class Gudang_Barang extends Controller
       }
       echo 0;
    }
+
+   public function update_pbsn()
+   {
+      $id = $_POST['id'];
+      $col = $_POST['col'];
+      $val = $_POST['val'];
+
+      $where = "id = " . $id;
+      $set = $col . " = " . $val;
+      $update = $this->db(0)->update("master_barang", $set, $where);
+      echo $update['errno'];
+   }
 }
