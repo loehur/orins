@@ -43,7 +43,7 @@ class Produk extends Controller
       }
 
       $data['parse'] = $pj;
-      $data['produk'] = $this->db(0)->get_where('produk', 'pj = ' . $pj . ' ORDER BY freq DESC, id_produk');
+      $data['produk'] = $this->db(0)->get_where('produk', 'pj = ' . $pj . ' ORDER BY id_produk DESC, id_produk');
 
       $data['detail'] = $this->db(0)->get_where('detail_group', 'pj = ' . $pj);
       $data['divisi'] = $this->db(0)->get('divisi');
