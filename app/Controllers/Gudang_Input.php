@@ -132,4 +132,24 @@ class Gudang_Input extends Controller
       }
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
+
+   function update_sn()
+   {
+      $kode = $_POST['kode'];
+      $id = $_POST['id'];
+      $value = $_POST['value'];
+      $col = $_POST['col'];
+      $primary = $_POST['primary'];
+      $tb = $_POST['tb'];
+      $set = $col . " = '" . $value . "'";
+      $where = $primary . " = " . $id;
+
+      $cek_sn = $this->db(0)->count_where('master_mutasi', "sn_unic = '" . $kode . $value . "'");
+      if ($cek_sn == 0) {
+         $up = $this->db(0)->update($tb, $set, $where);
+         echo $up['errno'] == 0 ? 0 : $up['error'];
+      } else {
+         echo "Duplicate SN " . $value;
+      }
+   }
 }

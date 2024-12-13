@@ -82,7 +82,7 @@
                     </td>
                     <td>
                         <?php if ($a['sn_c'] == 1) { ?>
-                            <span data-id="<?= $a['id'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-tb="master_mutasi" class="cell_edit"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
+                            <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['kode_barang'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-tb="master_mutasi" class="cell_edit"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
                         <?php } ?>
                     </td>
                     <td class="align-middle text-end">
@@ -131,6 +131,7 @@
         }
 
         var id = $(this).attr('data-id');
+        var kode = $(this).attr('data-kode');
         var primary = $(this).attr('data-primary');
         var col = $(this).attr('data-col');
         var tb = $(this).attr('data-tb');
