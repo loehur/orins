@@ -153,7 +153,7 @@
             <form action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
                 <div class="modal-body bg-primary bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
-                        <input type="" name="aff_target" id="aff_target">
+                        <input type="hidden" name="aff_target" id="aff_target">
                         <select class="tize loadDetail_aff" name="id_produk" required>
                             <option></option>
                             <?php foreach ($data['produk'] as $dp) { ?>
