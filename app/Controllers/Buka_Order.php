@@ -116,6 +116,12 @@ class Buka_Order extends Controller
                }
             }
          }
+
+         if (strlen($do['paket_ref']) > 0) {
+            if (!isset($total_per_paket[$do['paket_ref']])) {
+               $total_per_paket[$do['paket_ref']] = 0;
+            }
+         }
       }
 
       foreach ($data['order_barang'] as $dm) {
@@ -139,6 +145,12 @@ class Buka_Order extends Controller
                } else {
                   $total_per_paket[$dm['paket_ref']] = ($db['harga_' . $parse] * $dm['qty']);
                }
+            }
+         }
+
+         if (strlen($dm['paket_ref']) > 0) {
+            if (!isset($total_per_paket[$dm['paket_ref']])) {
+               $total_per_paket[$dm['paket_ref']] = 0;
             }
          }
       }
