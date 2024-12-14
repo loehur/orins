@@ -5,7 +5,7 @@
     }
 </style>
 <main>
-    <div class="position-fixed bg-white w-100" style="top:0; padding-top:70px;">
+    <div class="position-fixed bg-white w-100" style="top:0; padding-top:60px;">
         <div class="p-2 rounded bg-light ms-2 mb-2 me-1 border pb-0">
             <div class="row mb-1">
                 <div class="col-auto pe-0">
