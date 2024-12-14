@@ -599,11 +599,11 @@ class Buka_Order extends Controller
       $id_karyawan = $_POST['id_karyawan'];
 
       $n_ref = [];
-      $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' GROUP BY ref";
+      $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' AND ref <> '' GROUP BY ref";
       $n_ref =  $this->db(0)->get_cols_where('order_data', 'ref', $where_n, 1, 'ref');
 
       $n2_ref = [];
-      $where_n2 = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' GROUP BY ref";
+      $where_n2 = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' AND ref <> '' GROUP BY ref";
       $n2_ref =  $this->db(0)->get_cols_where('master_mutasi', 'ref', $where_n2, 1, 'ref');
       foreach ($n2_ref as $key => $n2) {
          if (isset($n_ref[$key])) {
