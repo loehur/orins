@@ -615,7 +615,7 @@ class Buka_Order extends Controller
       $qty_ref += 1;
       $qty_ref = substr($qty_ref, -5);
       $nv = str_pad($qty_ref, 5, "0", STR_PAD_LEFT);
-      $ref = $this->userData['id_toko'] . date("ymd") . $nv;
+      $ref = $this->userData['id_toko'] . date("ymd") . rand(0, 9) . $nv;
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
       $data['order'] = $this->db(0)->get_where('order_data', $where);
