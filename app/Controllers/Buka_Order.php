@@ -593,11 +593,11 @@ class Buka_Order extends Controller
       $n2_ref =  $this->db(0)->get_cols_where('master_mutasi', 'ref', $where_n2, 1, 'ref');
       foreach ($n2_ref as $key => $n2) {
          if (!isset($n_ref[$key])) {
-            $n_ref[$key] = $n2;
+            unset($n2_ref[$key]);
          }
       }
 
-      $n_ref = count($n_ref);
+      $n_ref = count($n_ref) + count($n2_ref);
       $n_ref += 1;
       $n_ref = substr($n_ref, -5);
       $nv = str_pad($n_ref, 5, "0", STR_PAD_LEFT);
