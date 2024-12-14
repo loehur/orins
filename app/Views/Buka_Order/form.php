@@ -4,7 +4,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Produk - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
+            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
                 <div class="modal-body bg-primary bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <select class="tize loadDetail" name="id_produk" required>
@@ -41,7 +41,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Paket - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add_paket/<?= $id_pelanggan_jenis ?>" method="POST">
+            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/add_paket/<?= $id_pelanggan_jenis ?>" method="POST">
                 <div class="modal-body bg-danger bg-gradient bg-opacity-10 px-2">
                     <div class="row mb-2">
                         <div class="col">
@@ -74,7 +74,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Jasa - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
+            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
                 <div class="modal-body bg-secondary bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <select class="tize loadDetail_Jasa" name="id_produk" required>
@@ -111,7 +111,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Barang - <b><?= $id_pelanggan_jenis == 1 ? "Umum" : "Dealer" ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add_barang" method="POST">
+            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/add_barang" method="POST">
                 <div class="modal-body bg-success bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <select class="tize loadDetail_Barang" name="id_produk" required>
@@ -150,7 +150,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Produk (Afiliasi) - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
+            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
                 <div class="modal-body bg-primary bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <input type="hidden" name="aff_target" id="aff_target">
@@ -189,7 +189,7 @@
                 <h5 class="modal-title" id="exampleModalLabel"><small><span class="produk_harga"></span></small></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/add_price/<?= $id_pelanggan_jenis ?>" method="POST">
+            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/add_price/<?= $id_pelanggan_jenis ?>" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" required>Harga</label>
@@ -212,7 +212,7 @@
                 <h5 class="modal-title" id="exampleModalLabel"><b><span class="produk_harga"></span></b></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= PV::BASE_URL ?>Buka_Order/diskon" method="POST">
+            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/diskon" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" required>Diskon Rp</label>

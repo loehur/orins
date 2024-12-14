@@ -578,10 +578,7 @@ class Buka_Order extends Controller
          $vals = $id_pelanggan . ",'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "'," . $id_pelanggan_jenis;
 
          $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
-         if ($do['errno'] == 0) {
-            $this->model('Log')->write($this->userData['user'] . " Add Pelanggan Success!");
-            echo 0;
-         } else {
+         if ($do['errno'] <> 0) {
             echo $do['error'];
             exit();
          }
@@ -589,13 +586,18 @@ class Buka_Order extends Controller
 
       $id_karyawan = $_POST['id_karyawan'];
 
-      $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%'";
-      $n =  $this->db(0)->count_distinct_where('order_data', 'ref', $where_n);
+      $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' GROUP BY ref";
+      $n_ref =  $this->db(0)->get_cols_where('order_data', 'ref', $where_n, 1, 'ref');
 
-      $where_n2 = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%'";
-      $n2 = $this->db(0)->count_distinct_where('master_mutasi', 'ref', $where_n2);
-      $n_ref = $n + $n2;
+      $where_n2 = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' GROUP BY ref";
+      $n2_ref =  $this->db(0)->get_cols_where('master_mutasi', 'ref', $where_n2, 1, 'ref');
+      foreach ($n2_ref as $key => $n2) {
+         if (!isset($n_ref[$key])) {
+            $n_ref[$key] = $n2;
+         }
+      }
 
+      $n_ref = count($n_ref);
       $n_ref += 1;
       $n_ref = substr($n_ref, -5);
       $nv = str_pad($n_ref, 5, "0", STR_PAD_LEFT);
@@ -655,7 +657,6 @@ class Buka_Order extends Controller
       }
       //===========================
 
-
       $data_harga = $this->db(0)->get('produk_harga');
       $detail_harga = [];
       foreach ($data['order'] as $do) {
@@ -696,8 +697,6 @@ class Buka_Order extends Controller
       //updateFreqCS
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
 
-      $error = 0;
-
       foreach ($data['barang'] as $dbr) {
          $barang_c = $dbr['kode_barang'];
          $harga = $this->db(0)->get_where_row('master_barang', "code ='" . $barang_c . "'")['harga_' . $id_pelanggan_jenis];
@@ -716,13 +715,12 @@ class Buka_Order extends Controller
             $sn_c = 1;
          }
 
-
          $where = "id = " . $dbr['id'];
          $set = "stat = 1, harga_jual = " . $harga . ", sn_c = " . $sn_c . ", cs_id = " . $id_karyawan . ", id_target = " . $id_pelanggan . ", jenis_target = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
          $update = $this->db(0)->update("master_mutasi", $set, $where);
          if ($update['errno'] <> 0) {
-            $error = $update['error'];
-            break;
+            echo $update['error'];
+            exit();
          }
       }
 
@@ -754,8 +752,8 @@ class Buka_Order extends Controller
          $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {
-            $error = $update['error'];
-            break;
+            echo $update['error'];
+            exit();
          }
       }
 
@@ -770,14 +768,12 @@ class Buka_Order extends Controller
          $set = "margin_paket = " . $val['margin_paket'];
          $update = $this->db(0)->update($val['tb'], $set, $where);
          if ($update['errno'] <> 0) {
-            $error = $update['error'];
-            break;
+            echo $update['error'];
+            exit();
          }
       }
 
-      if ($error == 0) {
-         echo 1;
-      }
+      echo $id_pelanggan;
    }
 
    function deleteOrder()

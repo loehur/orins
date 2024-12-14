@@ -4,7 +4,7 @@
             <div class="col px-1">
                 <select class="border rounded tize" name="id_pelanggan" required>
                     <option></option>
-                    <?php foreach ($this->dPelanggan as $p) { ?>
+                    <?php foreach ($data['pelanggan'] as $p) { ?>
                         <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], 2) ?></option>
                     <?php } ?>
                 </select>

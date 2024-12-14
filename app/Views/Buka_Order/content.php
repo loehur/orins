@@ -31,7 +31,7 @@ $mgpaket = $data['margin_paket'];
             ?>
             <div class="row <?= count($data['order']) == 0 && count($data['order_barang']) == 0 ? "d-none" : "" ?>">
                 <div class="col px-2">
-                    <form action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
+                    <form class="proses" action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
                         <div class="row mb-2">
                             <div class="col px-1" style="max-width: 300px;">
                                 <input name="new_customer" class="form-control form-control-sm" placeholder="New Customer">
@@ -426,7 +426,7 @@ $mgpaket = $data['margin_paket'];
         });
     })
 
-    $("form").on("submit", function(e) {
+    $("form.ajax").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
             url: $(this).attr('action'),
@@ -435,15 +435,34 @@ $mgpaket = $data['margin_paket'];
             success: function(res) {
                 if (res == 0) {
                     content();
-                } else if (res == 1) {
-                    var parse = $("select[name=id_pelanggan]").val();
-                    location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + parse;
                 } else {
                     alert(res);
                 }
             }
         });
     });
+
+    $("form.proses").on("submit", function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            type: $(this).attr("method"),
+            success: function(res) {
+                if (isNumeric(res) == false) {
+                    alert(res);
+                } else {
+                    location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + res;
+                }
+            }
+        });
+    });
+
+    function isNumeric(str) {
+        if (typeof str != "string") return false
+        return !isNaN(str) &&
+            !isNaN(parseFloat(str))
+    }
 
     var click = 0;
     $("span.edit_n").on('dblclick', function() {
