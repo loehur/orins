@@ -53,7 +53,7 @@
     <!-- Main page content-->
     <small>
         <div class="ms-2 rounded pb-2 me-1 border mt-5 pt-5" style="max-width: 500px;">
-            <div class="row row-cols-1 mx-2 mt-2">
+            <div class="row mx-2 mt-2">
                 <?php foreach ($data['mutasi'] as $ref => $do_) { ?>
                     <?php
                     $no = 0;
