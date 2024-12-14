@@ -41,22 +41,30 @@ class Data_Order extends Controller
          case 0:
             //DALAM PROSES 7 HARI
             $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND CURDATE() <= (insertTime + INTERVAL 7 DAY)  ORDER BY id_order_data DESC";
+            $where2 = "(id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND CURDATE() <= (insertTime + INTERVAL 7 DAY)  ORDER BY id DESC";
             break;
          case 1:
             //DALAM PROSES > 7 HARI
             $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 7 DAY) AND CURDATE() <= (insertTime + INTERVAL 30 DAY)) ORDER BY id_order_data DESC";
+            $where2 = "(id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 7 DAY) AND CURDATE() <= (insertTime + INTERVAL 30 DAY)) ORDER BY id DESC";
             break;
          case 2:
             //DALAM PROSES > 30 HARI
             $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 30 DAY) AND CURDATE() <= (insertTime + INTERVAL 365 DAY)) ORDER BY id_order_data DESC";
+            $where2 = "(id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 30 DAY) AND CURDATE() <= (insertTime + INTERVAL 365 DAY)) ORDER BY id DESC";
             break;
          case 3:
             //DALAM PROSES > 1 TAHUN
             $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND CURDATE() > (insertTime + INTERVAL 365 DAY) ORDER BY id_order_data DESC";
+            $where2 = "(id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND CURDATE() > (insertTime + INTERVAL 365 DAY) ORDER BY id DESC";
             break;
       }
 
       $data['order'] = $this->db(0)->get_where('order_data', $where);
+      if (count($data['order']) == 0) {
+         $data['order'] = $this->db(0)->get_where('master_mutasi', $where2);
+      }
+
 
       $refs = array_column($data['order'], 'ref');
       if (count($refs) > 0) {
