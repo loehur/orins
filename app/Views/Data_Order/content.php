@@ -53,7 +53,7 @@
     <!-- Main page content-->
     <small>
         <div class="mx-2 rounded px-2 mt-3 pt-5">
-            <div class="row">
+            <div class="row text-sm">
                 <div class="col px-0" style="max-width: 500px;">
                     <div class="row row-cols-1 mx-0 mt-2">
                         <?php foreach ($data['order'] as $ref => $do_) { ?>
@@ -127,14 +127,14 @@
                                         <?php if ($do['id_afiliasi'] == 0 || $this->userData['id_toko'] == $do['id_toko']) { ?>
                                             <td class="text-end pe-1">
                                                 <small>
-                                                    A
+                                                    &nbsp;
                                                     <?php if ($ambil_all == true) { ?>
                                                         <i class="fa-solid fa-circle-check text-purple"></i>
                                                     <?php } else { ?>
                                                         <i class="fa-regular fa-circle"></i>
                                                     <?php } ?>
                                                     <br>
-                                                    L
+                                                    &nbsp;
                                                     <?php if ($lunas == true) { ?>
                                                         <i class="fa-solid fa-circle-check text-success"></i>
                                                     <?php } else { ?>
@@ -218,7 +218,7 @@
                                         ?>
                                         <td class="text-end pe-1">
                                             <small>
-                                                L
+                                                &nbsp;
                                                 <?php if ($lunas == true) { ?>
                                                     <i class="fa-solid fa-circle-check text-success"></i>
                                                 <?php } else { ?>
