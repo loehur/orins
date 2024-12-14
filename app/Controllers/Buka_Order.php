@@ -677,44 +677,14 @@ class Buka_Order extends Controller
 
       $error = 0;
 
-      foreach ($data['order'] as $do) {
-         $detail_harga = unserialize($do['detail_harga']);
-         $harga = 0;
-         $diskon = 0;
-         $jumlah = $do['jumlah'];
-
-         foreach ($detail_harga as $key => $dh_o) {
-            $diskon += ($dh_o['d'] * $jumlah);
-            foreach ($data_harga as $dh) {
-               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
-                  $harga +=  $dh['harga_' . $id_pelanggan_jenis];
-                  $detail_harga[$key]['h'] = $dh['harga_' . $id_pelanggan_jenis];
-
-                  if (strlen($do['paket_ref']) > 0) {
-                     if (isset($total_per_paket[$do['paket_ref']])) {
-                        $total_per_paket[$do['paket_ref']] += ($detail_harga[$key]['h'] * $do['jumlah']);
-                     } else {
-                        $total_per_paket[$do['paket_ref']] = ($detail_harga[$key]['h'] * $do['jumlah']);
-                     }
-                  }
-
-                  break;
-               }
-            }
-         }
-
-         $where = "id_order_data = " . $do['id_order_data'];
-         $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
-         $update = $this->db(0)->update("order_data", $set, $where);
-         if ($update['errno'] <> 0) {
-            $error = $update['error'];
-            break;
-         }
-      }
-
       foreach ($data['barang'] as $dbr) {
          $barang_c = $dbr['kode_barang'];
          $harga = $this->db(0)->get_where_row('master_barang', "code ='" . $barang_c . "'")['harga_' . $id_pelanggan_jenis];
+
+         if ($harga == 0) {
+            echo "Harga " . $barang_c . " belum ditentukan";
+            exit();
+         }
 
          $id_sumber = $dbr['id_sumber'];
          $qty = $dbr['qty'];
@@ -729,6 +699,39 @@ class Buka_Order extends Controller
          $where = "id = " . $dbr['id'];
          $set = "stat = 1, harga_jual = " . $harga . ", sn_c = " . $sn_c . ", cs_id = " . $id_karyawan . ", id_target = " . $id_pelanggan . ", jenis_target = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
          $update = $this->db(0)->update("master_mutasi", $set, $where);
+         if ($update['errno'] <> 0) {
+            $error = $update['error'];
+            break;
+         }
+      }
+
+      foreach ($data['order'] as $do) {
+         $detail_harga = unserialize($do['detail_harga']);
+         $harga = 0;
+         $diskon = 0;
+         $jumlah = $do['jumlah'];
+
+         foreach ($detail_harga as $key => $dh_o) {
+            $diskon += ($dh_o['d'] * $jumlah);
+            foreach ($data_harga as $dh) {
+               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
+                  $harga +=  $dh['harga_' . $id_pelanggan_jenis];
+                  $detail_harga[$key]['h'] = $dh['harga_' . $id_pelanggan_jenis];
+                  if (strlen($do['paket_ref']) > 0) {
+                     if (isset($total_per_paket[$do['paket_ref']])) {
+                        $total_per_paket[$do['paket_ref']] += ($detail_harga[$key]['h'] * $do['jumlah']);
+                     } else {
+                        $total_per_paket[$do['paket_ref']] = ($detail_harga[$key]['h'] * $do['jumlah']);
+                     }
+                  }
+                  break;
+               }
+            }
+         }
+
+         $where = "id_order_data = " . $do['id_order_data'];
+         $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
+         $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {
             $error = $update['error'];
             break;
