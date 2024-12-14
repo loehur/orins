@@ -53,7 +53,7 @@
     <!-- Main page content-->
     <small>
         <div class="ms-2 rounded pb-2 me-1 border mt-3 pt-5">
-            <div class="row mx-1">
+            <div class="row mx-2">
                 <div class="col px-0" style="max-width: 500px;">
                     <div class="row row-cols-1 mx-0 mt-2">
                         <?php foreach ($data['order'] as $ref => $do_) { ?>
