@@ -52,8 +52,8 @@
     </div>
     <!-- Main page content-->
     <small>
-        <div class="ms-2 rounded pb-2 me-1 border mt-3 pt-5">
-            <div class="row mx-1">
+        <div class="mx-2 rounded px-2 mt-3 pt-5">
+            <div class="row">
                 <div class="col px-0" style="max-width: 500px;">
                     <div class="row row-cols-1 mx-0 mt-2">
                         <?php foreach ($data['order'] as $ref => $do_) { ?>
@@ -127,14 +127,12 @@
                                         <?php if ($do['id_afiliasi'] == 0 || $this->userData['id_toko'] == $do['id_toko']) { ?>
                                             <td class="text-end pe-1">
                                                 <small>
-                                                    Ambil
                                                     <?php if ($ambil_all == true) { ?>
                                                         <i class="fa-solid fa-circle-check text-purple"></i>
                                                     <?php } else { ?>
                                                         <i class="fa-regular fa-circle"></i>
                                                     <?php } ?>
                                                     <br>
-                                                    Lunas
                                                     <?php if ($lunas == true) { ?>
                                                         <i class="fa-solid fa-circle-check text-success"></i>
                                                     <?php } else { ?>
@@ -216,7 +214,6 @@
                                         ?>
                                         <td class="text-end pe-1 align-top">
                                             <small>
-                                                Lunas
                                                 <?php if ($lunas == true) { ?>
                                                     <i class="fa-solid fa-circle-check text-success"></i>
                                                 <?php } else { ?>
