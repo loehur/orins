@@ -113,9 +113,9 @@
                                 <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
                                     <tr data-id="<?= $do['id_pelanggan'] ?>" class="cekPLG" style="cursor: pointer;">
                                         <td class="p-1">
-                                            <span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary"><b><?= strtoupper($pelanggan) ?></b></span>
+                                            <span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary"><b><?= strtoupper($pelanggan) ?></b></span> #<?= substr($do['id_pelanggan'], 2) ?>
                                             <br>
-                                            <small><?= $cs  ?> [<?= substr($do['insertTime'], 2, -3) ?>]</small>
+                                            <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
                                         </td>
                                     <?php }
                                     ?>

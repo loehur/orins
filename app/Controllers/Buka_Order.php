@@ -565,7 +565,28 @@ class Buka_Order extends Controller
 
    function proses($id_pelanggan_jenis)
    {
-      $id_pelanggan = $_POST['id_pelanggan'];
+      if ($_POST['id_pelanggan'] <> "") {
+         $id_pelanggan = $_POST['id_pelanggan'];
+      } else {
+         $hp = $_POST['hp'];
+         $nama = $_POST['new_customer'];
+
+         $get_lastID = $this->db(0)->get_cols('pelanggan', 'MAX(id_pelanggan) as max', 0);
+         $id_pelanggan = $get_lastID['max'] + 1;
+
+         $cols = 'id_pelanggan, id_toko, nama, no_hp, id_pelanggan_jenis';
+         $vals = $id_pelanggan . ",'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "'," . $id_pelanggan_jenis;
+
+         $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
+         if ($do['errno'] == 0) {
+            $this->model('Log')->write($this->userData['user'] . " Add Pelanggan Success!");
+            echo 0;
+         } else {
+            echo $do['error'];
+            exit();
+         }
+      }
+
       $id_karyawan = $_POST['id_karyawan'];
 
       $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%'";

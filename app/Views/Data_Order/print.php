@@ -18,6 +18,7 @@
     if (count($data['order']) > 0) {
         foreach ($data['order'] as $do) {
             $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
+            $id_pelanggan = $data['pelanggan'][$do['id_pelanggan']]['id_pelanggan'];
             $cs_name = $data['karyawan'][$do['id_penerima']]['nama'];
             $cs = substr($cs_name, 0, 2) . "-" . $do['id_penerima'];
             break;
@@ -34,7 +35,7 @@
 
     <table style="width: 100%;">
         <tr>
-            <td><small>Pelanggan</small><br><b><?= strtoupper($pelanggan) ?></b></td>
+            <td><small>Pelanggan</small><br><b><?= strtoupper($pelanggan) ?></b> #<?= substr($id_pelanggan, 2) ?></td>
             <td><small>CS</small><br><b><?= strtoupper($cs) ?></b></td>
             <td style="text-align: right;"><small>Tanggal</small><br><b><?= date('d/m/y H:i', strtotime($do['insertTime'])) ?></b></td>
             <td style="text-align: right;"><small>No. Referensi</small><br><b><?= substr($do['ref'], 0, -5) ?>-<span style="color: green;"><?= substr($do['ref'], -5) ?></span></b></td>

@@ -32,12 +32,20 @@ $mgpaket = $data['margin_paket'];
             <div class="row <?= count($data['order']) == 0 && count($data['order_barang']) == 0 ? "d-none" : "" ?>">
                 <div class="col px-2">
                     <form action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
+                        <div class="row mb-2">
+                            <div class="col px-1" style="max-width: 300px;">
+                                <input name="new_customer" class="form-control form-control-sm" placeholder="New Customer">
+                            </div>
+                            <div class="col px-1" style="max-width: 300px;">
+                                <input name="hp" class="form-control form-control-sm" placeholder="Phone Number">
+                            </div>
+                        </div>
                         <div class="row pb-2">
                             <div class="col px-1" style="max-width: 300px;">
-                                <select class="tize shadow-none" name="id_pelanggan" required>
+                                <select class="tize shadow-none" id="pelanggan" name="id_pelanggan">
                                     <option value="">Customer Name (<?= $pelanggan_jenis ?>)</option>
                                     <?php foreach ($data['pelanggan'] as $p) { ?>
-                                        <option value="<?= $p['id_pelanggan'] ?>"><?= strtoupper($p['nama']) ?> | <?= $p['no_hp'] ?></option>
+                                        <option value="<?= $p['id_pelanggan'] ?>"><?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], 2) ?> | <?= $p['no_hp'] ?></option>
                                     <?php } ?>
                                 </select>
                             </div>
@@ -312,8 +320,17 @@ $mgpaket = $data['margin_paket'];
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('select.tize').selectize();
+        $('.tize').selectize();
     });
+
+    $('select[name=id_pelanggan]').change(function() {
+        $('input[name=new_customer]').val("");
+        $('input[name=hp]').val("");
+    })
+
+    $('input[name=new_customer]').keypress(function() {
+        $("#pelanggan")[0].selectize.clear();
+    })
 
     $("button.delError").click(function() {
         var id_ = $(this).attr('data-id');

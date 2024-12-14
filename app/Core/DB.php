@@ -57,6 +57,34 @@ class DB extends DBC
         return $reply;
     }
 
+    public function get_cols($table, $cols, $row = 1, $index = "")
+    {
+        $reply = [];
+        $query = "SELECT $cols FROM $table";
+        $result = $this->mysqli->query($query);
+        if ($result) {
+            switch ($row) {
+                case "0":
+                    $reply = $result->fetch_assoc();
+                case "1";
+                    while ($row = $result->fetch_assoc())
+                        if ($index == "")
+                            $reply[] = $row;
+                        else
+                            $reply[$row[$index]] = $row;
+                    break;
+            }
+
+            if (is_array($reply)) {
+                return $reply;
+            } else {
+                return [];
+            }
+        } else {
+            return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
+        }
+    }
+
     public function get_cols_where($table, $cols, $where, $row = 1, $index = "")
     {
         $reply = [];

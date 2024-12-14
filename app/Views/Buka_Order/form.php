@@ -17,7 +17,7 @@
                     <div id="detail"></div>
                     <?php if (count($mgpaket) > 0) { ?>
                         <div class="mb-2 mt-5">
-                            <label class="text-sm fw-bold text-danger ps-1">Link to Package</label>
+                            <label class="text-sm fw-bold text-danger ps-1">Include to Package</label>
                             <select class="tize" name="id_paket">
                                 <option></option>
                                 <?php foreach ($mgpaket as $dp) { ?>
@@ -87,7 +87,7 @@
                     <div id="detail_jasa"></div>
                     <?php if (count($mgpaket) > 0) { ?>
                         <div class="mb-2 mt-5">
-                            <label class="text-sm fw-bold text-danger ps-1">Link to Package</label>
+                            <label class="text-sm fw-bold text-danger ps-1">Include to Package</label>
                             <select class="tize" name="id_paket">
                                 <option></option>
                                 <?php foreach ($mgpaket as $dp) { ?>
@@ -128,7 +128,7 @@
                     </div>
                     <?php if (count($mgpaket) > 0) { ?>
                         <div class="mb-2 mt-5">
-                            <label class="text-sm fw-bold text-danger ps-1">Link to Package</label>
+                            <label class="text-sm fw-bold text-danger ps-1">Include to Package</label>
                             <select class="tize" name="id_paket">
                                 <option></option>
                                 <?php foreach ($mgpaket as $dp) { ?>
@@ -164,7 +164,7 @@
                     <div id="detail_aff"></div>
                     <?php if (count($mgpaket) > 0) { ?>
                         <div class="mb-2 mt-5">
-                            <label class="text-sm fw-bold text-danger ps-1">Link to Package</label>
+                            <label class="text-sm fw-bold text-danger ps-1">Include to Package</label>
                             <select class="tize" name="id_paket">
                                 <option></option>
                                 <?php foreach ($mgpaket as $dp) { ?>

@@ -67,19 +67,12 @@ class Pelanggan extends Controller
          $vals = "'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "'," . $id_pelanggan_jenis;
       }
 
-      $whereCount = "id_toko = " . $this->userData['id_toko'] . " AND nama = '" . $nama . "' AND id_pelanggan_jenis = " . $id_pelanggan_jenis;
-      $dataCount = $this->db(0)->count_where('pelanggan', $whereCount);
-      if ($dataCount < 1) {
-         $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
-         if ($do['errno'] == 0) {
-            $this->model('Log')->write($this->userData['user'] . " Add Pelanggan Success!");
-            echo 0;
-         } else {
-            print_r($do['error']);
-         }
+      $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
+      if ($do['errno'] == 0) {
+         $this->model('Log')->write($this->userData['user'] . " Add Pelanggan Success!");
+         echo 0;
       } else {
-         $this->model('Log')->write($this->userData['user'] . " Add Pelanggan Failed, Double Forbidden!");
-         echo "Pelanggan dengan Nama tersebut sudah Ada!";
+         echo $do['error'];
       }
    }
 
