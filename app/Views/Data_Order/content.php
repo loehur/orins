@@ -5,8 +5,8 @@
     }
 </style>
 <main>
-    <div class="position-fixed bg-white w-100" style="top:0; padding-top:60px;">
-        <div class="p-2 rounded bg-light ms-2 mb-2 me-1 border pb-0">
+    <div class="position-fixed bg-white w-100" style="top:0; padding-top:70px;">
+        <div class="p-2 rounded bg-light ms-2 mb-2 me-1 border pb-0" style="max-width: 600px;">
             <div class="row mb-1">
                 <div class="col-auto pe-0">
                     <input type="text" placeholder="Cari Pelanggan..." id="myInput" class="form-control form-control-sm">
@@ -52,7 +52,7 @@
     </div>
     <!-- Main page content-->
     <small>
-        <div class="ms-2 rounded pb-2 me-1 border mt-5 pt-5" style="max-width: 500px;">
+        <div class="ms-2 rounded pb-2 me-1 border mt-5 pt-5">
             <div class="row">
                 <div class="col px-0">
                     <div class="row row-cols-1 mx-2 mt-2">
