@@ -145,10 +145,12 @@
                                             <?php } else {
                                             if ($id_user_afiliasi <> 0) {
                                             ?>
-                                                <td class="text-end pe-1 text-success align-top">
+                                                <td class="text-end pe-1 text-success">
                                                     <small>
                                                         Afiliated Order
                                                     </small>
+                                                    <br>
+                                                    &nbsp;
                                                 </td>
                                         <?php }
                                         } ?>
@@ -214,7 +216,7 @@
                                         $lunas = true;
                                     }
                                         ?>
-                                        <td class="text-end pe-1 align-top">
+                                        <td class="text-end pe-1">
                                             <small>
                                                 Lunas
                                                 <?php if ($lunas == true) { ?>
@@ -223,6 +225,8 @@
                                                     <i class="fa-regular fa-circle"></i>
                                                 <?php } ?>
                                             </small>
+                                            <br>
+                                            &nbsp;
                                         </td>
                                             </tr>
                                         </table>
