@@ -121,14 +121,29 @@
                             $dibayar += $ds['jumlah'];
                             $verify_payment += $ds['jumlah'];
                             if (in_array($this->userData['user_tipe'], PV::PRIV[2])) {
-                                foreach ($data['order'][$ref] as $do) {
-                                    if ($do['ref'] == $ref) {
-                                        if ($do['tuntas'] == 0) {
-                                            $showMutasi .= "<i class='fa-regular fa-circle-xmark cancel_diskon' data-id='" . $ds['id_diskon'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelDiskon'></i> <span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
-                                            break;
-                                        } else {
-                                            $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
-                                            break;
+                                if (isset($data['order'][$ref]) && is_array($data['order'][$ref])) {
+                                    foreach ($data['order'][$ref] as $do) {
+                                        if ($do['ref'] == $ref) {
+                                            if ($do['tuntas'] == 0) {
+                                                $showMutasi .= "<i class='fa-regular fa-circle-xmark cancel_diskon' data-id='" . $ds['id_diskon'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelDiskon'></i> <span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                                break;
+                                            } else {
+                                                $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (isset($data['mutasi'][$ref]) && is_array($data['mutasi'][$ref])) {
+                                    foreach ($data['order'][$ref] as $do) {
+                                        if ($do['ref'] == $ref) {
+                                            if ($do['tuntas'] == 0) {
+                                                $showMutasi .= "<i class='fa-regular fa-circle-xmark cancel_diskon' data-id='" . $ds['id_diskon'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelDiskon'></i> <span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                                break;
+                                            } else {
+                                                $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
+                                                break;
+                                            }
                                         }
                                     }
                                 }
