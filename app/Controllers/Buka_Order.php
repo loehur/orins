@@ -71,6 +71,11 @@ class Buka_Order extends Controller
       foreach ($data['order'] as $key => $do) {
          if (strlen($do['paket_ref']) > 0) {
             if ($do['price_locker'] == 1) {
+
+               if (!isset($total_per_paket[$do['paket_ref']])) {
+                  $total_per_paket[$do['paket_ref']] = 0;
+               }
+
                $count_price_locker += 1;
                $harga_paket[$do['paket_ref']] = $data['paket'][$do['paket_ref']]['harga_' . $parse];
                $id_margin[$do['paket_ref']]['id'] = $do['id_order_data'];
@@ -116,16 +121,15 @@ class Buka_Order extends Controller
                }
             }
          }
-
-         if (strlen($do['paket_ref']) > 0) {
-            if (!isset($total_per_paket[$do['paket_ref']])) {
-               $total_per_paket[$do['paket_ref']] = 0;
-            }
-         }
       }
 
       foreach ($data['order_barang'] as $dm) {
          if ($dm['price_locker'] == 1) {
+
+            if (!isset($total_per_paket[$dm['paket_ref']])) {
+               $total_per_paket[$dm['paket_ref']] = 0;
+            }
+
             $count_price_locker += 1;
             $harga_paket[$dm['paket_ref']] = $data['paket'][$dm['paket_ref']]['harga_' . $parse];
             $id_margin[$dm['paket_ref']]['id'] = $dm['id'];
@@ -137,20 +141,14 @@ class Buka_Order extends Controller
                $id_margin[$do['paket_ref']]['tb'] = "master_mutasi";
                $id_margin[$do['paket_ref']]['primary'] =  "id";
             }
-
-            if (strlen($dm['paket_ref']) > 0) {
-               $db = $data['barang'][$dm['kode_barang']];
-               if (isset($total_per_paket[$dm['paket_ref']])) {
-                  $total_per_paket[$dm['paket_ref']] += ($db['harga_' . $parse] * $dm['qty']);
-               } else {
-                  $total_per_paket[$dm['paket_ref']] = ($db['harga_' . $parse] * $dm['qty']);
-               }
-            }
          }
 
          if (strlen($dm['paket_ref']) > 0) {
-            if (!isset($total_per_paket[$dm['paket_ref']])) {
-               $total_per_paket[$dm['paket_ref']] = 0;
+            $db = $data['barang'][$dm['kode_barang']];
+            if (isset($total_per_paket[$dm['paket_ref']])) {
+               $total_per_paket[$dm['paket_ref']] += ($db['harga_' . $parse] * $dm['qty']);
+            } else {
+               $total_per_paket[$dm['paket_ref']] = ($db['harga_' . $parse] * $dm['qty']);
             }
          }
       }
