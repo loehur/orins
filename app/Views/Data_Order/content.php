@@ -214,7 +214,7 @@
                                         $lunas = true;
                                     }
                                         ?>
-                                        <td class="text-end pe-1">
+                                        <td class="text-end pe-1 align-top">
                                             <small>
                                                 Lunas
                                                 <?php if ($lunas == true) { ?>
