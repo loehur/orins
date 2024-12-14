@@ -127,14 +127,14 @@
                                         <?php if ($do['id_afiliasi'] == 0 || $this->userData['id_toko'] == $do['id_toko']) { ?>
                                             <td class="text-end pe-1">
                                                 <small>
-                                                    Ambil
+                                                    A
                                                     <?php if ($ambil_all == true) { ?>
                                                         <i class="fa-solid fa-circle-check text-purple"></i>
                                                     <?php } else { ?>
                                                         <i class="fa-regular fa-circle"></i>
                                                     <?php } ?>
                                                     <br>
-                                                    Lunas
+                                                    L
                                                     <?php if ($lunas == true) { ?>
                                                         <i class="fa-solid fa-circle-check text-success"></i>
                                                     <?php } else { ?>
@@ -147,7 +147,7 @@
                                             ?>
                                                 <td class="text-end pe-1 text-success">
                                                     <small>
-                                                        Afiliated Order
+                                                        AF
                                                     </small>
                                                     <br>
                                                     &nbsp;
@@ -218,7 +218,7 @@
                                         ?>
                                         <td class="text-end pe-1">
                                             <small>
-                                                Lunas
+                                                L
                                                 <?php if ($lunas == true) { ?>
                                                     <i class="fa-solid fa-circle-check text-success"></i>
                                                 <?php } else { ?>
