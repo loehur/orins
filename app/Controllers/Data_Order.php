@@ -61,12 +61,18 @@ class Data_Order extends Controller
       }
 
       $data['order'] = $this->db(0)->get_where('order_data', $where);
-      if (count($data['order']) == 0) {
-         $data['order'] = $this->db(0)->get_where('master_mutasi', $where2);
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where2);
+
+      $refs = array_unique(array_column($data['order'], 'ref'));
+
+      foreach ($data['mutasi'] as $key => $dm) {
+         foreach ($refs as $r) {
+            if ($dm['ref'] == $r) {
+               unset($data['mutasi'][$key]);
+            }
+         }
       }
 
-
-      $refs = array_column($data['order'], 'ref');
       if (count($refs) > 0) {
          $min_ref = min($refs);
          $max_ref = max($refs);
@@ -87,7 +93,13 @@ class Data_Order extends Controller
          $data_[$do['ref']][$key] = $do;
       }
 
+      $datam_ = [];
+      foreach ($data['mutasi'] as $key => $do) {
+         $datam_[$do['ref']][$key] = $do;
+      }
+
       $data['order'] = $data_;
+      $data['mutasi'] = $datam_;
 
       $this->view($this->v_content, $data);
    }
