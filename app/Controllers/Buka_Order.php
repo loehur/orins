@@ -594,15 +594,15 @@ class Buka_Order extends Controller
       $where_n2 = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' GROUP BY ref";
       $n2_ref =  $this->db(0)->get_cols_where('master_mutasi', 'ref', $where_n2, 1, 'ref');
       foreach ($n2_ref as $key => $n2) {
-         if (!isset($n_ref[$key])) {
+         if (isset($n_ref[$key])) {
             unset($n2_ref[$key]);
          }
       }
 
-      $n_ref = count($n_ref) + count($n2_ref);
-      $n_ref += 1;
-      $n_ref = substr($n_ref, -5);
-      $nv = str_pad($n_ref, 5, "0", STR_PAD_LEFT);
+      $qty_ref = count($n_ref) + count($n2_ref);
+      $qty_ref += 1;
+      $qty_ref = substr($qty_ref, -5);
+      $nv = str_pad($qty_ref, 5, "0", STR_PAD_LEFT);
       $ref = $this->userData['id_toko'] . date("ymd") . $nv;
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
