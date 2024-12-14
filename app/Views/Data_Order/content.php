@@ -53,7 +53,7 @@
     <!-- Main page content-->
     <small>
         <div class="mx-2 rounded px-2 mt-3 pt-5">
-            <div class="row text-sm">
+            <div class="row">
                 <div class="col px-0" style="max-width: 500px;">
                     <div class="row row-cols-1 mx-0 mt-2">
                         <?php foreach ($data['order'] as $ref => $do_) { ?>
@@ -112,7 +112,7 @@
                                         <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
                                             <tr data-id="<?= $do['id_pelanggan'] ?>" class="cekPLG" style="cursor: pointer;">
                                                 <td class="p-1">
-                                                    <span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><?= strtoupper($pelanggan) ?></b></span> #<?= substr($do['id_pelanggan'], 2) ?>
+                                                    <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><?= strtoupper($pelanggan) ?></b></span> #<?= substr($do['id_pelanggan'], 2) ?></small>
                                                     <br>
                                                     <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
                                                 </td>
@@ -204,7 +204,7 @@
                                         <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
                                             <tr data-id="<?= $do['id_target'] ?>" class="cekPLG" style="cursor: pointer;">
                                                 <td class="p-1">
-                                                    <span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><?= strtoupper($pelanggan) ?></b></span> #<?= substr($do['id_target'], 2) ?>
+                                                    <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><?= strtoupper($pelanggan) ?></b></span> #<?= substr($do['id_target'], 2) ?></small>
                                                     <br>
                                                     <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
                                                 </td>
