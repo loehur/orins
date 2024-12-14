@@ -6,7 +6,7 @@
 </style>
 <main>
     <div class="position-fixed bg-white w-100" style="top:0; padding-top:70px;">
-        <div class="p-2 rounded bg-light ms-2 mb-2 me-1 border pb-0" style="max-width: 600px;">
+        <div class="p-2 rounded bg-light ms-2 mb-2 me-1 border pb-0" style="max-width: 500px;">
             <div class="row mb-1">
                 <div class="col-auto pe-0">
                     <input type="text" placeholder="Cari Pelanggan..." id="myInput" class="form-control form-control-sm">
