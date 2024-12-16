@@ -1,6 +1,11 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
-<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>plugins/dataTables/jquery.dataTables.css" rel="stylesheet" />
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
 
+<style>
+    .dt-search {
+        float: right !important;
+    }
+</style>
 <?php
 $input = ["grup", "tipe", "brand", "model"];
 $required = ["required", "required", "required", "required"];
@@ -53,11 +58,11 @@ $max_length = [2, 2, 2, 3];
             </div>
         </form>
         <div>
-            <table class="table table-sm" id="tb_barang">
+            <table id="tb_barang">
                 <thead>
                     <tr>
-                        <th>Code</th>
-                        <th>Item</th>
+                        <td>Code</td>
+                        <td>Item</td>
                     </tr>
                 </thead>
                 <?php foreach ($data['barang'] as $a) { ?>
@@ -109,7 +114,7 @@ $max_length = [2, 2, 2, 3];
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
-<script src="<?= PV::ASSETS_URL ?>plugins/dataTables/jquery.dataTables.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 
 <script>
     $(document).ready(function() {
