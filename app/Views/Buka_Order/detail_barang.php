@@ -4,7 +4,9 @@
         <div class="col">
             <table class="table table-sm m-0 p-0">
                 <?php if (count($data['stok']) == 0) { ?>
-
+                    <tr>
+                        <td><span class="text-danger">Stok Kosong</span></td>
+                    </tr>
                 <?php } ?>
                 <?php foreach ($data['stok'] as $ds) {
                     if ($ds['qty'] > 0) { ?>
@@ -21,12 +23,8 @@
                                 </form>
                             </td>
                         </tr>
-                    <?php } else { ?>
-                        <tr>
-                            <td><span class="text-danger">Stok Kosong</span></td>
-                        </tr>
-                <?php }
-                } ?>
+                    <?php } ?>
+                <?php } ?>
             </table>
         </div>
         <div class="ok"></div>
