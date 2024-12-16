@@ -463,10 +463,10 @@
         <?php } ?>
     </div>
 
-    <?php if (isset($dh)) { ?>
-        <?php if (($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) && $dh['tuntas'] == 0) { ?>
-            <div class="row mx-0 px-2 mt-2" id="loadMulti">
-                <div class="col px-1 text-sm" style="max-width: 600px;">
+    <div class="row mx-0 px-2 mt-2">
+        <?php if (isset($dh)) { ?>
+            <?php if (($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) && $dh['tuntas'] == 0) { ?>
+                <div class="col px-1 text-sm" id="loadMulti" style="max-width: 600px;">
                     <form action="<?= PV::BASE_URL; ?>Data_Operasi/bayar_multi" method="POST">
                         <div class="border px-0">
                             <small>
@@ -548,7 +548,7 @@
         <?php } ?>
 
         <?php if (count($data['r_kas']) > 0) { ?>
-            <div class="col px-1 text-sm" style="max-width: 600px;">
+            <div class="col px-1 text-sm">
                 <div class="mb-1 text-success"><small>Riwayat Pembayaran</small></div>
                 <table class="table table-sm border text-sm">
                     <?php
@@ -598,10 +598,10 @@
                 </table>
             </div>
         <?php } ?>
+    </div>
 </main>
 
 <?php require_once('form.php') ?>
-
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 

@@ -14,7 +14,7 @@ $max_length = [2, 2, 2, 3];
 <main>
     <!-- Main page content-->
     <div class="container">
-        <a class="btn btn-light border rounded-0" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+        <a class="btn btn-sm btn-light border rounded-0" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
             Tambah Barang
         </a>
         <div class="collapse mb-3" id="collapseExample">
