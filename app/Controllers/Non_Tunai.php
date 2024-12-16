@@ -31,7 +31,7 @@ class Non_Tunai extends Controller
 
    public function content($parse = "")
    {
-      $data['pelanggan'] = $this->db(0)->get('pelanggan');
+      $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);

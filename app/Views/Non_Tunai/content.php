@@ -49,11 +49,7 @@
 
 
                                 $pelanggan = "Non";
-                                foreach ($data['pelanggan'] as $dp) {
-                                    if ($dp['id_pelanggan'] == $client) {
-                                        $pelanggan = $dp['nama'];
-                                    }
-                                }
+                                $pelanggan = $dp['id_pelanggan'][$client]['nama'];
 
                             ?>
                                 <tr>
@@ -131,11 +127,7 @@
                             $ref = $a['ref_transaksi'];
 
                             $pelanggan = "Non";
-                            foreach ($data['pelanggan'] as $dp) {
-                                if ($dp['id_pelanggan'] == $client) {
-                                    $pelanggan = $dp['nama'];
-                                }
-                            }
+                            $pelanggan = $dp['id_pelanggan'][$client]['nama'];
 
                         ?>
                             <tr>
