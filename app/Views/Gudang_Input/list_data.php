@@ -72,7 +72,7 @@
                 $no++; ?>
                 <tr id="tr<?= $a['id'] ?>">
                     <td class="text-end">
-                        <?= $no ?>. <small>#<?= $a['id'] ?></small>
+                        #<?= $a['id'] ?></small> <?= $no ?>. <small>
                     </td>
                     <td class="">
                         <?= $data['barang_code'][$a['kode_barang']]['nama'] ?>
@@ -82,7 +82,7 @@
                     </td>
                     <td>
                         <?php if ($a['sn_c'] == 1 && $a['stat'] == 0) { ?>
-                            <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['kode_barang'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-tb="master_mutasi" class="cell_edit"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
+                            <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['kode_barang'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-no="<?= $no ?>" data-tb="master_mutasi" class="cell_edit r<?= $no ?>"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
                         <?php } else { ?>
                             <?= $a['sn'] ?>
                         <?php } ?>
@@ -133,6 +133,7 @@
         }
 
         var id = $(this).attr('data-id');
+        var no = $(this).attr('data-no');
         var kode = $(this).attr('data-kode');
         var primary = $(this).attr('data-primary');
         var col = $(this).attr('data-col');
@@ -169,6 +170,7 @@
                     url: '<?= PV::BASE_URL ?>Gudang_Input/update_pbsn',
                     data: {
                         'id': id,
+                        'no': no,
                         'value': value_after,
                         'col': col,
                         'primary': primary,
@@ -183,7 +185,9 @@
                             if (value_after == "") {
                                 el.html("[ ]");
                             } else {
+                                var next = parseInt(no) + 1;
                                 el.html(value_after);
+                                $("span.r" + next).click();
                             }
                         } else {
                             alert(res);
