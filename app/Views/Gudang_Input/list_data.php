@@ -81,8 +81,10 @@
                         <?= $a['qty'] ?>
                     </td>
                     <td>
-                        <?php if ($a['sn_c'] == 1) { ?>
+                        <?php if ($a['sn_c'] == 1 && $a['stat'] == 0) { ?>
                             <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['kode_barang'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-tb="master_mutasi" class="cell_edit"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
+                        <?php } else { ?>
+                            <?= $a['sn'] ?>
                         <?php } ?>
                     </td>
                     <td class="align-middle text-end">
