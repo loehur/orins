@@ -161,80 +161,82 @@
                             } ?>
                     </div>
                 </div>
-                <div class="col px-0" style="max-width: 500px;">
-                    <div class="row row-cols-1 mx-0 mt-2">
-                        <?php foreach ($data['mutasi'] as $ref => $do_) { ?>
-                            <?php
-                            $no = 0;
-                            $lunas = false;
-                            $dibayar = 0;
-                            $ambil_all = true;
-                            foreach ($data['kas'] as $dk) {
-                                if ($dk['ref_transaksi'] == $ref && $dk['status_mutasi'] == 1) {
-                                    $dibayar += $dk['jumlah'];
-                                }
-                            }
-                            $bill = 0;
-
-                            foreach ($do_ as $do) {
-                                $no++;
-                                $dateTime = substr($do['insertTime'], 0, 10);
-                                $today = date("Y-m-d");
-                                $cancel = $do['stat'];
-
-                                $jumlah = ($do['harga_jual'] * $do['qty']) + $do['margin_paket'];
-                                if ($cancel == 1) {
-                                    $bill += $jumlah;
-                                }
-
-                                if ($no == 1) {
-                                    foreach ($data['pelanggan'] as $dp) {
-                                        if ($dp['id_pelanggan'] == $do['id_target']) {
-                                            $pelanggan = $dp['nama'];
-                                        }
-                                    }
-
-                                    foreach ($data['karyawan'] as $dp) {
-                                        if ($dp['id_karyawan'] == $do['cs_id']) {
-                                            $cs = $dp['nama'];
-                                        }
-                                    }
-                            ?>
-                                    <div class="col px-1">
-                                        <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
-                                            <tr data-id="<?= $do['id_target'] ?>" class="cekPLG" style="cursor: pointer;">
-                                                <td class="p-1">
-                                                    <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><?= strtoupper($pelanggan) ?></b></span> #<?= substr($do['id_target'], 2) ?></small>
-                                                    <br>
-                                                    <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
-                                                </td>
-                                            <?php }
-                                            ?>
-                                        <?php }
-                                    $sisa = $bill - $dibayar;
-                                    if ($sisa <= 0) {
-                                        $lunas = true;
-                                    }
-                                        ?>
-                                        <td class="text-end pe-1">
-                                            <small>
-                                                &nbsp;
-                                                <?php if ($lunas == true) { ?>
-                                                    <i class="fa-solid fa-circle-check text-success"></i>
-                                                <?php } else { ?>
-                                                    <i class="fa-regular fa-circle"></i>
-                                                <?php } ?>
-                                            </small>
-                                            <br>
-                                            &nbsp;
-                                        </td>
-                                            </tr>
-                                        </table>
-                                    </div>
+                <?php if (count($data['mutasi']) > 0) { ?>
+                    <div class="col px-0" style="max-width: 500px;">
+                        <div class="row row-cols-1 mx-0 mt-2">
+                            <?php foreach ($data['mutasi'] as $ref => $do_) { ?>
                                 <?php
-                            } ?>
+                                $no = 0;
+                                $lunas = false;
+                                $dibayar = 0;
+                                $ambil_all = true;
+                                foreach ($data['kas'] as $dk) {
+                                    if ($dk['ref_transaksi'] == $ref && $dk['status_mutasi'] == 1) {
+                                        $dibayar += $dk['jumlah'];
+                                    }
+                                }
+                                $bill = 0;
+
+                                foreach ($do_ as $do) {
+                                    $no++;
+                                    $dateTime = substr($do['insertTime'], 0, 10);
+                                    $today = date("Y-m-d");
+                                    $cancel = $do['stat'];
+
+                                    $jumlah = ($do['harga_jual'] * $do['qty']) + $do['margin_paket'];
+                                    if ($cancel == 1) {
+                                        $bill += $jumlah;
+                                    }
+
+                                    if ($no == 1) {
+                                        foreach ($data['pelanggan'] as $dp) {
+                                            if ($dp['id_pelanggan'] == $do['id_target']) {
+                                                $pelanggan = $dp['nama'];
+                                            }
+                                        }
+
+                                        foreach ($data['karyawan'] as $dp) {
+                                            if ($dp['id_karyawan'] == $do['cs_id']) {
+                                                $cs = $dp['nama'];
+                                            }
+                                        }
+                                ?>
+                                        <div class="col px-1">
+                                            <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
+                                                <tr data-id="<?= $do['id_target'] ?>" class="cekPLG" style="cursor: pointer;">
+                                                    <td class="p-1">
+                                                        <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><?= strtoupper($pelanggan) ?></b></span> #<?= substr($do['id_target'], 2) ?></small>
+                                                        <br>
+                                                        <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
+                                                    </td>
+                                                <?php }
+                                                ?>
+                                            <?php }
+                                        $sisa = $bill - $dibayar;
+                                        if ($sisa <= 0) {
+                                            $lunas = true;
+                                        }
+                                            ?>
+                                            <td class="text-end pe-1">
+                                                <small>
+                                                    &nbsp;
+                                                    <?php if ($lunas == true) { ?>
+                                                        <i class="fa-solid fa-circle-check text-success"></i>
+                                                    <?php } else { ?>
+                                                        <i class="fa-regular fa-circle"></i>
+                                                    <?php } ?>
+                                                </small>
+                                                <br>
+                                                &nbsp;
+                                            </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    <?php
+                                } ?>
+                        </div>
                     </div>
-                </div>
+                <?php } ?>
             </div>
         </div>
     </small>
