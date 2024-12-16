@@ -55,113 +55,113 @@
     <small>
         <div class="mx-2 rounded px-2 mt-3 pt-5">
             <div class="row">
-                <div class="col px-0" style="max-width: 500px;">
-                    <div class="row row-cols-1 mx-0 mt-2">
-                        <?php foreach ($data['order'] as $ref => $do_) { ?>
-                            <?php
-                            $no = 0;
-                            $lunas = false;
-                            $dibayar = 0;
-                            $ambil_all = true;
-                            foreach ($data['kas'] as $dk) {
-                                if ($dk['ref_transaksi'] == $ref && $dk['status_mutasi'] == 1) {
-                                    $dibayar += $dk['jumlah'];
-                                }
-                            }
-                            $bill = 0;
-
-                            foreach ($do_ as $do) {
-                                $no++;
-                                $dateTime = substr($do['insertTime'], 0, 10);
-                                $today = date("Y-m-d");
-                                $cancel = $do['cancel'];
-                                $id_ambil = $do['id_ambil'];
-                                $id_user_afiliasi = $do['id_user_afiliasi'];
-
-                                if ($this->userData['id_toko'] <> $do['id_toko'] && $do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
-                                    break;
-                                }
-
-                                $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
-                                if ($cancel == 0) {
-                                    $bill += $jumlah;
-                                }
-
-                                $divisi_arr = unserialize($do['spk_dvs']);
-                                $countSPK = count($divisi_arr);
-
-                                if ($id_ambil == 0) {
-                                    if ($countSPK > 0 && $cancel == 0) {
-                                        $ambil_all = false;
-                                    }
-                                }
-
-                                if ($no == 1) {
-                                    foreach ($data['pelanggan'] as $dp) {
-                                        if ($dp['id_pelanggan'] == $do['id_pelanggan']) {
-                                            $pelanggan = $dp['nama'];
-                                        }
-                                    }
-
-                                    foreach ($data['karyawan'] as $dp) {
-                                        if ($dp['id_karyawan'] == $do['id_penerima']) {
-                                            $cs = $dp['nama'];
-                                        }
-                                    }
-                            ?>
-                                    <div class="col px-1">
-                                        <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
-                                            <tr data-id="<?= $do['id_pelanggan'] ?>" class="cekPLG" style="cursor: pointer;">
-                                                <td class="p-1">
-                                                    <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><?= strtoupper($pelanggan) ?></b></span> #<?= substr($do['id_pelanggan'], 2) ?></small>
-                                                    <br>
-                                                    <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
-                                                </td>
-                                            <?php }
-                                            ?>
-                                        <?php }
-                                    $sisa = $bill - $dibayar;
-                                    if ($sisa <= 0) {
-                                        $lunas = true;
-                                    }
-                                        ?>
-                                        <?php if ($do['id_afiliasi'] == 0 || $this->userData['id_toko'] == $do['id_toko']) { ?>
-                                            <td class="text-end pe-1">
-                                                <small>
-                                                    &nbsp;
-                                                    <?php if ($ambil_all == true) { ?>
-                                                        <i class="fa-solid fa-circle-check text-purple"></i>
-                                                    <?php } else { ?>
-                                                        <i class="fa-regular fa-circle"></i>
-                                                    <?php } ?>
-                                                    <br>
-                                                    &nbsp;
-                                                    <?php if ($lunas == true) { ?>
-                                                        <i class="fa-solid fa-circle-check text-success"></i>
-                                                    <?php } else { ?>
-                                                        <i class="fa-regular fa-circle"></i>
-                                                    <?php } ?>
-                                                </small>
-                                            </td>
-                                            <?php } else {
-                                            if ($id_user_afiliasi <> 0) {
-                                            ?>
-                                                <td class="text-end pe-1 text-success">
-                                                    <small>
-                                                        AF
-                                                    </small>
-                                                    <br>
-                                                    &nbsp;
-                                                </td>
-                                        <?php }
-                                        } ?>
-                                            </tr>
-                                        </table>
-                                    </div>
+                <?php if (count($data['order']) > 0) { ?>
+                    <div class="col px-0" style="max-width: 500px;">
+                        <div class="row row-cols-1 mx-0 mt-2">
+                            <?php foreach ($data['order'] as $ref => $do_) { ?>
                                 <?php
-                            } ?>
+                                $no = 0;
+                                $lunas = false;
+                                $dibayar = 0;
+                                $ambil_all = true;
+                                foreach ($data['kas'] as $dk) {
+                                    if ($dk['ref_transaksi'] == $ref && $dk['status_mutasi'] == 1) {
+                                        $dibayar += $dk['jumlah'];
+                                    }
+                                }
+                                $bill = 0;
+
+                                foreach ($do_ as $do) {
+                                    $no++;
+                                    $dateTime = substr($do['insertTime'], 0, 10);
+                                    $today = date("Y-m-d");
+                                    $cancel = $do['cancel'];
+                                    $id_ambil = $do['id_ambil'];
+                                    $id_user_afiliasi = $do['id_user_afiliasi'];
+
+                                    if ($this->userData['id_toko'] <> $do['id_toko'] && $do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
+                                        break;
+                                    }
+
+                                    $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
+                                    if ($cancel == 0) {
+                                        $bill += $jumlah;
+                                    }
+
+                                    $divisi_arr = unserialize($do['spk_dvs']);
+                                    $countSPK = count($divisi_arr);
+
+                                    if ($id_ambil == 0) {
+                                        if ($countSPK > 0 && $cancel == 0) {
+                                            $ambil_all = false;
+                                        }
+                                    }
+
+                                    if ($no == 1) {
+                                        foreach ($data['pelanggan'] as $dp) {
+                                            if ($dp['id_pelanggan'] == $do['id_pelanggan']) {
+                                                $pelanggan = $dp['nama'];
+                                            }
+                                        }
+
+                                        foreach ($data['karyawan'] as $dp) {
+                                            if ($dp['id_karyawan'] == $do['id_penerima']) {
+                                                $cs = $dp['nama'];
+                                            }
+                                        } ?>
+                                        <div class="col px-1">
+                                            <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
+                                                <tr data-id="<?= $do['id_pelanggan'] ?>" class="cekPLG" style="cursor: pointer;">
+                                                    <td class="p-1">
+                                                        <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><?= strtoupper($pelanggan) ?></b></span> #<?= substr($do['id_pelanggan'], 2) ?></small>
+                                                        <br>
+                                                        <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
+                                                    </td>
+                                                <?php }
+                                                ?>
+                                            <?php }
+                                        $sisa = $bill - $dibayar;
+                                        if ($sisa <= 0) {
+                                            $lunas = true;
+                                        }
+                                            ?>
+                                            <?php if ($do['id_afiliasi'] == 0 || $this->userData['id_toko'] == $do['id_toko']) { ?>
+                                                <td class="text-end pe-1">
+                                                    <small>
+                                                        &nbsp;
+                                                        <?php if ($ambil_all == true) { ?>
+                                                            <i class="fa-solid fa-circle-check text-purple"></i>
+                                                        <?php } else { ?>
+                                                            <i class="fa-regular fa-circle"></i>
+                                                        <?php } ?>
+                                                        <br>
+                                                        &nbsp;
+                                                        <?php if ($lunas == true) { ?>
+                                                            <i class="fa-solid fa-circle-check text-success"></i>
+                                                        <?php } else { ?>
+                                                            <i class="fa-regular fa-circle"></i>
+                                                        <?php } ?>
+                                                    </small>
+                                                </td>
+                                                <?php } else {
+                                                if ($id_user_afiliasi <> 0) {
+                                                ?>
+                                                    <td class="text-end pe-1 text-success">
+                                                        <small>
+                                                            AF
+                                                        </small>
+                                                        <br>
+                                                        &nbsp;
+                                                    </td>
+                                            <?php }
+                                            } ?>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    <?php } ?>
+                        </div>
                     </div>
-                </div>
+                <?php } ?>
                 <?php if (count($data['mutasi']) > 0) { ?>
                     <div class="col px-0" style="max-width: 500px;">
                         <div class="row row-cols-1 mx-0 mt-2">
