@@ -14,55 +14,64 @@ $max_length = [2, 2, 2, 3];
 <main>
     <!-- Main page content-->
     <div class="container">
-        <form action="<?= PV::BASE_URL ?>Gudang_Barang/add" method="POST">
-            <div class="row mx-0 mb-4">
-                <?php foreach ($input as $k => $i) { ?>
-                    <div class="col px-1 mb-2">
-                        <div class="row mx-0 mb-1">
-                            <div class="col px-0 overflow-auto">
-                                <div id="<?= $i ?>_t" class="text-sm text-secondary border-0 w-100" style="height: 105px;"></div>
-                            </div>
-                        </div>
-                        <div class="row mx-0">
-                            <div class="col px-0">
-                                <div style="min-width: 100px;">
-                                    <label class="text-sm"><?= strtoupper($i) ?></label>
-                                    <input <?= $required[$k] ?> name="<?= $i ?>_c" id="<?= $i ?>_c" minlength="2" class="float-end border-bottom border-0 mb-2 text-center" maxlength="<?= $max_length ?>" style="width: 50px; text-transform:uppercase">
+        <a class="btn btn-light border rounded-0" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            Tambah Barang
+        </a>
+        <div class="collapse mb-3" id="collapseExample">
+            <div class="card card-body shadow-sm rounded-0">
+                <form action="<?= PV::BASE_URL ?>Gudang_Barang/add" method="POST">
+                    <div class="row mx-0 mb-4">
+                        <?php foreach ($input as $k => $i) { ?>
+                            <div class="col px-1 mb-2">
+                                <div class="row mx-0 mb-1">
+                                    <div class="col px-0 overflow-auto">
+                                        <div id="<?= $i ?>_t" class="text-sm text-secondary border-0 w-100" style="height: 105px;"></div>
+                                    </div>
                                 </div>
-                                <div class="autocomplete">
-                                    <input data-tab="<?= $k ?>" <?= $required[$k] ?> name="<?= $i ?>" id="<?= $i ?>" class="ac border-bottom border-0 mb-1 w-100" style="text-transform:uppercase">
+                                <div class="row mx-0">
+                                    <div class="col px-0">
+                                        <div style="min-width: 100px;">
+                                            <label class="text-sm"><?= strtoupper($i) ?></label>
+                                            <input <?= $required[$k] ?> name="<?= $i ?>_c" id="<?= $i ?>_c" minlength="2" class="float-end border-bottom border-0 mb-2 text-center" maxlength="<?= $max_length ?>" style="width: 50px; text-transform:uppercase">
+                                        </div>
+                                        <div class="autocomplete">
+                                            <input data-tab="<?= $k ?>" <?= $required[$k] ?> name="<?= $i ?>" id="<?= $i ?>" class="ac border-bottom border-0 mb-1 w-100" style="text-transform:uppercase">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                        <?php } ?>
+                        <div class="col mt-auto px-1 mb-2">
+                            <label class="mb-2 text-sm">KODE BARANG PABRIK</label><br>
+                            <input name="code_f" id="<?= $i ?>" class="border-bottom border-0 mb-1" style="text-transform:uppercase">
+                        </div>
+                        <div class="col mb-2 mt-auto">
+                            <div class="mb-2">
+                                <input name="sn" class="form-check-input" type="checkbox" value="1">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    SN
+                                </label>
+                            </div>
+                            <div class="mb-2">
+                                <input name="pb" class="form-check-input" type="checkbox" value="1">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Publish
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-outline-success">Create</button>
                         </div>
                     </div>
-                <?php } ?>
-                <div class="col mt-auto px-1 mb-2">
-                    <label class="mb-2 text-sm">KODE BARANG PABRIK</label><br>
-                    <input name="code_f" id="<?= $i ?>" class="border-bottom border-0 mb-1" style="text-transform:uppercase">
-                </div>
-                <div class="col mb-2 mt-auto">
-                    <div class="mb-2">
-                        <input name="sn" class="form-check-input" type="checkbox" value="1">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            SN
-                        </label>
-                    </div>
-                    <div class="mb-2">
-                        <input name="pb" class="form-check-input" type="checkbox" value="1">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Publish
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-outline-success">Create</button>
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
+
         <div>
             <table id="tb_barang">
                 <thead>
                     <tr>
                         <td>Code</td>
                         <td>Item</td>
+                        <td>Stok</td>
                     </tr>
                 </thead>
                 <?php foreach ($data['barang'] as $a) { ?>
@@ -105,6 +114,9 @@ $max_length = [2, 2, 2, 3];
                             <br>
                             <?= $a['code_f'] ?>
                         </td>
+                        <td>
+                            <?= isset($data['stok'][$a['code']]) ? $data['stok'][$a['code']]['qty'] : 0 ?>
+                        </td>
                     </tr>
                 <?php } ?>
             </table>
@@ -123,7 +135,7 @@ $max_length = [2, 2, 2, 3];
             "bFilter": true,
             "bInfo": false,
             "bAutoWidth": false,
-            "pageLength": 10,
+            "pageLength": 30,
             "scrollY": 400,
             "dom": "lfrti"
         });
