@@ -87,6 +87,8 @@ class Data_Order extends Controller
          }
       }
 
+
+      $data['kas'] = [];
       if (count($refs) > 0) {
          $min_ref = min($refs);
          $max_ref = max($refs);
