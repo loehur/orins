@@ -51,7 +51,8 @@ class Setoran extends Controller
    {
       $ref = date("Ymdhis") . rand(0, 9);
       $set = "ref_setoran = '" . $ref . "'";
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = ''";
+
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' AND insertTime LIKE '2024-12-15%'";
       $update = $this->db(0)->update("kas", $set, $where);
       echo $update['errno'];
    }
