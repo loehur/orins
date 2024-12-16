@@ -260,9 +260,9 @@ class Data_Order extends Controller
       foreach ($data['order'] as $do) {
          if ($do['paket_ref'] <> "") {
             if (isset($data['paket'][$do['paket_ref']]['harga'])) {
-               $data['paket'][$do['paket_ref']]['harga'] += ($do['harga'] + $do['margin_paket']);
+               $data['paket'][$do['paket_ref']]['harga'] += (($do['harga'] * $do['jumlah']) + $do['margin_paket']);
             } else {
-               $data['paket'][$do['paket_ref']]['harga'] = ($do['harga'] + $do['margin_paket']);
+               $data['paket'][$do['paket_ref']]['harga'] = (($do['harga'] * $do['jumlah']) + $do['margin_paket']);
             }
             if (!isset($data['paket'][$do['paket_ref']]['order'])) {
                $data['paket'][$do['paket_ref']]['order'] = [];
@@ -273,9 +273,9 @@ class Data_Order extends Controller
       foreach ($data['mutasi'] as $do) {
          if ($do['paket_ref'] <> "") {
             if (isset($data['paket'][$do['paket_ref']]['harga'])) {
-               $data['paket'][$do['paket_ref']]['harga'] += ($do['harga_jual'] + $do['margin_paket']);
+               $data['paket'][$do['paket_ref']]['harga'] += (($do['harga_jual'] * $do['qty']) + $do['margin_paket']);
             } else {
-               $data['paket'][$do['paket_ref']]['harga'] = ($do['harga_jual'] + $do['margin_paket']);
+               $data['paket'][$do['paket_ref']]['harga'] = (($do['harga_jual'] * $do['qty']) + $do['margin_paket']);
             }
             if (!isset($data['paket'][$do['paket_ref']]['order'])) {
                $data['paket'][$do['paket_ref']]['order'] = [];
