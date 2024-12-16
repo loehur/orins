@@ -7,7 +7,7 @@
 	<?php } ?>
 	<ul class="navbar-nav align-items-center">
 		<!-- User Dropdown-->
-		<?php if (in_array($this->userData['user_tipe'], PV::PRIV[0])) { ?>
+		<?php if (in_array($this->userData['user_tipe'], PV::PRIV[0]) || in_array($this->userData['user_tipe'], PV::OFFICE)) { ?>
 			<li class="nav-item dropdown no-caret dropdown-user me-2">
 				<a class="rounded bg-transparent text-decoration-none py-2 px-3 border bg-white" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<b><i class="fa-solid fa-repeat"></i></b>
