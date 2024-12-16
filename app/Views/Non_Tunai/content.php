@@ -161,7 +161,13 @@
                                 </td>
 
                                 <?php
-                                $tuntas = $this->db(0)->get_where_row("order_data", "ref = '" . $ref . "'")['tuntas'];
+                                $get_t = $this->db(0)->get_where_row("order_data", "ref = '" . $ref . "'");
+                                if (isset($get_t['tuntas'])) {
+                                    $tuntas = $get['tuntas'];
+                                } else {
+                                    $tuntas = 0;
+                                }
+
                                 if ($tuntas == 0) {
                                     switch ($a['status_mutasi']) {
                                         case 1:
