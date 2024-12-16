@@ -342,7 +342,7 @@ $max_length = [2, 2, 2, 3];
             value = "";
         }
         var el = $(this);
-        var width = el.parent().width() + 5;
+        var width = el.parent().width();
         var align = "center";
 
         el.parent().css("width", width);
