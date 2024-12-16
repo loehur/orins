@@ -72,7 +72,7 @@
                 $no++; ?>
                 <tr id="tr<?= $a['id'] ?>">
                     <td class="text-end">
-                        <?= $no ?>
+                        <?= $no ?>. <small>#<?= $a['id'] ?></small>
                     </td>
                     <td class="">
                         <?= $data['barang_code'][$a['kode_barang']]['nama'] ?>
