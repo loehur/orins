@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>plugins/dataTables/jquery.dataTables.css" rel="stylesheet" />
 
 <?php
 $input = ["grup", "tipe", "brand", "model"];
@@ -51,8 +52,14 @@ $max_length = [2, 2, 2, 3];
                 </div>
             </div>
         </form>
-        <div class="overflow-auto" style="height: 500px;">
-            <table class="table table-sm">
+        <div>
+            <table class="table table-sm" id="tb_barang">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Item</th>
+                    </tr>
+                </thead>
                 <?php foreach ($data['barang'] as $a) { ?>
                     <tr>
                         <td>
@@ -63,11 +70,11 @@ $max_length = [2, 2, 2, 3];
                                     for ($i = 0; $i <= 6; $i += 2) {
                                         $no += 1;
                                         if ($i == 6) { ?>
-                                            <td>
+                                            <td class="p-0">
                                                 <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 3) ?></span><br>
                                             </td>
                                         <?php } else { ?>
-                                            <td>
+                                            <td class="p-0">
                                                 <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 2) ?></span><br>
                                             </td>
                                         <?php } ?>
@@ -102,8 +109,21 @@ $max_length = [2, 2, 2, 3];
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
+<script src="<?= PV::ASSETS_URL ?>plugins/dataTables/jquery.dataTables.js"></script>
 
 <script>
+    $(document).ready(function() {
+        $('#tb_barang').dataTable({
+            "bLengthChange": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "pageLength": 10,
+            "scrollY": 400,
+            "dom": "lfrti"
+        });
+    })
+
     $('.check').change(function() {
         var id = $(this).attr('data-id');
         var col = $(this).attr('data-col');
