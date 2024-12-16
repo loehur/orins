@@ -2,7 +2,7 @@
     <?php $total = 0 ?>
     <?php $total_masalah = 0 ?>
     <?php if (count($data['kas']) > 0) { ?>
-        <div class="p-2 ms-3 mt-3 me-3 bg-white">
+        <div class="p-2 ms-3 me-3 bg-white">
             <div class="row mb-1">
                 <div class="col ms-2">
                     <span class="text-purple">Setoran Dalam Antrian</span></small>
