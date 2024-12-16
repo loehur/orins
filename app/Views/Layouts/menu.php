@@ -21,7 +21,7 @@ $yearNow = date('Y');
 						<?php if ($aff_c > 0) { ?>
 							<a class="nav-link <?= (str_contains($t, "Afiliasi Order")) ? 'active' : 'collapsed' ?> py-1" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#collapseAff" aria-expanded="true" aria-controls="collapseAff">
 								<div class="nav-link-icon"><i data-feather="plus-square"></i></div>
-								Afiliasi Order <span class="badge bg-danger-soft text-danger ms-auto"><?= $aff_c ?></span>
+								Afiliasi Order <span class="badge bg-danger-soft text-danger ms-2"><?= $aff_c ?></span>
 								<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 							</a>
 							<div class="collapse <?= (str_contains($t, "Afiliasi Order")) ? 'show' : '' ?>" id="collapseAff" data-bs-parent="#accordionSidenav">
@@ -38,7 +38,7 @@ $yearNow = date('Y');
 						<?php if ($lanjut_c > 0) { ?>
 							<a class="nav-link <?= (str_contains($t, "SPK - Lanjutan")) ? 'active' : 'collapsed' ?> py-1" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseSPKP" aria-expanded="true" aria-controls="collapseSPKP">
 								<div class="nav-link-icon"><i data-feather="alert-triangle"></i></div>
-								SPK - Lanjutan <span class="badge bg-danger-soft text-danger ms-auto"><?= $lanjut_c ?></span>
+								SPK - Lanjutan <span class="badge bg-danger-soft text-danger ms-2"><?= $lanjut_c ?></span>
 								<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 							</a>
 							<div class="collapse <?= (str_contains($t, "SPK - Lanjutan")) ? 'show' : '' ?>" id="collapseSPKP" data-bs-parent="#accordionSidenav">
@@ -182,7 +182,7 @@ $yearNow = date('Y');
 		</nav>
 	</div>
 	<div id="layoutSidenav_content">
-		<div style="margin-top: 50px;" id="content"></div>
+		<div style="margin-top: 40px;max-width:1100px" id="content"></div>
 	</div>
 </div>
 </div>

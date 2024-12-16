@@ -463,8 +463,8 @@
         <?php } ?>
     </div>
 
-    <?php if (isset($dh)) {
-        if (($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) && $dh['tuntas'] == 0) { ?>
+    <?php if (isset($dh)) { ?>
+        <?php if (($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) && $dh['tuntas'] == 0) { ?>
             <div class="row mx-0 px-2 mt-2" id="loadMulti">
                 <div class="col px-1 text-sm" style="max-width: 600px;">
                     <form action="<?= PV::BASE_URL; ?>Data_Operasi/bayar_multi" method="POST">
@@ -544,10 +544,10 @@
                         </div>
                     </form>
                 </div>
-            <?php }
-    }
+            <?php } ?>
+        <?php } ?>
 
-    if (count($data['r_kas']) > 0) { ?>
+        <?php if (count($data['r_kas']) > 0) { ?>
             <div class="col px-1 text-sm" style="max-width: 600px;">
                 <div class="mb-1 text-success"><small>Riwayat Pembayaran</small></div>
                 <table class="table table-sm border text-sm">
@@ -580,8 +580,7 @@
                             case 4:
                                 $metod = "Saldo Deposit";
                                 break;
-                        }
-                    ?>
+                        } ?>
                         <tr class="<?= $cl_tb ?>">
                             <td>
                                 <?= substr($rk['ref_bayar'], 0, 4) . "-" . substr($rk['ref_bayar'], 4, 2) . "-" . substr($rk['ref_bayar'], 6, 2) . " " . substr($rk['ref_bayar'], 8, 2) . ":" . substr($rk['ref_bayar'], 10, 2) ?>
@@ -595,9 +594,7 @@
                                 <?= $statusP ?>
                             </td>
                         </tr>
-                    <?php }
-                    ?>
-
+                    <?php } ?>
                 </table>
             </div>
         <?php } ?>

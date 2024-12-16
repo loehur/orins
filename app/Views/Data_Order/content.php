@@ -1,4 +1,5 @@
 <?php $modeView = $data['parse'] ?>
+<?php $target_jenis = $data['parse_2'] ?>
 <style>
     tr:hover {
         background-color: ghostwhite;
@@ -18,28 +19,28 @@
                         <div class="d-flex align-items-start align-items-end pt-1">
                             <div class="ps-0 pe-1">
                                 <?php $outline = ($modeView == 0) ? "" : "outline-" ?>
-                                <a href="<?= PV::BASE_URL ?>Data_Order/index/0" type="button" class="btn btn-sm btn-<?= $outline ?>primary">
+                                <a href="<?= PV::BASE_URL ?>Data_Order/index/0/<?= $data['parse_2'] ?>" type="button" class="btn btn-sm btn-<?= $outline ?>primary">
                                     Terkini
                                 </a>
                                 <?php $outline = "outline-" ?>
                             </div>
                             <div class="ps-0 pe-1">
                                 <?php $outline = ($modeView == 1) ? "" : "outline-" ?>
-                                <a href="<?= PV::BASE_URL ?>Data_Order/index/1" type="button" class="btn btn-sm btn-<?= $outline ?>success">
+                                <a href="<?= PV::BASE_URL ?>Data_Order/index/1/<?= $data['parse_2'] ?>" type="button" class="btn btn-sm btn-<?= $outline ?>success">
                                     >1 Minggu
                                 </a>
                                 <?php $outline = "outline-" ?>
                             </div>
                             <div class="ps-0 pe-1">
                                 <?php $outline = ($modeView == 2) ? "" : "outline-" ?>
-                                <a href="<?= PV::BASE_URL ?>Data_Order/index/2" type="button" class="btn btn-sm btn-<?= $outline ?>info">
+                                <a href="<?= PV::BASE_URL ?>Data_Order/index/2/<?= $data['parse_2'] ?>" type="button" class="btn btn-sm btn-<?= $outline ?>info">
                                     >1 Bulan
                                 </a>
                                 <?php $outline = "outline-" ?>
                             </div>
                             <div class="ps-0 pe-1">
                                 <?php $outline = ($modeView == 3) ? "" : "outline-" ?>
-                                <a href="<?= PV::BASE_URL ?>Data_Order/index/3" type="button" class="btn btn-sm btn-<?= $outline ?>secondary">
+                                <a href="<?= PV::BASE_URL ?>Data_Order/index/3/<?= $data['parse_2'] ?>" type="button" class="btn btn-sm btn-<?= $outline ?>secondary">
                                     >1 Tahun
                                 </a>
                                 <?php $outline = "outline-" ?>

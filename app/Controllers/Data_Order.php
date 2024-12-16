@@ -16,47 +16,61 @@ class Data_Order extends Controller
       $this->v_viewer = "Layouts/viewer";
    }
 
-   public function index($parse)
+   public function index($parse, $parse_2 = 0)
    {
+      $title = "";
+      switch ($parse_2) {
+         case 1:
+            $title = "Data Order - Proses (Umum)";
+            break;
+         case 2:
+            $title = "Data Order - Proses (R/D)";
+            break;
+         case 3:
+            $title = "Data Order - Proses (Online)";
+            break;
+      }
+
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Data Order - Proses"
+         "title" => $title
       ]);
 
-      $this->viewer($parse);
+      $this->viewer($parse, $parse_2);
    }
 
-   public function viewer($parse = "")
+   public function viewer($parse = 0, $parse_2 = 0)
    {
-      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse, "parse_2" => $parse_2]);
    }
 
-   public function content($parse = "")
+   public function content($parse = 0, $parse_2 = 0)
    {
       $data['parse'] = $parse;
+      $data['parse_2'] = $parse_2;
       $data['pelanggan'] = $this->db(0)->get('pelanggan');
       $data['karyawan'] = $this->db(0)->get('karyawan');
 
       switch ($parse) {
          case 0:
             //DALAM PROSES 7 HARI
-            $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND CURDATE() <= (insertTime + INTERVAL 7 DAY)  ORDER BY id_order_data DESC";
-            $where2 = "(id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND CURDATE() <= (insertTime + INTERVAL 7 DAY)  ORDER BY id DESC";
+            $where = "id_pelanggan_jenis = " . $parse_2 . " AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND CURDATE() <= (insertTime + INTERVAL 7 DAY)  ORDER BY id_order_data DESC";
+            $where2 = "jenis_target = " . $parse_2 . " AND (id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND CURDATE() <= (insertTime + INTERVAL 7 DAY)  ORDER BY id DESC";
             break;
          case 1:
             //DALAM PROSES > 7 HARI
-            $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 7 DAY) AND CURDATE() <= (insertTime + INTERVAL 30 DAY)) ORDER BY id_order_data DESC";
-            $where2 = "(id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 7 DAY) AND CURDATE() <= (insertTime + INTERVAL 30 DAY)) ORDER BY id DESC";
+            $where = "id_pelanggan_jenis = " . $parse_2 . " AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 7 DAY) AND CURDATE() <= (insertTime + INTERVAL 30 DAY)) ORDER BY id_order_data DESC";
+            $where2 = "jenis_target = " . $parse_2 . " AND (id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 7 DAY) AND CURDATE() <= (insertTime + INTERVAL 30 DAY)) ORDER BY id DESC";
             break;
          case 2:
             //DALAM PROSES > 30 HARI
-            $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 30 DAY) AND CURDATE() <= (insertTime + INTERVAL 365 DAY)) ORDER BY id_order_data DESC";
-            $where2 = "(id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 30 DAY) AND CURDATE() <= (insertTime + INTERVAL 365 DAY)) ORDER BY id DESC";
+            $where = "id_pelanggan_jenis = " . $parse_2 . " AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 30 DAY) AND CURDATE() <= (insertTime + INTERVAL 365 DAY)) ORDER BY id_order_data DESC";
+            $where2 = "jenis_target = " . $parse_2 . " AND (id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND (CURDATE() > (insertTime + INTERVAL 30 DAY) AND CURDATE() <= (insertTime + INTERVAL 365 DAY)) ORDER BY id DESC";
             break;
          case 3:
             //DALAM PROSES > 1 TAHUN
-            $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND CURDATE() > (insertTime + INTERVAL 365 DAY) ORDER BY id_order_data DESC";
-            $where2 = "(id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND CURDATE() > (insertTime + INTERVAL 365 DAY) ORDER BY id DESC";
+            $where = "id_pelanggan_jenis = " . $parse_2 . " AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND CURDATE() > (insertTime + INTERVAL 365 DAY) ORDER BY id_order_data DESC";
+            $where2 = "jenis_target = " . $parse_2 . " AND (id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND CURDATE() > (insertTime + INTERVAL 365 DAY) ORDER BY id DESC";
             break;
       }
 

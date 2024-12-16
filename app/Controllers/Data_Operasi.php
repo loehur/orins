@@ -96,9 +96,6 @@ class Data_Operasi extends Controller
       $data_ = [];
       $data['mode'] = 0;
       foreach ($data['order'] as $key => $do) {
-         if ($do['id_afiliasi'] <> 0) {
-            $data['mode'] = 1;
-         }
          $data_[$do['ref']][$key] = $do;
       }
 
