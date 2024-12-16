@@ -49,7 +49,7 @@
 
 
                                 $pelanggan = "Non";
-                                $pelanggan = $dp['id_pelanggan'][$client]['nama'];
+                                $pelanggan = $data['pelanggan'][$client]['nama'];
 
                             ?>
                                 <tr>
@@ -127,7 +127,7 @@
                             $ref = $a['ref_transaksi'];
 
                             $pelanggan = "Non";
-                            $pelanggan = $dp['id_pelanggan'][$client]['nama'];
+                            $pelanggan = $data['pelanggan'][$client]['nama'];
 
                         ?>
                             <tr>
