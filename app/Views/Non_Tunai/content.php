@@ -163,7 +163,7 @@
                                 <?php
                                 $get_t = $this->db(0)->get_where_row("order_data", "ref = '" . $ref . "'");
                                 if (isset($get_t['tuntas'])) {
-                                    $tuntas = $get['tuntas'];
+                                    $tuntas = $get_t['tuntas'];
                                 } else {
                                     $tuntas = 0;
                                 }
