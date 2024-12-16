@@ -150,7 +150,7 @@
             </div>
         </div>
     <?php } ?>
-    <div class="pt-2 pe-2 pb-0 ms-3 mt-3 me-3 bg-white">
+    <div class="pe-2 pb-0 ms-3 me-3 bg-white">
         <div class="row mb-1">
             <div class="col ms-2">
                 <span class="text-purple">Riwayat Setoran Kasir</span> <small>(Last 20)</small>
