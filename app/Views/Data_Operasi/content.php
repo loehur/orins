@@ -258,11 +258,11 @@
                                                                 <?php if ($do['id_afiliasi'] <> 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) {
                                                                     $toko_aff = $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $do['id_afiliasi']);
                                                                     if ($do['status_order'] == 1) { ?>
-                                                                        <span class="badge text-primary border border-warning"><?= $toko_aff ?> - <span class="text-danger">Checking</span></span>
+                                                                        <span class="badge text-primary border border-warning"><?= $toko_aff ?> - <span class="text-danger"><i class="fa-regular fa-circle"></i> Checking</span></span>
                                                                     <?php } else {
                                                                         $cs_aff = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $do['id_user_afiliasi']);
                                                                     ?>
-                                                                        <span class="badge text-dark border border-success"><i class="fa-regular fa-square-check"></i> <?= $cs_aff ?> - <?= $toko_aff ?></span>
+                                                                        <span class="badge text-sucess border border-success"><i class="fa-solid fa-circle-check"></i> <?= $cs_aff ?> - <?= $toko_aff ?></span>
                                                                     <?php } ?>
                                                                 <?php } ?>
                                                             </td>
