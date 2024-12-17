@@ -4,9 +4,9 @@ class Barang extends Controller
 {
     function stok_data($kode, $id_toko)
     {
-        $cols = "kode_barang, CONCAT('U',sn,sds) as unic, sn, sds, sum(qty) as qty";
-        $where_masuk = "kode_barang = '" . $kode . "' AND id_target = '" . $id_toko . "' AND stat = 1 GROUP BY sn, sds";
-        $where_keluar = "kode_barang = '" . $kode . "' AND id_sumber = '" . $id_toko . "' AND stat <> 2 GROUP BY sn, sds";
+        $cols = "CONCAT('U',kode_barang,sn,sds) as unic, sn, sds, sum(qty) as qty";
+        $where_masuk = "kode_barang = '" . $kode . "' AND id_target = " . $id_toko . " AND stat = 1 GROUP BY sn, sds";
+        $where_keluar = "kode_barang = '" . $kode . "' AND id_sumber = " . $id_toko . " AND stat <> 2 GROUP BY sn, sds";
 
         $masuk = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_masuk, 1, "unic");
         $keluar = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_keluar, 1, "unic");
@@ -22,9 +22,9 @@ class Barang extends Controller
 
     function stok_data_proses($kode, $id_toko)
     {
-        $cols = "kode_barang, CONCAT('U',sn,sds) as unic, sn, sds, sum(qty) as qty";
-        $where_masuk = "kode_barang = '" . $kode . "' AND id_target = '" . $id_toko . "' AND stat = 1 GROUP BY sn, sds";
-        $where_keluar = "kode_barang = '" . $kode . "' AND id_sumber = '" . $id_toko . "' AND stat = 1 GROUP BY sn, sds";
+        $cols = "CONCAT('U',kode_barang,sn,sds) as unic, sn, sds, sum(qty) as qty";
+        $where_masuk = "kode_barang = '" . $kode . "' AND id_target = " . $id_toko . " AND stat = 1 GROUP BY unic";
+        $where_keluar = "kode_barang = '" . $kode . "' AND id_sumber = " . $id_toko . " AND stat = 1 GROUP BY unic";
 
         $masuk = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_masuk, 1, "unic");
         $keluar = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_keluar, 1, "unic");
@@ -36,6 +36,36 @@ class Barang extends Controller
         }
 
         return $masuk;
+    }
+
+    function cek($kode, $id_toko, $sn, $sds, $qty)
+    {
+        $stok = $this->stok_data($kode, $id_toko);
+        $unic = "U" . $kode . $sn . $sds;
+        if (isset($stok[$unic])) {
+            if ($stok[$unic]['qty'] < $qty) {
+                return $stok;
+            } else {
+                return true;
+            }
+        } else {
+            return $stok;
+        }
+    }
+
+    function cek_proses($kode, $id_toko, $sn, $sds, $qty)
+    {
+        $stok = $this->stok_data_proses($kode, $id_toko);
+        $unic = "U" . $kode . $sn . $sds;
+        if (isset($stok[$unic])) {
+            if ($stok[$unic]['qty'] < $qty) {
+                return $stok;
+            }
+        } else {
+            return $stok;
+        }
+
+        return true;
     }
 
     function stok_data_all($kode, $id_toko)
@@ -90,35 +120,5 @@ class Barang extends Controller
         }
 
         return $masuk;
-    }
-
-    function cek($kode, $id_toko, $sn, $sds, $qty)
-    {
-        $stok = $this->stok_data($kode, $id_toko);
-        $unic = "U" . $sn . $sds;
-        if (isset($stok[$unic])) {
-            if ($stok[$unic]['qty'] < $qty) {
-                return $stok;
-            } else {
-                return true;
-            }
-        } else {
-            return $stok;
-        }
-    }
-
-    function cek_proses($kode, $id_toko, $sn, $sds, $qty)
-    {
-        $stok = $this->stok_data_proses($kode, $id_toko);
-        $unic = "U" . $sn . $sds;
-        if (isset($stok[$unic])) {
-            if ($stok[$unic]['qty'] < $qty) {
-                return $stok;
-            }
-        } else {
-            return $stok;
-        }
-
-        return true;
     }
 }
