@@ -46,6 +46,9 @@
     $("form").on("submit", function(e) {
         $(".modal").hide();
         var id_paket = $("#paket_barang").val();
+        if (typeof id_paket == "undefined") {
+            id_paket = "";
+        }
         e.preventDefault();
         $.ajax({
             url: $(this).attr('action'),
