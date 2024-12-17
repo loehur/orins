@@ -5,8 +5,8 @@ class Barang extends Controller
     function stok_data($kode, $id_toko)
     {
         $cols = "CONCAT('U',kode_barang,sn,sds) as unic, sn, sds, sum(qty) as qty";
-        $where_masuk = "kode_barang = '" . $kode . "' AND id_target = " . $id_toko . " AND stat = 1 GROUP BY sn, sds";
-        $where_keluar = "kode_barang = '" . $kode . "' AND id_sumber = " . $id_toko . " AND stat <> 2 GROUP BY sn, sds";
+        $where_masuk = "kode_barang = '" . $kode . "' AND id_target = " . $id_toko . " AND stat = 1 GROUP BY unic";
+        $where_keluar = "kode_barang = '" . $kode . "' AND id_sumber = " . $id_toko . " AND stat <> 2 GROUP BY unic";
 
         $masuk = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_masuk, 1, "unic");
         $keluar = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_keluar, 1, "unic");
