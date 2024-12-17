@@ -224,8 +224,8 @@ class Buka_Order extends Controller
          $id_sumber = $dm['id_sumber'];
 
          $cek = $this->data('Barang')->cek($_POST['kode'], $dm['id_sumber'], $dm['sn'], $dm['sds'], $dm['qty']);
-         if ($cek <> true) {
-            print_r($cek);
+         if ($cek == false) {
+            echo "Stok (" . $_POST['kode'] . ") kosong";
             exit();
          }
 
@@ -471,8 +471,6 @@ class Buka_Order extends Controller
          echo "Stok (" . $barang_c . ") kosong";
          exit();
       }
-
-      print_r($_POST['id_paket']);
 
       if (isset($_POST['id_paket']) && $_POST['id_paket'] <> "") {
          $paketGet = explode("-", $_POST['id_paket']);
