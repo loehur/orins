@@ -215,6 +215,7 @@ class Buka_Order extends Controller
       $paket_group = $this->userData['id_toko'] . date("ymdHis") . rand(0, 9);
       $data['order'] = $this->db(0)->get_where("paket_order", "paket_ref = '" . $id . "'");
       $data['mutasi'] = $this->db(0)->get_where("paket_mutasi", "paket_ref = '" . $id . "'");
+      $data['barang'] = $this->db(0)->get('master_barang', 'code');
 
       foreach ($data['mutasi'] as $dm) {
          $_POST['kode'] = $dm['kode_barang'];
@@ -222,7 +223,6 @@ class Buka_Order extends Controller
          $_POST['sds'] = $dm['sds'];
          $_POST['sn'] = $dm['sn'];
          $id_sumber = $dm['id_sumber'];
-
          $this->add_barang($id_pelanggan_jenis, $dm['price_locker'], $id, $id_sumber, 0, $paket_group);
       }
 
@@ -479,13 +479,9 @@ class Buka_Order extends Controller
       $harga = $barang['harga_' . $id_jenis_pelanggan];
 
       $cols = 'jenis, jenis_target, id_barang, kode_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual, price_locker, paket_ref, paket_group, margin_paket';
-      $vals = "2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $barang_c . "','" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $margin_paket;
+      $vals = "2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $barang_c . "'," . $id_sumber . "," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $margin_paket;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
-      if ($do['errno'] == 0) {
-         echo 0;
-      } else {
-         print_r($do['error']);
-      }
+      echo $do['errno'] == 0 ? 0 : $do['error'];
    }
 
    function load_detail($produk)
