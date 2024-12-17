@@ -30,6 +30,7 @@
     <div class="row mt-1 mx-2 pb-2">
         <?php
         $id_pelanggan = $data['parse'];
+        $id_pelanggan_jenis = 0;
         $arr_tuntas = [];
         $loadRekap = [];
         foreach ($data['refs'] as $ref) {
@@ -192,6 +193,7 @@
                                     <?php
                                     if (isset($data['order'][$ref])) {
                                         foreach ($data['order'][$ref] as $do) {
+                                            $id_pelanggan_jenis = $do['id_pelanggan_jenis'];
                                             $id = $do['id_order_data'];
                                             $jumlah = $do['harga'] * $do['jumlah'];
 
@@ -366,6 +368,7 @@
                                         foreach ($data['mutasi'][$ref] as $do) {
                                             $no += 1;
                                             $jumlah = $do['qty'];
+                                            $id_pelanggan_jenis = $do['jenis_target'];
                                             $dp = $data['barang'][$do['kode_barang']];
                                             $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']); ?>
                                             <tr>
@@ -424,7 +427,7 @@
                                                                 <span class="visually-hidden">Toggle Dropdown</span>
                                                             </button>
                                                             <ul class="dropdown-menu p-0">
-                                                                <li><a class="dropdown-item" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $do['ref'] ?>/<?= $do['id_pelanggan_jenis'] ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Edit Order</small></a></li>
+                                                                <li><a class="dropdown-item" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Edit Order</small></a></li>
                                                                 <li><a data-bs-toggle="modal" data-bs-target="#exampleModalSur" class="dropdown-item surcharge" data-ref="<?= $do['ref'] ?>" href="#"><small>Surcharge</small></a></li>
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $sisa > 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon" data-sisa="<?= $sisa ?>" data-ref="<?= $do['ref'] ?>" href="#"><small>Extra Diskon</small></a></li>

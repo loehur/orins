@@ -123,7 +123,7 @@
                                 <tr>
                                     <td style="padding-left:10px;border-top: 1px solid silver;">
                                         <?php
-                                        echo "<b>" . $pdo['jumlah'] . "x - " . $pdo['produk'] . "</b><br>";
+                                        echo $pdo['jumlah'] . "x - " . $pdo['produk'] . "<br>";
                                         $detail_arr = unserialize($pdo['produk_detail']);
                                         foreach ($detail_arr as $da) { ?>
                                             <table class="border-bottom" style="float: left;margin:0;padding:0;font-size: 13;">
@@ -134,6 +134,16 @@
                                                 </tr>
                                             </table>
                                         <?php } ?>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+
+                            <?php
+                            foreach ($do['barang'] as $pdo) {
+                                $dp = $data['barang'][$pdo['kode_barang']] ?>
+                                <tr>
+                                    <td style="padding-left:10px;border-top: 1px solid silver;">
+                                        <?= $pdo['qty'] . "x - " . trim($dp['brand'] . " " . $dp['model']) . "<br>" ?>
                                     </td>
                                 </tr>
                             <?php } ?>
@@ -170,7 +180,7 @@
                 }
                 $no += 1;
                 $akum_diskon = 0;
-                $total += (($do['harga'] * $do['jumlah']) + $do['margin_paket']);
+                $total += (($do['harga'] * $do['jumlah']));
                 $id_produk = $do['id_produk'];
                 $detail_arr = unserialize($do['produk_detail']);
                 $listDetail = unserialize($do['detail_harga']);
@@ -228,7 +238,7 @@
                 $no += 1;
                 $jumlah = $do['qty'];
                 $dp = $data['barang'][$do['kode_barang']];
-                $total += (($jumlah * $do['harga_jual']) + $do['margin_paket']); ?>
+                $total += (($jumlah * $do['harga_jual'])); ?>
 
                 <tr style="border-bottom: 1px solid silver;">
                     <td style="text-align: right; vertical-align:text-top; padding-right:5px" valign="top">

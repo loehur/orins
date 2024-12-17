@@ -257,7 +257,7 @@ class Data_Order extends Controller
 
       $data['paket'] = [];
       $data['list_paket'] = $this->db(0)->get_where('paket_main', 'id_toko = ' . $this->userData['id_toko'], 'id');
-      foreach ($data['order'] as $do) {
+      foreach ($data['order'] as $key => $do) {
          if ($do['paket_ref'] <> "") {
             if (isset($data['paket'][$do['paket_ref']]['harga'])) {
                $data['paket'][$do['paket_ref']]['harga'] += (($do['harga'] * $do['jumlah']) + $do['margin_paket']);
@@ -268,19 +268,21 @@ class Data_Order extends Controller
                $data['paket'][$do['paket_ref']]['order'] = [];
             }
             array_push($data['paket'][$do['paket_ref']]['order'], $do);
+            unset($data['order'][$key]);
          }
       }
-      foreach ($data['mutasi'] as $do) {
+      foreach ($data['mutasi'] as $key => $do) {
          if ($do['paket_ref'] <> "") {
             if (isset($data['paket'][$do['paket_ref']]['harga'])) {
                $data['paket'][$do['paket_ref']]['harga'] += (($do['harga_jual'] * $do['qty']) + $do['margin_paket']);
             } else {
                $data['paket'][$do['paket_ref']]['harga'] = (($do['harga_jual'] * $do['qty']) + $do['margin_paket']);
             }
-            if (!isset($data['paket'][$do['paket_ref']]['order'])) {
-               $data['paket'][$do['paket_ref']]['order'] = [];
+            if (!isset($data['paket'][$do['paket_ref']]['barang'])) {
+               $data['paket'][$do['paket_ref']]['barang'] = [];
             }
             array_push($data['paket'][$do['paket_ref']]['barang'], $do);
+            unset($data['mutasi'][$key]);
          }
       }
 

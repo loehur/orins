@@ -129,8 +129,8 @@
                     <?php if (count($mgpaket) > 0) { ?>
                         <div class="mb-2 mt-5">
                             <label class="text-sm fw-bold text-danger ps-1">Include to Package</label>
-                            <select class="tize" name="id_paket">
-                                <option></option>
+                            <select class="tize" name="id_paket" id="paket_barang">
+                                <option value="" selected></option>
                                 <?php foreach ($mgpaket as $dp) { ?>
                                     <option value="<?= $dp['id'] . "-" . $dp['primary'] . "-" . $dp['tb'] ?>"><?= $dp['nama'] ?></option>
                                 <?php } ?>

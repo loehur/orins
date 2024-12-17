@@ -79,13 +79,10 @@ $mgpaket = $data['margin_paket'];
                     </div>
                     <div class="col-auto text-end">
                         <label>Paid</label><br>
-                        <span class="fw-bold" id="paid" data-val="<? $dEdit[2] ?>"><?= number_format($dEdit[2]) ?></span>
+                        <span class="fw-bold" id="paid" data-val="<?= $dEdit[2] ?>"><?= number_format($dEdit[2]) ?></span>
                     </div>
                     <div class="col mt-auto">
-                        <span class="btn btn-sm btn-secondary bg-gradient">Tetapkan</span>
-                    </div>
-                    <div class="col text-end">
-                        <a class="text-danger" href="#">Batalkan Edit</a>
+                        <a class="submit" href="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $dEdit[1] ?>/<?= $dEdit[3] ?>"><span class="btn btn-sm btn-secondary bg-gradient">Update</span></a>
                     </div>
                 </div>
             <?php }
@@ -335,7 +332,7 @@ $mgpaket = $data['margin_paket'];
                 <?= $total_item ?> Items
             </div>
             <div class="col text-end border">
-                <span class="fw-bold">Total Rp<?= number_format($total_order) ?></span>
+                <span class="fw-bold" id="total_order" data-val="<?= $total_order ?>">Total Rp<?= number_format($total_order) ?></span>
             </div>
         </div>
     </div>
@@ -477,6 +474,32 @@ $mgpaket = $data['margin_paket'];
             success: function(res) {
                 if (isNumeric(res) == false) {
                     alert(res);
+                } else {
+                    location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + res;
+                }
+            }
+        });
+    });
+
+    $('a.submit').on('click', function(e) {
+        e.preventDefault();
+
+        var paid = parseInt($("#paid").attr('data-val'));
+        var total_o = parseInt($("#total_order").attr('data-val'));
+
+        if (total_o < paid) {
+            alert("Jumlah pembayaran lebih besar dari order, lakukan pembatalan bayar terlebih dahulu");
+            return;
+        }
+
+        $.ajax({
+            url: $(this).attr('href'),
+            type: 'POST',
+            data: {},
+            cache: false,
+            success: function(res) {
+                if (isNumeric(res) == false) {
+                    $('body').html(res);
                 } else {
                     location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + res;
                 }

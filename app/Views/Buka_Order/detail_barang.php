@@ -45,10 +45,11 @@
 
     $("form").on("submit", function(e) {
         $(".modal").hide();
+        var id_paket = $("#paket_barang").val();
         e.preventDefault();
         $.ajax({
             url: $(this).attr('action'),
-            data: $(this).serialize(),
+            data: $(this).serialize() + "&id_paket=" + id_paket,
             type: $(this).attr("method"),
             success: function(res) {
                 if (res == 0) {
