@@ -1,11 +1,12 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
-<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
 
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
 <style>
     .dt-search {
         float: right !important;
     }
 </style>
+
 <?php
 $input = ["grup", "tipe", "brand", "model"];
 $required = ["required", "required", "required", "required"];
@@ -18,9 +19,9 @@ $max_length = [2, 2, 2, 3];
             Tambah Barang
         </a>
         <div class="collapse mb-3" id="collapseExample">
-            <div class="card card-body shadow-sm rounded-0">
+            <div class="card card-body shadow-sm rounded-0 pb-0">
                 <form action="<?= PV::BASE_URL ?>Gudang_Barang/add" method="POST">
-                    <div class="row mx-0 mb-4">
+                    <div class="row mx-0 pb-0">
                         <?php foreach ($input as $k => $i) { ?>
                             <div class="col px-1 mb-2">
                                 <div class="row mx-0 mb-1">

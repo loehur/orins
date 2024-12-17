@@ -1,12 +1,18 @@
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
+<style>
+    .dt-search {
+        float: right !important;
+    }
+</style>
+
 <main>
     <!-- Main page content-->
     <div class="container">
-        <table class="table table-sm">
+        <table id="tb_barang">
             <thead>
                 <th>Kode</th>
                 <th>Head</th>
                 <th>Nama</th>
-                <th class="text-end d-none">Modal</th>
                 <th class="text-end">Harga Umum</th>
                 <th class="text-end">Harga Dealer</th>
                 <th class="text-end">Harga Olshop</th>
@@ -21,9 +27,6 @@
                     </td>
                     <td>
                         <?= strtoupper($a['brand'] . " " . $a['model']) ?>
-                    </td>
-                    <td class="text-end d-none">
-                        <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga" data-tb="master_barang"><?= $a['harga'] ?></span>
                     </td>
                     <td class="text-end">
                         <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_1" data-tb="master_barang"><?= $a['harga_1'] ?></span>
@@ -41,8 +44,20 @@
 </main>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-
+<script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 <script>
+    $(document).ready(function() {
+        $('#tb_barang').dataTable({
+            "bLengthChange": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "pageLength": 50,
+            "scrollY": 600,
+            "dom": "lfrti"
+        });
+    })
+
     var click = 0;
     $(".cell_edit").on('dblclick', function() {
         click = click + 1;

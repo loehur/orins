@@ -424,6 +424,7 @@
                                                                 <span class="visually-hidden">Toggle Dropdown</span>
                                                             </button>
                                                             <ul class="dropdown-menu p-0">
+                                                                <li><a class="dropdown-item" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $do['ref'] ?>/<?= $do['id_pelanggan_jenis'] ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Edit Order</small></a></li>
                                                                 <li><a data-bs-toggle="modal" data-bs-target="#exampleModalSur" class="dropdown-item surcharge" data-ref="<?= $do['ref'] ?>" href="#"><small>Surcharge</small></a></li>
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $sisa > 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon" data-sisa="<?= $sisa ?>" data-ref="<?= $do['ref'] ?>" href="#"><small>Extra Diskon</small></a></li>

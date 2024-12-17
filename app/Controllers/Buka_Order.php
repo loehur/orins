@@ -16,6 +16,12 @@ class Buka_Order extends Controller
       $this->v_viewer = "Layouts/viewer";
    }
 
+   function Edit_order($ref, $jenis_pelanggan, $dibayar, $id_pelanggan)
+   {
+      $_SESSION['edit'][$this->userData['id_user']] = [$ref, $jenis_pelanggan, $dibayar, $id_pelanggan];
+      $this->index($jenis_pelanggan);
+   }
+
    public function index($jenis_pelanggan)
    {
       if ($jenis_pelanggan == 1) {
@@ -48,11 +54,20 @@ class Buka_Order extends Controller
       $data['produk_jasa'] = $this->db(0)->get_where('produk', "pj = " . $this->userData['id_toko'] . " ORDER BY freq DESC, id_produk");
       $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
 
-      $data['id_jenis_pelanggan'] = $parse;
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
-      $data['order'] = $this->db(0)->get_where('order_data', $where);
+      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse . " ORDER BY freq DESC";
+      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan, 'id_pelanggan');
 
-      $whereBarang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0";
+      $data['id_jenis_pelanggan'] = $parse;
+      if (isset($_SESSION['edit'][$this->userData['id_user']])) {
+         $dEdit = $_SESSION['edit'][$this->userData['id_user']];
+         $where = "ref = '" . $dEdit[0] . "'";
+         $whereBarang = "ref = '" . $dEdit[0] . "'";
+      } else {
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
+         $whereBarang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0";
+      }
+
+      $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data['order_barang'] = $this->db(0)->get_where('master_mutasi', $whereBarang);
 
       $data['barang'] = $this->db(0)->get('master_barang', 'code');
@@ -158,9 +173,6 @@ class Buka_Order extends Controller
          $adjuster[$key] = ($data['paket'][$key]['harga_' . $parse] * $id_margin[$key]['qty']) - $tpp;
          $id_margin[$key]['margin_paket'] = $adjuster[$key];
       }
-
-      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse . " ORDER BY freq DESC";
-      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan, 'id_pelanggan');
 
       $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC";
       $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan, 'id_karyawan');

@@ -4,17 +4,21 @@
 $pelanggan_jenis = "";
 $id_pelanggan_jenis = $data['id_jenis_pelanggan'];
 
-if ($id_pelanggan_jenis == 1) {
-    $pelanggan_jenis = "Umum";
-} else {
-    $pelanggan_jenis = "Rekanan";
+switch ($id_pelanggan_jenis) {
+    case 1:
+        $pelanggan_jenis = "Umum";
+        break;
+    case 2:
+        $pelanggan_jenis = "Rekanan";
+        break;
+    default:
+        $pelanggan_jenis = "Online";
+        break;
 }
 
 $total_order = 0;
 $total_item = 0;
-
 $paket = false;
-
 $mgpaket = $data['margin_paket'];
 ?>
 
@@ -29,7 +33,7 @@ $mgpaket = $data['margin_paket'];
             <?php }
         } else {
             ?>
-            <div class="row <?= count($data['order']) == 0 && count($data['order_barang']) == 0 ? "d-none" : "" ?>">
+            <div class="row <?= (count($data['order']) == 0 && count($data['order_barang']) == 0) || isset($_SESSION['edit'][$this->userData['id_user']]) ? "d-none" : "" ?>">
                 <div class="col px-2">
                     <form class="proses" action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
                         <div class="row mb-2">
@@ -65,13 +69,35 @@ $mgpaket = $data['margin_paket'];
                 </div>
             </div>
 
+            <?php
+            if (isset($_SESSION['edit'][$this->userData['id_user']])) {
+                $dEdit = $_SESSION['edit'][$this->userData['id_user']]; ?>
+                <div class="row mb-3 text-sm border py-2">
+                    <div class="col-auto">
+                        <label>Pelanggan</label><br>
+                        <span class="fw-bold"><?= strtoupper($data['pelanggan'][$dEdit[3]]['nama']) ?></span>
+                    </div>
+                    <div class="col-auto text-end">
+                        <label>Paid</label><br>
+                        <span class="fw-bold" id="paid" data-val="<? $dEdit[2] ?>"><?= number_format($dEdit[2]) ?></span>
+                    </div>
+                    <div class="col mt-auto">
+                        <span class="btn btn-sm btn-secondary bg-gradient">Tetapkan</span>
+                    </div>
+                    <div class="col text-end">
+                        <a class="text-danger" href="#">Batalkan Edit</a>
+                    </div>
+                </div>
+            <?php }
+            ?>
+
             <div class="row mb-2">
-                <div class="col pe-0">
+                <div class="col px-0 text-end">
                     <?php if ($data['count'] <= 15) { ?>
-                        <button type="button" class="btn me-2 shadow-none btn-sm btn-danger bg-gradient py-1" data-bs-target="#exampleModalPaket" data-bs-toggle="modal">(&#43;) Paket</button>
-                        <button type="button" class="btn me-2 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
-                        <button type="button" class="btn me-2 shadow-none btn-sm btn-dark bg-gradient py-1" data-bs-target="#exampleModalJasa" data-bs-toggle="modal">(&#43;) Jasa</button>
-                        <button type="button" class="btn me-2 shadow-none btn-sm btn-success bg-gradient py-1" data-bs-target="#exampleModalB" data-bs-toggle="modal">(&#43;) Barang</button>
+                        <button type="button" class="btn me-1 shadow-none btn-sm btn-danger bg-gradient py-1" data-bs-target="#exampleModalPaket" data-bs-toggle="modal">(&#43;) Paket</button>
+                        <button type="button" class="btn me-1 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
+                        <button type="button" class="btn me-1 shadow-none btn-sm btn-dark bg-gradient py-1" data-bs-target="#exampleModalJasa" data-bs-toggle="modal">(&#43;) Jasa</button>
+                        <button type="button" class="btn me-1 shadow-none btn-sm btn-success bg-gradient py-1" data-bs-target="#exampleModalB" data-bs-toggle="modal">(&#43;) Barang</button>
                         <div class="btn-group me-1">
                             <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                 (&#43;) Afiliasi

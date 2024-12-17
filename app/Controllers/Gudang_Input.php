@@ -94,7 +94,7 @@ class Gudang_Input extends Controller
          exit();
       }
 
-      $id = date('ymdHi');
+      $id = date('ymdHis') . rand(0, 9);
       $cols = 'id, id_sumber,no_faktur,no_po,tanggal,sds';
       $vals = $id . ",'" . $supplier_c . "','" . $no_fak . "','" . $no_po . "','" . $tanggal . "'," . $sds;
       $do = $this->db(0)->insertCols('master_input', $cols, $vals);
