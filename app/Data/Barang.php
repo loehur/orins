@@ -80,10 +80,10 @@ class Barang extends Controller
         $unic = "U" . $sn . $sds;
         if (isset($stok[$unic])) {
             if ($stok[$unic]['qty'] < $qty) {
-                return 0;
+                return $stok;
             }
         } else {
-            return 0;
+            return $stok;
         }
 
         return 1;
