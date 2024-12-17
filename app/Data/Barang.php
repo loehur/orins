@@ -80,13 +80,13 @@ class Barang extends Controller
         $unic = "U" . $sn . $sds;
         if (isset($stok[$unic])) {
             if ($stok[$unic]['qty'] < $qty) {
-                return 0;
+                return false;
+            } else {
+                return true;
             }
         } else {
-            return 0;
+            return false;
         }
-
-        return 1;
     }
 
 
@@ -114,12 +114,12 @@ class Barang extends Controller
         $unic = "U" . $sn . $sds;
         if (isset($stok[$unic])) {
             if ($stok[$unic]['qty'] < $qty) {
-                return 0;
+                return false;
             }
         } else {
-            return 0;
+            return false;
         }
 
-        return 1;
+        return true;
     }
 }

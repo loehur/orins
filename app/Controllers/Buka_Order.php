@@ -223,7 +223,7 @@ class Buka_Order extends Controller
          $_POST['sn'] = $dm['sn'];
          $id_sumber = $dm['id_sumber'];
 
-         $cek = $this->data('Barang')->cek($_POST['kode'], $dm['id_sumber'], $dm['sn'], $dm['sds'], $dm['qty']);
+         $cek = $this->data('Barang')->cek_proses($_POST['kode'], $dm['id_sumber'], $dm['sn'], $dm['sds'], $dm['qty']);
          if ($cek == false) {
             echo "Stok (" . $_POST['kode'] . ") kosong";
             exit();
