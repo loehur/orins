@@ -262,7 +262,7 @@
                                                                     <?php } else {
                                                                         $cs_aff = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $do['id_user_afiliasi']);
                                                                     ?>
-                                                                        <span class="badge badge-sucess"><i class="fa-solid fa-circle-check"></i> <?= $cs_aff ?> - <?= $toko_aff ?></span>
+                                                                        <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> <?= $cs_aff ?> - <?= $toko_aff ?></span>
                                                                     <?php } ?>
                                                                 <?php } ?>
                                                             </td>
