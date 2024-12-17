@@ -281,14 +281,6 @@ $total_item = 0;
                 </table>
             </div>
         </div>
-        <div class="row mt-2">
-            <div class="col text-end border">
-                <?= number_format($total_item) ?> Items
-            </div>
-            <div class="col text-end border fw-bold">
-                Total <?= number_format($total_order) ?>
-            </div>
-        </div>
     </div>
 </main>
 

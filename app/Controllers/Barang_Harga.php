@@ -36,6 +36,7 @@ class Barang_Harga extends Controller
       $data['grup'] = $this->db(0)->get('master_grup');
       $data['tipe'] = $this->db(0)->get('master_tipe');
       $data['brand'] = $this->db(0)->get('master_brand');
+      $data['stok'] = $this->data('Barang')->stok_data_list_all($this->userData['id_toko']);
       $this->view($this->v_content, $data);
    }
 
