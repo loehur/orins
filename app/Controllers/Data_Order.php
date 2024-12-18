@@ -48,8 +48,8 @@ class Data_Order extends Controller
    {
       $data['parse'] = $parse;
       $data['parse_2'] = $parse_2;
-      $data['pelanggan'] = $this->db(0)->get('pelanggan');
-      $data['karyawan'] = $this->db(0)->get('karyawan');
+      $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
+      $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
 
       switch ($parse) {
          case 0:
@@ -81,14 +81,6 @@ class Data_Order extends Controller
       $ref2 = array_unique(array_column($data['mutasi'], 'ref'));
       $refs = array_unique(array_merge($ref1, $ref2));
 
-      foreach ($data['mutasi'] as $key => $dm) {
-         foreach ($ref1 as $r) {
-            if ($dm['ref'] == $r) {
-               unset($data['mutasi'][$key]);
-            }
-         }
-      }
-
       $data['kas'] = [];
       if (count($refs) > 0) {
          foreach ($refs as $r) {
@@ -110,6 +102,7 @@ class Data_Order extends Controller
 
       $data['order'] = $data_;
       $data['mutasi'] = $datam_;
+      $data['refs'] = $refs;
 
       $this->view($this->v_content, $data);
    }
