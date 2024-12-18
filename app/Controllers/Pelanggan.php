@@ -55,7 +55,7 @@ class Pelanggan extends Controller
    function add($id_pelanggan_jenis)
    {
       $hp = $_POST['hp'];
-      $nama = $_POST['nama'];
+      $nama = strtoupper($_POST['nama']);
 
       if ($id_pelanggan_jenis == 2) {
          $usaha = $_POST['usaha'];

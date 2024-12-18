@@ -600,20 +600,40 @@ class Buka_Order extends Controller
             $id_pelanggan = $_POST['id_pelanggan'];
          } else {
             $hp = $_POST['hp'];
-            $nama = $_POST['new_customer'];
 
-            $get_lastID = $this->db(0)->get_cols('pelanggan', 'MAX(id_pelanggan) as max', 0);
-            $id_pelanggan = $get_lastID['max'] + 1;
+            if (strlen($hp) > 0) {
+               $hp = $this->data('Validasi')->valid_wa($hp);
+               if ($hp == false) {
+                  echo "Nomor HP tidak valid";
+                  exit();
+               }
+            }
 
-            $cols = 'id_pelanggan, id_toko, nama, no_hp, id_pelanggan_jenis';
-            $vals = $id_pelanggan . ",'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "'," . $id_pelanggan_jenis;
-
-            $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
-            if ($do['errno'] <> 0) {
-               echo $do['error'];
+            $nama = strtoupper($_POST['new_customer']);
+            if (strlen($nama) == 0) {
+               echo "Lengkapi Nama Customer";
                exit();
             }
+
+            $cek_pelanggan = $this->db(0)->get_where_row('pelanggan', "UPPER(nama) = '" . $nama . "' AND no_hp = '" . $hp . "'");
+
+            if (isset($cek_pelanggan['id_pelanggan'])) {
+               $id_pelanggan = $cek_pelanggan['id_pelanggan'];
+            } else {
+               $get_lastID = $this->db(0)->get_cols('pelanggan', 'MAX(id_pelanggan) as max', 0);
+               $id_pelanggan = $get_lastID['max'] + 1;
+
+               $cols = 'id_pelanggan, id_toko, nama, no_hp, id_pelanggan_jenis';
+               $vals = $id_pelanggan . ",'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "'," . $id_pelanggan_jenis;
+
+               $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
+               if ($do['errno'] <> 0) {
+                  echo $do['error'];
+                  exit();
+               }
+            }
          }
+
          $id_karyawan = $_POST['id_karyawan'];
 
          $where_order = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
