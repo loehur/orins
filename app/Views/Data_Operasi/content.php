@@ -627,9 +627,6 @@
             clearTuntas();
         }
 
-        $("div#noteBayar").hide();
-        $("tr#noteBayar_multi").hide();
-
         //MULTI
         totalBill = $("span#totalBill").attr("data-total");
         json_rekap = [<?= json_encode($loadRekap) ?>];

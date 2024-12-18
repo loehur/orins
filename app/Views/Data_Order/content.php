@@ -1,5 +1,7 @@
 <?php $modeView = $data['parse'] ?>
 <?php $target_jenis = $data['parse_2'] ?>
+<?php $arr_tuntas = [] ?>
+
 <style>
     tr:hover {
         background-color: ghostwhite;
@@ -61,15 +63,27 @@
                             <?php foreach ($data['order'] as $ref => $do_) { ?>
                                 <?php
                                 $no = 0;
-                                $lunas = false;
-                                $dibayar = 0;
-                                $ambil_all = true;
-                                foreach ($data['kas'] as $dk) {
-                                    if ($dk['ref_transaksi'] == $ref && $dk['status_mutasi'] == 1) {
-                                        $dibayar += $dk['jumlah'];
+
+                                $bill[$ref] = 0;
+                                $dibayar[$ref] = 0;
+                                $verify_payment[$ref] = 0;
+                                $lunas[$ref] = false;
+                                $ambil_all[$ref] = true;
+                                $sisa[$ref] = 0;
+
+                                foreach ($data['kas'][$ref] as $dk) {
+                                    if ($dk['ref_transaksi'] == $ref && $dk['status_mutasi'] <> 2) {
+                                        $dibayar[$ref] += $dk['jumlah'];
+
+                                        if ($dk['metode_mutasi'] == 1 && $dk['status_setoran'] == 1) {
+                                            $verify_payment[$ref] += $dk['jumlah'];
+                                        }
+
+                                        if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3 || $dk['metode_mutasi'] == 4) && $dk['status_mutasi'] == 1) {
+                                            $verify_payment[$ref] += $dk['jumlah'];
+                                        }
                                     }
                                 }
-                                $bill = 0;
 
                                 foreach ($do_ as $do) {
                                     $no++;
@@ -85,7 +99,7 @@
 
                                     $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
                                     if ($cancel == 0) {
-                                        $bill += $jumlah;
+                                        $bill[$ref] += $jumlah;
                                     }
 
                                     $divisi_arr = unserialize($do['spk_dvs']);
@@ -93,7 +107,7 @@
 
                                     if ($id_ambil == 0) {
                                         if ($countSPK > 0 && $cancel == 0) {
-                                            $ambil_all = false;
+                                            $ambil_all[$ref] = false;
                                         }
                                     }
 
@@ -120,23 +134,30 @@
                                                 <?php }
                                                 ?>
                                             <?php }
-                                        $sisa = $bill - $dibayar;
-                                        if ($sisa <= 0) {
-                                            $lunas = true;
+
+                                        $sisa[$ref] = $bill[$ref] - $dibayar[$ref];
+                                        if ($sisa[$ref] <= 0) {
+                                            $lunas[$ref] = true;
+                                        } else {
+                                            $lunas[$ref] = false;
                                         }
-                                            ?>
+
+                                        if ($verify_payment[$ref] >= $bill[$ref] && $ambil_all[$ref] == true) {
+                                            array_push($arr_tuntas, $ref);
+                                        } ?>
+
                                             <?php if ($do['id_afiliasi'] == 0 || $this->userData['id_toko'] == $do['id_toko']) { ?>
                                                 <td class="text-end pe-1">
                                                     <small>
                                                         &nbsp;
-                                                        <?php if ($ambil_all == true) { ?>
+                                                        <?php if ($ambil_all[$ref] == true) { ?>
                                                             <i class="fa-solid fa-circle-check text-purple"></i>
                                                         <?php } else { ?>
                                                             <i class="fa-regular fa-circle"></i>
                                                         <?php } ?>
                                                         <br>
                                                         &nbsp;
-                                                        <?php if ($lunas == true) { ?>
+                                                        <?php if ($lunas[$ref] == true) { ?>
                                                             <i class="fa-solid fa-circle-check text-success"></i>
                                                         <?php } else { ?>
                                                             <i class="fa-regular fa-circle"></i>
@@ -168,15 +189,26 @@
                             <?php foreach ($data['mutasi'] as $ref => $do_) { ?>
                                 <?php
                                 $no = 0;
-                                $lunas = false;
-                                $dibayar = 0;
-                                $ambil_all = true;
-                                foreach ($data['kas'] as $dk) {
-                                    if ($dk['ref_transaksi'] == $ref && $dk['status_mutasi'] == 1) {
-                                        $dibayar += $dk['jumlah'];
+                                $lunas[$ref] = false;
+                                $dibayar[$ref] = 0;
+                                $ambil_all[$ref] = true;
+                                $sisa[$ref] = 0;
+                                $bill[$ref] = 0;
+                                $verify_payment[$ref] = 0;
+
+                                foreach ($data['kas'][$ref] as $dk) {
+                                    if ($dk['ref_transaksi'] == $ref && $dk['status_mutasi'] <> 2) {
+                                        $dibayar[$ref] += $dk['jumlah'];
+
+                                        if ($dk['metode_mutasi'] == 1 && $dk['status_setoran'] == 1) {
+                                            $verify_payment[$ref] += $dk['jumlah'];
+                                        }
+
+                                        if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3 || $dk['metode_mutasi'] == 4) && $dk['status_mutasi'] == 1) {
+                                            $verify_payment[$ref] += $dk['jumlah'];
+                                        }
                                     }
                                 }
-                                $bill = 0;
 
                                 foreach ($do_ as $do) {
                                     $no++;
@@ -186,7 +218,7 @@
 
                                     $jumlah = ($do['harga_jual'] * $do['qty']) + $do['margin_paket'];
                                     if ($cancel == 1) {
-                                        $bill += $jumlah;
+                                        $bill[$ref] += $jumlah;
                                     }
 
                                     if ($no == 1) {
@@ -213,11 +245,16 @@
                                                 <?php }
                                                 ?>
                                             <?php }
-                                        $sisa = $bill - $dibayar;
-                                        if ($sisa <= 0) {
-                                            $lunas = true;
+
+                                        $sisa[$ref] = $bill[$ref] - $dibayar[$ref];
+                                        if ($sisa[$ref] <= 0) {
+                                            $lunas[$ref] = true;
                                         }
-                                            ?>
+
+                                        if ($verify_payment[$ref] >= $bill[$ref] && $ambil_all[$ref] == true) {
+                                            array_push($arr_tuntas, $ref);
+                                        } ?>
+
                                             <td class="text-end pe-1">
                                                 <small>
                                                     &nbsp;
@@ -245,6 +282,10 @@
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
+    $(document).ready(function() {
+        clearTuntas();
+    });
+
     $("#myInput").on("keyup", function() {
         var input = this.value;
         var filter = input.toLowerCase();
@@ -269,4 +310,22 @@
         var id = $(this).attr("data-id");
         window.location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + id;
     });
+
+    function clearTuntas() {
+        var dataNya = '<?= serialize($arr_tuntas) ?>';
+        var countArr = <?= count($arr_tuntas) ?>;
+
+        if (countArr > 0) {
+            $.ajax({
+                url: '<?= PV::BASE_URL ?>Data_Operasi/clearTuntas',
+                data: {
+                    'data': dataNya,
+                },
+                type: 'POST',
+                success: function() {
+                    content();
+                }
+            });
+        }
+    }
 </script>

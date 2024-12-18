@@ -49,7 +49,7 @@ class Setoran extends Controller
 
    function setor()
    {
-      $ref = date("Ymdhis") . rand(0, 9);
+      $ref = date("ymdhis") . rand(0, 9);
       $set = "ref_setoran = '" . $ref . "'";
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = ''";

@@ -77,10 +77,12 @@ class Data_Order extends Controller
       $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where2);
 
-      $refs = array_unique(array_column($data['order'], 'ref'));
+      $ref1 = array_unique(array_column($data['order'], 'ref'));
+      $ref2 = array_unique(array_column($data['mutasi'], 'ref'));
+      $refs = array_unique(array_merge($ref1, $ref2));
 
       foreach ($data['mutasi'] as $key => $dm) {
-         foreach ($refs as $r) {
+         foreach ($ref1 as $r) {
             if ($dm['ref'] == $r) {
                unset($data['mutasi'][$key]);
             }
@@ -89,19 +91,13 @@ class Data_Order extends Controller
 
 
       $data['kas'] = [];
+      $data['kas_tuntas'] = [];
       if (count($refs) > 0) {
-         $min_ref = min($refs);
-         $max_ref = max($refs);
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "')";
-         $data['kas'] = $this->db(0)->get_where('kas', $where);
-      }
-
-      $refs = array_column($data['order'], 'ref');
-      if (count($refs) > 0) {
-         $min_ref = min($refs);
-         $max_ref = max($refs);
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN " . $min_ref . " AND " . $max_ref . ")";
-         $data['kas'] = $this->db(0)->get_where('kas', $where);
+         foreach ($refs as $r) {
+            $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi = '" . $r . "'";
+            $data_kas = $this->db(0)->get_where('kas', $where);
+            $data['kas'][$r] = $data_kas;
+         }
       }
 
       $data_ = [];
