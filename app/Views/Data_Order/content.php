@@ -160,7 +160,6 @@
                                 <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
                                     <tr data-id="<?= $id_pelanggan ?>" class="cekPLG" style="cursor: pointer;">
                                         <td class="p-1">
-                                            <?= $ref ?>
                                             <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><?= strtoupper($pelanggan) ?></b></span> #<?= substr($id_pelanggan, 2) ?></small>
                                             <br>
                                             <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
