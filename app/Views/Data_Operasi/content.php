@@ -38,7 +38,7 @@
 
         foreach ($data['refs'] as $ref) {
         ?>
-            <div class="col px-1 text-sm" style="max-width:600px;">
+            <div class="col px-1 text-sm" style="min-width:400px;">
                 <?php
                 $no = 0;
                 $bill = 0;
