@@ -4,15 +4,19 @@ $id_pelanggan_jenis = $data['id_jenis_pelanggan'];
 
 if ($id_pelanggan_jenis == 1) {
     $pelanggan_jenis = "Umum";
-} else {
+} else if ($id_pelanggan_jenis == 2) {
     $pelanggan_jenis = "Rekanan";
+} else {
+    $pelanggan_jenis = "Online";
 }
 ?>
 
 <main>
     <div class="card mx-1 my-1 bg-light">
         <div class="card-header ">Pelanggan <b><?= $pelanggan_jenis ?></b>
-            <button type="button" class="float-end btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
+            <?php if ($id_pelanggan_jenis <> 3) { ?>
+                <button type="button" class="float-end btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
+            <?php } ?>
         </div>
         <div class="card-body py-1">
             <?php
