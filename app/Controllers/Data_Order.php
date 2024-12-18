@@ -90,7 +90,6 @@ class Data_Order extends Controller
       }
 
       $data['kas'] = [];
-      $data['kas_tuntas'] = [];
       if (count($refs) > 0) {
          foreach ($refs as $r) {
             $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi = '" . $r . "'";

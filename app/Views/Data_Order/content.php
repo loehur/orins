@@ -53,6 +53,25 @@
             </div>
         </div>
     </div>
+
+    <?php
+
+    foreach ($data['kas'] as $ref => $dk) {
+        $dibayar[$ref] = 0;
+        $verify_payment[$ref] = 0;
+
+        if (isset($dk['status_mutasi']) && $dk['status_mutasi'] <> 2) {
+            $dibayar[$ref] += $dk['jumlah'];
+            if ($dk['metode_mutasi'] == 1 && $dk['status_setoran'] == 1) {
+                $verify_payment[$ref] += $dk['jumlah'];
+            }
+            if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3 || $dk['metode_mutasi'] == 4) && $dk['status_mutasi'] == 1) {
+                $verify_payment[$ref] += $dk['jumlah'];
+            }
+        }
+    }
+    ?>
+
     <!-- Main page content-->
     <small>
         <div class="mx-2 rounded px-2 mt-3 pt-5">
@@ -65,25 +84,8 @@
                                 $no = 0;
 
                                 $bill[$ref] = 0;
-                                $dibayar[$ref] = 0;
-                                $verify_payment[$ref] = 0;
                                 $lunas[$ref] = false;
                                 $ambil_all[$ref] = true;
-                                $sisa[$ref] = 0;
-
-                                foreach ($data['kas'][$ref] as $dk) {
-                                    if ($dk['ref_transaksi'] == $ref && $dk['status_mutasi'] <> 2) {
-                                        $dibayar[$ref] += $dk['jumlah'];
-
-                                        if ($dk['metode_mutasi'] == 1 && $dk['status_setoran'] == 1) {
-                                            $verify_payment[$ref] += $dk['jumlah'];
-                                        }
-
-                                        if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3 || $dk['metode_mutasi'] == 4) && $dk['status_mutasi'] == 1) {
-                                            $verify_payment[$ref] += $dk['jumlah'];
-                                        }
-                                    }
-                                }
 
                                 foreach ($do_ as $do) {
                                     $no++;
@@ -190,25 +192,8 @@
                                 <?php
                                 $no = 0;
                                 $lunas[$ref] = false;
-                                $dibayar[$ref] = 0;
                                 $ambil_all[$ref] = true;
-                                $sisa[$ref] = 0;
                                 $bill[$ref] = 0;
-                                $verify_payment[$ref] = 0;
-
-                                foreach ($data['kas'][$ref] as $dk) {
-                                    if ($dk['ref_transaksi'] == $ref && $dk['status_mutasi'] <> 2) {
-                                        $dibayar[$ref] += $dk['jumlah'];
-
-                                        if ($dk['metode_mutasi'] == 1 && $dk['status_setoran'] == 1) {
-                                            $verify_payment[$ref] += $dk['jumlah'];
-                                        }
-
-                                        if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3 || $dk['metode_mutasi'] == 4) && $dk['status_mutasi'] == 1) {
-                                            $verify_payment[$ref] += $dk['jumlah'];
-                                        }
-                                    }
-                                }
 
                                 foreach ($do_ as $do) {
                                     $no++;
@@ -257,8 +242,9 @@
 
                                             <td class="text-end pe-1">
                                                 <small>
+                                                    <?= $dibayar[$ref] ?>
                                                     &nbsp;
-                                                    <?php if ($lunas == true) { ?>
+                                                    <?php if ($lunas[$ref] == true) { ?>
                                                         <i class="fa-solid fa-circle-check text-success"></i>
                                                     <?php } else { ?>
                                                         <i class="fa-regular fa-circle"></i>
@@ -283,7 +269,7 @@
 
 <script>
     $(document).ready(function() {
-        clearTuntas();
+        //clearTuntas();
     });
 
     $("#myInput").on("keyup", function() {
