@@ -33,6 +33,9 @@
         $id_pelanggan_jenis = 0;
         $arr_tuntas = [];
         $loadRekap = [];
+
+        $user_id = 0;
+
         foreach ($data['refs'] as $ref) {
         ?>
             <div class="col px-1 text-sm" style="max-width:600px;">
@@ -196,6 +199,8 @@
                                             $id_pelanggan_jenis = $do['id_pelanggan_jenis'];
                                             $id = $do['id_order_data'];
                                             $jumlah = $do['harga'] * $do['jumlah'];
+
+                                            $user_id = $do['id_user'];
 
                                             $cancel = $do['cancel'];
                                             $id_cancel = $do['id_cancel'];
@@ -367,6 +372,7 @@
                                     if (isset($data['mutasi'][$ref])) {
                                         foreach ($data['mutasi'][$ref] as $do) {
                                             $no += 1;
+                                            $user_id = $do['user_id'];
                                             $jumlah = $do['qty'];
                                             $id_pelanggan_jenis = $do['jenis_target'];
                                             $dp = $data['barang'][$do['kode_barang']];
@@ -427,7 +433,9 @@
                                                                 <span class="visually-hidden">Toggle Dropdown</span>
                                                             </button>
                                                             <ul class="dropdown-menu p-0">
-                                                                <li><a class="dropdown-item" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Edit Order</small></a></li>
+                                                                <?php if ($user_id == $this->userData['id_user']) { ?>
+                                                                    <li><a class="dropdown-item" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Edit Order</small></a></li>
+                                                                <?php } ?>
                                                                 <li><a data-bs-toggle="modal" data-bs-target="#exampleModalSur" class="dropdown-item surcharge" data-ref="<?= $do['ref'] ?>" href="#"><small>Surcharge</small></a></li>
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $sisa > 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon" data-sisa="<?= $sisa ?>" data-ref="<?= $do['ref'] ?>" href="#"><small>Extra Diskon</small></a></li>
