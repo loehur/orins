@@ -132,6 +132,7 @@ $max_length = [2, 2, 2, 3];
 <script>
     $(document).ready(function() {
         $('#tb_barang').dataTable({
+            "order": [],
             "bLengthChange": false,
             "bFilter": true,
             "bInfo": false,
