@@ -166,6 +166,13 @@
                             <table class="table table-sm mb-0 text-sm">
                                 <?php
                                 $pelanggan = $data['pelanggan'][$id_pelanggan]['nama'];
+                                $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
+
+                                $in_toko = "";
+                                if ($id_toko_pelanggan <> $this->userData['id_toko']) {
+                                    $in_toko = $this->dToko[$id_toko_pelanggan]['inisial'] . " ";
+                                }
+
                                 $dh = $data['head'][$ref];
 
                                 $cs = $this->dKaryawanAll[$dh['cs']]['nama'];
@@ -179,7 +186,7 @@
                                         <table class="w-100 p-0 m-0 ">
                                             <tr>
                                                 <td>
-                                                    <span class="text-danger"><?= substr($ref, -5) ?></span> <b><?= strtoupper($pelanggan) ?></b> #<?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], 2) ?>
+                                                    <span class="text-danger"><?= substr($ref, -5) ?></span> <b><?= $in_toko ?><?= strtoupper($pelanggan) ?></b> #<?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], 2) ?>
                                                 </td>
                                                 <?php if ($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                     <td class="text-end text-purple"><small><b><?= strtoupper($cs) ?></b></span></small></td>
