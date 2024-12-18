@@ -1,12 +1,12 @@
 <?php
 
-class Gudang_Barang extends Controller
+class MyOB_Code extends Controller
 {
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[7])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[8])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -19,7 +19,7 @@ class Gudang_Barang extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Gudang - Barang"
+         "title" => "MyOB - Code"
       ]);
 
       $this->viewer();
@@ -33,10 +33,6 @@ class Gudang_Barang extends Controller
    public function content()
    {
       $data['barang'] = $this->db(0)->get_where('master_barang', "code <> '' ORDER BY id DESC");
-      $data['grup'] = $this->db(0)->get('master_grup');
-      $data['tipe'] = $this->db(0)->get('master_tipe');
-      $data['brand'] = $this->db(0)->get('master_brand');
-      $data['stok'] = $this->data('Barang')->stok_data_list_all(0);
       $this->view($this->v_content, $data);
    }
 

@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
+
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
 <style>
     .dt-search {
@@ -7,53 +9,47 @@
 
 <main>
     <!-- Main page content-->
-    <div class="container text-sm">
-        <table id="tb_barang" class="hover">
-            <thead>
-                <th>Kode</th>
-                <th>Head</th>
-                <th>Nama</th>
-                <th class="text-end">Umum</th>
-                <th class="text-end">Olshop</th>
-                <th>Stok</th>
-            </thead>
-            <?php foreach ($data['barang'] as $a) { ?>
-                <tr>
-                    <td>
-                        <?= $a['code'] ?>
-                    </td>
-                    <td class="">
-                        <?= strtoupper($a['grup'] . " " . $a['tipe']) ?>
-                    </td>
-                    <td>
-                        <?= strtoupper($a['brand'] . " " . $a['model']) ?>
-                    </td>
-                    <td class="text-end">
-                        <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_1" data-tb="master_barang"><?= $a['harga_1'] ?></span>
-                    </td>
-                    <td class="text-end">
-                        <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
-                    </td>
-                    <td>
-                        <?= isset($data['stok'][$a['code']]) ? $data['stok'][$a['code']]['qty'] : 0 ?>
-                    </td>
-                </tr>
-            <?php } ?>
-        </table>
+    <div class="container">
+        <div>
+            <table id="tb_barang" class="hover">
+                <thead>
+                    <tr>
+                        <td>Orins/MyOB</td>
+                        <td>Item</td>
+                    </tr>
+                </thead>
+                <?php foreach ($data['barang'] as $a) { ?>
+                    <tr>
+                        <td>
+                            <small><?= $a['code'] ?></small><br>
+                            <span class="cell_edit" data-id="<?= $a['id'] ?>" data-col="code_myob" data-tipe="text" data-primary="id" data-tb="master_barang"><?= strlen($a['code_myob']) == 0 ? "[ ]" : $a['code_myob'] ?></span>
+                        </td>
+                        <td class="">
+                            <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span>
+                            <br>
+                            <?= strtoupper($a['brand']) ?> <?= strtoupper($a['model']) ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </table>
+        </div>
     </div>
 </main>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
+
 <script>
     $(document).ready(function() {
         $('#tb_barang').dataTable({
+            "order": [],
             "bLengthChange": false,
             "bFilter": true,
             "bInfo": false,
             "bAutoWidth": false,
-            "pageLength": 50,
-            "scrollY": 600,
+            "pageLength": 30,
+            "scrollY": 610,
             "dom": "lfrti"
         });
     })
@@ -69,18 +65,21 @@
         var primary = $(this).attr('data-primary');
         var col = $(this).attr('data-col');
         var tb = $(this).attr('data-tb');
-        var tipe = "number";
+        var tipe = $(this).attr('data-tipe');
         var value = $(this).html();
         var value_before = value;
-        if (value == "") {
-            value = 0;
+        if (value == "[ ]") {
+            value = "";
         }
         var el = $(this);
         var width = el.parent().width();
-        var align = "right";
+        var align = "left";
+        if (tipe == "number") {
+            align = "right";
+        }
 
         el.parent().css("width", width);
-        el.html("<input required type=" + tipe + " style='text-transform:uppercase;outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value=''>");
+        el.html("<input required type=" + tipe + " style='text-transform:uppercase;outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value='" + value + "'>");
 
         $("#value_").focus();
         $('#value_').keypress(function(e) {
@@ -90,7 +89,7 @@
         });
         $("#value_").focusout(function() {
             var value_after = $(this).val().toUpperCase();
-            if (value_after === value_before || value_after == "") {
+            if (value_after === value_before) {
                 el.html(value);
                 click = 0;
             } else {
@@ -101,16 +100,20 @@
                         'value': value_after,
                         'col': col,
                         'primary': primary,
-                        'tb': tb
+                        'tb': tb,
                     },
                     type: 'POST',
                     dataType: 'html',
                     success: function(res) {
                         click = 0;
                         if (res == 0) {
-                            el.html(value_after);
+                            if (value_after == "") {
+                                el.html("[ ]");
+                            } else {
+                                el.html(value_after);
+                            }
                         } else {
-                            el.html(res);
+                            alert(res);
                         }
                     },
                 });

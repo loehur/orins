@@ -67,7 +67,7 @@ $max_length = [2, 2, 2, 3];
         </div>
 
         <div>
-            <table id="tb_barang">
+            <table id="tb_barang" class="hover">
                 <thead>
                     <tr>
                         <td>Code</td>
