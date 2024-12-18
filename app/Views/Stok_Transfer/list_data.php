@@ -54,7 +54,7 @@
                         <?= $no ?>#
                     </td>
                     <td class="">
-                        <?= $a['kode_barang'] ?>
+                        <?= $data['barang_code'][$a['kode_barang']]['nama'] ?>
                     </td>
                     <td class="">
                         <?= $a['sds'] == 0 ? "SDS-NO" : "SDS-YES" ?>

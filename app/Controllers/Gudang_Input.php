@@ -47,9 +47,11 @@ class Gudang_Input extends Controller
    function list_data($id)
    {
       $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
-      $cols = "id, code, CONCAT(brand,' ',model) as nama, code_f";
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
+
+      $cols = "id, code, CONCAT(brand,' ',model) as nama, code_f";
       $data['barang_code'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'code');
+
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");
       $data['id'] = $id;
       $this->view(__CLASS__ . '/list_data', $data);
