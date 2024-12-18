@@ -26,16 +26,23 @@
     } else {
         foreach ($data['mutasi'] as $do) {
             $pelanggan = $data['pelanggan'][$do['id_target']]['nama'];
+            $id_pelanggan = $data['pelanggan'][$do['id_target']]['id_pelanggan'];
             $cs_name = $data['karyawan'][$do['cs_id']]['nama'];
             $cs = substr($cs_name, 0, 2) . "-" . $do['cs_id'];
             break;
         }
     }
+
+    $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
+    $in_toko = "";
+    if ($id_toko_pelanggan <> $this->userData['id_toko']) {
+        $in_toko = $this->dToko[$id_toko_pelanggan]['inisial'] . " ";
+    }
     ?>
 
     <table style="width: 100%;">
         <tr>
-            <td><small>Pelanggan</small><br><b><?= strtoupper($pelanggan) ?></b> #<?= substr($id_pelanggan, 2) ?></td>
+            <td><small>Pelanggan</small><br><b><span style="color:green;"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> #<?= substr($id_pelanggan, 2) ?></td>
             <td><small>CS</small><br><b><?= strtoupper($cs) ?></b></td>
             <td style="text-align: right;"><small>Tanggal</small><br><b><?= date('d/m/y H:i', strtotime($do['insertTime'])) ?></b></td>
             <td style="text-align: right;"><small>No. Referensi</small><br><b><?= substr($do['ref'], 0, -5) ?>-<span style="color: green;"><?= substr($do['ref'], -5) ?></span></b></td>
