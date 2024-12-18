@@ -86,7 +86,7 @@
 $t = $data['title'];
 ?>
 
-<body class="nav-fixed">
+<body class="nav-fixed disabled_all">
 	<?php include_once('topnav.php'); ?>
 	<?php include_once('menu.php'); ?>
 	<script src="<?= PV::ASSETS_URL ?>plugins/bootstrap-5.1/bootstrap.bundle.min.js"></script>

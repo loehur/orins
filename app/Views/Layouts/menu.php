@@ -9,7 +9,6 @@ $data_spk_lnjut = $this->db(0)->get_where('order_data', $where);
 $lanjut_c = count($data_spk_lnjut);
 
 $yearNow = date('Y');
-
 ?>
 
 <div id="layoutSidenav">
