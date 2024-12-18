@@ -219,7 +219,7 @@ class Buka_Order extends Controller
 
       foreach ($data['mutasi'] as $dm) {
          $_POST['kode'] = $dm['kode_barang'];
-         $_POST['qty'] = $_POST['jumlah'] * $dm['qty'];
+         $_POST['qty'] = $_POST['qty_paket'] * $dm['qty'];
          $_POST['sds'] = 0;
          $_POST['sn'] = '';
          $id_sumber = $dm['id_sumber'];
@@ -234,7 +234,7 @@ class Buka_Order extends Controller
          $_POST['detail_harga'] = $do['detail_harga'];
          $_POST['produk_code'] = $do['produk_code'];
          $_POST['produk_detail'] = $do['produk_detail'];
-         $_POST['jumlah'] = $_POST['jumlah'] * $do['jumlah'];
+         $_POST['jumlah'] = $_POST['qty_paket'] * $do['jumlah'];
          $this->add($do['id_afiliasi'], $id, $paket_group, $do['price_locker'], $do['pj']);
       }
    }
@@ -827,7 +827,7 @@ class Buka_Order extends Controller
       $cek_price_lock = $this->db(0)->get_where_row('order_data', 'id_order_data = ' . $id_order);
       if ($cek_price_lock['price_locker'] == 1) {
          $where = "paket_group = '" . $cek_price_lock['paket_group'] . "' AND paket_ref = '" . $cek_price_lock['paket_ref'] . "'";
-         $do = $this->db(0)->delete_where('order_data', $where);
+         $do = $this->db(0)->delete_where('master_mutasi', $where);
          if ($do['errno'] <> 0) {
             echo $do['error'];
             exit();

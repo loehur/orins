@@ -56,7 +56,7 @@
                     <div class="row mx-0 mb-3">
                         <div class="col text-center px-0 m-auto" style="max-width: 100px;">
                             <label>Jumlah</label><br>
-                            <input type="number" min="1" value="1" name="jumlah" class="form-control float-end text-center border-0 shadow-none" id="qtyIn" required>
+                            <input type="number" min="1" value="1" name="qty_paket" class="form-control float-end text-center border-0 shadow-none" id="qtyIn" required>
                         </div>
                     </div>
                 </div>
