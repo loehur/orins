@@ -145,6 +145,14 @@
                         } ?>
 
                         <?php
+
+
+                        $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
+                        $in_toko = "";
+                        if ($id_toko_pelanggan <> $this->userData['id_toko']) {
+                            $in_toko = $this->dToko[$id_toko_pelanggan]['inisial'] . " ";
+                        }
+
                         $sisa[$ref] = $bill[$ref] - $dibayar[$ref];
                         if ($sisa[$ref] <= 0) {
                             $lunas[$ref] = true;
@@ -160,7 +168,7 @@
                                 <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
                                     <tr data-id="<?= $id_pelanggan ?>" class="cekPLG" style="cursor: pointer;">
                                         <td class="p-1">
-                                            <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><?= strtoupper($pelanggan) ?></b></span> #<?= substr($id_pelanggan, 2) ?></small>
+                                            <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b></span> #<?= substr($id_pelanggan, 2) ?></small>
                                             <br>
                                             <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
                                         </td>
