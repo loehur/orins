@@ -707,7 +707,7 @@ class Buka_Order extends Controller
          $cols = 'id, tipe, id_sumber, id_target, tanggal, user_id';
          $vals = "'" . $ref . "',2,0,'" . $tujuan . "','" . $tanggal . "'," . $this->userData['id_user'];
          $do = $this->db(0)->insertCols('master_input', $cols, $vals);
-         if ($do['errno'] <> 0) {
+         if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
             echo $do['error'];
             exit();
          }
@@ -778,7 +778,7 @@ class Buka_Order extends Controller
             $b_code = str_replace(['-', '&', '#'], '', $do['produk_code']);
             $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $b_code . "'");
             if (!isset($barang['product_name'])) {
-               echo "Nama Stok Barang Produksi belum di tentukan";
+               echo "Nama Barang belum di tentukan";
                exit();
             }
          }
@@ -804,9 +804,13 @@ class Buka_Order extends Controller
 
          $detail_harga = unserialize($do['detail_harga']);
          $countDH = count($detail_harga);
+         $harga_code = $id_pelanggan_jenis;
+         if ($id_pelanggan_jenis == 100) {
+            $harga_code = 2;
+         }
          foreach ($detail_harga as $kH => $dh_o) {
             foreach ($data_harga as $dh) {
-               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
+               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $harga_code] <> 0) {
                   $countDH -= 1;
                   break;
                }
@@ -860,9 +864,9 @@ class Buka_Order extends Controller
          foreach ($detail_harga as $key => $dh_o) {
             $diskon += ($dh_o['d'] * $jumlah);
             foreach ($data_harga as $dh) {
-               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
-                  $harga +=  $dh['harga_' . $id_pelanggan_jenis];
-                  $detail_harga[$key]['h'] = $dh['harga_' . $id_pelanggan_jenis];
+               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $harga_code] <> 0) {
+                  $harga +=  $dh['harga_' . $harga_code];
+                  $detail_harga[$key]['h'] = $dh['harga_' . $harga_code];
                   if (strlen($do['paket_ref']) > 0) {
                      if (isset($total_per_paket[$do['paket_ref']])) {
                         $total_per_paket[$do['paket_ref']] += ($detail_harga[$key]['h'] * $do['jumlah']);
@@ -884,6 +888,9 @@ class Buka_Order extends Controller
          }
 
          if ($id_pelanggan_jenis == 100) {
+            $b_code = str_replace(['-', '&', '#'], '', $do['produk_code']);
+            $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $b_code . "'");
+
             $qty = $do['jumlah'];
             $sds = 0;
             $sn =  "";
@@ -893,7 +900,7 @@ class Buka_Order extends Controller
             $target_id = $this->userData['id_toko'];
 
             $cols = 'ref,jenis,id_barang,kode_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
-            $vals = "'" . $ref . "',0," . $id_barang . ",'" . $b_code . "','" . $id_sumber . "','" . $target_id . "'," . $h_beli . "," . $qty . "," . $sds . "," . $sn;
+            $vals = "'" . $ref . "',0," . $id_barang . ",'" . $b_code . "','" . $id_sumber . "','" . $target_id . "'," . $h_beli . "," . $qty . "," . $sds . ",'" . $sn . "'";
             $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
 
             if ($do['errno'] <> 0) {
