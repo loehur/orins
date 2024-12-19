@@ -571,6 +571,10 @@ class Buka_Order extends Controller
 
    function add_price($id_pelanggan_jenis)
    {
+      if ($id_pelanggan_jenis == 100) {
+         $id_pelanggan_jenis = 2;
+      }
+
       $harga_code = $_POST['harga_code'];
       $harga = $_POST['harga'];
 
