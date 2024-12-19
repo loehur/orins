@@ -80,8 +80,8 @@ class Stok_Transfer extends Controller
       }
 
       $id = date('ymdHi');
-      $cols = 'id, tipe, id_sumber, id_target, tanggal';
-      $vals = "'" . $id . "',1,0,'" . $tujuan . "','" . $tanggal . "'";
+      $cols = 'id, tipe, id_sumber, id_target, tanggal, user_id';
+      $vals = "'" . $id . "',1,0,'" . $tujuan . "','" . $tanggal . "'," . $this->userData['id_user'];
       $do = $this->db(0)->insertCols('master_input', $cols, $vals);
       if ($do['errno'] <> 0) {
          $error .= $do['error'];

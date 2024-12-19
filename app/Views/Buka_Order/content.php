@@ -11,8 +11,11 @@ switch ($id_pelanggan_jenis) {
     case 2:
         $pelanggan_jenis = "Rekanan";
         break;
-    default:
+    case 3:
         $pelanggan_jenis = "Online";
+        break;
+    default:
+        $pelanggan_jenis = "Stok";
         break;
 }
 
@@ -36,7 +39,7 @@ $mgpaket = $data['margin_paket'];
             <div class="row <?= (count($data['order']) == 0 && count($data['order_barang']) == 0) || isset($_SESSION['edit'][$this->userData['id_user']]) ? "d-none" : "" ?>">
                 <div class="col px-2">
                     <form class="proses" action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
-                        <?php if ($id_pelanggan_jenis <> 3) { ?>
+                        <?php if ($id_pelanggan_jenis == 1 || $id_pelanggan_jenis == 2) { ?>
                             <div class="row mb-2">
                                 <div class="col px-1" style="max-width: 300px;">
                                     <input name="new_customer" class="form-control form-control-sm" placeholder="New Customer">
@@ -92,25 +95,42 @@ $mgpaket = $data['margin_paket'];
 
             <div class="row mb-2">
                 <div class="col px-0 text-end">
-                    <?php if ($data['count'] <= 15) { ?>
-                        <button type="button" class="btn me-1 shadow-none btn-sm btn-danger bg-gradient py-1" data-bs-target="#exampleModalPaket" data-bs-toggle="modal">(&#43;) Paket</button>
-                        <button type="button" class="btn me-1 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
-                        <button type="button" class="btn me-1 shadow-none btn-sm btn-dark bg-gradient py-1" data-bs-target="#exampleModalJasa" data-bs-toggle="modal">(&#43;) Jasa</button>
-                        <button type="button" class="btn me-1 shadow-none btn-sm btn-success bg-gradient py-1" data-bs-target="#exampleModalB" data-bs-toggle="modal">(&#43;) Barang</button>
-                        <div class="btn-group me-1">
-                            <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                (&#43;) Afiliasi
-                                <span class="visually-hidden">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
-                                <?php foreach ($this->dToko as $dt) {
-                                    if ($dt['id_toko'] <> $this->userData['id_toko']) { ?>
-                                        <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
-                                <?php }
-                                } ?>
-                            </ul>
-                        </div>
-                    <?php } ?>
+                    <?php if ($data['count'] <= 30) {
+                        if ($id_pelanggan_jenis <> 100) { ?>
+                            <button type="button" class="btn me-1 shadow-none btn-sm btn-danger bg-gradient py-1" data-bs-target="#exampleModalPaket" data-bs-toggle="modal">(&#43;) Paket</button>
+                            <button type="button" class="btn me-1 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
+                            <button type="button" class="btn me-1 shadow-none btn-sm btn-dark bg-gradient py-1" data-bs-target="#exampleModalJasa" data-bs-toggle="modal">(&#43;) Jasa</button>
+                            <button type="button" class="btn me-1 shadow-none btn-sm btn-success bg-gradient py-1" data-bs-target="#exampleModalB" data-bs-toggle="modal">(&#43;) Barang</button>
+                            <div class="btn-group me-1">
+                                <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                    (&#43;) Afiliasi
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
+                                    <?php foreach ($this->dToko as $dt) {
+                                        if ($dt['id_toko'] <> $this->userData['id_toko']) { ?>
+                                            <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
+                                    <?php }
+                                    } ?>
+                                </ul>
+                            </div>
+                        <?php } else { ?>
+                            <button type="button" class="btn me-1 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
+                            <div class="btn-group me-1">
+                                <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                    (&#43;) Afiliasi
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
+                                    <?php foreach ($this->dToko as $dt) {
+                                        if ($dt['id_toko'] <> $this->userData['id_toko']) { ?>
+                                            <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
+                                    <?php }
+                                    } ?>
+                                </ul>
+                            </div>
+                    <?php }
+                    } ?>
                 </div>
             </div>
             <?php if (count($data['order']) > 0) { ?>
@@ -215,6 +235,12 @@ $mgpaket = $data['margin_paket'];
                                                     </td>
                                                     <td class="align-middle" style="width: 30px;"><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                                                 </tr>
+                                                <?php if ($id_pelanggan_jenis == 100) { ?>
+                                                    <tr>
+                                                        <?php $code = str_replace(['-', '&', '#'], '', $do['produk_code']); ?>
+                                                        <td colspan="10"><b><span data-bs-toggle="modal" data-code="<?= $do['produk_code'] ?>" data-bs-target="#exampleModalPC" style="cursor: pointer;" class="tetapkanNama px-2">N</span></b> <span class="text-danger fw-bold"><?= isset($data['barang'][$code]) ? $data['barang'][$code]['product_name'] : "" ?></span></td>
+                                                    </tr>
+                                                <?php } ?>
                                                 <tr>
                                                     <td colspan="10" class="border-bottom-0">
                                                         <table class="table table-sm table-borderless mb-1">
@@ -402,6 +428,11 @@ $mgpaket = $data['margin_paket'];
         var harga_code = $(this).attr("data-code");
         $("span.produk_harga").html(produk);
         $("input[name=harga_code").val(harga_code);
+    })
+
+    $("span.tetapkanNama").click(function() {
+        var product_code = $(this).attr("data-code");
+        $("input[name=product_code").val(product_code);
     })
 
     $("span.tetapkanDiskon").click(function() {

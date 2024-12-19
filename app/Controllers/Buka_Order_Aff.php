@@ -87,6 +87,7 @@ class Buka_Order_Aff extends Controller
    function proses($ref, $id_pelanggan_jenis)
    {
       $id_karyawan = $_POST['id_karyawan'];
+      $id_pelanggan = $_POST['id_pelanggan'];
       //updateFreqCS
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
 
@@ -94,7 +95,6 @@ class Buka_Order_Aff extends Controller
       $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data_harga = $this->db(0)->get('produk_harga');
 
-      $error = 0;
       foreach ($data['order'] as $do) {
          $detail_harga = unserialize($do['detail_harga']);
          $harga = 0;
@@ -109,12 +109,13 @@ class Buka_Order_Aff extends Controller
          }
          $where = "id_order_data = " . $do['id_order_data'];
          $set = "detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_user_afiliasi = " . $id_karyawan . ", status_order = 0";
-         $update = $this->db(0)->update("order_data", $set, $where);
-         $error = $update['errno'];
+         $up = $this->db(0)->update("order_data", $set, $where);
+         if ($up['errno'] <> 0) {
+            echo $up['error'];
+            exit();
+         }
       }
 
-      if ($error == 0) {
-         echo 1;
-      }
+      echo $id_pelanggan;
    }
 }

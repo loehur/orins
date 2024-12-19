@@ -167,6 +167,32 @@ class Gudang_Barang extends Controller
       echo 0;
    }
 
+   function add_produksi()
+   {
+      $code_s = strtoupper($_POST['product_code']);
+      $code = str_replace(['-', '&', '#'], '', $code_s);
+      $nama = strtoupper($_POST['nama']);
+
+      //BARANG
+      $cols = 'code, code_s, product_name, sp';
+      $vals = "'" . $code . "','" . $code_s . "','" . $nama . "',1";
+      $do = $this->db(0)->insertCols('master_barang', $cols, $vals);
+      if ($do['errno'] <> 0) {
+         if ($do['errno'] == 1062) {
+            $up = $this->db(0)->update('master_barang', "product_name = '" . $nama . "'", "code = '" . $code . "' AND code_s = '" . $code_s . "'");
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+         } else {
+            echo $do['error'];
+            exit();
+         }
+      }
+
+      echo 0;
+   }
+
    function update_code()
    {
       //cek dulu

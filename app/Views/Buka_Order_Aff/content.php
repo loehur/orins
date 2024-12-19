@@ -7,7 +7,7 @@
                     <div class="row">
                         <div class="col px-1">
                             <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pelanggan_nama']) ?>" required readonly>
-                            <input class="form-control" type="hidden" name="pelanggan" value="<?= $data['pelanggan'] ?>" required readonly>
+                            <input class="form-control" type="hidden" name="id_pelanggan" value="<?= $data['pelanggan'] ?>" required readonly>
                         </div>
                         <div class="col ps-0 pe-1">
                             <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pengirim']) ?>" required readonly>
@@ -191,13 +191,10 @@
             data: $(this).serialize(),
             type: $(this).attr("method"),
             success: function(res) {
-                if (res == 0) {
-                    content();
-                } else if (res == 1) {
-                    var parse = $("input[name=pelanggan]").val();
-                    location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + parse;
-                } else {
+                if (isNumeric(res) == false) {
                     alert(res);
+                } else {
+                    location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + res;
                 }
             }
         });

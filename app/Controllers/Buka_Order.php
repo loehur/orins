@@ -64,6 +64,11 @@ class Buka_Order extends Controller
             "content" => $this->v_content,
             "title" => "Buka Order - Online"
          ]);
+      } elseif ($jenis_pelanggan == 100) {
+         $this->view("Layouts/layout_main", [
+            "content" => $this->v_content,
+            "title" => "Buka Order - Stok"
+         ]);
       }
       $this->viewer($jenis_pelanggan);
    }
@@ -99,7 +104,7 @@ class Buka_Order extends Controller
       $data['stok'] = $this->data('Barang')->stok_data_list($this->userData['id_toko']);
 
       $data_harga = $this->db(0)->get('produk_harga');
-      $data['count'] = count($data['order']);
+      $data['count'] = count($data['order']) + count($data['order_barang']);
       $getHarga = [];
       $data['errorID'] = [];
 
@@ -130,14 +135,19 @@ class Buka_Order extends Controller
             }
          }
 
+         $parse_harga = $parse;
+         if ($parse == 100) {
+            $parse_harga = 2;
+         }
+
          $detail_harga = unserialize($do['detail_harga']);
          if (is_array($detail_harga)) {
             $countDH[$key] = count($detail_harga);
             foreach ($detail_harga as $dh_o) {
                $getHarga[$key][$dh_o['c_h']] = 0;
                foreach ($data_harga as $dh) {
-                  if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse] <> 0) {
-                     $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse];
+                  if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse_harga] <> 0) {
+                     $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse_harga];
                      if (strlen($do['paket_ref']) > 0) {
                         if (isset($total_per_paket[$do['paket_ref']])) {
                            $total_per_paket[$do['paket_ref']] += ($getHarga[$key][$dh_o['c_h']] * $do['jumlah']);
@@ -615,6 +625,12 @@ class Buka_Order extends Controller
    function proses($id_pelanggan_jenis, $id_pelanggan = 0)
    {
 
+      if ($id_pelanggan_jenis == 100) {
+         $stok_order = 1;
+      } else {
+         $stok_order = 0;
+      }
+
       if (isset($_SESSION['edit'][$this->userData['id_user']])) {
          $dEdit = $_SESSION['edit'][$this->userData['id_user']];
          $ref = $dEdit[0];
@@ -684,6 +700,19 @@ class Buka_Order extends Controller
          $ref = $this->userData['id_toko'] . date("ymd") . rand(0, 9) . $nv;
       }
 
+      if ($id_pelanggan_jenis == 100) {
+         $tujuan = $this->userData['id_toko'];
+         $tanggal = date('Y-m-d');
+
+         $cols = 'id, tipe, id_sumber, id_target, tanggal, user_id';
+         $vals = "'" . $ref . "',2,0,'" . $tujuan . "','" . $tanggal . "'," . $this->userData['id_user'];
+         $do = $this->db(0)->insertCols('master_input', $cols, $vals);
+         if ($do['errno'] <> 0) {
+            echo $do['error'];
+            exit();
+         }
+      }
+
       $data['barang'] = $this->db(0)->get('master_barang', 'code');
       $data['order'] = $this->db(0)->get_where('order_data', $where_order);
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_barang);
@@ -744,6 +773,16 @@ class Buka_Order extends Controller
       $data_harga = $this->db(0)->get('produk_harga');
       $detail_harga = [];
       foreach ($data['order'] as $do) {
+
+         if ($id_pelanggan_jenis == 100) {
+            $b_code = str_replace(['-', '&', '#'], '', $do['produk_code']);
+            $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $b_code . "'");
+            if (!isset($barang['product_name'])) {
+               echo "Nama Stok Barang Produksi belum di tentukan";
+               exit();
+            }
+         }
+
          if ($do['ref'] <> '') {
             $id_karyawan = $do['id_penerima'];
          }
@@ -837,11 +876,30 @@ class Buka_Order extends Controller
          }
 
          $where = "id_order_data = " . $do['id_order_data'];
-         $set = "margin_paket = 0, diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
+         $set = "margin_paket = 0, diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "', stok = " . $stok_order;
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {
             echo $update['error'];
             exit();
+         }
+
+         if ($id_pelanggan_jenis == 100) {
+            $qty = $do['jumlah'];
+            $sds = 0;
+            $sn =  "";
+            $id_sumber = 0;
+            $id_barang = $barang['id'];
+            $h_beli = $barang['harga'];
+            $target_id = $this->userData['id_toko'];
+
+            $cols = 'ref,jenis,id_barang,kode_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
+            $vals = "'" . $ref . "',0," . $id_barang . ",'" . $b_code . "','" . $id_sumber . "','" . $target_id . "'," . $h_beli . "," . $qty . "," . $sds . "," . $sn;
+            $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
+
+            if ($do['errno'] <> 0) {
+               echo $do['error'];
+               exit();
+            }
          }
       }
 

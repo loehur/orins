@@ -264,7 +264,7 @@
                                                                     <span class="text-nowrap text-success"><small><?= $id . "# " . ucwords($produk) ?></small></span>
                                                                 <?php } ?>
                                                                 <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
-                                                                <?php if ($dibayar == 0 && $cancel == 0) { ?>
+                                                                <?php if ($dibayar == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                                     <div class="btn-group">
                                                                         <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                                                             <span class="visually-hidden">Toggle Dropdown</span>
@@ -497,7 +497,7 @@
                             <small>
                                 <table class="table table-sm mb-0 table-borderless text-sm">
                                     <tr class="table-info">
-                                        <td colspan="3" class="p-2 text-center"><b>PEMBAYARAN MULTI</b></td>
+                                        <td colspan="4" class="p-2 text-center"><b>PEMBAYARAN MULTI</b></td>
                                     </tr>
                                     <tr>
                                         <td>Metode</td>
