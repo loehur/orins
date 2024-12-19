@@ -29,6 +29,9 @@ class Data_Order extends Controller
          case 3:
             $title = "Data Order - Proses (Online)";
             break;
+         case 100:
+            $title = "Data Order - Proses (Stok)";
+            break;
       }
 
       $this->view("Layouts/layout_main", [

@@ -346,7 +346,7 @@ $mgpaket = $data['margin_paket'];
                                 <span class="badge bg-danger"><?= $db['paket_ref'] <> "" ? $data['paket'][$db['paket_ref']]['nama'] : "" ?></span>
                                 #<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?>
                             </td>
-                            <td><?= trim($dp['brand'] . " " . $dp['model'])  ?><br><?= $db['sn'] ?></td>
+                            <td><?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?><br><?= $db['sn'] ?></td>
                             <td class="text-end"><?= number_format($db['qty']) ?>x<br><?= $db['price_locker'] == 0 ? "@" . number_format($dp['harga_' . $id_pelanggan_jenis]) : "" ?></td>
                             <td class="text-end pe-2"><?= number_format($totalnya) ?></td>
                             <td class="pt-2" style="width: 30px;"><a class="deleteItemBarang" data-id="<?= $db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>

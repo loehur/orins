@@ -32,7 +32,7 @@ class Barang_Masuk extends Controller
 
    public function content()
    {
-      $data['input'] = $this->db(0)->get_where('master_input', "(tipe = 1 OR tipe = 2) AND id_target = '" . $this->userData['id_toko'] . "' ORDER BY id DESC LIMIT 10");
+      $data['input'] = $this->db(0)->get_where('master_input', "(tipe = 1 OR tipe = 2) AND id_target = '" . $this->userData['id_toko'] . "' ORDER BY tanggal DESC LIMIT 10");
       $data['toko'] = $this->db(0)->get_where('toko', "en = 1", "id_toko");
       $this->view(__CLASS__ . '/content', $data);
    }
@@ -50,7 +50,7 @@ class Barang_Masuk extends Controller
       $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
       $data['toko'] = $this->db(0)->get_where('toko', "en = 1", "id_toko");
 
-      $cols = "id, code, CONCAT(brand,' ',model) as nama";
+      $cols = "id, code, CONCAT(brand,' ',model) as nama, product_name";
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'code');
 
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");

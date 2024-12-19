@@ -219,7 +219,7 @@
                                             $cancel = $do['cancel'];
                                             $id_cancel = $do['id_cancel'];
 
-                                            if ($cancel == 0) {
+                                            if ($cancel == 0 && $do['stok'] == 0) {
                                                 $bill += $jumlah + $do['margin_paket'];
                                             }
 
@@ -393,7 +393,7 @@
                                             $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']); ?>
                                             <tr>
                                                 <td>
-                                                    <?= trim($dp['brand'] . " " . $dp['model']) ?>
+                                                    <?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?>
                                                 </td>
                                                 <td class=""><small>
                                                         <?= $do['sds'] == 1 ? "S" : "" ?>#<?= $do['sn'] ?>

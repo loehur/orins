@@ -10,7 +10,6 @@
     <div class="container text-sm">
         <table id="tb_barang" class="hover">
             <thead>
-                <th>Kode</th>
                 <th>Head</th>
                 <th>Nama</th>
                 <th class="text-end">Umum</th>
@@ -19,14 +18,11 @@
             </thead>
             <?php foreach ($data['barang'] as $a) { ?>
                 <tr>
-                    <td>
-                        <?= $a['code'] ?>
-                    </td>
                     <td class="">
                         <?= strtoupper($a['grup'] . " " . $a['tipe']) ?>
                     </td>
                     <td>
-                        <?= strtoupper($a['brand'] . " " . $a['model']) ?>
+                        <?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?>
                     </td>
                     <td class="text-end">
                         <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_1" data-tb="master_barang"><?= $a['harga_1'] ?></span>

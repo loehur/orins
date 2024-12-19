@@ -120,7 +120,7 @@
                             foreach ($data['stok'] as $dps) {
                                 $dp = $data['barang'][$dps['kode_barang']];
                                 $harga = $dp['harga_' . $id_pelanggan_jenis] ?>
-                                <option value="<?= $dps['kode_barang'] ?>"><?= trim($dp['brand'] . " " . $dp['model'])  ?> Rp<?= number_format($harga) ?> #<?= $dps['kode_barang'] ?><?= strlen($dp['code_f']) > 0 ? "#" . $dp['code_f'] : "" ?></option>
+                                <option value="<?= $dps['kode_barang'] ?>"><?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name']  ?> Rp<?= number_format($harga) ?> #<?= $dps['kode_barang'] ?><?= strlen($dp['code_f']) > 0 ? "#" . $dp['code_f'] : "" ?></option>
                             <?php
                             }
                             ?>
@@ -212,7 +212,7 @@
                 <h5 class="modal-title" id="exampleModalLabel"><small><span class="produk_harga"></span></small></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form class="ajax" action="<?= PV::BASE_URL ?>Gudang_Barang/add_produksi" method="POST">
+            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/add_produksi" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" required>Nama Produk</label>

@@ -899,8 +899,8 @@ class Buka_Order extends Controller
             $h_beli = $barang['harga'];
             $target_id = $this->userData['id_toko'];
 
-            $cols = 'ref,jenis,id_barang,kode_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
-            $vals = "'" . $ref . "',0," . $id_barang . ",'" . $b_code . "','" . $id_sumber . "','" . $target_id . "'," . $h_beli . "," . $qty . "," . $sds . ",'" . $sn . "'";
+            $cols = 'ref,jenis,id_barang,kode_barang,id_sumber,id_target,harga_beli,qty';
+            $vals = "'" . $ref . "',0," . $id_barang . ",'" . $b_code . "','" . $id_sumber . "','" . $target_id . "'," . $h_beli . "," . $qty;
             $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
 
             if ($do['errno'] <> 0) {
@@ -988,5 +988,31 @@ class Buka_Order extends Controller
       $set = "jumlah = " . $value;
       $update = $this->db(0)->update("order_data", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+   }
+
+   function add_produksi()
+   {
+      $code_s = strtoupper($_POST['product_code']);
+      $code = str_replace(['-', '&', '#'], '', $code_s);
+      $nama = strtoupper($_POST['nama']);
+
+      //BARANG
+      $cols = 'code, code_s, product_name, sp';
+      $vals = "'" . $code . "','" . $code_s . "','" . $nama . "',1";
+      $do = $this->db(0)->insertCols('master_barang', $cols, $vals);
+      if ($do['errno'] <> 0) {
+         if ($do['errno'] == 1062) {
+            $up = $this->db(0)->update('master_barang', "product_name = '" . $nama . "'", "code = '" . $code . "' AND code_s = '" . $code_s . "'");
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+         } else {
+            echo $do['error'];
+            exit();
+         }
+      }
+
+      echo 0;
    }
 }

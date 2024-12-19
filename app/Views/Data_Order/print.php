@@ -252,7 +252,7 @@
                         <?= $no ?>.
                     </td>
                     <td style="padding-right: 5px;" valign='top'>
-                        <?= trim($dp['brand'] . " " . $dp['model']) ?><br>
+                        <?= trim($dp['brand'] . " " . $dp['model']) ?><?= trim($dp['product_name']) ?><br>
                         <span style="font-size: 13;"><?= $do['sn'] <> "" ? "SN: " . $do['sn'] : "" ?></span>
                     </td>
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px">
