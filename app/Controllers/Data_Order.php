@@ -82,6 +82,7 @@ class Data_Order extends Controller
       $refs = array_unique(array_merge($ref1, $ref2));
 
       $data['kas'] = [];
+      $data['diskon'] = [];
 
       if (count($refs) > 0) {
          $ref_list = "";
@@ -91,6 +92,9 @@ class Data_Order extends Controller
          $ref_list = rtrim($ref_list, ',');
          $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ")";
          $data['kas'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
+
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
+         $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi', 1);
       }
 
       $data['refs'] = $refs;
