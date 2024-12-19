@@ -447,11 +447,11 @@
                                                                 <span class="visually-hidden">Toggle Dropdown</span>
                                                             </button>
                                                             <ul class="dropdown-menu p-0">
-                                                                <?php if ($user_id == $this->userData['id_user']) { ?>
+                                                                <?php if ($user_id == $this->userData['id_user'] && $do['tuntas'] == 0) { ?>
                                                                     <li><a class="dropdown-item" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Edit Order</small></a></li>
                                                                 <?php } ?>
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $sisa > 0) { ?>
-                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon" data-sisa="<?= $sisa ?>" data-ref="<?= $do['ref'] ?>" href="#"><small>Extra Diskon</small></a></li>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon" data-sisa="<?= $sisa ?>" data-ref="<?= $ref ?>" href="#"><small>Extra Diskon</small></a></li>
                                                                 <?php } ?>
                                                             </ul>
                                                         </td>
