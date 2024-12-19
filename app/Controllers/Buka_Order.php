@@ -19,6 +19,16 @@ class Buka_Order extends Controller
    function Edit_order($ref, $jenis_pelanggan, $dibayar, $id_pelanggan)
    {
       $_SESSION['edit'][$this->userData['id_user']] = [$ref, $jenis_pelanggan, $dibayar, $id_pelanggan];
+      $dEdit = $_SESSION['edit'][$this->userData['id_user']];
+
+      //balikan stok nya dl
+      $where = "ref = '" . $dEdit[0] . "' AND id_target = " . $id_pelanggan;
+      $set = "stat = 0";
+      $up = $this->db(0)->update("master_mutasi", $set, $where);
+      if ($up['errno'] <> 0) {
+         echo $up['error'];
+         exit();
+      }
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0 AND ref = ''";
       $do = $this->db(0)->delete_where('order_data', $where);
