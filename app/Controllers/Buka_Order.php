@@ -28,7 +28,7 @@ class Buka_Order extends Controller
       }
 
       $whereBarang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND ref = ''";
-      $do = $this->db(0)->delete_where('order_mutasi', $whereBarang);
+      $do = $this->db(0)->delete_where('master_mutasi', $whereBarang);
       if ($do['errno'] <> 0) {
          echo $do['error'];
          exit();
