@@ -36,14 +36,16 @@ $mgpaket = $data['margin_paket'];
             <div class="row <?= (count($data['order']) == 0 && count($data['order_barang']) == 0) || isset($_SESSION['edit'][$this->userData['id_user']]) ? "d-none" : "" ?>">
                 <div class="col px-2">
                     <form class="proses" action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $id_pelanggan_jenis ?>" method="POST">
-                        <div class="row mb-2">
-                            <div class="col px-1" style="max-width: 300px;">
-                                <input name="new_customer" class="form-control form-control-sm" placeholder="New Customer">
+                        <?php if ($id_pelanggan_jenis <> 3) { ?>
+                            <div class="row mb-2">
+                                <div class="col px-1" style="max-width: 300px;">
+                                    <input name="new_customer" class="form-control form-control-sm" placeholder="New Customer">
+                                </div>
+                                <div class="col px-1" style="max-width: 300px;">
+                                    <input name="hp" class="form-control form-control-sm" placeholder="Phone Number">
+                                </div>
                             </div>
-                            <div class="col px-1" style="max-width: 300px;">
-                                <input name="hp" class="form-control form-control-sm" placeholder="Phone Number">
-                            </div>
-                        </div>
+                        <?php } ?>
                         <div class="row pb-2">
                             <div class="col px-1" style="max-width: 300px;">
                                 <select class="tize shadow-none" id="pelanggan" name="id_pelanggan">
