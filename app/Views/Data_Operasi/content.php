@@ -443,7 +443,6 @@
                                                                 <?php if ($user_id == $this->userData['id_user']) { ?>
                                                                     <li><a class="dropdown-item" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Edit Order</small></a></li>
                                                                 <?php } ?>
-                                                                <li><a data-bs-toggle="modal" data-bs-target="#exampleModalSur" class="dropdown-item surcharge" data-ref="<?= $do['ref'] ?>" href="#"><small>Surcharge</small></a></li>
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $sisa > 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon" data-sisa="<?= $sisa ?>" data-ref="<?= $do['ref'] ?>" href="#"><small>Extra Diskon</small></a></li>
                                                                 <?php } ?>
