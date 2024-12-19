@@ -57,6 +57,11 @@
     <?php
     $today = date("Y-m-d");
 
+    foreach ($data['refs'] as $ref) {
+        $dibayar[$ref] = 0;
+        $verify_payment[$ref] = 0;
+    }
+
     foreach ($data['kas'] as $ref => $sd) {
         $dibayar[$ref] = 0;
         $verify_payment[$ref] = 0;

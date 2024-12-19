@@ -21,9 +21,9 @@ class M_DB
         return $this->db->get($table, $index);
     }
 
-    public function get_where($table, $where, $index = "")
+    public function get_where($table, $where, $index = "", $group = 0)
     {
-        return $this->db->get_where($table, $where, $index);
+        return $this->db->get_where($table, $where, $index, $group);
     }
 
     public function get_cols($table, $cols, $row = 1, $index = "")

@@ -74,36 +74,26 @@ class Data_Order extends Controller
             break;
       }
 
-      $data['order'] = $this->db(0)->get_where('order_data', $where);
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where2);
+      $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where2, 'ref', 1);
 
-      $ref1 = array_unique(array_column($data['order'], 'ref'));
-      $ref2 = array_unique(array_column($data['mutasi'], 'ref'));
+      $ref1 = array_keys($data['order']);
+      $ref2 = array_keys($data['mutasi']);
       $refs = array_unique(array_merge($ref1, $ref2));
 
       $data['kas'] = [];
+
       if (count($refs) > 0) {
+         $ref_list = "";
          foreach ($refs as $r) {
-            $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi = '" . $r . "'";
-            $data_kas = $this->db(0)->get_where('kas', $where);
-            $data['kas'][$r] = $data_kas;
+            $ref_list .= $r . ",";
          }
+         $ref_list = rtrim($ref_list, ',');
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ")";
+         $data['kas'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
       }
 
-      $data_ = [];
-      foreach ($data['order'] as $key => $do) {
-         $data_[$do['ref']][$key] = $do;
-      }
-
-      $datam_ = [];
-      foreach ($data['mutasi'] as $key => $do) {
-         $datam_[$do['ref']][$key] = $do;
-      }
-
-      $data['order'] = $data_;
-      $data['mutasi'] = $datam_;
       $data['refs'] = $refs;
-
       $this->view($this->v_content, $data);
    }
 

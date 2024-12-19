@@ -40,18 +40,25 @@ class DB extends DBC
         return $reply;
     }
 
-    public function get_where($table, $where, $index = "")
+    public function get_where($table, $where, $index, $group)
     {
         $reply = [];
         $query = "SELECT * FROM $table WHERE $where";
         $result = $this->mysqli->query($query);
 
         if ($result) {
+            $no = 0;
             while ($row = $result->fetch_assoc())
-                if ($index == "")
+                if ($index == "") {
                     $reply[] = $row;
-                else
-                    $reply[$row[$index]] = $row;
+                } else {
+                    if ($group == 0) {
+                        $reply[$row[$index]] = $row;
+                    } else {
+                        $no += 1;
+                        $reply[$row[$index]][$no] = $row;
+                    }
+                }
         }
 
         return $reply;
