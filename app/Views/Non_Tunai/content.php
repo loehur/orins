@@ -56,7 +56,7 @@
                                     <td>
                                         <span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br>
                                         <?php if ($a['jenis_transaksi'] == 1) { ?>
-                                            <small><?= $a['ref_transaksi'] ?></small>
+                                            <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" data-pelanggan="<?= $client ?>" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
                                         <?php } ?>
                                         <?php if ($a['jenis_transaksi'] == 2) { ?>
                                             <small>Topup Deposit</small>
@@ -133,7 +133,7 @@
                             <tr>
                                 <td>
                                     <span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br>
-                                    <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $ref ?>"><small><?= $a['ref_transaksi'] ?></small></span>
+                                    <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" data-pelanggan="<?= $client ?>" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
                                 </td>
                                 <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
                                 <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
@@ -262,6 +262,7 @@
 
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
-        $("div#cekOrder").load('<?= PV::BASE_URL ?>Non_Tunai/cekOrder/' + ref);
+        var id_pelanggan = $(this).attr("data-pelanggan");
+        $("div#cekOrder").load('<?= PV::BASE_URL  ?>Afiliasi/cekOrder/' + ref + '/' + id_pelanggan);
     });
 </script>
