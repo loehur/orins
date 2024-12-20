@@ -105,13 +105,13 @@
                                 $id_user_afiliasi = $do['id_user_afiliasi'];
                                 $id_afiliasi = $do['id_afiliasi'];
 
-                                if ($this->userData['id_toko'] <> $do['id_toko'] && $do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
-                                    break;
-                                }
-
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
                                 if ($cancel == 0) {
                                     $bill[$ref] += $jumlah;
+                                }
+
+                                if ($this->userData['id_toko'] <> $do['id_toko'] && $do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
+                                    break;
                                 }
 
                                 $divisi_arr = unserialize($do['spk_dvs']);
