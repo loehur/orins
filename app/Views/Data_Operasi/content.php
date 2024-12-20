@@ -5,7 +5,7 @@
                 <select class="border rounded tize" name="id_pelanggan" required>
                     <option></option>
                     <?php foreach ($data['pelanggan'] as $p) { ?>
-                        <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], 2) ?></option>
+                        <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], -2) ?></option>
                     <?php } ?>
                 </select>
             </div>
@@ -193,7 +193,7 @@
                                         <table class="w-100 p-0 m-0 ">
                                             <tr>
                                                 <td>
-                                                    <span class="text-danger"><?= substr($ref, -5) ?></span> <b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> #<?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], 2) ?>
+                                                    <span class="text-danger"><?= substr($ref, -5) ?></span> <b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> #<?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], -2) ?>
                                                 </td>
                                                 <?php if ($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                     <td class="text-end text-purple"><small><b><?= strtoupper($cs) ?></b></span></small></td>
