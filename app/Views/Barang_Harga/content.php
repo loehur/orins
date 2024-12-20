@@ -13,6 +13,7 @@
                 <th>Head</th>
                 <th>Nama</th>
                 <th class="text-end">Umum</th>
+                <th class="text-end">R/D</th>
                 <th class="text-end">Olshop</th>
                 <th>Stok</th>
             </thead>
