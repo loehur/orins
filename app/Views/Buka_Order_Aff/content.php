@@ -184,6 +184,12 @@
         $('select.tize').selectize();
     });
 
+    function isNumeric(str) {
+        if (typeof str != "string") return false
+        return !isNaN(str) &&
+            !isNaN(parseFloat(str))
+    }
+
     $("form").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
