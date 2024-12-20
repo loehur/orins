@@ -102,19 +102,20 @@ $max_length = [2, 2, 2, 3];
                                     ?>
                                 </tr>
                             </table>
-                            <input name="pb" class="form-check-input check" type="checkbox" data-id="<?= $a['id'] ?>" data-col="pb" value="1" <?= $a['pb'] == 1 ? "checked" : '' ?>>
-                            <label class="form-check-label" for="flexCheckDefault">
-                                PB
-                            </label>
-                            <input name="pb" class="form-check-input check" type="checkbox" data-id="<?= $a['id'] ?>" data-col="sn" value="1" <?= $a['sn'] == 1 ? "checked" : '' ?>>
-                            <label class="form-check-label" for="flexCheckDefault">
-                                SN
-                            </label>
+                            <?php if ($a['sp'] == 0) { ?>
+                                <input name="pb" class="form-check-input check" type="checkbox" data-id="<?= $a['id'] ?>" data-col="pb" value="1" <?= $a['pb'] == 1 ? "checked" : '' ?>>
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    PB
+                                </label>
+                                <input name="pb" class="form-check-input check" type="checkbox" data-id="<?= $a['id'] ?>" data-col="sn" value="1" <?= $a['sn'] == 1 ? "checked" : '' ?>>
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    SN
+                                </label>
+                            <?php } ?>
                         </td>
                         <td class="">
-                            <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span>
+                            <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span><br>
                             <?php if ($a['sp'] == 0) { ?>
-                                <br>
                                 <?= strtoupper($a['brand']) ?>
                                 <span class="cell_edit_name" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
                             <?php } else { ?>
