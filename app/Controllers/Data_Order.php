@@ -184,11 +184,24 @@ class Data_Order extends Controller
       $reason = $_POST['reason'];
       $karyawan = $_POST['id_karyawan'];
 
-      $where = "id_order_data = " . $id;
+      $where = "id_order_data = " . $id . " AND ref = ''";
       $dateNow = date("Y-m-d H:i:s");
       $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
       $update = $this->db(0)->update("order_data", $set, $where);
-      echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+      if ($update['errno'] == 0) {
+         $where2 = "pid = " . $id;
+         $set2 = "stat = 2";
+         $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
+         if ($update2 <> 0) {
+            echo $update['error'];
+            exit();
+         }
+      } else {
+         echo $update['error'];
+         exit();
+      }
+
+      echo 0;
    }
 
    function cancel_diskon()
