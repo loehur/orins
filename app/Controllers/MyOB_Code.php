@@ -32,7 +32,7 @@ class MyOB_Code extends Controller
 
    public function content()
    {
-      $data['barang'] = $this->db(0)->get_where('master_barang', "code <> '' ORDER BY id DESC");
+      $data['barang'] = $this->db(0)->get_where('master_barang', "sp = 0 ORDER BY id DESC");
       $this->view($this->v_content, $data);
    }
 
