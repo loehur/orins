@@ -626,8 +626,18 @@ class Buka_Order extends Controller
       $this->dataSynchrone();
    }
 
-   function proses($id_pelanggan_jenis, $id_pelanggan = 0)
+   function proses($id_pelanggan_jenis, $id_pelanggan = 0, $ref = "")
    {
+      $id_user_afiliasi = 0;
+
+      if (isset($_POST['id_karyawan_aff'])) {
+         $id_user_afiliasi = $_POST['id_karyawan_aff'];
+      }
+
+      if ($id_user_afiliasi <> 0) {
+         $where = "ref = '" . $ref . "' AND cancel = 0";
+         $data['order'] = $this->db(0)->get_where('order_data', $where);
+      }
 
       if ($id_pelanggan_jenis == 100) {
          $stok_order = 1;
@@ -641,70 +651,71 @@ class Buka_Order extends Controller
          $where_order = "ref = '" . $ref . "' OR (id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0)";
          $where_barang = "ref = '" . $ref . "' OR (id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND id_target = 0 AND jenis = 2)";
       } else {
-         if ($_POST['id_pelanggan'] <> "") {
-            $id_pelanggan = $_POST['id_pelanggan'];
-         } else {
-            $hp = $_POST['hp'];
-
-            if (strlen($hp) > 0) {
-               $hp = $this->data('Validasi')->valid_wa($hp);
-               if ($hp == false) {
-                  echo "Nomor HP tidak valid";
-                  exit();
-               }
-            }
-
-            $nama = strtoupper($_POST['new_customer']);
-            if (strlen($nama) == 0) {
-               echo "Lengkapi Nama Customer";
-               exit();
-            }
-
-            $cek_pelanggan = $this->db(0)->get_where_row('pelanggan', "UPPER(nama) = '" . $nama . "' AND no_hp = '" . $hp . "'");
-
-            if (isset($cek_pelanggan['id_pelanggan'])) {
-               $id_pelanggan = $cek_pelanggan['id_pelanggan'];
+         if ($id_user_afiliasi == 0) {
+            if ($_POST['id_pelanggan'] <> "") {
+               $id_pelanggan = $_POST['id_pelanggan'];
             } else {
-               $get_lastID = $this->db(0)->get_cols('pelanggan', 'MAX(id_pelanggan) as max', 0);
-               $id_pelanggan = $get_lastID['max'] + 1;
+               $hp = $_POST['hp'];
 
-               $cols = 'id_pelanggan, id_toko, nama, no_hp, id_pelanggan_jenis';
-               $vals = $id_pelanggan . ",'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "'," . $id_pelanggan_jenis;
+               if (strlen($hp) > 0) {
+                  $hp = $this->data('Validasi')->valid_wa($hp);
+                  if ($hp == false) {
+                     echo "Nomor HP tidak valid";
+                     exit();
+                  }
+               }
 
-               $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
-               if ($do['errno'] <> 0) {
-                  echo $do['error'];
+               $nama = strtoupper($_POST['new_customer']);
+               if (strlen($nama) == 0) {
+                  echo "Lengkapi Nama Customer";
                   exit();
                }
+
+               $cek_pelanggan = $this->db(0)->get_where_row('pelanggan', "UPPER(nama) = '" . $nama . "' AND no_hp = '" . $hp . "'");
+
+               if (isset($cek_pelanggan['id_pelanggan'])) {
+                  $id_pelanggan = $cek_pelanggan['id_pelanggan'];
+               } else {
+                  $get_lastID = $this->db(0)->get_cols('pelanggan', 'MAX(id_pelanggan) as max', 0);
+                  $id_pelanggan = $get_lastID['max'] + 1;
+
+                  $cols = 'id_pelanggan, id_toko, nama, no_hp, id_pelanggan_jenis';
+                  $vals = $id_pelanggan . ",'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "'," . $id_pelanggan_jenis;
+
+                  $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
+                  if ($do['errno'] <> 0) {
+                     echo $do['error'];
+                     exit();
+                  }
+               }
             }
-         }
+            $id_karyawan = $_POST['id_karyawan'];
 
-         $id_karyawan = $_POST['id_karyawan'];
+            $where_order = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
+            $where_barang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND id_target = 0 AND jenis = 2";
 
-         $where_order = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
-         $where_barang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND id_target = 0 AND jenis = 2";
+            $n_ref = [];
+            $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' AND ref <> '' GROUP BY ref";
+            $n_ref =  $this->db(0)->get_cols_where('order_data', 'ref', $where_n, 1, 'ref');
 
-         $n_ref = [];
-         $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' AND ref <> '' GROUP BY ref";
-         $n_ref =  $this->db(0)->get_cols_where('order_data', 'ref', $where_n, 1, 'ref');
-
-         $n2_ref = [];
-         $where_n2 = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' AND ref <> '' GROUP BY ref";
-         $n2_ref =  $this->db(0)->get_cols_where('master_mutasi', 'ref', $where_n2, 1, 'ref');
-         foreach ($n2_ref as $key => $n2) {
-            if (isset($n_ref[$key])) {
-               unset($n2_ref[$key]);
+            $n2_ref = [];
+            $where_n2 = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' AND ref <> '' GROUP BY ref";
+            $n2_ref =  $this->db(0)->get_cols_where('master_mutasi', 'ref', $where_n2, 1, 'ref');
+            foreach ($n2_ref as $key => $n2) {
+               if (isset($n_ref[$key])) {
+                  unset($n2_ref[$key]);
+               }
             }
-         }
 
-         $qty_ref = count($n_ref) + count($n2_ref);
-         $qty_ref += 1;
-         $qty_ref = substr($qty_ref, -5);
-         $nv = str_pad($qty_ref, 5, "0", STR_PAD_LEFT);
-         $ref = $this->userData['id_toko'] . date("ymd") . rand(0, 9) . $nv;
+            $qty_ref = count($n_ref) + count($n2_ref);
+            $qty_ref += 1;
+            $qty_ref = substr($qty_ref, -5);
+            $nv = str_pad($qty_ref, 5, "0", STR_PAD_LEFT);
+            $ref = $this->userData['id_toko'] . date("ymd") . rand(0, 9) . $nv;
+         }
       }
 
-      if ($id_pelanggan_jenis == 100) {
+      if ($id_pelanggan_jenis == 100 && $id_user_afiliasi == 0) {
          $tujuan = $this->userData['id_toko'];
          $tanggal = date('Y-m-d');
 
@@ -717,59 +728,60 @@ class Buka_Order extends Controller
          }
       }
 
-      $data['barang'] = $this->db(0)->get('master_barang', 'code');
-      $data['order'] = $this->db(0)->get_where('order_data', $where_order);
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_barang);
-
-      $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
-      $id_margin = [];
       $total_per_paket = [];
       $harga_paket = [];
-
       $paket_qty = [];
+      $id_margin = [];
 
-      foreach ($data['mutasi'] as $dbr) {
-         $id_sumber = $dbr['id_sumber'];
-         $barang_c = $dbr['kode_barang'];
+      if ($id_user_afiliasi == 0) {
+         $data['barang'] = $this->db(0)->get('master_barang', 'code');
+         $data['order'] = $this->db(0)->get_where('order_data', $where_order);
+         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_barang);
+         $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
 
-         if ($dbr['ref'] <> '') {
-            $id_karyawan = $dbr['cs_id'];
-         }
+         foreach ($data['mutasi'] as $dbr) {
+            $id_sumber = $dbr['id_sumber'];
+            $barang_c = $dbr['kode_barang'];
 
-         $qty = $dbr['qty'];
-         $sds = $dbr['sds'];
-         $sn =  $dbr['sn'];
-
-         if ($dbr['price_locker'] == 1) {
-            $harga_paket[$dbr['paket_ref']] = $data['paket'][$dbr['paket_ref']]['harga_' . $id_pelanggan_jenis];
-            $id_margin[$dbr['paket_ref']]['id'] = $dbr['id'];
-            $id_margin[$dbr['paket_ref']]['primary'] = 'id';
-            $id_margin[$dbr['paket_ref']]['tb'] = 'master_mutasi';
-
-            $get = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $dbr['paket_ref'] . "' AND price_locker = 1");
-            if (isset($get['jumlah'])) {
-               $paket_qty = $dbr['jumlah'] / $get['jumlah'];
-               $id_margin[$dbr['paket_ref']]['qty'] = $paket_qty;
+            if ($dbr['ref'] <> '') {
+               $id_karyawan = $dbr['cs_id'];
             }
-         }
 
-         if (strlen($dbr['paket_ref']) > 0) {
-            $db = $data['barang'][$barang_c];
-            if (isset($total_per_paket[$dbr['paket_ref']])) {
-               $total_per_paket[$dbr['paket_ref']] += ($db['harga_' . $id_pelanggan_jenis] * $dbr['qty']);
-            } else {
-               $total_per_paket[$dbr['paket_ref']] = ($db['harga_' . $id_pelanggan_jenis] * $dbr['qty']);
+            $qty = $dbr['qty'];
+            $sds = $dbr['sds'];
+            $sn =  $dbr['sn'];
+
+            if ($dbr['price_locker'] == 1) {
+               $harga_paket[$dbr['paket_ref']] = $data['paket'][$dbr['paket_ref']]['harga_' . $id_pelanggan_jenis];
+               $id_margin[$dbr['paket_ref']]['id'] = $dbr['id'];
+               $id_margin[$dbr['paket_ref']]['primary'] = 'id';
+               $id_margin[$dbr['paket_ref']]['tb'] = 'master_mutasi';
+
+               $get = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $dbr['paket_ref'] . "' AND price_locker = 1");
+               if (isset($get['jumlah'])) {
+                  $paket_qty = $dbr['jumlah'] / $get['jumlah'];
+                  $id_margin[$dbr['paket_ref']]['qty'] = $paket_qty;
+               }
             }
-         }
 
-         if ($id_sumber == 0) {
-            $id_sumber = $this->userData['id_toko'];
-         }
+            if (strlen($dbr['paket_ref']) > 0) {
+               $db = $data['barang'][$barang_c];
+               if (isset($total_per_paket[$dbr['paket_ref']])) {
+                  $total_per_paket[$dbr['paket_ref']] += ($db['harga_' . $id_pelanggan_jenis] * $dbr['qty']);
+               } else {
+                  $total_per_paket[$dbr['paket_ref']] = ($db['harga_' . $id_pelanggan_jenis] * $dbr['qty']);
+               }
+            }
 
-         $cek = $this->data('Barang')->cek_proses($barang_c, $id_sumber, $sn, $sds, $qty);
-         if ($cek == false) {
-            echo "Stok (" . $barang_c . ") kosong";
-            exit();
+            if ($id_sumber == 0) {
+               $id_sumber = $this->userData['id_toko'];
+            }
+
+            $cek = $this->data('Barang')->cek_proses($barang_c, $id_sumber, $sn, $sds, $qty);
+            if ($cek == false) {
+               echo "Stok (" . $barang_c . ") kosong";
+               exit();
+            }
          }
       }
       //===========================
@@ -778,7 +790,7 @@ class Buka_Order extends Controller
       $detail_harga = [];
       foreach ($data['order'] as $do) {
 
-         if ($id_pelanggan_jenis == 100) {
+         if ($id_pelanggan_jenis == 100 && $id_user_afiliasi == 0) {
             $b_code = str_replace(['-', '&', '#'], '', $do['produk_code']);
             $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $b_code . "'");
             if (!isset($barang['product_name'])) {
@@ -791,7 +803,7 @@ class Buka_Order extends Controller
             $id_karyawan = $do['id_penerima'];
          }
 
-         if (strlen($do['paket_ref']) > 0) {
+         if (strlen($do['paket_ref']) > 0 && $id_user_afiliasi == 0) {
             if ($do['price_locker'] == 1) {
                $harga_paket[$do['paket_ref']] = $data['paket'][$do['paket_ref']]['harga_' . $id_pelanggan_jenis];
                $id_margin[$do['paket_ref']]['id'] = $do['id_order_data'];
@@ -827,35 +839,36 @@ class Buka_Order extends Controller
          }
       }
 
-      //updateFreq
+
       $this->db(0)->update("pelanggan", "freq = freq+1", "id_pelanggan = " . $id_pelanggan);
-      //updateFreqCS
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
 
-      foreach ($data['mutasi'] as $dbr) {
-         $barang_c = $dbr['kode_barang'];
-         $harga = $this->db(0)->get_where_row('master_barang', "code ='" . $barang_c . "'")['harga_' . $id_pelanggan_jenis];
+      if ($id_user_afiliasi == 0) {
+         foreach ($data['mutasi'] as $dbr) {
+            $barang_c = $dbr['kode_barang'];
+            $harga = $this->db(0)->get_where_row('master_barang', "code ='" . $barang_c . "'")['harga_' . $id_pelanggan_jenis];
 
-         if ($harga == 0) {
-            echo "Harga " . $barang_c . " belum ditentukan";
-            exit();
-         }
+            if ($harga == 0) {
+               echo "Harga " . $barang_c . " belum ditentukan";
+               exit();
+            }
 
-         $id_sumber = $dbr['id_sumber'];
-         $qty = $dbr['qty'];
-         $sds = $dbr['sds'];
-         $sn =  $dbr['sn'];
-         $sn_c = 0;
-         if (strlen($sn) > 0) {
-            $sn_c = 1;
-         }
+            $id_sumber = $dbr['id_sumber'];
+            $qty = $dbr['qty'];
+            $sds = $dbr['sds'];
+            $sn =  $dbr['sn'];
+            $sn_c = 0;
+            if (strlen($sn) > 0) {
+               $sn_c = 1;
+            }
 
-         $where = "id = " . $dbr['id'];
-         $set = "margin_paket = 0, stat = 1, harga_jual = " . $harga . ", sn_c = " . $sn_c . ", cs_id = " . $id_karyawan . ", id_target = " . $id_pelanggan . ", jenis_target = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
-         $update = $this->db(0)->update("master_mutasi", $set, $where);
-         if ($update['errno'] <> 0) {
-            echo $update['error'];
-            exit();
+            $where = "id = " . $dbr['id'];
+            $set = "margin_paket = 0, stat = 1, harga_jual = " . $harga . ", sn_c = " . $sn_c . ", cs_id = " . $id_karyawan . ", id_target = " . $id_pelanggan . ", jenis_target = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
+            $update = $this->db(0)->update("master_mutasi", $set, $where);
+            if ($update['errno'] <> 0) {
+               echo $update['error'];
+               exit();
+            }
          }
       }
 
@@ -891,7 +904,7 @@ class Buka_Order extends Controller
             exit();
          }
 
-         if ($id_pelanggan_jenis == 100) {
+         if ($id_pelanggan_jenis == 100 && $id_pelanggan_jenis == 0) {
             $b_code = str_replace(['-', '&', '#'], '', $do['produk_code']);
             $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $b_code . "'");
 
@@ -930,7 +943,10 @@ class Buka_Order extends Controller
          }
       }
 
-      unset($_SESSION['edit']);
+      if (isset($_SESSION['edit'])) {
+         unset($_SESSION['edit']);
+      }
+
       echo $id_pelanggan;
    }
 

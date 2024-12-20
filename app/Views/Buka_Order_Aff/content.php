@@ -3,7 +3,7 @@
     <div class="container px-2">
         <div class="card shadow-none mb-1">
             <div class="card-body bg-warning-soft pb-0 pt-2">
-                <form action="<?= PV::BASE_URL ?>Buka_Order_Aff/proses/<?= $data['parse'] ?>/<?= $data['pelanggan_jenis'] ?>" method="POST">
+                <form action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $data['pelanggan_jenis'] ?>/0/<?= $data['parse'] ?>" method="POST">
                     <div class="row">
                         <div class="col px-1">
                             <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pelanggan_nama']) ?>" required readonly>
@@ -13,7 +13,7 @@
                             <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pengirim']) ?>" required readonly>
                         </div>
                         <div class="col ps-0 pe-1">
-                            <select class="tize" name="id_karyawan" required>
+                            <select class="tize" name="id_karyawan_aff" required>
                                 <option value="">CS</option>
                                 <?php foreach ($data['karyawan'] as $k) {
                                     if ($k['id_toko'] == $this->userData['id_toko']) { ?>

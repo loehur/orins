@@ -95,18 +95,28 @@ class Buka_Order_Aff extends Controller
       $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data_harga = $this->db(0)->get('produk_harga');
 
+      $harga_code = $id_pelanggan_jenis;
+      if ($id_pelanggan_jenis == 100) {
+         $harga_code = 2;
+      }
       foreach ($data['order'] as $do) {
          $detail_harga = unserialize($do['detail_harga']);
          $harga = 0;
          foreach ($detail_harga as $key => $dh_o) {
             foreach ($data_harga as $dh) {
-               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $id_pelanggan_jenis] <> 0) {
-                  $harga +=  $dh['harga_' . $id_pelanggan_jenis];
-                  $detail_harga[$key]['h'] = $dh['harga_' . $id_pelanggan_jenis];
+               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $harga_code] <> 0) {
+                  $harga +=  $dh['harga_' . $harga_code];
+                  $detail_harga[$key]['h'] = $dh['harga_' . $harga_code];
                   break;
                }
             }
          }
+
+         if ($harga == 0) {
+            echo "Error getting Harga";
+            exit();
+         }
+
          $where = "id_order_data = " . $do['id_order_data'];
          $set = "detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_user_afiliasi = " . $id_karyawan . ", status_order = 0";
          $up = $this->db(0)->update("order_data", $set, $where);
