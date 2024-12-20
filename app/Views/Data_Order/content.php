@@ -155,66 +155,68 @@
                         <?php
 
 
-                        $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
-                        $in_toko = "";
-                        if ($id_toko_pelanggan <> $this->userData['id_toko']) {
-                            $in_toko = $this->dToko[$id_toko_pelanggan]['inisial'] . " ";
-                        }
+                        if ($no > 0) {
+                            $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
+                            $in_toko = "";
+                            if ($id_toko_pelanggan <> $this->userData['id_toko']) {
+                                $in_toko = $this->dToko[$id_toko_pelanggan]['inisial'] . " ";
+                            }
 
-                        $sisa[$ref] = $bill[$ref] - $dibayar[$ref];
-                        if ($sisa[$ref] <= 0) {
-                            $lunas[$ref] = true;
-                        } else {
-                            $lunas[$ref] = false;
-                        }
-                        if ($verify_payment[$ref] >= $bill[$ref] && $ambil_all[$ref] == true) {
-                            array_push($arr_tuntas, $ref);
-                        } ?>
+                            $sisa[$ref] = $bill[$ref] - $dibayar[$ref];
+                            if ($sisa[$ref] <= 0) {
+                                $lunas[$ref] = true;
+                            } else {
+                                $lunas[$ref] = false;
+                            }
+                            if ($verify_payment[$ref] >= $bill[$ref] && $ambil_all[$ref] == true) {
+                                array_push($arr_tuntas, $ref);
+                            } ?>
 
-                        <div class="row mx-0 mt-2">
-                            <div class="col px-1" style="min-width: 200px;">
-                                <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
-                                    <tr data-id="<?= $id_pelanggan ?>" class="cekPLG" style="cursor: pointer;">
-                                        <td class="p-1">
-                                            <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b></span> #<?= substr($id_pelanggan, 2) ?></small>
-                                            <br>
-                                            <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
-                                        </td>
-
-                                        <?php if ($id_afiliasi == 0 || $this->userData['id_toko'] == $do['id_toko']) { ?>
-                                            <td class="text-end pe-1">
-                                                <small>
-                                                    &nbsp;
-                                                    <?php if ($ambil_all[$ref] == true) { ?>
-                                                        <i class="fa-solid fa-circle-check text-purple"></i>
-                                                    <?php } else { ?>
-                                                        <i class="fa-regular fa-circle"></i>
-                                                    <?php } ?>
-                                                    <br>
-                                                    &nbsp;
-                                                    <?php if ($lunas[$ref] == true) { ?>
-                                                        <i class="fa-solid fa-circle-check text-success"></i>
-                                                    <?php } else { ?>
-                                                        <i class="fa-regular fa-circle"></i>
-                                                    <?php } ?>
-                                                </small>
+                            <div class="row mx-0 mt-2">
+                                <div class="col px-1" style="min-width: 200px;">
+                                    <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
+                                        <tr data-id="<?= $id_pelanggan ?>" class="cekPLG" style="cursor: pointer;">
+                                            <td class="p-1">
+                                                <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b></span> #<?= substr($id_pelanggan, 2) ?></small>
+                                                <br>
+                                                <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
                                             </td>
-                                            <?php } else {
-                                            if ($id_user_afiliasi <> 0) {
-                                            ?>
-                                                <td class="text-end pe-1 text-success">
+
+                                            <?php if ($id_afiliasi == 0 || $this->userData['id_toko'] == $do['id_toko']) { ?>
+                                                <td class="text-end pe-1">
                                                     <small>
-                                                        AF
+                                                        &nbsp;
+                                                        <?php if ($ambil_all[$ref] == true) { ?>
+                                                            <i class="fa-solid fa-circle-check text-purple"></i>
+                                                        <?php } else { ?>
+                                                            <i class="fa-regular fa-circle"></i>
+                                                        <?php } ?>
+                                                        <br>
+                                                        &nbsp;
+                                                        <?php if ($lunas[$ref] == true) { ?>
+                                                            <i class="fa-solid fa-circle-check text-success"></i>
+                                                        <?php } else { ?>
+                                                            <i class="fa-regular fa-circle"></i>
+                                                        <?php } ?>
                                                     </small>
-                                                    <br>
-                                                    &nbsp;
                                                 </td>
-                                        <?php }
-                                        } ?>
-                                    </tr>
-                                </table>
+                                                <?php } else {
+                                                if ($id_user_afiliasi <> 0) {
+                                                ?>
+                                                    <td class="text-end pe-1 text-success">
+                                                        <small>
+                                                            AF
+                                                        </small>
+                                                        <br>
+                                                        &nbsp;
+                                                    </td>
+                                            <?php }
+                                            } ?>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
+                        <?php } ?>
                     <?php } ?>
                 </div>
             </div>
