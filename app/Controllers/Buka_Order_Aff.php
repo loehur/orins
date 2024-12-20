@@ -64,6 +64,7 @@ class Buka_Order_Aff extends Controller
          $data['pelanggan_'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
          $data['pelanggan_nama'] = "";
          $data['pelanggan_nama'] = $data['pelanggan_'][$do['id_pelanggan']]['nama'];
+
          $data['pelanggan_jenis'] = $do['id_pelanggan_jenis'];
          $data['pengirim'] = $do['id_penerima'];
       }

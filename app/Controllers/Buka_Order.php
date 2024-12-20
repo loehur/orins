@@ -632,6 +632,7 @@ class Buka_Order extends Controller
 
       if (isset($_POST['id_karyawan_aff'])) {
          $id_user_afiliasi = $_POST['id_karyawan_aff'];
+         $id_pelanggan = $_POST['id_pelanggan'];
       }
 
       if ($id_user_afiliasi <> 0) {
