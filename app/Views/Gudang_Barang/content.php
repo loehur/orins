@@ -81,20 +81,24 @@ $max_length = [2, 2, 2, 3];
                             <table class="p-0 m-0">
                                 <tr>
                                     <?php
-                                    $no = 0;
-                                    for ($i = 0; $i <= 6; $i += 2) {
-                                        $no += 1;
-                                        if ($i == 6) { ?>
-                                            <td class="p-0">
-                                                <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 3) ?></span><br>
-                                            </td>
-                                        <?php } else { ?>
-                                            <td class="p-0">
-                                                <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 2) ?></span><br>
-                                            </td>
-                                        <?php } ?>
-                                    <?php
-                                    }
+                                    if ($a['sp'] == 0) {
+                                        $no = 0;
+                                        for ($i = 0; $i <= 6; $i += 2) {
+                                            $no += 1;
+                                            if ($i == 6) { ?>
+                                                <td class="p-0">
+                                                    <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 3) ?></span><br>
+                                                </td>
+                                            <?php } else { ?>
+                                                <td class="p-0">
+                                                    <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 2) ?></span><br>
+                                                </td>
+                                            <?php } ?>
+                                        <?php
+                                        }
+                                    } else { ?>
+                                        <?= $a['code'] ?>
+                                    <?php }
                                     ?>
                                 </tr>
                             </table>
@@ -109,11 +113,13 @@ $max_length = [2, 2, 2, 3];
                         </td>
                         <td class="">
                             <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span>
-                            <br>
-                            <?= strtoupper($a['brand']) ?>
-                            <span class="cell_edit_name" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
-                            <br>
-                            <?= $a['code_f'] ?>
+                            <?php if ($a['sp'] == 0) { ?>
+                                <br>
+                                <?= strtoupper($a['brand']) ?>
+                                <span class="cell_edit_name" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
+                            <?php } else { ?>
+                                <span class="text-sm"><?= strtoupper($a['product_name']) ?></span>
+                            <?php } ?>
                         </td>
                         <td>
                             <?= isset($data['stok'][$a['code']]) ? $data['stok'][$a['code']]['qty'] : 0 ?>
