@@ -32,7 +32,7 @@ class Barang_Masuk extends Controller
 
    public function content()
    {
-      $data['input'] = $this->db(0)->get_where('master_input', "(tipe = 1 OR tipe = 2) AND id_target = '" . $this->userData['id_toko'] . "' ORDER BY tanggal DESC LIMIT 10");
+      $data['input'] = $this->db(0)->get_where('master_input', "(tipe = 1 OR tipe = 2) AND id_target = '" . $this->userData['id_toko'] . "' ORDER BY tanggal DESC LIMIT 30");
       $data['toko'] = $this->db(0)->get_where('toko', "en = 1", "id_toko");
       $this->view(__CLASS__ . '/content', $data);
    }
