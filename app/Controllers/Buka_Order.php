@@ -897,8 +897,14 @@ class Buka_Order extends Controller
             }
          }
 
+         if ($id_user_afiliasi == 0) {
+            $st_order = ", status_order = 0";
+         } else {
+            $st_order = "";
+         }
+
          $where = "id_order_data = " . $do['id_order_data'];
-         $set = "margin_paket = 0, diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "', stok = " . $stok_order . ", id_user_afiliasi = " . $id_user_afiliasi . ", status_order = 0";
+         $set = "margin_paket = 0, diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "', stok = " . $stok_order . ", id_user_afiliasi = " . $id_user_afiliasi . $st_order;
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {
             echo $update['error'];
