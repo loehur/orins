@@ -690,6 +690,7 @@ class Buka_Order extends Controller
                   }
                }
             }
+
             $id_karyawan = $_POST['id_karyawan'];
 
             $where_order = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
@@ -840,7 +841,6 @@ class Buka_Order extends Controller
          }
       }
 
-
       $this->db(0)->update("pelanggan", "freq = freq+1", "id_pelanggan = " . $id_pelanggan);
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
 
@@ -898,14 +898,14 @@ class Buka_Order extends Controller
          }
 
          $where = "id_order_data = " . $do['id_order_data'];
-         $set = "margin_paket = 0, diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "', stok = " . $stok_order;
+         $set = "margin_paket = 0, diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "', stok = " . $stok_order . ", id_user_afiliasi = " . $id_user_afiliasi . ", status_order = 0";
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {
             echo $update['error'];
             exit();
          }
 
-         if ($id_pelanggan_jenis == 100 && $id_pelanggan_jenis == 0) {
+         if ($id_pelanggan_jenis == 100 && $id_user_afiliasi == 0) {
             $b_code = str_replace(['-', '&', '#'], '', $do['produk_code']);
             $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $b_code . "'");
 
