@@ -96,6 +96,7 @@
                         $lunas[$ref] = false;
                         $ambil_all[$ref] = true;
                         $id_afiliasi = 0;
+                        $ada = false;
 
                         if (isset($data['order'][$ref])) {
                             foreach ($data['order'][$ref] as $do) {
@@ -124,6 +125,7 @@
                                 }
 
                                 if ($no == 1) {
+                                    $ada = true;
                                     $id_pelanggan = $do['id_pelanggan'];
                                     $dateTime = substr($do['insertTime'], 0, 10);
                                     $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
@@ -155,7 +157,7 @@
                         <?php
 
 
-                        if ($no > 0) {
+                        if ($ada == true) {
                             $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
                             $in_toko = "";
                             if ($id_toko_pelanggan <> $this->userData['id_toko']) {
