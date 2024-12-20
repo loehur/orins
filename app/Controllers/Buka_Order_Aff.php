@@ -61,13 +61,9 @@ class Buka_Order_Aff extends Controller
          }
 
          $data['pelanggan'] = $do['id_pelanggan'];
-         $data['pelanggan_'] = $this->db(0)->get('pelanggan');
+         $data['pelanggan_'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
          $data['pelanggan_nama'] = "";
-         foreach ($data['pelanggan_'] as $pl) {
-            if ($pl['id_pelanggan'] == $data['pelanggan']) {
-               $data['pelanggan_nama'] = $pl['nama'];
-            }
-         }
+         $data['pelanggan_nama'] = $data['pelanggan_'][$do['id_pelanggan']]['nama'];
          $data['pelanggan_jenis'] = $do['id_pelanggan_jenis'];
          $data['pengirim'] = $do['id_penerima'];
       }
