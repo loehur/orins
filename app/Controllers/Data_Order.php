@@ -184,7 +184,7 @@ class Data_Order extends Controller
       $reason = $_POST['reason'];
       $karyawan = $_POST['id_karyawan'];
 
-      $where = "id_order_data = " . $id . " AND ref = ''";
+      $where = "id_order_data = " . $id;
       $dateNow = date("Y-m-d H:i:s");
       $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
       $update = $this->db(0)->update("order_data", $set, $where);

@@ -58,4 +58,27 @@ class Non_Tunai_C extends Controller
 
       $this->view(__CLASS__ . "/cek", $data);
    }
+
+   function action()
+   {
+      $id = $_POST['id'];
+      $val = $_POST['val'];
+      $note = $_POST['note'];
+      $where_kas = "id_kas = " . $id;
+      $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
+
+      if ($val == 2) {
+         $set_ = "tuntas = 0";
+         $ref = $this->db(0)->get_where_row("kas", $where_kas)['ref_transaksi'];
+         $where = "ref = '" . $ref . "'";
+         $this->db(0)->update("order_data", $set_, $where);
+
+         $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
+      }
+
+      $where = "id_kas = " . $id;
+      $update = $this->db(0)->update("kas", $set, $where_kas);
+
+      echo $update['errno'];
+   }
 }

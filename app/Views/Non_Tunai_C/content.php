@@ -189,7 +189,7 @@
         }
 
         $.ajax({
-            url: "<?= PV::BASE_URL ?>Non_Tunai/action",
+            url: "<?= PV::BASE_URL ?>Non_Tunai_C/action",
             data: {
                 id: id_,
                 val: value,
