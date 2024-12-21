@@ -1034,8 +1034,8 @@ class Buka_Order extends Controller
       $nama = strtoupper($_POST['nama']);
 
       //BARANG
-      $cols = 'code, code_s, product_name, sp';
-      $vals = "'" . $code . "','" . $code_s . "','" . $nama . "',1";
+      $cols = 'grup, code, code_s, product_name, sp';
+      $vals = "'PRODUKSI','" . $code . "','" . $code_s . "','" . $nama . "',1";
       $do = $this->db(0)->insertCols('master_barang', $cols, $vals);
       if ($do['errno'] <> 0) {
          if ($do['errno'] == 1062) {
