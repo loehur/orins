@@ -32,11 +32,11 @@ class Setoran_F extends Controller
    public function content($parse = "")
    {
       $cols = "id_toko, ref_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran = 0 GROUP BY id_toko, ref_setoran, status_setoran";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran = 0 GROUP BY id_toko, ref_setoran, status_setoran";
       $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
 
       $cols = "id_toko, ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY id_toko, ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY id_toko, ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
       $data['setor_done'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
 
       $this->view($this->v_content, $data);
