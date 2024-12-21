@@ -1,5 +1,14 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
 
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
+<style>
+    .dt-search {
+        float: right !important;
+    }
+</style>
+
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
+
 <?php
 $input = ["grup", "tipe", "brand", "c4", "model"];
 $required = ["required", "required", "required", "required", "required"];
@@ -38,26 +47,15 @@ $max_length = [2, 2, 3, 3, 2];
         </form>
         <div class="overflow-auto" style="height: 500px;">
             <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <td>Code</td>
+                        <td>Item</td>
+                    </tr>
+                </thead>
                 <?php foreach ($data['barang'] as $a) { ?>
                     <tr>
-                        <td>
-                            <table class="p-0 m-0">
-                                <tr>
-                                    <?php
-                                    $no = 0;
-                                    $i = 0;
-                                    foreach ($max_length as $ml) {
-                                        $no += 1; ?>
-                                        <td class="px-0">
-                                            <?= $no == 1 ? "D" : "" ?><span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, $ml) ?></span><br>
-                                        </td>
-                                    <?php
-                                        $i += $ml;
-                                    }
-                                    ?>
-                                </tr>
-                            </table>
-                        </td>
+                        <td>D<?= $a['code'] ?></span></td>
                         <td class="">
                             <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span> <span class="text-sm"><?= strtoupper($a['brand']) ?> <?= strtoupper($a['brand']) ?></span><br>
                             <span class="cell_edit_name" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
@@ -71,6 +69,7 @@ $max_length = [2, 2, 3, 3, 2];
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 
 <script>
     $(".cell_edit_name").on('dblclick', function() {
@@ -142,6 +141,17 @@ $max_length = [2, 2, 3, 3, 2];
         autocomplete(document.getElementById("brand"), brand);
         autocomplete(document.getElementById("c4"), c4);
         list_gtb();
+
+        $('#tb_barang').dataTable({
+            "order": [],
+            "bLengthChange": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "pageLength": 30,
+            "scrollY": 400,
+            "dom": "lfrti"
+        });
     });
 
     var grup_name, tipe_name, brand_name, c4_name, model_name;
