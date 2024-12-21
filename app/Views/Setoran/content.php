@@ -175,7 +175,7 @@
                     ?>
                         <tr>
                             <td class="text-primary align-middle" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
-                            <td><?= $set['count'] ?> Trx</td>
+                            <td class="text-end"><?= $set['count'] ?> Trx</td>
                             <td><?= $set['ref_setoran'] ?></td>
                             <td class="text-end">Rp<?= number_format($set['jumlah']) ?></td>
                             <td style="width: 1px; white-space: nowrap;"><?= $st_setor ?></td>
