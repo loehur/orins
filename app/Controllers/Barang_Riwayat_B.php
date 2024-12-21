@@ -31,13 +31,14 @@ class Barang_Riwayat_B extends Controller
 
    public function content()
    {
-      $this->view(__CLASS__ . '/content');
+      $data['barang'] = $this->db(0)->get_where('master_barang', "sp = 0", 'code');
+      $this->view(__CLASS__ . '/content', $data);
    }
 
    function data($month)
    {
       $data['barang'] = $this->db(0)->get_where('master_barang', "en = 1", "code");
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "insertTime LIKE '" . $month . "%' AND (id_sumber = " . $this->userData['id_toko'] . " OR id_target = " . $this->userData['id_toko'] . ")");
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "stat = 1 AND insertTime LIKE '" . $month . "%' AND (id_sumber = " . $this->userData['id_toko'] . " OR id_target = " . $this->userData['id_toko'] . ")");
       $this->view(__CLASS__ . '/data', $data);
    }
 }

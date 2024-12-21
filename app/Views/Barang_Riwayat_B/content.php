@@ -12,6 +12,14 @@
                     <button onclick="cek()" class="btn btn-primary">Cek</button>
                 </div>
             </div>
+            <div class="col">
+                <select name="barang" class="tize border-0" id="barang">
+                    <option value="">Pilih Barang</option>
+                    <?php foreach ($data['barang'] as $key => $br) { ?>
+                        <option value="<?= $key ?>"><?= trim($br['brand'] . " " . $br['model']) ?></option>
+                    <?php } ?>
+                </select>
+            </div>
         </div>
         <div id="data" class="bg-light mx-1 px-2">
         </div>

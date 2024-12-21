@@ -68,6 +68,9 @@
                                     </td>
                                     <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
                                     <td align="right">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
+                                    <td align="right">
+                                        <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-danger border-0">Cancel</button>
+                                    </td>
                                 </tr>
                                 <?php
                                 if (($no == $count)) {
@@ -171,5 +174,35 @@
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
         $("div#cekOrder").load('<?= PV::BASE_URL . $data['c_'] ?>/cekOrder/' + ref);
+    });
+
+    $("button.action").click(function() {
+        var id_ = $(this).attr("data-id");
+        var value = $(this).attr("data-val");
+        var note = "";
+
+        if (value == 2) {
+            var note = prompt("Catatan", "");
+            if (note === null) {
+                return;
+            }
+        }
+
+        $.ajax({
+            url: "<?= PV::BASE_URL ?>Non_Tunai/action",
+            data: {
+                id: id_,
+                val: value,
+                note: note
+            },
+            type: "POST",
+            success: function(result) {
+                if (result == 0) {
+                    content();
+                } else {
+                    alert(result);
+                }
+            },
+        });
     });
 </script>
