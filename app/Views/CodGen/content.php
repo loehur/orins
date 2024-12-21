@@ -46,7 +46,7 @@ $max_length = [2, 2, 3, 3, 2];
             </div>
         </form>
         <div class="overflow-auto" style="height: 500px;">
-            <table class="table table-sm">
+            <table id="tb_barang">
                 <thead>
                     <tr>
                         <td>Code</td>
