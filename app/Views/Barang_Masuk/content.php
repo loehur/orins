@@ -9,7 +9,7 @@
 <main>
     <!-- Main page content-->
     <div class="container">
-        <div class="overflow-auto" style="height: 800px;">
+        <div class="overflow-auto" style="height: 700px;">
             <table class="table table-sm">
                 <?php foreach ($data['input'] as $a) { ?>
                     <tr>
