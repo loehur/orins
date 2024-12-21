@@ -1,12 +1,12 @@
 <?php
 
-class Barang_Riwayat_All extends Controller
+class Barang_Riwayat_B extends Controller
 {
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[7])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -18,7 +18,7 @@ class Barang_Riwayat_All extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Barang - Riwayat"
+         "title" => "Barang - Riwayat Bulanan"
       ]);
 
       $this->viewer();
@@ -31,14 +31,13 @@ class Barang_Riwayat_All extends Controller
 
    public function content()
    {
-      $data['barang'] = $this->db(0)->get_where('master_barang', "sp = 0", 'code');
-      $this->view(__CLASS__ . '/content', $data);
+      $this->view(__CLASS__ . '/content');
    }
 
-   function data($kode)
+   function data($month)
    {
-      $data['barang'] = $this->db(0)->get_where_row('master_barang', "sp = 0 AND code = '" . $kode . "'");
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "kode_barang = '" . $kode . "'");
+      $data['barang'] = $this->db(0)->get_where('master_barang', "en = 1", "code");
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "insertTime LIKE '" . $month . "%' AND (id_sumber = " . $this->userData['id_toko'] . " OR id_target = " . $this->userData['id_toko'] . ")");
       $this->view(__CLASS__ . '/data', $data);
    }
 }
