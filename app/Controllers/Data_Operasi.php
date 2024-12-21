@@ -123,6 +123,7 @@ class Data_Operasi extends Controller
             $data['head'][$ref]['id_afiliasi'] = $dd['id_afiliasi'];
             $data['head'][$ref]['insertTime'] = $dd['insertTime'];
             $data['head'][$ref]['tuntas'] = $dd['tuntas'];
+            $data['head'][$ref]['user_id'] = $dd['id_user'];
             break;
          }
       }
@@ -132,6 +133,7 @@ class Data_Operasi extends Controller
             $data['head'][$ref]['cs'] = $dd['cs_id'];
             $data['head'][$ref]['insertTime'] = $dd['insertTime'];
             $data['head'][$ref]['tuntas'] = $dd['tuntas'];
+            $data['head'][$ref]['user_id'] = $dd['user_id'];
             break;
          }
       }

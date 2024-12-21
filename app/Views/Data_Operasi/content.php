@@ -196,9 +196,9 @@
                                                     <span class="text-danger"><?= substr($ref, -5) ?></span> <b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> #<?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], -2) ?>
                                                 </td>
                                                 <?php if ($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) { ?>
-                                                    <td class="text-end text-purple"><small><b><?= strtoupper($cs) ?></b></span></small></td>
+                                                    <td class="text-end text-purple"><small><?= $dh['user_id'] ?>#<b><?= strtoupper($cs) ?></b></span></small></td>
                                                 <?php } else { ?>
-                                                    <td class="text-end text-purple"><small><b><?= strtoupper($cs) ?>/<?= strtoupper($cs_to) ?></b></span></small></td>
+                                                    <td class="text-end text-purple"><small><?= $dh['user_id'] ?>#<b><?= strtoupper($cs) ?>/<?= strtoupper($cs_to) ?></b></span></small></td>
                                                 <?php }
                                                 ?>
                                                 <td class="text-end ps-1" style="width: 1%; white-space:nowrap"><small><?= substr($dh['insertTime'], 2, -3) ?></small></td>
@@ -449,6 +449,8 @@
                                                             <ul class="dropdown-menu p-0">
                                                                 <?php if ($user_id == $this->userData['id_user'] && $do['tuntas'] == 0) { ?>
                                                                     <li><a class="dropdown-item" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Edit Order</small></a></li>
+                                                                <?php } else { ?>
+                                                                    <li><a class="dropdown-item" href="#"><small>CreatorID #<?= $user_id ?></small></a></li>
                                                                 <?php } ?>
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $sisa > 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon" data-sisa="<?= $sisa ?>" data-ref="<?= $ref ?>" href="#"><small>Extra Diskon</small></a></li>
