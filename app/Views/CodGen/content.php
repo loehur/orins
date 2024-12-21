@@ -54,7 +54,7 @@ $max_length = [2, 2, 3, 3, 2];
             </thead>
             <?php foreach ($data['barang'] as $a) { ?>
                 <tr>
-                    <td>D<?= $a['code'] ?></span></td>
+                    <td class="align-top">D<?= $a['code'] ?></span></td>
                     <td class="">
                         <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span> <span class="text-sm"><?= strtoupper($a['brand']) ?> <?= strtoupper($a['brand']) ?></span><br>
                         <span class="cell_edit_name" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
