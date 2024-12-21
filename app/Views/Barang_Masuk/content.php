@@ -9,30 +9,32 @@
 <main>
     <!-- Main page content-->
     <div class="container">
-        <table class="table table-sm">
-            <?php foreach ($data['input'] as $a) { ?>
-                <tr>
-                    <td class="align-middle">
-                        <a href="<?= PV::BASE_URL ?>Barang_Masuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
-                    </td>
-                    <td>
-                        <?= $a['id'] ?>
-                    </td>
-                    <td class="">
-                        <?= isset($data['toko'][$a['id_sumber']]['nama_toko']) ? $data['toko'][$a['id_sumber']]['nama_toko'] : "Gudang" ?>
-                    </td>
-                    <td>
-                        <?= $a['no_faktur'] ?>
-                    </td>
-                    <td>
-                        <?= $a['no_po'] ?>
-                    </td>
-                    <td>
-                        <?= $a['cek'] == 1 ? "VERIFIED" : "CHECKING" ?>
-                    </td>
-                </tr>
-            <?php } ?>
-        </table>
+        <div class="overflow-auto" style="height: 800px;">
+            <table class="table table-sm">
+                <?php foreach ($data['input'] as $a) { ?>
+                    <tr>
+                        <td class="align-middle">
+                            <a href="<?= PV::BASE_URL ?>Barang_Masuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
+                        </td>
+                        <td>
+                            <?= $a['id'] ?>
+                        </td>
+                        <td class="">
+                            <?= isset($data['toko'][$a['id_sumber']]['nama_toko']) ? $data['toko'][$a['id_sumber']]['nama_toko'] : "Gudang" ?>
+                        </td>
+                        <td>
+                            <?= $a['no_faktur'] ?>
+                        </td>
+                        <td>
+                            <?= $a['no_po'] ?>
+                        </td>
+                        <td>
+                            <?= $a['cek'] == 1 ? "VERIFIED" : "CHECKING" ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </table>
+        </div>
     </div>
 </main>
 
