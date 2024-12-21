@@ -495,11 +495,11 @@ class Buka_Order extends Controller
          $id_sumber = $this->userData['id_toko'];
       }
 
-      $cek = $this->data('Barang')->cek($barang_c, $id_sumber, $sn, $sds, $qty);
-      if ($cek == false) {
-         echo "Stok (" . $barang_c . ") kosong";
-         exit();
-      }
+      // $cek = $this->data('Barang')->cek($barang_c, $id_sumber, $sn, $sds, $qty);
+      // if ($cek == false) {
+      //    echo "Stok (" . $barang_c . ") kosong";
+      //    exit();
+      // }
 
       if (isset($_POST['id_paket']) && $_POST['id_paket'] <> "") {
          $paketGet = explode("-", $_POST['id_paket']);
@@ -779,11 +779,11 @@ class Buka_Order extends Controller
                $id_sumber = $this->userData['id_toko'];
             }
 
-            $cek = $this->data('Barang')->cek_proses($barang_c, $id_sumber, $sn, $sds, $qty);
-            if ($cek == false) {
-               echo "Stok (" . $barang_c . ") kosong";
-               exit();
-            }
+            // $cek = $this->data('Barang')->cek_proses($barang_c, $id_sumber, $sn, $sds, $qty);
+            // if ($cek == false) {
+            //    echo "Stok (" . $barang_c . ") kosong";
+            //    exit();
+            // }
          }
       }
       //===========================
