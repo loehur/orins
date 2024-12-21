@@ -897,7 +897,7 @@ class Buka_Order extends Controller
             }
          }
 
-         if ($id_user_afiliasi == 0) {
+         if ($id_user_afiliasi <> 0) {
             $st_order = ", status_order = 0";
          } else {
             $st_order = "";
