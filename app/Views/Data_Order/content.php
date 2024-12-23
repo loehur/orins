@@ -114,6 +114,7 @@
                                     break;
                                 }
 
+                                $bill[$ref] -= $do['diskon'];
                                 $divisi_arr = unserialize($do['spk_dvs']);
                                 $countSPK = count($divisi_arr);
 
