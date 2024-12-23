@@ -36,7 +36,14 @@
     function cek() {
         var get = $("#month").val();
         if (get != "") {
-            $('#data').load('<?= PV::BASE_URL ?>Barang_Riwayat_B/data/' + get);
+            $('#data').load('<?= PV::BASE_URL ?>Barang_Riwayat_B/riwayat_data/0/' + get);
         }
     }
+
+    $("#barang").change(function() {
+        var get = $(this).val();
+        if (get != "") {
+            $('#data').load('<?= PV::BASE_URL ?>Barang_Riwayat_B/riwayat_data/1/' + get);
+        }
+    })
 </script>
