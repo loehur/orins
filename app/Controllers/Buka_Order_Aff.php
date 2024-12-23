@@ -40,6 +40,11 @@ class Buka_Order_Aff extends Controller
 
       $getHarga = [];
 
+      if ($data['count'] == 0) {
+         echo "<div class='container'><a href='" . PV::BASE_URL . "Data_Operasi/index/" . $parse . "'>Data Submitted - " . $parse . "</a></div>";
+         exit();
+      }
+
       foreach ($data['order'] as $key => $do) {
          $detail_harga = unserialize($do['detail_harga']);
          $countDH[$key] = count($detail_harga);
@@ -79,50 +84,5 @@ class Buka_Order_Aff extends Controller
       }
 
       $this->view($this->v_content, $data);
-   }
-
-   function proses($ref, $id_pelanggan_jenis)
-   {
-      $id_karyawan = $_POST['id_karyawan'];
-      $id_pelanggan = $_POST['id_pelanggan'];
-      //updateFreqCS
-      $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
-
-      $where = "ref = '" . $ref . "' AND cancel = 0";
-      $data['order'] = $this->db(0)->get_where('order_data', $where);
-      $data_harga = $this->db(0)->get('produk_harga');
-
-      $harga_code = $id_pelanggan_jenis;
-      if ($id_pelanggan_jenis == 100) {
-         $harga_code = 2;
-      }
-      foreach ($data['order'] as $do) {
-         $detail_harga = unserialize($do['detail_harga']);
-         $harga = 0;
-         foreach ($detail_harga as $key => $dh_o) {
-            foreach ($data_harga as $dh) {
-               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $harga_code] <> 0) {
-                  $harga +=  $dh['harga_' . $harga_code];
-                  $detail_harga[$key]['h'] = $dh['harga_' . $harga_code];
-                  break;
-               }
-            }
-         }
-
-         if ($harga == 0) {
-            echo "Error getting Harga";
-            exit();
-         }
-
-         $where = "id_order_data = " . $do['id_order_data'];
-         $set = "detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_user_afiliasi = " . $id_karyawan . ", status_order = 0";
-         $up = $this->db(0)->update("order_data", $set, $where);
-         if ($up['errno'] <> 0) {
-            echo $up['error'];
-            exit();
-         }
-      }
-
-      echo $id_pelanggan;
    }
 }
