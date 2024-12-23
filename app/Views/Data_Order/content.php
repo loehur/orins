@@ -78,6 +78,7 @@
         foreach ($sd as $dk) {
             if ($dk['cancel'] == 0) {
                 $dibayar[$ref] += $dk['jumlah'];
+                $verify_payment[$ref] += $dk['jumlah'];
             }
         }
     }
