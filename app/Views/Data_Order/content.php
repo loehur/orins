@@ -145,6 +145,7 @@
                                 }
 
                                 if ($no == 1) {
+                                    $ada = true;
                                     $id_pelanggan = $do['id_target'];
                                     $dateTime = substr($do['insertTime'], 0, 10);
                                     $pelanggan = $data['pelanggan'][$do['id_target']]['nama'];

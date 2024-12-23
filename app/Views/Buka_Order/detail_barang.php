@@ -9,6 +9,9 @@
                     </tr>
                 <?php } ?>
                 <?php foreach ($data['stok'] as $ds) { ?>
+                    <?php if ($ds['qty'] == 0 && $ds['sn'] <> "") {
+                        continue;
+                    } ?>
                     <tr>
                         <td class="fw-bold"><?= $ds['qty'] ?></td>
                         <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?></td>
