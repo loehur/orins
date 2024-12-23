@@ -17,28 +17,30 @@
                 <th class="text-end">Olshop</th>
                 <th>Stok</th>
             </thead>
-            <?php foreach ($data['barang'] as $a) { ?>
-                <tr>
-                    <td class="">
-                        <?= strtoupper($a['grup'] . " " . $a['tipe']) ?>
-                    </td>
-                    <td>
-                        <?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?>
-                    </td>
-                    <td class="text-end">
-                        <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_1" data-tb="master_barang"><?= $a['harga_1'] ?></span>
-                    </td>
-                    <td class="text-end">
-                        <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_2" data-tb="master_barang"><?= $a['harga_2'] ?></span>
-                    </td>
-                    <td class="text-end">
-                        <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
-                    </td>
-                    <td>
-                        <?= isset($data['stok'][$a['code']]) ? $data['stok'][$a['code']]['qty'] : 0 ?>
-                    </td>
-                </tr>
-            <?php } ?>
+            <?php foreach ($data['barang'] as $a) {
+                if (isset($data['stok'][$a['code']])) { ?>
+                    <tr>
+                        <td class="">
+                            <?= strtoupper($a['grup'] . " " . $a['tipe']) ?>
+                        </td>
+                        <td>
+                            <?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?>
+                        </td>
+                        <td class="text-end">
+                            <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_1" data-tb="master_barang"><?= $a['harga_1'] ?></span>
+                        </td>
+                        <td class="text-end">
+                            <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_2" data-tb="master_barang"><?= $a['harga_2'] ?></span>
+                        </td>
+                        <td class="text-end">
+                            <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
+                        </td>
+                        <td>
+                            <?= $data['stok'][$a['code']]['qty'] ?>
+                        </td>
+                    </tr>
+            <?php }
+            } ?>
         </table>
     </div>
 </main>
