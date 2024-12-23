@@ -285,7 +285,7 @@
                     <div class="mb-3">
                         <label class="form-label" required>Diskon Rp</label>
                         <input type="number" min="0" name="diskon" class="form-control" required>
-                        <input type="" name="id_barang_diskon" class="form-control" required>
+                        <input type="hidden" name="id_barang_diskon" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
