@@ -86,7 +86,7 @@
     <small>
         <div class="mx-2 rounded px-2 mt-3 pt-5">
             <div class="row">
-                <div class="col px-0 overflow-auto" style="max-width: 500px;height: 600px;">
+                <div class="col px-0 overflow-auto mt-2" style="max-width: 500px;height: 600px;">
                     <?php foreach ($data['refs'] as $ref) { ?>
 
                         <?php
@@ -174,7 +174,7 @@
                                 array_push($arr_tuntas, $ref);
                             } ?>
 
-                            <div class="row mx-0 mt-2">
+                            <div class="row mx-0">
                                 <div class="col px-1" style="min-width: 200px;">
                                     <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
                                         <tr data-id="<?= $id_pelanggan ?>" class="cekPLG" style="cursor: pointer;">
