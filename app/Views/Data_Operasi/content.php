@@ -247,7 +247,7 @@
                                     ?>
                                             <tr style="<?= ($cancel == 1) ? 'color:silver' : '' ?>">
                                                 <td>
-                                                    <table class="border-bottom text-sm">
+                                                    <table class="text-sm">
                                                         <?php
                                                         if ($cancel <> 0) {
                                                             $canceler = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $id_cancel); ?>
@@ -291,7 +291,7 @@
                                                                 <div class="row mx-0">
                                                                     <?php
                                                                     foreach ($detail_arr as $da) { ?>
-                                                                        <div class="col px-1"><?= "<small>" . $da['group_name'] . "</small> <br><span class='text-nowrap'>" . strtoupper($da['detail_name']) . "</span>" ?></div>
+                                                                        <div class="col ps-0 pe-1"><?= "<small class='text-nowrap'><u>" . $da['group_name'] . "</u></small> <br><span class='text-nowrap'>" . strtoupper($da['detail_name']) . "</span>" ?></div>
                                                                     <?php } ?>
                                                                 </div>
                                                             </td>
