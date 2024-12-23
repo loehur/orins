@@ -347,7 +347,10 @@ $mgpaket = $data['margin_paket'];
                                 #<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?>
                             </td>
                             <td><?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?><br><?= $db['sn'] ?></td>
-                            <td class="text-end"><?= number_format($db['qty']) ?>x<br><?= $db['price_locker'] == 0 ? "@" . number_format($dp['harga_' . $id_pelanggan_jenis]) : "" ?></td>
+                            <td class="text-end">
+                                <?= number_format($db['qty']) ?>x<br>
+                                <b><span data-bs-toggle="modal" data-code="<?= $db['kode_barang'] ?>" data-jenis="<?= $db['jenis_target'] ?>" data-bs-target="#exampleModalPbarang" style="cursor: pointer;" class="tetapkanHargaBarang px-2">P</span></b><?= $db['price_locker'] == 0 ? "@" . number_format($dp['harga_' . $id_pelanggan_jenis]) : "" ?>
+                            </td>
                             <td class="text-end pe-2"><?= number_format($totalnya) ?></td>
                             <td class="pt-2" style="width: 30px;"><a class="deleteItemBarang" data-id="<?= $db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                         </tr>
@@ -428,6 +431,12 @@ $mgpaket = $data['margin_paket'];
         var harga_code = $(this).attr("data-code");
         $("span.produk_harga").html(produk);
         $("input[name=harga_code").val(harga_code);
+    })
+
+    $("span.tetapkanHargaBarang").click(function() {
+        var code = $(this).attr("data-code");
+        var jenis_pelanggan = $(this).attr("data-jenis");
+        $("input[name=code_barang").val(code);
     })
 
     $("span.tetapkanNama").click(function() {

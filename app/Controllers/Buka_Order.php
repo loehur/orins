@@ -601,6 +601,21 @@ class Buka_Order extends Controller
       $this->dataSynchrone();
    }
 
+   function add_price_barang($id_pelanggan_jenis)
+   {
+      if ($id_pelanggan_jenis == 100) {
+         $id_pelanggan_jenis = 2;
+      }
+
+      $code = $_POST['code_barang'];
+      $harga = $_POST['harga'];
+
+      $where = "code = '" . $code . "'";
+      $set = "harga_" . $id_pelanggan_jenis . " = " . $harga;
+      $update = $this->db(0)->update("master_barang", $set, $where);
+      echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+   }
+
    function diskon()
    {
       $parse = explode("_", $_POST['parse']);

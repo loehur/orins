@@ -205,6 +205,29 @@
     </div>
 </div>
 
+<div class="modal" id="exampleModalPbarang" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><small><span class="produk_harga"></span></small></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/add_price_barang/<?= $id_pelanggan_jenis ?>" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" required>Harga</label>
+                        <input type="number" min="1" name="harga" class="form-control" required>
+                        <input type="hidden" name="code_barang" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Tetapkan HARGA</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal" id="exampleModalPC" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
