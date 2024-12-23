@@ -390,7 +390,16 @@
                                             $jumlah = $do['qty'];
                                             $id_pelanggan_jenis = $do['jenis_target'];
                                             $dp = $data['barang'][$do['kode_barang']];
-                                            $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']); ?>
+                                            $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
+                                            $bill -= ($do['diskon'] * $jumlah);
+
+                                            $jumlah_semula = ($jumlah * $do['harga_jual']) + $do['margin_paket'];
+                                            if ($do['diskon'] > 0) {
+                                                $jumlah_semula = "<s>" . number_format(($jumlah * $do['harga_jual']) + $do['margin_paket']) . "</s><br><small>Disc. " . number_format($do['diskon'] * $jumlah) . "</small><br>";
+                                            }
+                                            $jumlah_real = ($jumlah * $do['harga_jual']) + $do['margin_paket'] - ($do['diskon'] * $jumlah);
+
+                                        ?>
                                             <tr>
                                                 <td>
                                                     <?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?>
@@ -400,7 +409,8 @@
                                                 </td>
                                                 <td class="text-end"><?= number_format($jumlah) ?></td>
                                                 <td class="text-end">
-                                                    <?= number_format($jumlah * $do['harga_jual']) ?>
+                                                    <?= $jumlah_semula ?>
+                                                    <?= number_format($jumlah_real) ?>
                                                 </td>
                                             </tr>
                                     <?php }

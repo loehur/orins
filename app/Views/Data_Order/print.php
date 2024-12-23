@@ -241,12 +241,11 @@
         }
         if (count($data['mutasi']) > 0) {
             foreach ($data['mutasi'] as $do) {
-                $akum_diskon = 0;
+                $akum_diskon = $do['diskon'];
                 $no += 1;
                 $jumlah = $do['qty'];
                 $dp = $data['barang'][$do['kode_barang']];
                 $total += (($jumlah * $do['harga_jual'])); ?>
-
                 <tr style="border-bottom: 1px solid silver;">
                     <td style="text-align: right; vertical-align:text-top; padding-right:5px" valign="top">
                         <?= $no ?>.
@@ -269,6 +268,7 @@
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                         <?php
                         if ($akum_diskon > 0) {
+                            $total_disc += $akum_diskon * $do['qty'];
                             echo "<del>" . number_format(($do['harga_jual'] * $do['qty']) + $do['margin_paket']) . "</del><br><small>Disc. " . number_format($akum_diskon * $do['qty']) . "</small><br>" . number_format((($do['harga_jual'] * $do['qty']) + $do['margin_paket']) - ($akum_diskon * $do['qty']));
                         } else {
                             echo number_format(($do['harga_jual'] * $do['qty']) + $do['margin_paket']);

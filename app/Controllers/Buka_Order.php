@@ -888,7 +888,6 @@ class Buka_Order extends Controller
 
             $id_sumber = $dbr['id_sumber'];
             $qty = $dbr['qty'];
-            $sds = $dbr['sds'];
             $sn =  $dbr['sn'];
             $sn_c = 0;
             if (strlen($sn) > 0) {
