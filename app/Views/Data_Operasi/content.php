@@ -291,7 +291,7 @@
                                                                 <div class="row mx-0">
                                                                     <?php
                                                                     foreach ($detail_arr as $da) { ?>
-                                                                        <div class="col ps-0 pe-1"><?= "<small class='text-nowrap'><u>" . $da['group_name'] . "</u></small> <br><span class='text-nowrap'>" . strtoupper($da['detail_name']) . "</span>" ?></div>
+                                                                        <div class="col ps-0 pe-1"><?= "<small class='text-nowrap'><u>" . $da['group_name'] . "</u><br><span class='text-nowrap'>" . strtoupper($da['detail_name']) . "</span></small>" ?></div>
                                                                     <?php } ?>
                                                                 </div>
                                                             </td>
