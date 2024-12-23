@@ -86,7 +86,7 @@
     <small>
         <div class="mx-2 rounded px-2 mt-3 pt-5">
             <div class="row">
-                <div class="col px-0 overflow-auto mt-2" style="max-width: 500px;height: 600px;">
+                <div class="col px-0 overflow-auto mt-2" style="max-width: 500px;height: 700px;">
                     <?php foreach ($data['refs'] as $ref) { ?>
 
                         <?php
