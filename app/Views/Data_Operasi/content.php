@@ -285,19 +285,15 @@
                                                                     <?php } ?>
                                                                 <?php } ?>
                                                             </td>
+                                                        </tr>
                                                         <tr>
-                                                        <tr>
-                                                            <td>
-                                                                <table class="text-sm">
-                                                                    <tr>
-                                                                        <?php
-                                                                        foreach ($detail_arr as $da) { ?>
-                                                                            <td class="pe-1" style="line-height: 100%;">
-                                                                                <?= "<small>" . $da['group_name'] . "</small> <br>" . strtoupper($da['detail_name']) ?>
-                                                                            </td>
-                                                                        <?php } ?>
-                                                                    </tr>
-                                                                </table>
+                                                            <td style="line-height: 100%;">
+                                                                <div class="row mx-0">
+                                                                    <?php
+                                                                    foreach ($detail_arr as $da) { ?>
+                                                                        <div class="col px-1"><?= "<small>" . $da['group_name'] . "</small> <br><span class='text-nowrap'>" . strtoupper($da['detail_name']) . "</span>" ?></div>
+                                                                    <?php } ?>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     </table>
