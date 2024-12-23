@@ -105,6 +105,7 @@
                                 $id_ambil = $do['id_ambil'];
                                 $id_user_afiliasi = $do['id_user_afiliasi'];
                                 $id_afiliasi = $do['id_afiliasi'];
+                                $id_toko = $do['id_toko'];
 
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
                                 if ($cancel == 0) {
@@ -140,6 +141,7 @@
                             foreach ($data['mutasi'][$ref] as $do) {
                                 $no++;
                                 $cancel = $do['stat'];
+                                $id_toko = $do['id_sumber'];
 
                                 $jumlah = ($do['harga_jual'] * $do['qty']) + $do['margin_paket'];
                                 if ($cancel == 1) {
@@ -186,7 +188,7 @@
                                                 <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
                                             </td>
 
-                                            <?php if ($id_afiliasi == 0 || $this->userData['id_toko'] == $do['id_toko']) { ?>
+                                            <?php if ($id_afiliasi == 0 || $this->userData['id_toko'] == $id_toko) { ?>
                                                 <td class="text-end pe-1">
                                                     <small>
                                                         &nbsp;

@@ -209,7 +209,6 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"><small><span class="produk_harga"></span></small></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/add_price_barang/<?= $id_pelanggan_jenis ?>" method="POST">
@@ -264,6 +263,29 @@
                         <label class="form-label" required>Diskon Rp</label>
                         <input type="number" min="0" name="diskon" class="form-control" required>
                         <input type="hidden" name="parse" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn text-purple border-purple" data-bs-dismiss="modal">Tetapkan Diskon</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modalDiskonBarang" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><b><span class="produk_harga"></span></b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/diskon_barang" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" required>Diskon Rp</label>
+                        <input type="number" min="0" name="diskon" class="form-control" required>
+                        <input type="" name="id_barang_diskon" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>

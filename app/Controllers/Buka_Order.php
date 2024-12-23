@@ -641,6 +641,23 @@ class Buka_Order extends Controller
       $this->dataSynchrone();
    }
 
+   function diskon_barang()
+   {
+      $parse = explode("_", $_POST['id_barang_diskon']);
+      $diskon = $_POST['diskon'];
+      $harga = $parse[1];
+
+      if ($diskon > $harga) {
+         echo "Diskon tidak boleh melebihi harga";
+         exit();
+      }
+
+      $where = "id = " . $parse[0];
+      $set = "diskon = '" . $diskon . "'";
+      $update = $this->db(0)->update("master_mutasi", $set, $where);
+      echo $update['errno'] <> 0 ? $update['error'] : 0;
+   }
+
    function proses($id_pelanggan_jenis, $id_pelanggan = 0, $ref = "")
    {
       $id_user_afiliasi = 0;

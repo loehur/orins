@@ -221,6 +221,7 @@ $mgpaket = $data['margin_paket'];
                                                                     if ($do['price_locker'] == 0) {
                                                                         if ($akum_diskon > 0) {
                                                                             echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del> " . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                                                            $total_order -= ($akum_diskon * $do['jumlah']);
                                                                         } else {
                                                                             echo number_format($do['harga'] * $do['jumlah']);
                                                                         }
@@ -340,6 +341,8 @@ $mgpaket = $data['margin_paket'];
                             $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
                         }
 
+                        $total_order -= ($db['diskon'] * $db['qty']);
+
                     ?>
                         <tr>
                             <td class="text-secondary text-end ps-2">
@@ -349,7 +352,21 @@ $mgpaket = $data['margin_paket'];
                             <td><?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?><br><?= $db['sn'] ?></td>
                             <td class="text-end">
                                 <?= number_format($db['qty']) ?>x<br>
-                                <b><span data-bs-toggle="modal" data-code="<?= $db['kode_barang'] ?>" data-jenis="<?= $db['jenis_target'] ?>" data-bs-target="#exampleModalPbarang" style="cursor: pointer;" class="tetapkanHargaBarang px-2">P</span></b><?= $db['price_locker'] == 0 ? "@" . number_format($dp['harga_' . $id_pelanggan_jenis]) : "" ?>
+                                <b><span data-bs-toggle="modal" data-code="<?= $db['kode_barang'] ?>" data-jenis="<?= $db['jenis_target'] ?>" data-bs-target="#exampleModalPbarang" style="cursor: pointer;" class="tetapkanHargaBarang px-2">P</span></b>
+                                <b><span data-bs-toggle="modal" data-id="<?= $db['id'] . "_" . $dp['harga_' . $id_pelanggan_jenis] ?>" data-bs-target="#modalDiskonBarang" style="cursor: pointer;" class="tetapkanDiskonBarang pe-2">D</span></b>
+
+                                <?php
+                                $harga_satuan = $dp['harga_' . $id_pelanggan_jenis];
+                                $harga_semula = "";
+                                if ($db['diskon'] > 0) {
+                                    $harga_satuan -= $db['diskon'];
+                                    $harga_semula = "<s>" . number_format($dp['harga_' . $id_pelanggan_jenis]) . "</s>";
+                                }
+
+
+                                $totalnya -= ($db['diskon'] * $db['qty']);
+                                ?>
+                                <?= $db['price_locker'] == 0 ? $harga_semula . " @" . number_format($harga_satuan)  : "" ?>
                             </td>
                             <td class="text-end pe-2"><?= number_format($totalnya) ?></td>
                             <td class="pt-2" style="width: 30px;"><a class="deleteItemBarang" data-id="<?= $db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
@@ -449,6 +466,11 @@ $mgpaket = $data['margin_paket'];
         var parse = $(this).attr("data-parse");
         $("span.produk_harga").html(produk);
         $("input[name=parse").val(parse);
+    })
+
+    $("span.tetapkanDiskonBarang").click(function() {
+        var id = $(this).attr("data-id");
+        $("input[name=id_barang_diskon").val(id);
     })
 
     $("a.aff").click(function() {

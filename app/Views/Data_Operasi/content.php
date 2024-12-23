@@ -193,7 +193,7 @@
                                         <table class="w-100 p-0 m-0 ">
                                             <tr>
                                                 <td>
-                                                    <span class="text-danger"><?= substr($ref, -5) ?></span> <b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> #<?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], -2) ?>
+                                                    <span class="text-danger"><?= substr($ref, -4) ?></span> <b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> #<?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], -2) ?>
                                                 </td>
                                                 <?php if ($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                     <td class="text-end text-purple"><small><?= $dh['user_id'] ?>#<b><?= strtoupper($cs) ?></b></span></small></td>
