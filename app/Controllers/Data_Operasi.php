@@ -99,6 +99,7 @@ class Data_Operasi extends Controller
       rsort($refs);
       $data['refs'] = $refs;
       $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
+      $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'], 'id_karyawan');
 
       foreach ($refs as $r) {
          $data['head'][$r]['cs_to'] = 0;
