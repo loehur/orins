@@ -10,10 +10,10 @@ class Cron extends Controller
       echo "</pre>";
    }
 
-   function insertRef()
+   function insertRef($year)
    {
-      $data['order'] = $this->db(0)->get('order_data', 'ref', 1);
-      $data['mutasi'] = $this->db(0)->get('master_mutasi', 'ref', 1);
+      $data['order'] = $this->db(0)->get_where('order_data', "insertTime LIKE '" . $year . "%'", 'ref', 1);
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "insertTime LIKE '" . $year . "%'", 'ref', 1);
 
       $ref1 = array_keys($data['order']);
       $ref2 = array_keys($data['mutasi']);
