@@ -53,7 +53,6 @@ class Data_Operasi extends Controller
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $data['saldo'] = $this->data("Saldo")->deposit($parse);
       $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
-
       $data['barang'] = $this->db(0)->get('master_barang', 'code');
 
       if ($parse_2 < 2023) {
@@ -64,8 +63,13 @@ class Data_Operasi extends Controller
          $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND id_target = " . $parse . " AND tuntas = 0 AND insertTime LIKE '%" . $parse_2 . "%'";
       }
 
-      $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_mutasi, 'ref', 1);
+      if ($parse == 0 && $parse_2 == 0) {
+         $data['order'] = [];
+         $data['mutasi'] = [];
+      } else {
+         $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
+         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_mutasi, 'ref', 1);
+      }
 
       $ref1 = array_keys($data['order']);
       $ref2 = array_keys($data['mutasi']);
@@ -91,8 +95,6 @@ class Data_Operasi extends Controller
          $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
          $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi', 1);
       }
-
-      $data['mode'] = 0;
 
       rsort($refs);
       $data['refs'] = $refs;

@@ -1,30 +1,28 @@
 <main>
-    <?php if ($data['mode'] == 0) { ?>
-        <div class="row mx-2" style="max-width:600px">
-            <div class="col px-1">
-                <select class="border rounded tize" name="id_pelanggan" required>
-                    <option></option>
-                    <?php foreach ($data['pelanggan'] as $p) { ?>
-                        <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], -2) ?></option>
+    <div class="row mx-2" style="max-width:600px">
+        <div class="col px-1">
+            <select class="border rounded tize" name="id_pelanggan" required>
+                <option></option>
+                <?php foreach ($data['pelanggan'] as $p) { ?>
+                    <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], -2) ?></option>
+                <?php } ?>
+            </select>
+        </div>
+        <?php if ($data['parse_2'] <> 0) { ?>
+            <div class="col pe-0" style="min-width: 90px; max-width: 100px">
+                <select class="border tize" name="y" required>
+                    <?php
+                    $yNow = date("Y");
+                    for ($x = 2023; $x <= $yNow; $x++) { ?>
+                        <option value="<?= $x ?>" <?= ($data['parse_2'] == $x) ? "selected" : "" ?>><?= $x ?></option>
                     <?php } ?>
                 </select>
             </div>
-            <?php if ($data['parse_2'] <> 0) { ?>
-                <div class="col pe-0" style="min-width: 90px; max-width: 100px">
-                    <select class="border tize" name="y" required>
-                        <?php
-                        $yNow = date("Y");
-                        for ($x = 2023; $x <= $yNow; $x++) { ?>
-                            <option value="<?= $x ?>" <?= ($data['parse_2'] == $x) ? "selected" : "" ?>><?= $x ?></option>
-                        <?php } ?>
-                    </select>
-                </div>
-            <?php } ?>
-            <div class="col pt-auto mt-auto pe-0">
-                <button type="submit" class="cek btn btn-light border">Cek</button>
-            </div>
+        <?php } ?>
+        <div class="col pt-auto mt-auto pe-0">
+            <button type="submit" class="cek btn btn-light border">Cek</button>
         </div>
-    <?php } ?>
+    </div>
 
     <!-- Main page content-->
     <div class="row mt-1 mx-2 pb-2">
