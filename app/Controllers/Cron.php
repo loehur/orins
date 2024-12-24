@@ -41,4 +41,37 @@ class Cron extends Controller
          }
       }
    }
+
+   function update_idproduk($year)
+   {
+      $data_harga = $this->db(0)->get('produk_harga');
+      $where = "insertTime LIKE '" . $year . "%' AND id_pelanggan <> 0";
+      $data['order'] = $this->db(0)->get_where('order_data', $where);
+      foreach ($data['order'] as $key => $do) {
+         $parse_harga = $do['id_pelanggan_jenis'];
+         if ($parse_harga == 100) {
+            $parse_harga = 2;
+         }
+         $detail_harga = unserialize($do['detail_harga']);
+         if (is_array($detail_harga)) {
+            $countDH[$key] = count($detail_harga);
+            foreach ($detail_harga as $dh_o) {
+               $getHarga[$key][$dh_o['c_h']] = 0;
+               foreach ($data_harga as $dh) {
+                  if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse_harga] <> 0 && $dh['id_produk'] == 0) {
+                     $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse_harga];
+                     $where = "code = '" . $dh_o['c_h'] . "' AND id_produk = 0";
+                     $set = "harga_" . $parse_harga . " = " .  $getHarga[$key][$dh_o['c_h']] . ", id_produk = " . $do['id_produk'];
+                     $up = $this->db(0)->update("produk_harga", $set, $where);
+                     if ($up['errno'] <> 0) {
+                        echo $up['error'];
+                        exit();
+                     }
+                     break;
+                  }
+               }
+            }
+         }
+      }
+   }
 }

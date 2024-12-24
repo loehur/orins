@@ -166,7 +166,6 @@ class Buka_Order extends Controller
                      }
                      $countDH[$key] -= 1;
                      break;
-                     break;
                   }
 
                   if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse_harga] <> 0 && $dh['id_produk'] == $do['id_produk']) {
