@@ -16,9 +16,9 @@ class M_DB
     }
 
     //GET
-    public function get($table, $index = "")
+    public function get($table, $index = "", $group = 0)
     {
-        return $this->db->get($table, $index);
+        return $this->db->get($table, $index, $group);
     }
 
     public function get_where($table, $where, $index = "", $group = 0)

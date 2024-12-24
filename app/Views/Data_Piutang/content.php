@@ -53,8 +53,8 @@
                             <tr data-id="<?= $k ?>" class="cekPLG target" style="cursor: pointer;">
                                 <td class="p-1">
                                     <span class="text-primary"><b><?= strtoupper($pelanggan) ?></b></span>
-                                    <small><?= $hari ?> Hari</small>
                                 </td>
+                                <td class="text-end"> <small><?= $hari ?> Hari</small></td>
                             </tr>
                         <?php } ?>
                     </table>

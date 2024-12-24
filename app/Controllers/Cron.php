@@ -10,15 +10,35 @@ class Cron extends Controller
       echo "</pre>";
    }
 
-   function tes()
+   function insertRef()
    {
-      //id_toko = " . $this->userData['id_toko']
-      $where_count = "insertTime LIKE '2023-%' GROUP BY ref";
-      $count_order =  $this->db(0)->count_where('order_data', $where_count);
+      $data['order'] = $this->db(0)->get('order_data', 'ref', 1);
+      $data['mutasi'] = $this->db(0)->get('master_mutasi', 'ref', 1);
 
-      $n = $count_order;
-      $n = substr($n, -4);
-      $nv = str_pad($n, 4, "0", STR_PAD_LEFT);
-      echo $nv;
+      $ref1 = array_keys($data['order']);
+      $ref2 = array_keys($data['mutasi']);
+      $refs = array_unique(array_merge($ref1, $ref2));
+      $cols = 'ref';
+
+      foreach ($refs as $r) {
+         $vals = $r;
+         $do = $this->db(0)->insertCols('ref', $cols, $vals);
+         if ($do['errno'] <> 0) {
+            continue;
+         }
+      }
+   }
+
+   function update_idbarang()
+   {
+      $barang = $this->db(0)->get('master_barang', "code");
+      $mutasi = $this->db(0)->get_where('master_mutasi', 'id_barang = 0');
+      foreach ($mutasi as $r) {
+         $up = $this->db(0)->update('master_mutasi', "id_barang = '" . $barang[$r['kode_barang']]['id'] . "'", "id = " . $r['id']);
+         if ($up['errno'] <> 0) {
+            echo $up['error'];
+            exit();
+         }
+      }
    }
 }

@@ -173,11 +173,6 @@ class Gudang_Barang extends Controller
       $id = $_POST['id'];
       $count = $this->db(0)->count_where('master_mutasi', "kode_barang = '" . $id . "'");
 
-      if ($count > 0) {
-         echo "Barang sudah bermutasi, kode barang tidak dapat dirubah";
-         exit();
-      }
-
       $value = $_POST['value'];
       $col = $_POST['col'];
       $parent = $_POST['parent'];

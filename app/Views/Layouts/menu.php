@@ -174,8 +174,8 @@ $yearNow = date('Y');
 				<!-- Sidenav Footer-->
 				<div class="sidenav-footer bg-light">
 					<div class="sidenav-footer-content">
-						<div class="sidenav-footer-subtitle"><?= $this->userData['id_toko'] ?>#<?= $this->userData['id_user'] ?></div>
-						<div class="sidenav-footer-title"><?= $this->userData['nama'] ?></div>
+						<div class="sidenav-footer-subtitle"></div>
+						<div class="sidenav-footer-title"></div>
 					</div>
 				</div>
 		</nav>

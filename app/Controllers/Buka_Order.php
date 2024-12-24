@@ -749,6 +749,14 @@ class Buka_Order extends Controller
          }
       }
 
+      $cols = 'ref';
+      $vals = $ref;
+      $do = $this->db(0)->insertCols('ref', $cols, $vals);
+      if ($do['errno'] <> 0) {
+         echo $do['error'];
+         exit();
+      }
+
       if ($id_pelanggan_jenis == 100 && $id_user_afiliasi == 0) {
          $tujuan = $this->userData['id_toko'];
          $tanggal = date('Y-m-d');

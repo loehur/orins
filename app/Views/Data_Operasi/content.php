@@ -187,21 +187,28 @@
                                 if ($dh['cs_to'] <> 0) {
                                     $cs_to = $this->dKaryawanAll[$dh['cs_to']]['nama'];
                                 }
+
+                                $dRef = $data['ref'][$ref];
+                                $mark = $dRef['mark'];
+                                if ($mark == "") {
+                                    $mark = "M";
+                                }
                                 ?>
                                 <tr class="">
                                     <td colspan="5" class="table-light <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
-                                        <table class="w-100 p-0 m-0 ">
+                                        <table class="w-100 p-0 m-0 text-sm">
                                             <tr>
                                                 <td>
-                                                    <span class="text-danger"><?= substr($ref, -4) ?></span> <b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> #<?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], -2) ?>
+                                                    <span class="text-danger"><?= substr($ref, -4) ?></span> <b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> <small><?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], -2) ?>#<span class="fw-bold text-success"><?= $mark ?></span></small>
                                                 </td>
                                                 <?php if ($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) { ?>
-                                                    <td class="text-end text-purple"><small><?= $dh['user_id'] ?>#<b><?= strtoupper($cs) ?></b></span></small></td>
-                                                <?php } else { ?>
-                                                    <td class="text-end text-purple"><small><?= $dh['user_id'] ?>#<b><?= strtoupper($cs) ?>/<?= strtoupper($cs_to) ?></b></span></small></td>
+                                                    <td class="text-end text-purple"><b><?= strtoupper($cs) ?></b></span>
+                                                    </td> <?php } else { ?>
+                                                    <td class="text-end text-purple"><b><?= strtoupper($cs) ?>/<?= strtoupper($cs_to) ?></b></span>
+                                                    </td>
                                                 <?php }
                                                 ?>
-                                                <td class="text-end ps-1" style="width: 1%; white-space:nowrap"><small><?= substr($dh['insertTime'], 2, -3) ?></small></td>
+                                                <td class="text-end ps-1" style="width: 1%; white-space:nowrap"><small><?= date('d/m/y H:i', strtotime($dh['insertTime'])) ?></small></td>
                                             </tr>
                                         </table>
                                     </td>
@@ -269,8 +276,8 @@
                                                                         <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                                                             <span class="visually-hidden">Toggle Dropdown</span>
                                                                         </button>
-                                                                        <ul class="dropdown-menu p-0">
-                                                                            <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
+                                                                        <ul class="dropdown-menu p-0 border-0 shadow rounded-0">
+                                                                            <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item px-2 cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
                                                                         </ul>
                                                                     </div>
                                                                 <?php } ?>
@@ -399,6 +406,16 @@
                                             <tr>
                                                 <td>
                                                     <?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?>
+                                                    <?php if ($dibayar == 0 && $do['stat'] == 1) { ?>
+                                                        <div class="btn-group">
+                                                            <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <span class="visually-hidden">Toggle Dropdown</span>
+                                                            </button>
+                                                            <ul class="dropdown-menu p-0 border-0 shadow rounded-0">
+                                                                <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancelBarang" class="dropdown-item cancelBarang px-2" data-id="<?= $do['id'] ?>" href="#">Cancel</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    <?php } ?>
                                                 </td>
                                                 <td class=""><small>
                                                         <?= $do['sds'] == 1 ? "S" : "" ?>#<?= $do['sn'] ?>
@@ -434,34 +451,37 @@
 
                                     ?>
                                     <tr class="border-top">
-                                        <td class="text-end text border-0" colspan="3">
+                                        <td class="text-end text border-0 pb-0" colspan="3">
                                             <?php if (($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) && $dh['tuntas'] == 0) { ?>
                                                 <table>
                                                     <tr>
-                                                        <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
+                                                        <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border-0 px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
                                                         <?php
                                                         if ($ambil_all == false) { ?>
-                                                            <td class="text-end pe-1"><small><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded border text-purple px-1" data-ref="<?= $do['ref'] ?>">Ambil</span></small></td>
+                                                            <td class="text-end pe-1"><small><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded border-0 text-purple px-1" data-ref="<?= $do['ref'] ?>">Ambil</span></small></td>
                                                         <?php } ?>
                                                         <td class="text-end pe-1">
-                                                            <button type="button" class="border-0 bg-white ps-1 dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <button type="button" class="border-0 bg-white ps-0 dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <small>
-                                                                    <span data-bs-toggle="modal" data-bs-target="#modalDiskon" data-bs-toggle="dropdown" class="border rounded text-info px-2 dropdown-toggle dropdown-toggle-split">
+                                                                    <span data-bs-toggle="modal" data-bs-target="#modalDiskon" data-bs-toggle="dropdown" class="border-0 rounded text-info px-1 dropdown-toggle dropdown-toggle-split">
                                                                         <i class="fa-solid fa-sliders"></i>
                                                                     </span>
                                                                 </small>
                                                                 <span class="visually-hidden">Toggle Dropdown</span>
                                                             </button>
-                                                            <ul class="dropdown-menu p-0">
+                                                            <ul class="dropdown-menu p-0 border-0 shadow rounded-0">
                                                                 <?php if ($user_id == $this->userData['id_user'] && $do['tuntas'] == 0) { ?>
-                                                                    <li><a class="dropdown-item" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Edit Order</small></a></li>
+                                                                    <li><a class="dropdown-item px-2" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Edit Order</small></a></li>
                                                                 <?php } else { ?>
-                                                                    <li><a class="dropdown-item" href="#"><small>CreatorID #<?= $user_id ?></small></a></li>
+                                                                    <li><a class="dropdown-item px-2" href="#"><small>CreatorID #<?= $user_id ?></small></a></li>
                                                                 <?php } ?>
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $sisa > 0) { ?>
-                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon" data-sisa="<?= $sisa ?>" data-ref="<?= $ref ?>" href="#"><small>Extra Diskon</small></a></li>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon px-2" data-sisa="<?= $sisa ?>" data-ref="<?= $ref ?>" href="#"><small>Extra Diskon</small></a></li>
                                                                 <?php } ?>
                                                             </ul>
+                                                        </td>
+                                                        <td class="text-secondary text-sm">
+                                                            <small><?= $dh['user_id'] ?>#
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -477,7 +497,7 @@
                                     </tr>
                                     <?php if (strlen($showMutasi) > 0) { ?>
                                         <tr>
-                                            <td class="text-end text border-0" colspan="4">
+                                            <td class="text-end text border-0 pt-0" colspan="4">
                                                 <?= $showMutasi ?>
                                             </td>
                                         </tr>
