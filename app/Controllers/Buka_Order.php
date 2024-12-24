@@ -783,9 +783,11 @@ class Buka_Order extends Controller
       $cols = 'ref';
       $vals = $ref;
       $do = $this->db(0)->insertCols('ref', $cols, $vals);
-      if ($do['errno'] == 1062 && !isset($_SESSION['edit'][$this->userData['id_user']]) && $id_user_afiliasi == 0) {
-         echo $do['error'];
-         exit();
+      if ($do['errno'] == 1062) {
+         if (!isset($_SESSION['edit'][$this->userData['id_user']])) {
+            echo $do['error'];
+            exit();
+         }
       } else if ($do['errno'] <> 0) {
          echo $do['error'];
          exit();
