@@ -146,7 +146,30 @@ class Buka_Order extends Controller
             foreach ($detail_harga as $dh_o) {
                $getHarga[$key][$dh_o['c_h']] = 0;
                foreach ($data_harga as $dh) {
-                  if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse_harga] <> 0) {
+
+                  if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse_harga] <> 0 && $dh['id_produk'] == 0) {
+                     $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse_harga];
+                     $where = "code = '" . $dh_o['c_h'] . "' AND id_produk = 0";
+                     $set = "harga_" . $parse_harga . " = " .  $getHarga[$key][$dh_o['c_h']] . ", id_produk = " . $do['id_produk'];
+                     $up = $this->db(0)->update("produk_harga", $set, $where);
+                     if ($up['errno'] <> 0) {
+                        echo $up['error'];
+                        exit();
+                     }
+
+                     if (strlen($do['paket_ref']) > 0) {
+                        if (isset($total_per_paket[$do['paket_ref']])) {
+                           $total_per_paket[$do['paket_ref']] += ($getHarga[$key][$dh_o['c_h']] * $do['jumlah']);
+                        } else {
+                           $total_per_paket[$do['paket_ref']] = ($getHarga[$key][$dh_o['c_h']] * $do['jumlah']);
+                        }
+                     }
+                     $countDH[$key] -= 1;
+                     break;
+                     break;
+                  }
+
+                  if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse_harga] <> 0 && $dh['id_produk'] == $do['id_produk']) {
                      $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse_harga];
                      if (strlen($do['paket_ref']) > 0) {
                         if (isset($total_per_paket[$do['paket_ref']])) {
@@ -495,12 +518,6 @@ class Buka_Order extends Controller
          $id_sumber = $this->userData['id_toko'];
       }
 
-      // $cek = $this->data('Barang')->cek($barang_c, $id_sumber, $sn, $sds, $qty);
-      // if ($cek == false) {
-      //    echo "Stok (" . $barang_c . ") kosong";
-      //    exit();
-      // }
-
       if (isset($_POST['id_paket']) && $_POST['id_paket'] <> "") {
          $paketGet = explode("-", $_POST['id_paket']);
          $where = $paketGet[1] . " = " . $paketGet[0];
@@ -577,25 +594,39 @@ class Buka_Order extends Controller
 
       $harga_code = $_POST['harga_code'];
       $harga = $_POST['harga'];
+      $id_produk = $_POST['id_produk'];
 
-      $cols = 'code, harga_' . $id_pelanggan_jenis;
-      $vals = "'" . $harga_code . "'," . $harga;
+      $cols = 'id_produk, code, harga_' . $id_pelanggan_jenis;
+      $vals = $id_produk . ",'" . $harga_code . "'," . $harga;
 
-      $whereCount = "code = '" . $harga_code . "'";
-      $dataCount = $this->db(0)->count_where('produk_harga', $whereCount);
-      if ($dataCount < 1) {
-         $do = $this->db(0)->insertCols('produk_harga', $cols, $vals);
-         if ($do['errno'] == 0) {
-            $this->model('Log')->write($this->userData['user'] . " Add produk_harga Success!");
-            echo $do['errno'];
+      $whereCount = "code = '" . $harga_code . "' AND id_produk = 0";
+      $cek = $this->db(0)->get_where_row('produk_harga', $whereCount);
+      if (!isset($cek['code'])) {
+         $whereCount2 = "code = '" . $harga_code . "' AND id_produk = " . $id_produk;
+         $cek2 = $this->db(0)->get_where_row('produk_harga', $whereCount2);
+         if (!isset($cek2['code'])) {
+            $do = $this->db(0)->insertCols('produk_harga', $cols, $vals);
+            if ($do['errno'] <> 0) {
+               echo $do['error'];
+               exit();
+            }
          } else {
-            print_r($do['error']);
+            $where = "code = '" . $harga_code . "' AND id_produk = " . $id_produk;
+            $set = "harga_" . $id_pelanggan_jenis . " = " . $harga . ", id_produk = " . $id_produk;
+            $up = $this->db(0)->update("produk_harga", $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
          }
       } else {
-         $where = "code = '" . $harga_code . "'";
-         $set = "harga_" . $id_pelanggan_jenis . " = " . $harga;
-         $update = $this->db(0)->update("produk_harga", $set, $where);
-         echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+         $where = "code = '" . $harga_code . "' AND id_produk = 0";
+         $set = "harga_" . $id_pelanggan_jenis . " = " . $harga . ", id_produk = " . $id_produk;
+         $up = $this->db(0)->update("produk_harga", $set, $where);
+         if ($up['errno'] <> 0) {
+            echo $up['error'];
+            exit();
+         }
       }
 
       $this->dataSynchrone();
@@ -818,12 +849,6 @@ class Buka_Order extends Controller
             if ($id_sumber == 0) {
                $id_sumber = $this->userData['id_toko'];
             }
-
-            // $cek = $this->data('Barang')->cek_proses($barang_c, $id_sumber, $sn, $sds, $qty);
-            // if ($cek == false) {
-            //    echo "Stok (" . $barang_c . ") kosong";
-            //    exit();
-            // }
          }
       }
       //===========================
@@ -831,7 +856,6 @@ class Buka_Order extends Controller
       $data_harga = $this->db(0)->get('produk_harga');
       $detail_harga = [];
       foreach ($data['order'] as $do) {
-
          if ($id_pelanggan_jenis == 100 && $id_user_afiliasi == 0) {
             $b_code = str_replace(['-', '&', '#'], '', $do['produk_code']);
             $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $b_code . "'");
@@ -868,7 +892,7 @@ class Buka_Order extends Controller
          }
          foreach ($detail_harga as $kH => $dh_o) {
             foreach ($data_harga as $dh) {
-               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $harga_code] <> 0) {
+               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $harga_code] <> 0 && $dh['id_produk'] == $do['id_produk']) {
                   $countDH -= 1;
                   break;
                }
@@ -921,7 +945,7 @@ class Buka_Order extends Controller
          foreach ($detail_harga as $key => $dh_o) {
             $diskon += ($dh_o['d'] * $jumlah);
             foreach ($data_harga as $dh) {
-               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $harga_code] <> 0) {
+               if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $harga_code] <> 0 && $dh['id_produk'] == $do['id_produk']) {
                   $harga +=  $dh['harga_' . $harga_code];
                   $detail_harga[$key]['h'] = $dh['harga_' . $harga_code];
                   if (strlen($do['paket_ref']) > 0) {
@@ -955,7 +979,6 @@ class Buka_Order extends Controller
             $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $b_code . "'");
 
             $qty = $do['jumlah'];
-            $sds = 0;
             $sn =  "";
             $id_sumber = 0;
             $id_barang = $barang['id'];

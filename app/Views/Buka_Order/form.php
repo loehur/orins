@@ -195,6 +195,7 @@
                         <label class="form-label" required>Harga</label>
                         <input type="number" min="1" name="harga" class="form-control" required>
                         <input type="hidden" name="harga_code" class="form-control" required>
+                        <input type="hidden" name="id_produk" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>

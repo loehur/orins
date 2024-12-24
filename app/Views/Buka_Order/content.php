@@ -277,7 +277,7 @@ $mgpaket = $data['margin_paket'];
                                                                                         <?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
                                                                                     <?php } ?>
 
-                                                                                    <b><span data-bs-toggle="modal" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
+                                                                                    <b><span data-bs-toggle="modal" data-id_produk="<?= $id_produk ?>" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
                                                                                     <?php if ($harga_d > 0 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                                         <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
                                                                                     <?php } ?>
@@ -446,8 +446,10 @@ $mgpaket = $data['margin_paket'];
     $("span.tetapkanHarga").click(function() {
         var produk = $(this).attr("data-produk");
         var harga_code = $(this).attr("data-code");
+        var id_produk = $(this).attr("data-id_produk");
         $("span.produk_harga").html(produk);
-        $("input[name=harga_code").val(harga_code);
+        $("input[name=harga_code]").val(harga_code);
+        $("input[name=id_produk]").val(id_produk);
     })
 
     $("span.tetapkanHargaBarang").click(function() {

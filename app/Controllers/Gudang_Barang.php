@@ -171,7 +171,10 @@ class Gudang_Barang extends Controller
    {
       //cek dulu
       $id = $_POST['id'];
-      $count = $this->db(0)->count_where('master_mutasi', "kode_barang = '" . $id . "'");
+      //$count = $this->db(0)->count_where('master_mutasi', "kode_barang = '" . $id . "'");
+
+      echo "Under construction";
+      exit();
 
       $value = $_POST['value'];
       $col = $_POST['col'];
@@ -181,45 +184,64 @@ class Gudang_Barang extends Controller
       $mode = "NON";
       switch ($col) {
          case 1:
-            $set = "id = '" . $value . "'";
-            $where_grup = "id = '" . $value_before . "'";
-            $up = $this->db(0)->update('master_grup', $set, $where_grup);
-            if ($up['errno'] <> 0) {
-               echo $up['error'];
+            //$where_grup = "id = '" . $value_before . "'";
+            // $set = "id = '" . $value . "'";
+            // $up = $this->db(0)->update('master_grup', $set, $where_grup);
+            // if ($up['errno'] <> 0) {
+            //    echo $up['error'];
+            //    exit();
+            // }
+
+            $where_grup = "id = '" . $value . "'";
+            $cek = $this->db(0)->get_where_row('master_grup', $where_grup);
+            print_r($cek);
+            exit();
+
+            if (isset($cek['nama'])) {
+               $set_m = "grup = '" . $cek['nama'] . "'";
+            } else {
+               echo "Not found grup-code " . $value;
                exit();
             }
-
             $mode = 'G';
             break;
          case 2:
-            $set = "id = '" . $value . "'";
-            $where_tipe = "id = '" . $value_before . "'";
-            $up = $this->db(0)->update('master_tipe', $set, $where_tipe);
-            if ($up['errno'] <> 0) {
-               echo $up['error'];
+            // $set = "id = '" . $value . "'";
+            // $where_tipe = "id = '" . $value_before . "'";
+            // $up = $this->db(0)->update('master_tipe', $set, $where_tipe);
+            // if ($up['errno'] <> 0) {
+            //    echo $up['error'];
+            //    exit();
+            // }
+
+            $where_tipe = "id = '" . $value . "'";
+            $cek = $this->db(0)->get_where_row('master_tipe', $where_tipe);
+            if (isset($cek['nama'])) {
+               $set_m = "tipe = '" . $cek['nama'] . "'";
+            } else {
+               echo "Not found tipe-Code " . $value;
                exit();
             }
-
             $mode = 'T';
             break;
          case 3:
-            $set = "id = '" . $value . "'";
-            $where_brand = "id = '" . $value_before . "'";
-            $up = $this->db(0)->update('master_brand', $set, $where_brand);
-            if ($up['errno'] <> 0) {
-               echo $up['error'];
-               exit();
-            }
+            // $set = "id = '" . $value . "'";
+            // $where_brand = "id = '" . $value_before . "'";
+            // $up = $this->db(0)->update('master_brand', $set, $where_brand);
+            // if ($up['errno'] <> 0) {
+            //    echo $up['error'];
+            //    exit();
+            // }
             $mode = 'B';
             break;
          case 4:
-            $set = "id = '" . $value . "', code = '" . $parent . $value . "'";
-            $where_brand = "code = '" . $parent . $value_before . "'";
-            $up = $this->db(0)->update('master_model', $set, $where_brand);
-            if ($up['errno'] <> 0) {
-               echo $up['error'];
-               exit();
-            }
+            // $set = "id = '" . $value . "', code = '" . $parent . $value . "'";
+            // $where_brand = "code = '" . $parent . $value_before . "'";
+            // $up = $this->db(0)->update('master_model', $set, $where_brand);
+            // if ($up['errno'] <> 0) {
+            //    echo $up['error'];
+            //    exit();
+            // }
             $mode = 'M';
             break;
       }
@@ -229,12 +251,26 @@ class Gudang_Barang extends Controller
          $new_code_s = str_replace($mode . "-" . $value_before . "#", $mode . "-" . $value . "#", $d['code_s']);
          $new_code = str_replace(['G-', 'T-', 'B-', 'M-', '#'], '', $new_code_s);
 
-         $set = "code_s = '" . $new_code_s . "', code = '" . $new_code . "'";
-         $where = "code_s = '" . $d['code_s'] . "'";
-         $up = $this->db(0)->update('master_barang', $set, $where);
-         if ($up['errno'] <> 0) {
-            echo $up['error'];
+         $cek_ada = $this->db(0)->count_where('master_barang', "code = '" . $new_code . "'");
+         if ($cek_ada > 0) {
+            echo "Kode " . $new_code . " telah digunakan";
             exit();
+         } else {
+            $where = "id = '" . $d['id'] . "'";
+            $set = "code_s = '" . $new_code_s . "', code = '" . $new_code . "'," . $set_m;
+            $up = $this->db(0)->update('master_barang', $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            } else {
+               $where = "id_barang = '" . $d['id'] . "'";
+               $set = "kode_barang = '" . $new_code_s . "'";
+               $up = $this->db(0)->update('master_mutasi', $set, $where);
+               if ($up['errno'] <> 0) {
+                  echo $up['error'];
+                  exit();
+               }
+            }
          }
       }
 
