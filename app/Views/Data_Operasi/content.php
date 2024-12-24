@@ -53,8 +53,8 @@
                 $showMutasi = "";
                 $xtraDiskon = 0;
 
-                foreach ($data['kas'] as $dk) {
-                    if ($dk['ref_transaksi'] == $ref) {
+                if (isset($data['kas'][$ref])) {
+                    foreach ($data['kas'][$ref] as $dk) {
                         if ($dk['status_mutasi'] == 0 || $dk['status_mutasi'] == 1) {
                             $dibayar += $dk['jumlah'];
                         }
@@ -119,8 +119,8 @@
                 }
 
                 $list_xdiskon = [];
-                foreach ($data['diskon'] as $ds) {
-                    if ($ds['ref_transaksi'] == $ref) {
+                if (isset($data['diskon'][$ref])) {
+                    foreach ($data['diskon'][$ref] as $ds) {
                         $list_xdiskon[$ref] = false;
                         if ($ds['cancel'] == 0) {
                             $xtraDiskon += $ds['jumlah'];
@@ -182,7 +182,7 @@
 
                                 $dh = $data['head'][$ref];
 
-                                $cs = $this->dKaryawanAll[$dh['cs']]['nama'];
+                                $cs = $data['karyawan'][$dh['cs']]['nama'];
                                 $cs_to = "...";
                                 if ($dh['cs_to'] <> 0) {
                                     $cs_to = $this->dKaryawanAll[$dh['cs_to']]['nama'];
@@ -389,7 +389,7 @@
                                             $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
                                             $bill -= ($do['diskon'] * $jumlah);
 
-                                            $jumlah_semula = ($jumlah * $do['harga_jual']) + $do['margin_paket'];
+                                            $jumlah_semula = "";
                                             if ($do['diskon'] > 0) {
                                                 $jumlah_semula = "<s>" . number_format(($jumlah * $do['harga_jual']) + $do['margin_paket']) . "</s><br><small>Disc. " . number_format($do['diskon'] * $jumlah) . "</small><br>";
                                             }
