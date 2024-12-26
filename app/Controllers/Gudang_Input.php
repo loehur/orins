@@ -50,7 +50,6 @@ class Gudang_Input extends Controller
 
       $cols = "id, code, CONCAT(brand,' ',model) as nama, code_f";
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
-      $data['barang_code'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'code');
 
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");
       $data['id'] = $id;

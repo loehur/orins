@@ -75,14 +75,14 @@
                         #<?= $a['id'] ?></small> <?= $no ?>. <small>
                     </td>
                     <td class="">
-                        <?= $data['barang_code'][$a['kode_barang']]['nama'] ?>
+                        <?= $data['barang'][$a['id_barang']]['nama'] ?>
                     </td>
                     <td class="text-end">
                         <?= $a['qty'] ?>
                     </td>
                     <td>
                         <?php if ($a['sn_c'] == 1 && $a['stat'] == 0) { ?>
-                            <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['kode_barang'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-no="<?= $no ?>" data-tb="master_mutasi" class="cell_edit r<?= $no ?>"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
+                            <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['id_barang'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-no="<?= $no ?>" data-tb="master_mutasi" class="cell_edit r<?= $no ?>"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
                         <?php } else { ?>
                             <?= $a['sn'] ?>
                         <?php } ?>
