@@ -2,22 +2,12 @@
     <?php $total = 0 ?>
     <?php $total_masalah = 0 ?>
     <?php if (count($data['kas']) > 0) { ?>
-        <div class="p-2 ms-3 me-3 bg-white">
-            <div class="row mb-1">
-                <div class="col ms-2">
-                    <span class="text-purple">Setoran Dalam Antrian</span></small>
-                </div>
-            </div>
-            <div class="row">
+        <div class="p-2 ms-3 me-3 bg-white overflow-auto" style="height: 600px;">
+            <div class="row mx-0">
                 <div class="col">
-                    <table class="table table-sm">
+                    <table class="table table-sm text-sm">
                         <tr>
-                            <th class="text-end">ID</th>
-                            <th>Customer</th>
-                            <th>Referensi</th>
-                            <th>Tanggal</th>
-                            <th class="text-end">Jumlah</th>
-                            <th>Action</th>
+                            <th colspan="10">Penjualan Tunai</th>
                         </tr>
                         <?php
                         $no = 0;
@@ -46,13 +36,12 @@
                                 <td align="right">#<?= $a['id_kas'] ?></td>
                                 <td><?= strtoupper($pelanggan) ?></td>
                                 <td><?= $ref ?></td>
-                                <td><?= $a['insertTime'] ?></td>
-                                <td align="right">Rp<?= number_format($jumlah) ?></td>
+                                <td><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></td>
+                                <td align="right"><?= number_format($jumlah) ?></td>
                                 <td>
                                     <?php if ($a['status_mutasi'] == 1) { ?>
-                                        <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="px-2 text-decoration-none text-danger cancel border rounded" data-id="<?= $a['id_kas'] ?>" href="#">Batalkan</a>
+                                        <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="px-2 text-decoration-none text-danger cancel rounded" data-id="<?= $a['id_kas'] ?>" href="#"><i class="fa-solid fa-square-xmark"></i></a>
                                     <?php } else { ?>
-                                        <small>Dibatalkan</small><br>
                                         <small class="text-primary"><?= $a['note_batal'] ?></small>
                                     <?php } ?>
                                 </td>
@@ -69,9 +58,21 @@
         <div class="pe-2 pb-0 ms-3 me-3 bg-white">
             <div class="row">
                 <div class="col">
-                    <table class="table table-sm table-borderless mb-2">
+                    <table class="table table-sm text-sm table-borderless mb-2">
                         <tr>
-                            <td class="text-end text-success"><button id="setor" class="btn btn-outline-success">Buat Setoran: <b class="ms-2">Total Rp<?= number_format($total) ?></b></button></td>
+                            <td class="text-end">Penjualan Tunai</td>
+                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total) ?></b></td>
+                            <td rowspan="10" class="text-success text-sm align-middle"><button id="setor" class="btn btn-outline-success py-3 rounded-1">Buat<br>Setoran</button></td>
+                        </tr>
+                        <tr>
+                            <td class="text-end">
+                                <a data-bs-toggle="modal" data-bs-target="#modalPengeluaran" class="text-decoration-none" data-id="<?= $a['id_kas'] ?>" href="#"><i class="fa-solid text-danger fa-square-plus"></i> Pengeluaran</a>
+                            </td>
+                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total) ?></b></td>
+                        </tr>
+                        <tr>
+                            <td class="text-end">Total</td>
+                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total) ?></b></td>
                         </tr>
                     </table>
                 </div>
@@ -150,20 +151,20 @@
             </div>
         </div>
     <?php } ?>
-    <div class="pe-2 pb-0 ms-3 me-3 bg-white">
+    <div class="pe-2 pb-0 ms-3 me-3 bg-white text-sm">
         <div class="row mb-1">
             <div class="col ms-2">
-                <span class="text-purple">Riwayat Setoran Kasir</span> <small>(Last 20)</small>
+                <span class="text-purple">Riwayat Setoran</span>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <table class="table table-sm mb-2 ms-2">
+                <table class="table table-sm mb-2 ms-2 text-sm">
                     <?php foreach ($data['setor'] as $set) {
                         $st_setor = "";
                         switch ($set['status_setoran']) {
                             case 0:
-                                $st_setor = "<span class='text-warning'><i class='fa-regular fa-circle'></i> Finance Checking</span>";
+                                $st_setor = "<span class='text-warning'><i class='fa-regular fa-circle'></i> Checking</span>";
                                 break;
                             case 1:
                                 $st_setor = "<span class='text-success'><i class='fa-solid fa-circle-check'></i> Verified</span>";
@@ -212,6 +213,44 @@
                         <div class="row mb-2">
                             <div class="col-sm-6">
                                 <button type="submit" data-bs-dismiss="modal" class="btn btn-danger">Cancel Pembayaran</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<form action="<?= PV::BASE_URL; ?>Setoran/tambah_pengeluaran" method="POST">
+    <div class="modal" id="modalPengeluaran">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title text-white">Pengeluaran</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Jumlah</label>
+                                <input type="number" name="jumlah" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Jenis</label>
+                                <select class="form-control form-control-sm">
+                                    <option></option>
+                                    <?php
+                                    foreach ($data['jkeluar'] as $djk) { ?>
+                                        <option value="<?= $djk ?>"><?= $djk['nama'] ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-danger">Tambah</button>
                             </div>
                         </div>
                     </div>

@@ -6,7 +6,7 @@ class Afiliasi extends Controller
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[8])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[8]) && !in_array($this->userData['user_tipe'], PV::PRIV[5])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
