@@ -200,23 +200,24 @@ class Gudang_Barang extends Controller
             $mode = 'T';
             break;
          case 3:
-            // $set = "id = '" . $value . "'";
-            // $where_brand = "id = '" . $value_before . "'";
-            // $up = $this->db(0)->update('master_brand', $set, $where_brand);
-            // if ($up['errno'] <> 0) {
-            //    echo $up['error'];
-            //    exit();
-            // }
+            $where_brand = "id = '" . $value . "'";
+            $cek = $this->db(0)->get_where_row('master_brand', $where_brand);
+            if (isset($cek['nama'])) {
+               $set_m = "brand = '" . $cek['nama'] . "'";
+            } else {
+               echo "Not found brand-Code " . $value;
+               exit();
+            }
             $mode = 'B';
             break;
          case 4:
-            // $set = "id = '" . $value . "', code = '" . $parent . $value . "'";
-            // $where_brand = "code = '" . $parent . $value_before . "'";
-            // $up = $this->db(0)->update('master_model', $set, $where_brand);
-            // if ($up['errno'] <> 0) {
-            //    echo $up['error'];
-            //    exit();
-            // }
+            $set = "id = '" . $value . "', code = '" . $parent . $value . "'";
+            $where_brand = "code = '" . $parent . $value_before . "'";
+            $up = $this->db(0)->update('master_model', $set, $where_brand);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
             $mode = 'M';
             break;
       }
