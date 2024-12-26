@@ -50,7 +50,6 @@ class Stok_Transfer extends Controller
       $data['tujuan'] = $this->db(0)->get_where('toko', 'en = 1', 'id_toko');
       $cols = "id, code, CONCAT(brand,' ',model) as nama";
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
-      $data['barang_code'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'code');
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");
       $data['id'] = $id;
       $this->view(__CLASS__ . '/list_data', $data);

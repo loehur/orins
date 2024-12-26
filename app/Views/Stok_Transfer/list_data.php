@@ -20,7 +20,6 @@
                 <label>Tanggal</label><br>
                 <input type="date" name="tanggal" readonly class="text-center border-bottom border-0" value="<?= $d['tanggal'] ?>">
             </div>
-
         </div>
         <hr>
         <?php if ($d['cek'] == 0) { ?>
@@ -54,7 +53,7 @@
                         <?= $no ?>#
                     </td>
                     <td class="">
-                        <?= $data['barang_code'][$a['kode_barang']]['nama'] ?>
+                        <?= $data['barang'][$a['id_barang']]['nama'] ?>
                     </td>
                     <td class="">
                         <?= $a['sds'] == 0 ? "SDS-NO" : "SDS-YES" ?>
