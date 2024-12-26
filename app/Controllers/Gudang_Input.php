@@ -121,15 +121,15 @@ class Gudang_Input extends Controller
       $id_barang = $barang['id'];
       $h_beli = $barang['harga'];
 
-      $cols = 'ref,jenis,id_barang,kode_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
+      $cols = 'ref,jenis,id_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
 
       if ($sn == 1) {
-         $vals = "'" . $ref . "',0," . $id_barang . ",'" . $barang_ . "','" . $id_sumber . "',0," . $h_beli . ",1," . $sds . "," . $sn;
+         $vals = "'" . $ref . "',0," . $id_barang . ",'" . $id_sumber . "',0," . $h_beli . ",1," . $sds . "," . $sn;
          for ($x = 1; $x <= $qty; $x++) {
             $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
          }
       } else {
-         $vals = "'" . $ref . "',0," . $id_barang . ",'" . $barang_ . "','" . $id_sumber . "',0," . $h_beli . "," . $qty . "," . $sds . "," . $sn;
+         $vals = "'" . $ref . "',0," . $id_barang . ",'" . $id_sumber . "',0," . $h_beli . "," . $qty . "," . $sds . "," . $sn;
          $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       }
       echo $do['errno'] == 0 ? 0 : $do['error'];

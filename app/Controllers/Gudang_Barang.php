@@ -169,13 +169,7 @@ class Gudang_Barang extends Controller
 
    function update_code()
    {
-      //cek dulu
       $id = $_POST['id'];
-      //$count = $this->db(0)->count_where('master_mutasi', "kode_barang = '" . $id . "'");
-
-      echo "Under construction";
-      exit();
-
       $value = $_POST['value'];
       $col = $_POST['col'];
       $parent = $_POST['parent'];
@@ -184,19 +178,8 @@ class Gudang_Barang extends Controller
       $mode = "NON";
       switch ($col) {
          case 1:
-            //$where_grup = "id = '" . $value_before . "'";
-            // $set = "id = '" . $value . "'";
-            // $up = $this->db(0)->update('master_grup', $set, $where_grup);
-            // if ($up['errno'] <> 0) {
-            //    echo $up['error'];
-            //    exit();
-            // }
-
             $where_grup = "id = '" . $value . "'";
             $cek = $this->db(0)->get_where_row('master_grup', $where_grup);
-            print_r($cek);
-            exit();
-
             if (isset($cek['nama'])) {
                $set_m = "grup = '" . $cek['nama'] . "'";
             } else {
@@ -206,14 +189,6 @@ class Gudang_Barang extends Controller
             $mode = 'G';
             break;
          case 2:
-            // $set = "id = '" . $value . "'";
-            // $where_tipe = "id = '" . $value_before . "'";
-            // $up = $this->db(0)->update('master_tipe', $set, $where_tipe);
-            // if ($up['errno'] <> 0) {
-            //    echo $up['error'];
-            //    exit();
-            // }
-
             $where_tipe = "id = '" . $value . "'";
             $cek = $this->db(0)->get_where_row('master_tipe', $where_tipe);
             if (isset($cek['nama'])) {

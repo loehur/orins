@@ -87,11 +87,11 @@ $max_length = [2, 2, 2, 3];
                                             $no += 1;
                                             if ($i == 6) { ?>
                                                 <td class="p-0">
-                                                    <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 3) ?></span><br>
+                                                    <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['id'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 3) ?></span><br>
                                                 </td>
                                             <?php } else { ?>
                                                 <td class="p-0">
-                                                    <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['code'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 2) ?></span><br>
+                                                    <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['id'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 2) ?></span><br>
                                                 </td>
                                             <?php } ?>
                                         <?php
