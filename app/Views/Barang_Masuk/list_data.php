@@ -46,11 +46,11 @@
                         <?= $no ?>
                     </td>
                     <td class="">
-                        <?= $a['kode_barang'] ?>
+                        <?= $data['barang'][$a['id_barang']]['code'] ?>
                     </td>
                     <td class="">
-                        <?= $data['barang'][$a['kode_barang']]['nama'] ?>
-                        <?= $data['barang'][$a['kode_barang']]['product_name'] ?>
+                        <?= $data['barang'][$a['id_barang']]['nama'] ?>
+                        <?= $data['barang'][$a['id_barang']]['product_name'] ?>
                     </td>
                     <td class="text-end">
                         <?= $a['qty'] ?>

@@ -2,7 +2,7 @@
     <?php $total = 0 ?>
     <?php $total_masalah = 0 ?>
     <?php if (count($data['kas']) > 0) { ?>
-        <div class="p-2 ms-3 me-3 bg-white overflow-auto" style="height: 600px;">
+        <div class="p-2 ms-3 me-3 bg-white overflow-auto" style="max-height: 600px;">
             <div class="row mx-0">
                 <div class="col">
                     <table class="table table-sm text-sm">

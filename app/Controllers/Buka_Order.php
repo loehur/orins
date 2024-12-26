@@ -100,7 +100,7 @@ class Buka_Order extends Controller
       $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data['order_barang'] = $this->db(0)->get_where('master_mutasi', $whereBarang);
 
-      $data['barang'] = $this->db(0)->get('master_barang', 'code');
+      $data['barang'] = $this->db(0)->get('master_barang', 'id');
       $data['stok'] = $this->data('Barang')->stok_data_list($this->userData['id_toko']);
 
       $data_harga = $this->db(0)->get('produk_harga');
@@ -504,7 +504,7 @@ class Buka_Order extends Controller
 
    function add_barang($id_jenis_pelanggan, $price_locker = 0, $paket_ref = "", $id_sumber = 0, $margin_paket = 0, $paket_group = "")
    {
-      $barang_c = $_POST['kode'];
+      $id_barang = $_POST['kode'];
       $qty = $_POST['qty'];
       $sds = $_POST['sds'];
       $sn =  $_POST['sn'];
@@ -525,12 +525,11 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
-      $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $barang_c . "'");
-      $id_barang = $barang['id'];
+      $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $id_barang . "'");
       $harga = $barang['harga_' . $id_jenis_pelanggan];
 
-      $cols = 'jenis, jenis_target, id_barang, kode_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual, price_locker, paket_ref, paket_group, margin_paket';
-      $vals = "2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $barang_c . "'," . $id_sumber . "," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $margin_paket;
+      $cols = 'jenis, jenis_target, id_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual, price_locker, paket_ref, paket_group, margin_paket';
+      $vals = "2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $margin_paket;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
@@ -640,7 +639,7 @@ class Buka_Order extends Controller
       $code = $_POST['code_barang'];
       $harga = $_POST['harga'];
 
-      $where = "code = '" . $code . "'";
+      $where = "id = '" . $code . "'";
       $set = "harga_" . $id_pelanggan_jenis . " = " . $harga;
       $update = $this->db(0)->update("master_barang", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
@@ -807,21 +806,20 @@ class Buka_Order extends Controller
       $id_margin = [];
 
       if ($id_user_afiliasi == 0) {
-         $data['barang'] = $this->db(0)->get('master_barang', 'code');
+         $data['barang'] = $this->db(0)->get('master_barang', 'id');
          $data['order'] = $this->db(0)->get_where('order_data', $where_order);
          $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_barang);
          $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
 
          foreach ($data['mutasi'] as $dbr) {
             $id_sumber = $dbr['id_sumber'];
-            $barang_c = $dbr['kode_barang'];
+            $id_barang = $dbr['id_barang'];
 
             if ($dbr['ref'] <> '') {
                $id_karyawan = $dbr['cs_id'];
             }
 
             $qty = $dbr['qty'];
-            $sds = $dbr['sds'];
             $sn =  $dbr['sn'];
 
             if ($dbr['price_locker'] == 1) {
@@ -838,7 +836,7 @@ class Buka_Order extends Controller
             }
 
             if (strlen($dbr['paket_ref']) > 0) {
-               $db = $data['barang'][$barang_c];
+               $db = $data['barang'][$id_barang];
                if (isset($total_per_paket[$dbr['paket_ref']])) {
                   $total_per_paket[$dbr['paket_ref']] += ($db['harga_' . $id_pelanggan_jenis] * $dbr['qty']);
                } else {
@@ -910,11 +908,13 @@ class Buka_Order extends Controller
 
       if ($id_user_afiliasi == 0) {
          foreach ($data['mutasi'] as $dbr) {
-            $barang_c = $dbr['kode_barang'];
-            $harga = $this->db(0)->get_where_row('master_barang', "code ='" . $barang_c . "'")['harga_' . $id_pelanggan_jenis];
+            $id_barang = $dbr['id_barang'];
+            $barang = $this->db(0)->get_where_row('master_barang', "id ='" . $id_barang . "'");
+
+            $harga = $barang['harga_' . $id_pelanggan_jenis];
 
             if ($harga == 0) {
-               echo "Harga " . $barang_c . " belum ditentukan";
+               echo "Harga " . trim($barang['brand'] . " " . $barang['model']) . " belum ditentukan";
                exit();
             }
 

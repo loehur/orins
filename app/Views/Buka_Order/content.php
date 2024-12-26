@@ -330,7 +330,7 @@ $mgpaket = $data['margin_paket'];
                 <table class="table table-sm m-0 text-sm">
                     <?php foreach ($data['order_barang'] as $db) {
                         $total_item += 1;
-                        $dp = $data['barang'][$db['kode_barang']];
+                        $dp = $data['barang'][$db['id_barang']];
 
                         if ($db['price_locker'] == 1) {
                             $classKeyPrice = 'text-danger';
@@ -352,7 +352,7 @@ $mgpaket = $data['margin_paket'];
                             <td><?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?><br><?= $db['sn'] ?></td>
                             <td class="text-end">
                                 <?= number_format($db['qty']) ?>x<br>
-                                <b><span data-bs-toggle="modal" data-code="<?= $db['kode_barang'] ?>" data-jenis="<?= $db['jenis_target'] ?>" data-bs-target="#exampleModalPbarang" style="cursor: pointer;" class="tetapkanHargaBarang px-2">P</span></b>
+                                <b><span data-bs-toggle="modal" data-code="<?= $db['id_barang'] ?>" data-jenis="<?= $db['jenis_target'] ?>" data-bs-target="#exampleModalPbarang" style="cursor: pointer;" class="tetapkanHargaBarang px-2">P</span></b>
                                 <b><span data-bs-toggle="modal" data-id="<?= $db['id'] . "_" . $dp['harga_' . $id_pelanggan_jenis] ?>" data-bs-target="#modalDiskonBarang" style="cursor: pointer;" class="tetapkanDiskonBarang pe-2">D</span></b>
 
                                 <?php

@@ -390,7 +390,7 @@
                                             $user_id = $do['user_id'];
                                             $jumlah = $do['qty'];
                                             $id_pelanggan_jenis = $do['jenis_target'];
-                                            $dp = $data['barang'][$do['kode_barang']];
+                                            $dp = $data['barang'][$do['id_barang']];
                                             $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
                                             $bill -= ($do['diskon'] * $jumlah);
 

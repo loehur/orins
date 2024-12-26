@@ -99,7 +99,7 @@ class Afiliasi extends Controller
       $data['divisi'] = $this->db(0)->get('divisi', 'id_divisi');
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
-      $data['barang'] = $this->db(0)->get('master_barang', 'code');
+      $data['barang'] = $this->db(0)->get('master_barang', 'id');
 
       $where = "ref = '" . $ref . "'";
       $data['order'] = [];

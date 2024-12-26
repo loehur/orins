@@ -18,7 +18,7 @@
                 <th>Stok</th>
             </thead>
             <?php foreach ($data['barang'] as $a) {
-                if (isset($data['stok'][$a['code']])) { ?>
+                if (isset($data['stok'][$a['id']])) { ?>
                     <tr>
                         <td class="">
                             <?= strtoupper($a['grup'] . " " . $a['tipe']) ?>
@@ -36,7 +36,7 @@
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
                         </td>
                         <td>
-                            <?= $data['stok'][$a['code']]['qty'] ?>
+                            <?= $data['stok'][$a['id']]['qty'] ?>
                         </td>
                     </tr>
             <?php }

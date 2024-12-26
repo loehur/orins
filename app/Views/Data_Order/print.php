@@ -248,7 +248,7 @@
                 $akum_diskon = $do['diskon'];
                 $no += 1;
                 $jumlah = $do['qty'];
-                $dp = $data['barang'][$do['kode_barang']];
+                $dp = $data['barang'][$do['id_barang']];
                 $total += (($jumlah * $do['harga_jual'])); ?>
                 <tr style="border-bottom: 1px solid silver;">
                     <td style="text-align: right; vertical-align:text-top; padding-right:5px" valign="top">

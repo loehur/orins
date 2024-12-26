@@ -53,7 +53,7 @@ class Data_Operasi extends Controller
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $data['saldo'] = $this->data("Saldo")->deposit($parse);
       $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
-      $data['barang'] = $this->db(0)->get('master_barang', 'code');
+      $data['barang'] = $this->db(0)->get('master_barang', 'id');
 
       if ($parse_2 < 2023) {
          $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0";

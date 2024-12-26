@@ -51,7 +51,7 @@ class Barang_Masuk extends Controller
       $data['toko'] = $this->db(0)->get_where('toko', "en = 1", "id_toko");
 
       $cols = "id, code, CONCAT(brand,' ',model) as nama, product_name";
-      $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'code');
+      $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
 
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");
       $this->view(__CLASS__ . '/list_data', $data);
