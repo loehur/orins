@@ -169,7 +169,6 @@ class Gudang_Barang extends Controller
 
    function update_code()
    {
-      $id = $_POST['id'];
       $value = $_POST['value'];
       $col = $_POST['col'];
       $parent = $_POST['parent'];
@@ -181,7 +180,7 @@ class Gudang_Barang extends Controller
             $where_grup = "id = '" . $value . "'";
             $cek = $this->db(0)->get_where_row('master_grup', $where_grup);
             if (isset($cek['nama'])) {
-               $set_m = "grup = '" . $cek['nama'] . "'";
+               $set_m = ", grup = '" . $cek['nama'] . "'";
             } else {
                echo "Not found grup-code " . $value;
                exit();
@@ -192,7 +191,7 @@ class Gudang_Barang extends Controller
             $where_tipe = "id = '" . $value . "'";
             $cek = $this->db(0)->get_where_row('master_tipe', $where_tipe);
             if (isset($cek['nama'])) {
-               $set_m = "tipe = '" . $cek['nama'] . "'";
+               $set_m = ", tipe = '" . $cek['nama'] . "'";
             } else {
                echo "Not found tipe-Code " . $value;
                exit();
@@ -203,7 +202,7 @@ class Gudang_Barang extends Controller
             $where_brand = "id = '" . $value . "'";
             $cek = $this->db(0)->get_where_row('master_brand', $where_brand);
             if (isset($cek['nama'])) {
-               $set_m = "brand = '" . $cek['nama'] . "'";
+               $set_m = ", brand = '" . $cek['nama'] . "'";
             } else {
                echo "Not found brand-Code " . $value;
                exit();
@@ -218,6 +217,7 @@ class Gudang_Barang extends Controller
                echo $up['error'];
                exit();
             }
+            $set_m = "";
             $mode = 'M';
             break;
       }
@@ -233,19 +233,11 @@ class Gudang_Barang extends Controller
             exit();
          } else {
             $where = "id = '" . $d['id'] . "'";
-            $set = "code_s = '" . $new_code_s . "', code = '" . $new_code . "'," . $set_m;
+            $set = "code_s = '" . $new_code_s . "', code = '" . $new_code . "'" . $set_m;
             $up = $this->db(0)->update('master_barang', $set, $where);
             if ($up['errno'] <> 0) {
                echo $up['error'];
                exit();
-            } else {
-               $where = "id_barang = '" . $d['id'] . "'";
-               $set = "kode_barang = '" . $new_code_s . "'";
-               $up = $this->db(0)->update('master_mutasi', $set, $where);
-               if ($up['errno'] <> 0) {
-                  echo $up['error'];
-                  exit();
-               }
             }
          }
       }
