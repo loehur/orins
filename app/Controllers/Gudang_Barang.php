@@ -170,6 +170,7 @@ class Gudang_Barang extends Controller
    function update_code()
    {
       $value = $_POST['value'];
+      $id = $_POST['id'];
       $col = $_POST['col'];
       $parent = $_POST['parent'];
       $value_before = $_POST['value_before'];
@@ -222,7 +223,7 @@ class Gudang_Barang extends Controller
             break;
       }
 
-      $data = $this->db(0)->get_where('master_barang', "code LIKE '" . $parent . $value_before . "%' AND code_s LIKE '%" . $mode . "-" . $value_before . "#%'");
+      $data = $this->db(0)->get_where('master_barang', "id = '" . $id . "'");
       foreach ($data as $d) {
          $new_code_s = str_replace($mode . "-" . $value_before . "#", $mode . "-" . $value . "#", $d['code_s']);
          $new_code = str_replace(['G-', 'T-', 'B-', 'M-', '#'], '', $new_code_s);
