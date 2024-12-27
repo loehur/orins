@@ -215,12 +215,20 @@
                                 $st_setor = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
                                 break;
                         }
+
+                        if (isset($data['keluar'][$set['ref_setoran']]['count'])) {
+                            $count_keluar = $data['keluar'][$set['ref_setoran']]['count'];
+                            $jumlah_keluar = $data['keluar'][$set['ref_setoran']]['jumlah'];
+                        } else {
+                            $count_keluar = 0;
+                            $jumlah_keluar = 0;
+                        }
                     ?>
                         <tr>
                             <td class="text-primary align-middle" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
-                            <td class="text-end"><?= $set['count'] ?> Trx</td>
+                            <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
                             <td><?= $set['ref_setoran'] ?></td>
-                            <td class="text-end">Rp<?= number_format($set['jumlah']) ?></td>
+                            <td class="text-end">Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?></td>
                             <td style="width: 1px; white-space: nowrap;"><?= $st_setor ?></td>
                         </tr>
                     <?php } ?>

@@ -45,7 +45,11 @@ class Setoran extends Controller
 
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
       $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 5";
-      $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
+      $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
+
+      $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND jenis_transaksi = 3 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 5";
+      $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
 
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
       $this->view($this->v_content, $data);
@@ -58,7 +62,19 @@ class Setoran extends Controller
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = ''";
       $update = $this->db(0)->update("kas", $set, $where);
-      echo $update['errno'];
+      if ($update['errno'] <> 0) {
+         echo $update['error'];
+         exit();
+      } else {
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_transaksi = 3 AND ref_setoran = ''";
+         $update = $this->db(0)->update("kas", $set, $where);
+         if ($update['errno'] <> 0) {
+            echo $update['error'];
+            exit();
+         }
+      }
+
+      echo 0;
    }
 
    function setor_masalah()
@@ -77,6 +93,11 @@ class Setoran extends Controller
 
       $where = "metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '" . $ref_setor . "' ORDER BY id_kas DESC, id_client ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
+
+      $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
+      $data['pengeluaran'] = [];
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '" . $ref_setor . "' ORDER BY id_kas DESC";
+      $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
 
       $this->view(__CLASS__ . "/cek", $data);
    }
@@ -99,7 +120,7 @@ class Setoran extends Controller
       $note = $_POST['note'];
 
       $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali";
-      $vals = $this->userData['id_toko'] . ",3,2,'" . $jenis . "',1,0," . $jumlah . "," . $this->userData['id_user'] . ",0,'" . $note . "','',0,0";
+      $vals = $this->userData['id_toko'] . ",3,2,'" . $jenis . "',1,1," . $jumlah . "," . $this->userData['id_user'] . ",0,'" . $note . "','',0,0";
 
       $do = $this->db(0)->insertCols('kas', $cols, $vals);
       if ($do['errno'] <> 0) {

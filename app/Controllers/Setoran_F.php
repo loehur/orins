@@ -35,9 +35,17 @@ class Setoran_F extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran = 0 GROUP BY id_toko, ref_setoran, status_setoran";
       $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
 
+      $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND jenis_transaksi = 3 AND ref_setoran <> '' AND status_setoran = 0 GROUP BY ref_setoran, status_setoran";
+      $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
+
       $cols = "id_toko, ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
       $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY id_toko, ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
       $data['setor_done'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
+
+      $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND jenis_transaksi = 3 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
+      $data['keluar_done'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
 
       $this->view($this->v_content, $data);
    }
@@ -58,6 +66,11 @@ class Setoran_F extends Controller
 
       $where = "metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '" . $ref_setor . "' ORDER BY id_kas DESC, id_client ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
+
+      $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
+      $data['pengeluaran'] = [];
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '" . $ref_setor . "' ORDER BY id_kas DESC";
+      $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
 
       $this->view(__CLASS__ . "/cek", $data);
    }

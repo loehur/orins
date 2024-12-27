@@ -11,15 +11,20 @@
                 <div class="col">
                     <table class="table table-sm mb-2 ms-2">
                         <?php foreach ($data['setor'] as $set) {
-                            $time = strtotime(substr($set['ref_setoran'], 0, 8));
-                            $setor = date('d/m/Y', $time);
-                        ?>
+                            if (isset($data['keluar'][$set['ref_setoran']]['count'])) {
+                                $count_keluar = $data['keluar'][$set['ref_setoran']]['count'];
+                                $jumlah_keluar = $data['keluar'][$set['ref_setoran']]['jumlah'];
+                            } else {
+                                $count_keluar = 0;
+                                $jumlah_keluar = 0;
+                            } ?>
+
                             <tr>
                                 <td class="text-primary align-middle" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
                                 <td class="text-success"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $set['id_toko']) ?></td>
-                                <td><?= $setor ?><small class="text-secondary">-<?= substr($set['ref_setoran'], 8) ?></small></td>
-                                <td><?= $set['count'] ?> Transaksi</td>
-                                <td class="text-end">Rp<?= number_format($set['jumlah']) ?></td>
+                                <td><?= $set['ref_setoran'] ?></small></td>
+                                <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
+                                <td class="text-end">Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?></td>
                                 <td style="width: 80px;">
                                     <button data-id="<?= $set['ref_setoran'] ?>" data-val="1" class="verify btn btn-sm shadow-sm btn-primary bg-gradient rounded-pill">Verify</button>
                                 </td>
@@ -43,6 +48,14 @@
             <div class="col">
                 <table class="table table-sm mb-2 ms-2">
                     <?php foreach ($data['setor_done'] as $set) {
+                        if (isset($data['keluar_done'][$set['ref_setoran']]['count'])) {
+                            $count_keluar = $data['keluar_done'][$set['ref_setoran']]['count'];
+                            $jumlah_keluar = $data['keluar_done'][$set['ref_setoran']]['jumlah'];
+                        } else {
+                            $count_keluar = 0;
+                            $jumlah_keluar = 0;
+                        }
+
                         $st_setor = "";
                         switch ($set['status_setoran']) {
                             case 0:
@@ -60,11 +73,11 @@
                         $setor = date('d/m/Y', $time);
                     ?>
                         <tr>
-                            <td class="text-primary" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
+                            <td class="text-primary align-middle" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
                             <td class="text-success"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $set['id_toko']) ?></td>
-                            <td><?= $setor ?><small class="text-secondary">-<?= substr($set['ref_setoran'], 8) ?></small></td>
-                            <td><?= $set['count'] ?> Transaksi</td>
-                            <td class="text-end">Rp<?= number_format($set['jumlah']) ?></td>
+                            <td><?= $set['ref_setoran'] ?></small></td>
+                            <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
+                            <td class="text-end">Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?></td>
                             <td style="width: 80px;"><?= $st_setor ?></td>
                         </tr>
                     <?php } ?>
