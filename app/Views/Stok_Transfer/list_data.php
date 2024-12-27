@@ -24,13 +24,9 @@
         <hr>
         <?php if ($d['cek'] == 0) { ?>
             <div class="row mb-2 mx-0">
-                <div class="col-auto text-center px-1 mb-2">
-                    <label>Kode Barang</label><br>
-                    <input readonly name="barang_" id="barang_c" required class="text-center rounded border" style="text-transform: uppercase;">
-                </div>
                 <div class="col px-1 mb-2">
                     <label>Barang</label><br>
-                    <select name="barang" class="ac tize border-0 w-100" required id="barang">
+                    <select name="barang" class="tize border-0 w-100" required id="barang">
                         <option></option>
                         <?php foreach ($data['barang'] as $br) { ?>
                             <option value="<?= $br['id'] ?>"><?= $br['nama'] ?></option>
@@ -128,7 +124,7 @@
     $("#barang").change(function() {
         var get = $(this).val();
         if (typeof barang[get] != "undefined") {
-            var val = barang[get].code;
+            var val = barang[get].id;
             $("#" + this.id + "_c").val(val);
             $('#stok_data').load('<?= PV::BASE_URL ?>Stok_Transfer/stok_data/' + val + '/' + '<?= $d['id'] ?>');
         } else {

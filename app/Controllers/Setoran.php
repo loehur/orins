@@ -37,6 +37,9 @@ class Setoran extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
 
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '' ORDER BY id_kas DESC";
+      $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
+
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND status_setoran = 2 ORDER BY id_kas DESC, id_client ASC";
       $data['kas_reject'] = $this->db(0)->get_where('kas', $where);
 
@@ -44,7 +47,7 @@ class Setoran extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 5";
       $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
 
-      $data['jkeluar'] = $this->db(0)->get_where('pengeluaran_jenis', 'id_toko = ' . $this->userData['id_toko']);
+      $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
       $this->view($this->v_content, $data);
    }
 
@@ -87,5 +90,22 @@ class Setoran extends Controller
       $set = "status_mutasi = 2, note_batal = '" . $reason . "'";
       $update = $this->db(0)->update("kas", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+   }
+
+   function tambah_pengeluaran()
+   {
+      $jumlah = $_POST['jumlah'];
+      $jenis = $_POST['jenis'];
+      $note = $_POST['note'];
+
+      $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali";
+      $vals = $this->userData['id_toko'] . ",3,2,'" . $jenis . "',1,0," . $jumlah . "," . $this->userData['id_user'] . ",0,'" . $note . "','',0,0";
+
+      $do = $this->db(0)->insertCols('kas', $cols, $vals);
+      if ($do['errno'] <> 0) {
+         echo $do['error'];
+      } else {
+         echo 0;
+      }
    }
 }

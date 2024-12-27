@@ -183,7 +183,7 @@
                                     <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
                                         <tr data-id="<?= $id_pelanggan ?>" class="cekPLG" style="cursor: pointer;">
                                             <td class="p-1">
-                                                <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-primary text-nowrap"><b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b></span> #<?= substr($id_pelanggan, -2) ?></small>
+                                                <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-purple text-nowrap"><b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b></span> #<?= substr($id_pelanggan, -2) ?></small>
                                                 <br>
                                                 <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
                                             </td>
@@ -193,7 +193,7 @@
                                                     <small>
                                                         &nbsp;
                                                         <?php if ($ambil_all[$ref] == true) { ?>
-                                                            <i class="fa-solid fa-circle-check text-purple"></i>
+                                                            <i class="fa-solid fa-circle-check text-primary"></i>
                                                         <?php } else { ?>
                                                             <i class="fa-regular fa-circle"></i>
                                                         <?php } ?>

@@ -54,6 +54,60 @@
         </div>
     <?php } ?>
 
+
+    <?php if (count($data['pengeluaran']) > 0) { ?>
+        <div class="p-2 ms-3 me-3 bg-white overflow-auto" style="max-height: 600px;">
+            <div class="row mx-0">
+                <div class="col">
+                    <table class="table table-sm text-sm">
+                        <tr>
+                            <th colspan="10">Pengeluaran</th>
+                        </tr>
+                        <?php
+                        $no = 0;
+                        foreach ($data['pengeluaran'] as $a) {
+                            $no += 1;
+
+                            $client = $a['id_client'];
+                            $jumlah = $a['jumlah'];
+                            if ($a['status_mutasi'] == 1) {
+                                $total += $jumlah;
+                            }
+                            $pelanggan = "Non";
+                            foreach ($data['pelanggan'] as $dp) {
+                                if ($dp['id_pelanggan'] == $client) {
+                                    $pelanggan = $dp['nama'];
+                                }
+                            }
+
+                            $ref = $a['ref_transaksi'];
+                            if ($a['jenis_transaksi'] == 2) {
+                                $ref = "Topup Deposit";
+                            }
+
+                        ?>
+                            <tr class="<?= ($a['status_mutasi'] == 2) ? 'text-secondary' : '' ?>">
+                                <td align="right">#<?= $a['id_kas'] ?></td>
+                                <td><?= strtoupper($pelanggan) ?></td>
+                                <td><?= $ref ?></td>
+                                <td><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></td>
+                                <td align="right"><?= number_format($jumlah) ?></td>
+                                <td>
+                                    <?php if ($a['status_mutasi'] == 1) { ?>
+                                        <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="px-2 text-decoration-none text-danger cancel rounded" data-id="<?= $a['id_kas'] ?>" href="#"><i class="fa-solid fa-square-xmark"></i></a>
+                                    <?php } else { ?>
+                                        <small class="text-primary"><?= $a['note_batal'] ?></small>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    <?php } ?>
+
     <?php if ($total > 0) { ?>
         <div class="pe-2 pb-0 ms-3 me-3 bg-white">
             <div class="row">
@@ -232,20 +286,26 @@
                 </div>
                 <div class="modal-body">
                     <div class="container">
-                        <div class="row mb-3">
+                        <div class="row mb-2">
                             <div class="col">
                                 <label class="form-label">Jumlah</label>
                                 <input type="number" name="jumlah" class="form-control form-control-sm" required>
                             </div>
                             <div class="col">
                                 <label class="form-label">Jenis</label>
-                                <select class="form-control form-control-sm">
+                                <select name="jenis" class="form-control form-control-sm" required>
                                     <option></option>
                                     <?php
                                     foreach ($data['jkeluar'] as $djk) { ?>
-                                        <option value="<?= $djk ?>"><?= $djk['nama'] ?></option>
+                                        <option value="<?= $djk['id'] ?>"><?= $djk['nama'] ?></option>
                                     <?php } ?>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Keterangan</label>
+                                <input type="text" name="note" class="form-control form-control-sm" required>
                             </div>
                         </div>
                         <div class="row mb-2">
