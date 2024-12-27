@@ -7,7 +7,7 @@
                 <div class="col">
                     <table class="table table-sm text-sm">
                         <tr>
-                            <th colspan="10">Penjualan Tunai</th>
+                            <th colspan="10" class="text-success">Penjualan Tunai</th>
                         </tr>
                         <?php
                         $no = 0;
@@ -34,9 +34,9 @@
                         ?>
                             <tr class="<?= ($a['status_mutasi'] == 2) ? 'text-secondary' : '' ?>">
                                 <td align="right">#<?= $a['id_kas'] ?></td>
+                                <td><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></td>
                                 <td><?= strtoupper($pelanggan) ?></td>
                                 <td><?= $ref ?></td>
-                                <td><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></td>
                                 <td align="right"><?= number_format($jumlah) ?></td>
                                 <td>
                                     <?php if ($a['status_mutasi'] == 1) { ?>
@@ -54,43 +54,31 @@
         </div>
     <?php } ?>
 
-
+    <?php $total_pengeluaran = 0; ?>
     <?php if (count($data['pengeluaran']) > 0) { ?>
         <div class="p-2 ms-3 me-3 bg-white overflow-auto" style="max-height: 600px;">
             <div class="row mx-0">
                 <div class="col">
                     <table class="table table-sm text-sm">
                         <tr>
-                            <th colspan="10">Pengeluaran</th>
+                            <th colspan="10" class="text-danger">Pengeluaran</th>
                         </tr>
                         <?php
                         $no = 0;
                         foreach ($data['pengeluaran'] as $a) {
                             $no += 1;
 
-                            $client = $a['id_client'];
                             $jumlah = $a['jumlah'];
-                            if ($a['status_mutasi'] == 1) {
-                                $total += $jumlah;
-                            }
-                            $pelanggan = "Non";
-                            foreach ($data['pelanggan'] as $dp) {
-                                if ($dp['id_pelanggan'] == $client) {
-                                    $pelanggan = $dp['nama'];
-                                }
-                            }
 
+                            $total_pengeluaran += $jumlah;
                             $ref = $a['ref_transaksi'];
-                            if ($a['jenis_transaksi'] == 2) {
-                                $ref = "Topup Deposit";
-                            }
-
+                            $jenis = $data['jkeluar'][$ref]['nama'];
                         ?>
                             <tr class="<?= ($a['status_mutasi'] == 2) ? 'text-secondary' : '' ?>">
                                 <td align="right">#<?= $a['id_kas'] ?></td>
-                                <td><?= strtoupper($pelanggan) ?></td>
-                                <td><?= $ref ?></td>
                                 <td><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></td>
+                                <td><?= strtoupper($jenis) ?></td>
+                                <td><?= strtoupper($a['note']) ?></td>
                                 <td align="right"><?= number_format($jumlah) ?></td>
                                 <td>
                                     <?php if ($a['status_mutasi'] == 1) { ?>
@@ -122,11 +110,11 @@
                             <td class="text-end">
                                 <a data-bs-toggle="modal" data-bs-target="#modalPengeluaran" class="text-decoration-none" data-id="<?= $a['id_kas'] ?>" href="#"><i class="fa-solid text-danger fa-square-plus"></i> Pengeluaran</a>
                             </td>
-                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total) ?></b></td>
+                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total_pengeluaran) ?></b></td>
                         </tr>
                         <tr>
                             <td class="text-end">Total</td>
-                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total) ?></b></td>
+                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total - $total_pengeluaran) ?></b></td>
                         </tr>
                     </table>
                 </div>

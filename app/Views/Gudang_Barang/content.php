@@ -123,7 +123,7 @@ $max_length = [2, 2, 2, 3];
                             <?php } ?>
                         </td>
                         <td>
-                            <?= isset($data['stok'][$a['code']]) ? $data['stok'][$a['code']]['qty'] : 0 ?>
+                            <?= isset($data['stok'][$a['id']]) ? $data['stok'][$a['id']]['qty'] : 0 ?>
                         </td>
                     </tr>
                 <?php } ?>
