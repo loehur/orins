@@ -91,9 +91,8 @@ class Stok_Transfer extends Controller
 
    function add_mutasi($ref)
    {
-      $barang_c = $_POST['kode'];
-      $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $barang_c . "'");
-      $id_barang = $barang['id'];
+      $id_barang = $_POST['kode'];
+      $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $id_barang . "'");
 
       $head = $this->db(0)->get_where_row('master_input', "id = '" . $ref . "'");
       $target = $head['id_target'];
@@ -107,15 +106,15 @@ class Stok_Transfer extends Controller
 
       $id_sumber = 0;
 
-      $cek = $this->data('Barang')->cek($barang_c, 0, $sn, $sds, $qty);
+      $cek = $this->data('Barang')->cek($id_barang, 0, $sn, $sds, $qty);
       if ($cek == false) {
          echo "Stok ter-update tidak tersedia";
          exit();
       }
 
-      $cols = 'ref, jenis, id_barang, kode_barang, id_sumber, id_target, qty, sds, sn, sn_c';
+      $cols = 'ref, jenis, id_barang, id_sumber, id_target, qty, sds, sn, sn_c';
 
-      $vals = "'" . $ref . "',1," . $id_barang . ",'" . $barang_c . "','" . $id_sumber . "','" . $target . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c;
+      $vals = "'" . $ref . "',1," . $id_barang . ",'" . $id_sumber . "','" . $target . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }

@@ -4,7 +4,7 @@
             <div class="col-auto px-1 mb-2 text-center">
                 <label class="fw-bold">SDS</label><br>
                 <input type="hidden" name="sds" value="<?= $d['sds'] ?>">
-                <input type="hidden" name="kode" value="<?= $d['kode_barang'] ?>">
+                <input type="hidden" name="kode" value="<?= $d['id_barang'] ?>">
                 <input name="sds_" value="<?= $d['sds'] == 1 ? "YES" : "NO" ?>" readonly class="border-bottom border-0 text-center">
             </div>
             <div class="col px-1 mb-2">

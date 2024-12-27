@@ -31,14 +31,14 @@ class Barang_Riwayat extends Controller
 
    public function content()
    {
-      $data['barang'] = $this->db(0)->get_where('master_barang', "sp = 0", 'code');
+      $data['barang'] = $this->db(0)->get_where('master_barang', "sp = 0", 'id');
       $this->view(__CLASS__ . '/content', $data);
    }
 
    function data($kode)
    {
-      $data['barang'] = $this->db(0)->get_where_row('master_barang', "sp = 0 AND code = '" . $kode . "'");
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "kode_barang = '" . $kode . "' AND (id_sumber = 0 OR id_target = 0)");
+      $data['barang'] = $this->db(0)->get_where_row('master_barang', "sp = 0 AND id = '" . $kode . "'");
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id = '" . $kode . "' AND (id_sumber = 0 OR id_target = 0)");
       $this->view(__CLASS__ . '/data', $data);
    }
 }

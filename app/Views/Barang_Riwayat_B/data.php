@@ -1,7 +1,7 @@
     <div class="overflow-auto" style="height: 600px;">
         <table class="table table-sm text-sm">
             <?php foreach ($data['mutasi'] as $d) {
-                $dp = $data['barang'][$d['kode_barang']] ?>
+                $dp = $data['barang'][$d['id_barang']] ?>
                 <tr>
                     <td class="">#<?= $d['id'] ?></td>
                     <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
