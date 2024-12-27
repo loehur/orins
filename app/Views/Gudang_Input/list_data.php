@@ -67,34 +67,43 @@
 
         <table class="table table-sm mx-1">
             <?php
-            $no = 0;
-            foreach ($data['mutasi'] as $a) {
-                $no++; ?>
-                <tr id="tr<?= $a['id'] ?>">
-                    <td class="text-end">
-                        #<?= $a['id'] ?></small> <?= $no ?>. <small>
-                    </td>
-                    <td class="">
-                        <?= $data['barang'][$a['id_barang']]['nama'] ?>
-                    </td>
-                    <td class="text-end">
-                        <?= $a['qty'] ?>
-                    </td>
-                    <td>
-                        <?php if ($a['sn_c'] == 1 && $a['stat'] == 0) { ?>
-                            <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['id_barang'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-no="<?= $no ?>" data-tb="master_mutasi" class="cell_edit r<?= $no ?>"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
-                        <?php } else { ?>
-                            <?= $a['sn'] ?>
-                        <?php } ?>
-                    </td>
-                    <td class="align-middle text-end">
-                        <?php if ($a['stat'] == 0) { ?>
-                            <span data-id="<?= $a['id'] ?>" data-primary="id" data-tb="master_mutasi" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>
-                        <?php } else { ?>
-                            <span class="text-success"><i class="fa-solid fa-check"></i></span>
-                        <?php } ?>
-                    </td>
-                </tr>
+            $nos = 0;
+            foreach ($data['mutasi'] as $id_) {
+                $nos += 1;
+                $no = 0;
+                foreach ($id_ as $a) {
+                    $no++; ?>
+                    <tr id="tr<?= $a['id'] ?>">
+                        <td class="text-end text-sm text-secondary">
+                            #<?= $a['id'] ?>
+                        </td>
+                        <td class="text-end fw-bold"><?= $no == 1 ? $nos . "." : ""; ?></td>
+                        <td class="text-end">
+                            <?= $no ?>.
+                        </td>
+                        <td class="">
+                            <?= $data['barang'][$a['id_barang']]['nama'] ?>
+                        </td>
+                        <td class="text-end">
+                            <?= $a['qty'] ?>
+                        </td>
+                        <td>
+                            <?php if ($a['sn_c'] == 1 && $a['stat'] == 0) { ?>
+                                <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['id_barang'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-no="<?= $no ?>" data-tb="master_mutasi" class="cell_edit r<?= $no ?>"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
+                            <?php } else { ?>
+                                <?= $a['sn'] ?>
+                            <?php } ?>
+                        </td>
+                        <td class="align-middle text-end">
+                            <?php if ($a['stat'] == 0) { ?>
+                                <span data-id="<?= $a['id'] ?>" data-primary="id" data-tb="master_mutasi" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>
+                            <?php } else { ?>
+                                <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                <?php }
+                ?>
             <?php } ?>
         </table>
     </div>
