@@ -216,7 +216,7 @@ class Buka_Order extends Controller
          }
 
          if (strlen($dm['paket_ref']) > 0) {
-            $db = $data['barang'][$dm['kode_barang']];
+            $db = $data['barang'][$dm['id_barang']];
             if (isset($total_per_paket[$dm['paket_ref']])) {
                $total_per_paket[$dm['paket_ref']] += ($db['harga_' . $parse] * $dm['qty']);
             } else {
