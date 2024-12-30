@@ -40,12 +40,11 @@ class Setoran_F extends Controller
       $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
 
       $cols = "id_toko, ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY id_toko, ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY id_toko, ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 5";
       $data['setor_done'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
 
-      $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND jenis_transaksi = 3 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
-      $data['keluar_done'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
+      $whereSplit = "id_toko = " . $this->userData['id_toko'] . " AND st = 0";
+      $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
       $this->view($this->v_content, $data);
    }
@@ -54,7 +53,7 @@ class Setoran_F extends Controller
    {
       $ref = $_POST['ref'];
       $set = "status_setoran = " . $status . ", id_finance_setoran = " . $this->userData['id_user'];
-      $where = "ref_setoran = '" . $ref . "'";
+      $where = "ref_setoran = '" . $ref . "' AND jenis_transaksi <> 3";
       $update = $this->db(0)->update("kas", $set, $where);
       echo $update['errno'];
    }

@@ -17,14 +17,40 @@
                             } else {
                                 $count_keluar = 0;
                                 $jumlah_keluar = 0;
-                            } ?>
+                            }
+                            $totalSetor = $set['jumlah'] - $jumlah_keluar;
+                        ?>
 
                             <tr>
-                                <td class="text-primary align-middle" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
+                                <td class="text-primary align-top" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid mt-1 fa-list-check"></i></small></span></td>
                                 <td class="text-success"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $set['id_toko']) ?></td>
                                 <td><?= $set['ref_setoran'] ?></small></td>
                                 <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
-                                <td class="text-end">Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?></td>
+                                <td class="text-end">
+                                    <?php
+                                    if (isset($data['split'][$set['ref_setoran']])) {
+                                        $ds = $data['split'][$set['ref_setoran']];
+                                        $st_slip = "";
+                                        switch ($ds['st']) {
+                                            case 0:
+                                                $st_slip = "<span class='text-warning'><i class='fa-regular fa-circle'></i> Checking</span>";
+                                                break;
+                                            case 1:
+                                                $st_slip = "<span class='text-success'><i class='fa-solid fa-circle-check'></i> Verified</span>";
+                                                break;
+                                            default:
+                                                $st_slip = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
+                                                break;
+                                        } ?>
+                                        Setor Bank <span class="text-success">Rp<?= number_format($totalSetor - $ds['jumlah']) ?></span><br>
+                                        <div class="text-sm">
+                                            Uang Kecil <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
+                                            Total Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?>
+                                        </div>
+                                    <?php } else { ?>
+                                        Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?>
+                                    <?php } ?>
+                                </td>
                                 <td style="width: 80px;">
                                     <button data-id="<?= $set['ref_setoran'] ?>" data-val="1" class="verify btn btn-sm shadow-sm btn-primary bg-gradient rounded-pill">Verify</button>
                                 </td>
@@ -41,16 +67,16 @@
     <div class="pt-2 pe-2 pb-0 ms-3 mt-3 me-3 bg-white">
         <div class="row border-bottom mb-2">
             <div class="col ms-2">
-                <span class="text-purple">Setoran Kasir Terkonfirmasi</span> <small>(Last 20)</small>
+                <span class="text-purple">Setoran Kasir Terkonfirmasi</span>
             </div>
         </div>
         <div class="row">
             <div class="col">
                 <table class="table table-sm mb-2 ms-2">
                     <?php foreach ($data['setor_done'] as $set) {
-                        if (isset($data['keluar_done'][$set['ref_setoran']]['count'])) {
-                            $count_keluar = $data['keluar_done'][$set['ref_setoran']]['count'];
-                            $jumlah_keluar = $data['keluar_done'][$set['ref_setoran']]['jumlah'];
+                        if (isset($data['keluar'][$set['ref_setoran']]['count'])) {
+                            $count_keluar = $data['keluar'][$set['ref_setoran']]['count'];
+                            $jumlah_keluar = $data['keluar'][$set['ref_setoran']]['jumlah'];
                         } else {
                             $count_keluar = 0;
                             $jumlah_keluar = 0;

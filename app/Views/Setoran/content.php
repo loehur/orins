@@ -156,7 +156,6 @@
                                     $pelanggan = $dp['nama'];
                                 }
                             }
-
                         ?>
                             <tr class="<?= ($a['status_mutasi'] == 2) ? 'text-secondary' : '' ?>">
                                 <td align="right">#<?= $a['id_kas'] ?></td>
@@ -223,13 +222,49 @@
                             $count_keluar = 0;
                             $jumlah_keluar = 0;
                         }
+                        $totalSetor = $set['jumlah'] - $jumlah_keluar;
                     ?>
                         <tr>
-                            <td class="text-primary align-middle" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
+                            <td class="text-primary" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check mt-1"></i></small></span></td>
                             <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
                             <td><?= $set['ref_setoran'] ?></td>
-                            <td class="text-end">Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?></td>
-                            <td style="width: 1px; white-space: nowrap;"><?= $st_setor ?></td>
+                            <td class="text-end">
+                                <?php if ($set['status_setoran'] == 0) { ?>
+                                    <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= $totalSetor ?>)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
+                                <?php } ?>
+                            </td>
+                            <td class="text-end">
+                                Rp<?= number_format($totalSetor) ?><br>
+                                <?php
+                                if (isset($data['split'][$set['ref_setoran']])) {
+                                    $ds = $data['split'][$set['ref_setoran']];
+
+                                    $st_slip = "";
+                                    switch ($ds['st']) {
+                                        case 0:
+                                            $st_slip = "<span class='text-warning'><i class='fa-regular fa-circle'></i> Checking</span>";
+                                            break;
+                                        case 1:
+                                            $st_slip = "<span class='text-success'><i class='fa-solid fa-circle-check'></i> Verified</span>";
+                                            break;
+                                        default:
+                                            $st_slip = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
+                                            break;
+                                    }
+                                ?>
+                                    Uang Kecil: <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?><br>
+                                    </span>Setor Bank: <span class="text-success"><?= number_format($totalSetor - $ds['jumlah']) ?></span>
+                                <?php } ?>
+                            </td>
+                            <td style="width: 1px; white-space: nowrap;">
+                                <?php if (!isset($data['split'][$set['ref_setoran']])) { ?>
+                                    <?= $st_setor ?>
+                                <?php } else { ?>
+                                    <br>
+                                    <?= $st_slip ?><br>
+                                    <?= $st_setor ?>
+                                <?php } ?>
+                            </td>
                         </tr>
                     <?php } ?>
                 </table>
@@ -316,6 +351,37 @@
     </div>
 </form>
 
+<form action="<?= PV::BASE_URL; ?>Setoran/split" method="POST">
+    <div class="modal" id="modalSplit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white">Split Setor</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Uang Kecil</label>
+                                <input type="hidden" id="inp_ref" name="ref">
+                                <input type="number" id="uangKecil" name="jumlah" class="form-control form-control-sm text-end" required>
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Setoran Bank</label>
+                                <input type="number" id="jumlah_bank" readonly class="form-control form-control-sm">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Split</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
@@ -371,8 +437,19 @@
         });
     });
 
+    var totalSetor = 0;
+
+    function ref(ref_nya, total) {
+        $("input#inp_ref").val(ref_nya);
+        totalSetor = total;
+    }
+
     $("a.cancel").click(function() {
         id = $(this).attr("data-id");
         $("input[name=id_kas]").val(id);
+    })
+
+    $("#uangKecil").on('change keyup keypress', function() {
+        $("#jumlah_bank").val(totalSetor - $(this).val())
     })
 </script>

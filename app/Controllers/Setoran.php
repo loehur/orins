@@ -37,6 +37,9 @@ class Setoran extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
 
+      $whereSplit = "id_toko = " . $this->userData['id_toko'] . " AND st = 0";
+      $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '' ORDER BY id_kas DESC";
       $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
 
@@ -46,6 +49,9 @@ class Setoran extends Controller
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
       $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 5";
       $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
+
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
+      $data['kas'] = $this->db(0)->get_where('kas', $where);
 
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
       $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND jenis_transaksi = 3 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 5";
@@ -100,6 +106,31 @@ class Setoran extends Controller
       $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
 
       $this->view(__CLASS__ . "/cek", $data);
+   }
+
+   function split()
+   {
+      $ref = $_POST['ref'];
+      $jumlah = $_POST['jumlah'];
+      //SUPPLIER
+      $cols = 'id_toko, ref,jumlah';
+      $vals = $this->userData['id_toko'] . ",'" . $ref . "','" . $jumlah . "'";
+      $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
+      if ($do['errno'] == 1062) {
+         $set = "jumlah = '" . $jumlah . "'";
+         $where = "ref = '" . $ref . "'";
+         $up = $this->db(0)->update('kas_kecil', $set, $where);
+         if ($up['errno'] <> 0) {
+            echo $up['error'];
+            exit();
+         }
+      } else {
+         if ($do['errno'] <> 0) {
+            echo $do['error'];
+            exit();
+         }
+      }
+      echo 0;
    }
 
    function cancel()
