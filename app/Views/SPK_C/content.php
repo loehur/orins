@@ -72,7 +72,7 @@
                                     }
                                 }
 
-                                $cs = "Checking";
+                                $cs = $do['id_penerima'];
                                 foreach ($data['karyawan'] as $dp) {
                                     if ($dp['id_karyawan'] == $do['id_penerima']) {
                                         $cs = $dp['nama'];
