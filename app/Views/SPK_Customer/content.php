@@ -79,11 +79,7 @@
                                         }
                                     }
 
-                                    foreach ($data['karyawan'] as $dp) {
-                                        if ($dp['id_karyawan'] == $do['id_penerima']) {
-                                            $cs = $dp['nama'];
-                                        }
-                                    }
+                                    $cs = $data['karyawan_all'][$do['id_penerima']]['nama'];
                                     $cs_af = "";
                                     if ($do['id_user_afiliasi'] <> 0) {
                                         $cs_af = "/" . $data['karyawan_all'][$do['id_user_afiliasi']]['nama'];
