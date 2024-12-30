@@ -40,6 +40,7 @@
                 <div class="row mx-0">
                     <div class="col px-1 mb-2">
                         <label>Barang</label><br>
+                        <input type="hidden" name="head_id" value="<?= $d['id'] ?>">
                         <select name="barang" class="ac tize border-0 w-100" required id="barang">
                             <option></option>
                             <?php foreach ($data['barang'] as $br) { ?>
@@ -222,11 +223,4 @@
             },
         });
     });
-
-    $("#barang").change(function() {
-        var get = $(this).val();
-        if (get != "") {
-            $('#stok_data').load('<?= PV::BASE_URL ?>Stok_Transfer/stok_data/' + get + '/' + '<?= $d['id'] ?>');
-        }
-    })
 </script>

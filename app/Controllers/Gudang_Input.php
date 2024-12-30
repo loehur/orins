@@ -109,13 +109,13 @@ class Gudang_Input extends Controller
    function add_mutasi()
    {
       $ref = $_POST['head_id'];
-      $barang_ = $_POST['barang_'];
+      $barang = $_POST['barang'];
       $head = $this->db(0)->get_where_row('master_input', "id = '" . $ref . "'");
-      $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $barang_ . "'");
+      $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $barang . "'");
 
       $qty = $_POST['qty'];
       $sds = $head['sds'];
-      $sn =  $barang['sn'];
+      $sn = $barang['sn'];
       $id_sumber = $head['id_sumber'];
       $id_barang = $barang['id'];
       $h_beli = $barang['harga'];
@@ -128,7 +128,6 @@ class Gudang_Input extends Controller
       }
 
       $cols = 'ref,jenis,id_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
-
       if ($sn == 1) {
          $vals = "'" . $ref . "',0," . $id_barang . ",'" . $id_sumber . "',0," . $h_beli . ",1," . $sds . "," . $sn;
          for ($x = 1; $x <= $qty; $x++) {
