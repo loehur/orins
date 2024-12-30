@@ -72,13 +72,19 @@
                                     }
                                 }
 
-                                $cs = $data['karyawan_all'][$do['id_penerima']]['nama'] ?>
+                                $cs = $data['karyawan_all'][$do['id_penerima']]['nama'];
+
+                                $cs_af = "";
+                                if ($do['id_user_afiliasi'] <> 0) {
+                                    $cs_af = "/" . $data['karyawan_all'][$do['id_user_afiliasi']]['nama'];
+                                }
+                        ?>
                                 <tr>
                                     <td colspan="5" class="table-secondary">
                                         <table class="w-100 p-0 m-0">
                                             <tr>
                                                 <td><span><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
-                                                <td valign="top" class="text-end"><small><?= $cs  ?> <?= substr($do['insertTime'], 2, -3) ?></span></small></td>
+                                                <td valign="top" class="text-end"><small><?= $cs . $cs_af  ?> <?= substr($do['insertTime'], 2, -3) ?></span></small></td>
                                             </tr>
                                         </table>
                                     </td>
