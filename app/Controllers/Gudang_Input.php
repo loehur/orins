@@ -111,7 +111,7 @@ class Gudang_Input extends Controller
       $ref = $_POST['head_id'];
       $barang_ = $_POST['barang_'];
       $head = $this->db(0)->get_where_row('master_input', "id = '" . $ref . "'");
-      $barang = $this->db(0)->get_where_row('master_barang', "code = '" . $barang_ . "'");
+      $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $barang_ . "'");
 
       $qty = $_POST['qty'];
       $sds = $head['sds'];

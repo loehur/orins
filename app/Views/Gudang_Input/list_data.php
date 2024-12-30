@@ -106,7 +106,6 @@
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 
 <script>
-    var barang = JSON.parse('<?= json_encode($data['barang']) ?>');
     $(document).ready(function() {
         $('select.tize').selectize();
     });
@@ -226,9 +225,8 @@
 
     $("#barang").change(function() {
         var get = $(this).val();
-        if (typeof barang[get] != "undefined") {
-            var val = barang[get].code;
-            $('#stok_data').load('<?= PV::BASE_URL ?>Stok_Transfer/stok_data/' + val + '/' + '<?= $d['id'] ?>');
+        if (get != "") {
+            $('#stok_data').load('<?= PV::BASE_URL ?>Stok_Transfer/stok_data/' + get + '/' + '<?= $d['id'] ?>');
         }
     })
 </script>
