@@ -80,7 +80,7 @@ class Paket extends Controller
       $whereBarang = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND paket_ref = '" . $ref . "'";
       $data['order_barang'] = $this->db(0)->get_where('paket_mutasi', $whereBarang);
 
-      $data['barang'] = $this->db(0)->get('master_barang', 'code');
+      $data['barang'] = $this->db(0)->get('master_barang', 'id');
       $data['stok'] = $this->data('Barang')->stok_data_list_all($this->userData['id_toko']);
 
       $data_harga = $this->db(0)->get('produk_harga');
@@ -328,7 +328,7 @@ class Paket extends Controller
       $qty = $_POST['qty'];
       $id_sumber = $this->userData['id_toko'];
 
-      $cols = 'jenis, kode_barang, id_sumber, qty, paket_ref';
+      $cols = 'jenis, id_barang, id_sumber, qty, paket_ref';
       $vals = "2,'" . $barang_c . "','" . $id_sumber . "'," . $qty . ",'" . $ref . "'";
       $do = $this->db(0)->insertCols('paket_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];

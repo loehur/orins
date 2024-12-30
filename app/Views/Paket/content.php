@@ -260,7 +260,7 @@ $total_item = 0;
                     <?php foreach ($data['order_barang'] as $db) {
                         $classKeyPrice = 'text-secondary';
                         $total_item += 1;
-                        $dp = $data['barang'][$db['kode_barang']];
+                        $dp = $data['barang'][$db['id_barang']];
 
                         if ($db['price_locker'] == 1) {
                             $classKeyPrice = 'text-danger';
@@ -271,7 +271,7 @@ $total_item = 0;
                             $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
                         } ?>
                         <tr>
-                            <td class="text-secondary text-end ps-2"><span data-id="<?= $db['id'] ?>" data-primary="id" data-tb="paket_mutasi" data-ref="<?= $data['ref'] ?>" class="price_key <?= $classKeyPrice ?>" style="cursor: pointer;"><i class="fa-solid fa-key"></i></span> #<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger fw-bold'>S</span>" : "" ?></td>
+                            <td class="text-secondary text-end ps-2"><span data-id="<?= $db['id'] ?>" data-primary="id" data-tb="paket_mutasi" data-ref="<?= $data['ref'] ?>" class="price_key <?= $classKeyPrice ?>" style="cursor: pointer;"><i class="fa-solid fa-key"></i></span> #<?= $db['id'] ?></td>
                             <td><?= trim($dp['brand'] . " " . $dp['model'])  ?><br><?= $db['sn'] ?></td>
                             <td class="text-end"><?= number_format($db['qty']) ?>x<br><?= $db['price_locker'] == 0 ? "@" . number_format($dp['harga_' . $id_pelanggan_jenis]) : "" ?></td>
                             <td class="text-end pe-2"><?= number_format($totalnya) ?></td>

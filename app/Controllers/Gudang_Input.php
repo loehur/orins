@@ -120,6 +120,13 @@ class Gudang_Input extends Controller
       $id_barang = $barang['id'];
       $h_beli = $barang['harga'];
 
+      if ($sn == 1) {
+         if ($qty > 20) {
+            echo "Kuantiti Barang SN maksimal 20";
+            exit();
+         }
+      }
+
       $cols = 'ref,jenis,id_barang,id_sumber,id_target,harga_beli,qty,sds,sn_c';
 
       if ($sn == 1) {

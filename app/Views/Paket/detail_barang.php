@@ -12,7 +12,7 @@
                         <tr>
                             <td class="text-end">
                                 <form action="<?= PV::BASE_URL ?>Paket/add_barang/<?= $data['ref'] ?>" class="mb-0" method="POST">
-                                    <input type="hidden" name="kode" value="<?= $ds['kode_barang'] ?>">
+                                    <input type="hidden" name="kode" value="<?= $ds['id_barang'] ?>">
                                     <input type="number" style="width: 50px;" value="1" name="qty" class="border-0 h-100 rounded text-center"> <button data-bs-dismiss="modal" type="submit" class="btn btn-sm btn-primary">Tambah</button>
                                 </form>
                             </td>
