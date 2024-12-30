@@ -83,7 +83,7 @@
                         </td>
                         <td>
                             <?php if ($a['sn_c'] == 1 && $a['stat'] == 0) { ?>
-                                <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['id_barang'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-no="<?= $no ?>" data-tb="master_mutasi" class="cell_edit r<?= $no ?>"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
+                                <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['id_barang'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-no="<?= $no ?>" data-tb="master_mutasi" class="cell_edit n<?= $a['id'] ?>r<?= $no ?>"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
                             <?php } else { ?>
                                 <?= $a['sn'] ?>
                             <?php } ?>
@@ -189,7 +189,7 @@
                             } else {
                                 var next = parseInt(no) + 1;
                                 el.html(value_after);
-                                $("span.r" + next).click();
+                                $("span.n" + id + "r" + next).click();
                             }
                         } else {
                             alert(res);
