@@ -275,7 +275,7 @@ class Buka_Order extends Controller
       $data['barang'] = $this->db(0)->get('master_barang', 'code');
 
       foreach ($data['mutasi'] as $dm) {
-         $_POST['kode'] = $dm['kode_barang'];
+         $_POST['kode'] = $dm['id'];
          $_POST['qty'] = $_POST['qty_paket'] * $dm['qty'];
          $_POST['sds'] = 0;
          $_POST['sn'] = '';
