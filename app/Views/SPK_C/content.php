@@ -72,12 +72,7 @@
                                     }
                                 }
 
-                                $cs = $do['id_penerima'];
-                                foreach ($data['karyawan'] as $dp) {
-                                    if ($dp['id_karyawan'] == $do['id_penerima']) {
-                                        $cs = $dp['nama'];
-                                    }
-                                } ?>
+                                $cs = $data['karyawan_all'][$do['id_penerima']]['nama'] ?>
                                 <tr>
                                     <td colspan="5" class="table-secondary">
                                         <table class="w-100 p-0 m-0">
