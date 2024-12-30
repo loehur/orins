@@ -37,13 +37,6 @@
         <hr>
         <?php if ($d['cek'] == 0) { ?>
             <form action="<?= PV::BASE_URL ?>Gudang_Input/add_mutasi" method="POST">
-                <div class="row mb-2 mx-0">
-                    <div class="col-auto text-center px-1 mb-2">
-                        <label>Kode Barang</label><br>
-                        <input type="hidden" name="head_id" value="<?= $data['id'] ?>">
-                        <input readonly name="barang_" id="barang_c" required class="text-center rounded border" style="text-transform: uppercase;">
-                    </div>
-                </div>
                 <div class="row mx-0">
                     <div class="col px-1 mb-2">
                         <label>Barang</label><br>
@@ -235,10 +228,7 @@
         var get = $(this).val();
         if (typeof barang[get] != "undefined") {
             var val = barang[get].code;
-            $("#" + this.id + "_c").val(val);
             $('#stok_data').load('<?= PV::BASE_URL ?>Stok_Transfer/stok_data/' + val + '/' + '<?= $d['id'] ?>');
-        } else {
-            $("#" + this.id + "_c").val("");
         }
     })
 </script>
