@@ -734,6 +734,11 @@
         $("input[name=cancel_id]").val(id);
     })
 
+    $("a.cancelBarang").click(function() {
+        id = $(this).attr("data-id");
+        $("input[name=cancel_id]").val(id);
+    })
+
     $(".cancel_diskon").click(function() {
         id = $(this).attr("data-id");
         $("input[name=cancel_id_diskon]").val(id);

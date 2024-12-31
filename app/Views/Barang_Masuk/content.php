@@ -38,9 +38,6 @@
         </table>
         <div class="overflow-auto" style="height: 700px;">
             <table class="table table-sm text-sm">
-                <tr>
-                    <th colspan="10">Terverifikasi</th>
-                </tr>
                 <?php foreach ($data['input_done'] as $a) { ?>
                     <tr>
                         <td class="align-middle">

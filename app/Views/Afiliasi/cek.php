@@ -218,16 +218,6 @@
                                                                     <span class="text-nowrap text-success"><small><?= $id . "# " . ucwords($produk) ?></small></span>
                                                                 <?php } ?>
                                                                 <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
-                                                                <?php if ($dibayar == 0 && $cancel == 0) { ?>
-                                                                    <div class="btn-group">
-                                                                        <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                            <span class="visually-hidden">Toggle Dropdown</span>
-                                                                        </button>
-                                                                        <ul class="dropdown-menu p-0">
-                                                                            <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
-                                                                        </ul>
-                                                                    </div>
-                                                                <?php } ?>
                                                             </td>
                                                         <tr>
                                                         <tr>
