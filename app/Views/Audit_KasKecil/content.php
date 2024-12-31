@@ -7,35 +7,56 @@
 </style>
 
 <main>
+    <?php
+    $total_setor = 0;
+    ?>
     <!-- Main page content-->
     <div class="container">
         <table class="table table-sm">
-            <?php foreach ($data['input'] as $a) { ?>
+            <?php foreach ($data['split'] as $a) {
+                $total_setor += $a['jumlah']; ?>
                 <tr>
                     <td class="align-middle">
-                        <a href="<?= PV::BASE_URL ?>Audit_BMasuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
+                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
                     </td>
                     <td>
-                        <?= $a['id'] ?>
+                        <?= $a['ref'] ?>
                     </td>
-                    <td class="">
-                        <?= $data['supplier'][$a['id_sumber']]['nama'] ?>
+                    <td class="text-end">
+                        <?= number_format($a['jumlah']) ?>
                     </td>
-                    <td>
-                        <?= $a['no_faktur'] ?>
-                    </td>
-                    <td>
-                        <?= $a['no_po'] ?>
-                    </td>
-                    <td>
-                        <?= $a['sds'] == 1 ? "SDS-<b>YES</b>" : "SDS-NO" ?>
-                    </td>
-                    <td>
-                        <?= $a['cek'] == 1 ? "VERIFIED" : "CHECKING" ?>
+                    <td class="text-end" style="width:70px">
+                        <?= $a['st'] == 1 ? "VERIFIED" : "<span class='btn btn-sm btn-outline-primary'>Verify</span>" ?>
                     </td>
                 </tr>
             <?php } ?>
         </table>
+        <table class="table table-sm">
+            <?php foreach ($data['pengeluaran'] as $ref => $keluar) { ?>
+                <?php
+                $jumlah_keluar = 0;
+                foreach ($keluar as $a) {
+                    $total_setor += $a['jumlah']; ?>
+                    <tr>
+                        <td>
+                            <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                        </td>
+                        <td class="text-end">
+                            <?= number_format($a['jumlah']) ?>
+                        </td>
+                        <td class="text-end" style="width:70px">
+                            <?= $a['status_setoran'] == 1 ? "VERIFIED" : "<span class='btn btn-sm btn-outline-primary'>Verify</span>" ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+            <?php } ?>
+        </table>
+    </div>
+    <div class="row mx-0">
+        <div class="col text-end fw-bold pt-2">
+            Total Saldo <?= number_format($total_setor) ?>
+        </div>
+        <div class="col"><span class="btn btn-primary">Setor</span></div>
     </div>
 </main>
 

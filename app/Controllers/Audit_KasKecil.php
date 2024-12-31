@@ -31,7 +31,10 @@ class Audit_KasKecil extends Controller
 
    public function content()
    {
-
+      $whereSplit = "id_toko = " . $this->userData['id_toko'] . " AND st = 0";
+      $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran <> '' ORDER BY id_kas DESC";
+      $data['pengeluaran'] = $this->db(0)->get_where('kas', $where, 'ref_setoran', 1);
       $this->view(__CLASS__ . '/content', $data);
    }
 
