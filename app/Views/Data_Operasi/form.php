@@ -161,6 +161,33 @@
     </div>
 </form>
 
+<form action="<?= PV::BASE_URL; ?>Data_Operasi/mark" method="POST">
+    <div class="modal" id="exampleModalMark">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white">Mark</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <input type="text" name="mark" class="form-control form-control-sm" required>
+                                <input name="ref_mark" type="hidden" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Mark</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 <form action="<?= PV::BASE_URL ?>Data_Order/bayar" method="POST">
     <div class="modal" id="exampleModal2">
         <div class="modal-dialog">

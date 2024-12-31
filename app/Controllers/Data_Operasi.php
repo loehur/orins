@@ -7,7 +7,7 @@ class Data_Operasi extends Controller
       $this->session_cek();
       $this->data_order();
 
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[3])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[3]) && !in_array($this->userData['user_tipe'], PV::PRIV[5])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -191,6 +191,7 @@ class Data_Operasi extends Controller
          if ($dibayar < $jumlah) {
             $jumlah = $dibayar;
          }
+         $finance_id = 0;
 
          switch ($metode) {
             case 1:
@@ -203,7 +204,12 @@ class Data_Operasi extends Controller
                   $jumlah = $saldo;
                }
             default:
-               $status_mutasi = 0;
+               if (in_array($this->userData['user_tipe'], PV::PRIV[5])) {
+                  $status_mutasi = 1;
+                  $finance_id = $this->userData['id_user'];
+               } else {
+                  $status_mutasi = 0;
+               }
                break;
          }
          if ($count_ref == 0) {
@@ -217,8 +223,8 @@ class Data_Operasi extends Controller
          $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $metode . " AND status_mutasi = " . $status_mutasi . " AND note = '" . $note . "'";
          $dataCount = $this->db(0)->count_where('kas', $whereCount);
 
-         $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali";
-         $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $bayarnya . "," . $kembalian;
+         $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali, id_finance_nontunai";
+         $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $bayarnya . "," . $kembalian . "," . $finance_id;
 
          if ($dataCount < 1) {
             $do = $this->db(0)->insertCols('kas', $cols, $vals);
@@ -260,6 +266,19 @@ class Data_Operasi extends Controller
          } else {
             echo $do['error'];
          }
+      }
+   }
+
+   function mark()
+   {
+      $ref = $_POST['ref_mark'];
+      $mark = $_POST['mark'];
+
+      $up = $this->db(0)->update("ref", "mark = '" . $mark . "'", "ref = '" . $ref . "'");
+      if ($up['errno'] <> 0) {
+         echo $up['error'];
+      } else {
+         echo 0;
       }
    }
 }

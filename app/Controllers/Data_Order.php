@@ -104,66 +104,6 @@ class Data_Order extends Controller
       $this->view($this->v_content, $data);
    }
 
-   function bayar()
-   {
-      $ref = $_POST['ref'];
-
-      $jumlah = $_POST['jumlah'];
-
-      $dibayar = $jumlah;
-      $kembalian = $_POST['kembalian'];
-
-      $bill = $_POST['bill'];
-      $method = $_POST['method'];
-      $client = $_POST['client'];
-      $note = $_POST['note'];
-      $st_mutasi = 1;
-
-      $ref_bayar = date("Ymdhis") . rand(0, 9);
-
-      if ($jumlah > $bill) {
-         $jumlah = $bill;
-      }
-
-      if ($method == 2) {
-         if (strlen($note) == 0) {
-            $note = "Non Tunai";
-         }
-         $st_mutasi = 0;
-      }
-
-      if ($method == 3) {
-         if (strlen($note) == 0) {
-            $note = "Afiliasi";
-         }
-         $st_mutasi = 0;
-      }
-
-      if ($method == 4) {
-         $saldo = $this->data('Saldo')->deposit($client);
-         if ($jumlah > $saldo) {
-            $jumlah = $saldo;
-         }
-      }
-
-
-      $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $method . " AND status_mutasi = 0";
-      $dataCount = $this->db(0)->count_where('kas', $whereCount);
-
-      $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali";
-      $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $method . "," . $st_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $dibayar . "," . $kembalian;
-
-      if ($dataCount < 1) {
-         $do = $this->db(0)->insertCols('kas', $cols, $vals);
-         if ($do['errno'] == 0) {
-            echo $do['errno'];
-            $this->model('Log')->write($this->userData['user'] . " Bayar Success!");
-         } else {
-            echo $do['error'];
-         }
-      }
-   }
-
    function ambil()
    {
       $id = $_POST['ambil_id'];

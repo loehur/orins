@@ -187,9 +187,9 @@
                                 }
 
                                 $dRef = $data['ref'][$ref];
-                                $mark = $dRef['mark'];
+                                $mark = strtoupper($dRef['mark']);
                                 if ($mark == "") {
-                                    $mark = "M";
+                                    $mark = "";
                                 }
                                 ?>
                                 <tr class="">
@@ -197,7 +197,7 @@
                                         <table class="w-100 p-0 m-0 text-sm">
                                             <tr>
                                                 <td>
-                                                    <span class="text-danger"><?= substr($ref, -4) ?></span> <b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> <small><?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], -2) ?>#<span class="fw-bold text-success"><?= $mark ?></span></small>
+                                                    <span class="text-danger"><?= substr($ref, -4) ?></span> <b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> <small><span class="fw-bold text-success"><?= $mark ?></span>#<?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], -2) ?></small>
                                                 </td>
                                                 <?php if ($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                     <td class="text-end text-purple"><b><?= strtoupper($cs) ?></b></span>
@@ -472,6 +472,7 @@
                                                                 <span class="visually-hidden">Toggle Dropdown</span>
                                                             </button>
                                                             <ul class="dropdown-menu p-0 border-0 shadow rounded-0">
+                                                                <li><a data-bs-toggle="modal" data-bs-target="#exampleModalMark" class="dropdown-item markRef px-2" data-ref="<?= $ref ?>" href="#"><small>Mark</small></a></li>
                                                                 <?php if ($user_id == $this->userData['id_user'] && $do['tuntas'] == 0) { ?>
                                                                     <li><a class="dropdown-item px-2" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Edit Order</small></a></li>
                                                                 <?php } else { ?>
@@ -709,6 +710,11 @@
         max_diskon = $(this).attr("data-sisa");
         $("input[name=ref_diskon]").val(ref);
         $("input[name=max_diskon]").val(max_diskon);
+    })
+
+    $("a.markRef").click(function() {
+        var ref_ = $(this).attr("data-ref");
+        $("input[name=ref_mark]").val(ref_);
     })
 
     var bill = 0;
