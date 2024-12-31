@@ -3,7 +3,7 @@
             $dp = $data['barang'];
             $target_link = "";
 
-            switch ($d['tipe']) {
+            switch ($d['jenis']) {
                 case 0:
                     $target_link = "Gudang_Input";
                     break;
