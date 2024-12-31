@@ -83,7 +83,7 @@
                         </td>
                         <td>
                             <?php if ($a['sn_c'] == 1 && $a['stat'] == 0) { ?>
-                                <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['id_barang'] ?>" data-col="sn" data-tipe="text" data-primary="id" data-no="<?= $no ?>" data-tb="master_mutasi" class="cell_edit n<?= $a['id'] ?>r<?= $no ?>"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
+                                <span data-id="<?= $a['id'] ?>" data-kode="<?= $a['id_barang'] ?>" data-col="sn" data-nos="<?= $nos ?>" data-tipe="text" data-primary="id" data-no="<?= $no ?>" data-tb="master_mutasi" class="cell_edit n<?= $nos ?>r<?= $no ?>"><?= strlen($a['sn']) == 0 ? "[ ]" : $a['sn'] ?></span>
                             <?php } else { ?>
                                 <?= $a['sn'] ?>
                             <?php } ?>
@@ -136,6 +136,7 @@
 
         var id = $(this).attr('data-id');
         var no = $(this).attr('data-no');
+        var nos = $(this).attr('data-nos');
         var kode = $(this).attr('data-kode');
         var primary = $(this).attr('data-primary');
         var col = $(this).attr('data-col');
@@ -189,7 +190,7 @@
                             } else {
                                 var next = parseInt(no) + 1;
                                 el.html(value_after);
-                                $("span.n" + id + "r" + next).click();
+                                $("span.n" + nos + "r" + next).click();
                             }
                         } else {
                             alert(res);
