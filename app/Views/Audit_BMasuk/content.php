@@ -9,7 +9,10 @@
 <main>
     <!-- Main page content-->
     <div class="container">
-        <table class="table table-sm">
+        <table class="table table-sm text-sm">
+            <tr>
+                <th colspan="10">Pengecekan</th>
+            </tr>
             <?php foreach ($data['input'] as $a) { ?>
                 <tr>
                     <td class="align-middle">
@@ -31,7 +34,7 @@
                         <?= $a['sds'] == 1 ? "SDS-<b>YES</b>" : "SDS-NO" ?>
                     </td>
                     <td>
-                        <?= $a['cek'] == 1 ? "VERIFIED" : "CHECKING" ?>
+                        <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
                     </td>
                 </tr>
             <?php } ?>

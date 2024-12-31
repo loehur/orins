@@ -12,7 +12,10 @@
     ?>
     <!-- Main page content-->
     <div class="container">
-        <table class="table table-sm">
+        <table class="table table-sm text-sm">
+            <tr>
+                <th colspan="10" class="text-success">Setoran Pecahan</th>
+            </tr>
             <?php foreach ($data['split'] as $a) {
                 $total_setor += $a['jumlah']; ?>
                 <tr>
@@ -31,21 +34,27 @@
                 </tr>
             <?php } ?>
         </table>
-        <table class="table table-sm">
+        <table class="table table-sm text-sm">
+            <tr>
+                <th colspan="10" class="text-danger">Pengeluaran</th>
+            </tr>
             <?php foreach ($data['pengeluaran'] as $ref => $keluar) { ?>
                 <?php
                 $jumlah_keluar = 0;
-                foreach ($keluar as $a) {
-                    $total_setor += $a['jumlah']; ?>
+                foreach ($keluar as $a) { ?>
                     <tr>
                         <td>
                             <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
                         </td>
+                        <td>
+                            <?= $a['note'] ?>
+                        </td>
                         <td class="text-end">
                             <?= number_format($a['jumlah']) ?>
                         </td>
-                        <td class="text-end" style="width:70px">
+                        <td class="text-end" style="width:200px">
                             <?= $a['status_setoran'] == 1 ? "VERIFIED" : "<span class='btn btn-sm btn-outline-primary'>Verify</span>" ?>
+                            <?= $a['status_setoran'] == 1 ? "VERIFIED" : "<span class='btn btn-sm btn-outline-dark'>Reimburse</span>" ?>
                         </td>
                     </tr>
                 <?php } ?>
