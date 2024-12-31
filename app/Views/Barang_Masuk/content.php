@@ -36,7 +36,7 @@
                 </tr>
             <?php } ?>
         </table>
-        <div class="overflow-auto" style="height: 700px;">
+        <div class="overflow-auto" style="height: 500px;">
             <table class="table table-sm text-sm">
                 <?php foreach ($data['input_done'] as $a) { ?>
                     <tr>
