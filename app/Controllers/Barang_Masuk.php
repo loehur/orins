@@ -77,6 +77,13 @@ class Barang_Masuk extends Controller
             echo $up2['errno'];
             exit();
          }
+
+         $dateNow = date("Y-m-d H:i:s");
+         $up3 = $this->db(0)->update("order_data", "tgl_ambil = '" . $dateNow . "', id_ambil = " . $this->userData['id_user'], "ref = '" . $ref . "'");
+         if ($up3['errno'] <> 0) {
+            echo $up3['errno'];
+            exit();
+         }
       }
       echo 0;
    }
