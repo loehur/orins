@@ -769,7 +769,6 @@ class Buka_Order extends Controller
                   unset($n2_ref[$key]);
                }
             }
-
             $qty_ref = count($n_ref) + count($n2_ref);
             $qty_ref += 1;
             $qty_ref = substr($qty_ref, -5);
