@@ -15,10 +15,7 @@
                 </select>
             </div>
         </div>
-
-        <div id="data" class="bg-light mx-1 px-2">
-
-        </div>
+        <div id="data" class="bg-light mx-1 px-2"></div>
     </div>
 </main>
 
