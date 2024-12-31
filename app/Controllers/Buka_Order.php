@@ -778,14 +778,11 @@ class Buka_Order extends Controller
          }
       }
 
-
-
       if (!isset($_SESSION['edit'][$this->userData['id_user']]) && $id_user_afiliasi == 0) {
          $cols = 'ref';
          $vals = $ref;
          $do = $this->db(0)->insertCols('ref', $cols, $vals);
       }
-
 
       if ($id_pelanggan_jenis == 100 && $id_user_afiliasi == 0) {
          $tujuan = $this->userData['id_toko'];
@@ -961,13 +958,13 @@ class Buka_Order extends Controller
          }
 
          if ($id_user_afiliasi <> 0) {
-            $st_order = ", status_order = 0";
+            $st_order = ", status_order = 0, id_user_afiliasi = " . $id_user_afiliasi;
          } else {
             $st_order = "";
          }
 
          $where = "id_order_data = " . $do['id_order_data'];
-         $set = "margin_paket = 0, diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "', stok = " . $stok_order . ", id_user_afiliasi = " . $id_user_afiliasi . $st_order;
+         $set = "margin_paket = 0, diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "', stok = " . $stok_order . $st_order;
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {
             echo $update['error'];
