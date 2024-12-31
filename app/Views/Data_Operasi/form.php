@@ -77,6 +77,7 @@
                             <div class="col">
                                 <label class="form-label">Karyawan</label>
                                 <input type="hidden" name="cancel_id">
+                                <input type="hidden" name="tb">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
                                     <?php foreach ($data['karyawan_toko'] as $k) { ?>

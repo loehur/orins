@@ -388,11 +388,15 @@
                                         foreach ($data['mutasi'][$ref] as $do) {
                                             $no += 1;
                                             $user_id = $do['user_id'];
+                                            $cancel_barang = $do['stat'];
                                             $jumlah = $do['qty'];
                                             $id_pelanggan_jenis = $do['jenis_target'];
                                             $dp = $data['barang'][$do['id_barang']];
-                                            $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
-                                            $bill -= ($do['diskon'] * $jumlah);
+
+                                            if ($cancel_barang <> 2) {
+                                                $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
+                                                $bill -= ($do['diskon'] * $jumlah);
+                                            }
 
                                             $jumlah_semula = "";
                                             if ($do['diskon'] > 0) {
@@ -401,7 +405,7 @@
                                             $jumlah_real = ($jumlah * $do['harga_jual']) + $do['margin_paket'] - ($do['diskon'] * $jumlah);
 
                                         ?>
-                                            <tr>
+                                            <tr style="<?= ($cancel_barang == 2) ? 'color:silver' : '' ?>">
                                                 <td>
                                                     <?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?>
                                                     <?php if ($dibayar == 0 && $do['stat'] == 1) { ?>
@@ -410,7 +414,7 @@
                                                                 <span class="visually-hidden">Toggle Dropdown</span>
                                                             </button>
                                                             <ul class="dropdown-menu p-0 border-0 shadow rounded-0">
-                                                                <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancelBarang" class="dropdown-item cancelBarang px-2" data-id="<?= $do['id'] ?>" href="#">Cancel</a></li>
+                                                                <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancelBarang px-2" data-id="<?= $do['id'] ?>" href="#">Cancel</a></li>
                                                             </ul>
                                                         </div>
                                                     <?php } ?>
@@ -732,11 +736,13 @@
     $("a.cancel").click(function() {
         id = $(this).attr("data-id");
         $("input[name=cancel_id]").val(id);
+        $("input[name=tb]").val(0);
     })
 
     $("a.cancelBarang").click(function() {
         id = $(this).attr("data-id");
         $("input[name=cancel_id]").val(id);
+        $("input[name=tb]").val(1);
     })
 
     $(".cancel_diskon").click(function() {

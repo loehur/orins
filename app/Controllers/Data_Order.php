@@ -181,24 +181,35 @@ class Data_Order extends Controller
    function cancel()
    {
       $id = $_POST['cancel_id'];
+      $tb = $_POST['tb'];
+
       $reason = $_POST['reason'];
       $karyawan = $_POST['id_karyawan'];
-
-      $where = "id_order_data = " . $id;
-      $dateNow = date("Y-m-d H:i:s");
-      $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
-      $update = $this->db(0)->update("order_data", $set, $where);
-      if ($update['errno'] == 0) {
-         $where2 = "pid = " . $id;
-         $set2 = "stat = 2";
-         $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
-         if ($update2 <> 0) {
+      if ($tb == 0) {
+         $dateNow = date("Y-m-d H:i:s");
+         $where = "id_order_data = " . $id;
+         $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
+         $update = $this->db(0)->update("order_data", $set, $where);
+         if ($update['errno'] == 0) {
+            $where2 = "pid = " . $id;
+            $set2 = "stat = 2";
+            $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
+            if ($update2 <> 0) {
+               echo $update['error'];
+               exit();
+            }
+         } else {
             echo $update['error'];
             exit();
          }
       } else {
-         echo $update['error'];
-         exit();
+         $where = "id = " . $id;
+         $set = "stat = 2";
+         $update = $this->db(0)->update("master_mutasi", $set, $where);
+         if ($update['errno'] <> 0) {
+            echo $update['error'];
+            exit();
+         }
       }
 
       echo 0;
