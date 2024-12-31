@@ -39,6 +39,32 @@
                 </tr>
             <?php } ?>
         </table>
+        <div class="overflow-auto" style="height: 500px;">
+            <table class="table table-sm text-sm">
+                <?php foreach ($data['input_done'] as $a) { ?>
+                    <tr>
+                        <td class="align-middle">
+                            <a href="<?= PV::BASE_URL ?>Barang_Masuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
+                        </td>
+                        <td>
+                            <?= $a['id'] ?>
+                        </td>
+                        <td class="">
+                            <?= isset($data['toko'][$a['id_sumber']]['nama_toko']) ? $data['toko'][$a['id_sumber']]['nama_toko'] : "Gudang" ?>
+                        </td>
+                        <td>
+                            <?= $a['no_faktur'] ?>
+                        </td>
+                        <td>
+                            <?= $a['no_po'] ?>
+                        </td>
+                        <td>
+                            <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </table>
+        </div>
     </div>
 </main>
 
