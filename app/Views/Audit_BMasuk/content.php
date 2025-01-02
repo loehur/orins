@@ -25,10 +25,10 @@
                         <?= $data['supplier'][$a['id_sumber']]['nama'] ?>
                     </td>
                     <td>
-                        <?= $a['no_faktur'] ?>
+                        <?= $a['no_po'] ?>
                     </td>
                     <td>
-                        <?= $a['no_po'] ?>
+                        <?= $a['no_faktur'] ?>
                     </td>
                     <td>
                         <?= $a['sds'] == 1 ? "SDS-<b>YES</b>" : "SDS-NO" ?>
@@ -50,13 +50,16 @@
                             <?= $a['id'] ?>
                         </td>
                         <td class="">
-                            <?= isset($data['toko'][$a['id_sumber']]['nama_toko']) ? $data['toko'][$a['id_sumber']]['nama_toko'] : "Gudang" ?>
+                            <?= $data['supplier'][$a['id_sumber']]['nama'] ?>
+                        </td>
+                        <td>
+                            <?= $a['no_po'] ?>
                         </td>
                         <td>
                             <?= $a['no_faktur'] ?>
                         </td>
                         <td>
-                            <?= $a['no_po'] ?>
+                            <?= $a['sds'] == 1 ? "SDS-<b>YES</b>" : "SDS-NO" ?>
                         </td>
                         <td>
                             <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
