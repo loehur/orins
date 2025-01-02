@@ -33,12 +33,6 @@
         }
     }
 
-    $dRef = $data['ref'][$ref];
-    $mark = strtoupper($dRef['mark']);
-    if ($mark == "") {
-        $mark = "";
-    }
-
     $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
     $in_toko = "";
     if ($id_toko_pelanggan <> $this->userData['id_toko']) {
