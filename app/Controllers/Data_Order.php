@@ -203,6 +203,9 @@ class Data_Order extends Controller
          $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_mutasi);
       }
 
+      $where_ref = "ref = '" . $parse . "'";
+      $data['mark'] = $this->db(0)->get_where_row('ref', $where_ref, 'ref')['mark'];
+
       $data['paket'] = [];
       $data['list_paket'] = $this->db(0)->get_where('paket_main', 'id_toko = ' . $this->userData['id_toko'], 'id');
       foreach ($data['order'] as $key => $do) {
