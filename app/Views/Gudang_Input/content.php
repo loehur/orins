@@ -19,12 +19,12 @@
                     <input type="date" name="tanggal" class="text-center border-bottom border-0" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>">
                 </div>
                 <div class="col-auto px-1 mb-2 text-end">
-                    <label>No. Faktur</label><br>
-                    <input class="text-end border-bottom border-0" required name="no_fak" style="text-transform: uppercase;">
+                    <label>No. DO</label><br>
+                    <input class="text-end border-bottom border-0" required name="no_po" style="text-transform: uppercase;">
                 </div>
                 <div class="col-auto px-1 mb-2 text-end">
-                    <label>No. PO</label><br>
-                    <input class="text-end border-bottom border-0" required name="no_po" style="text-transform: uppercase;">
+                    <label>No. Faktur</label><br>
+                    <input class="text-end border-bottom border-0" required name="no_fak" style="text-transform: uppercase;">
                 </div>
                 <div class="col-auto px-1 mb-2">
                     <div class="pt-4">
