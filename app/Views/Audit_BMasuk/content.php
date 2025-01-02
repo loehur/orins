@@ -44,7 +44,7 @@
                 <?php foreach ($data['input_done'] as $a) { ?>
                     <tr>
                         <td class="align-middle">
-                            <a href="<?= PV::BASE_URL ?>Barang_Masuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
+                            <a href="<?= PV::BASE_URL ?>Audit_BMasuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
                         </td>
                         <td>
                             <?= $a['id'] ?>
