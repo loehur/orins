@@ -33,6 +33,12 @@
         }
     }
 
+    $dRef = $data['ref'][$ref];
+    $mark = strtoupper($dRef['mark']);
+    if ($mark == "") {
+        $mark = "";
+    }
+
     $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
     $in_toko = "";
     if ($id_toko_pelanggan <> $this->userData['id_toko']) {
@@ -42,7 +48,7 @@
 
     <table style="width: 100%;">
         <tr>
-            <td><small>Pelanggan</small><br><b><span style="color:green;"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> #<?= substr($id_pelanggan, -2) ?></td>
+            <td><small>Pelanggan</small><br><b><span style="color:green;"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> | <span style="color:blue;"><?= $data['mark'] ?></span> #<?= substr($id_pelanggan, -2) ?></td>
             <td><small>CS</small><br><b><?= strtoupper($cs) ?></b></td>
             <td style="text-align: right;"><small>Tanggal</small><br><b><?= date('d/m/y H:i', strtotime($do['insertTime'])) ?></b></td>
             <td style="text-align: right;"><small>No. Referensi</small><br><b><?= substr($do['ref'], 0, -5) ?>-<span style="color: green;"><?= substr($do['ref'], -4) ?></span></b></td>
