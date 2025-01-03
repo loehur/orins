@@ -14,10 +14,7 @@
     </table>
 
     <?php
-    echo "Maaf sedang dalam perawatan";
-    print_r($data['order']);
-    print_r($data['mutasi']);
-    exit();
+    echo count($data['order']);
 
     if (count($data['order']) > 0) {
         foreach ($data['order'] as $do) {
