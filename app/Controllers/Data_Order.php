@@ -236,20 +236,11 @@ class Data_Order extends Controller
          }
       }
 
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi = '" . $parse . "'";
+      $data['kas'] = $this->db(0)->get_where('kas', $where);
 
-      $ref1 = array_unique(array_column($data['order'], 'ref'));
-      $ref2 = array_unique(array_column($data['mutasi'], 'ref'));
-      $refs = array_unique(array_merge($ref1, $ref2));
-
-      if (count($refs) > 0) {
-         $min_ref = min($refs);
-         $max_ref = max($refs);
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND (ref_transaksi BETWEEN " . $min_ref . " AND " . $max_ref . ")";
-         $data['kas'] = $this->db(0)->get_where('kas', $where);
-
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND (ref_transaksi BETWEEN '" . $min_ref . "' AND '" . $max_ref . "')";
-         $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where);
-      }
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi = '" . $parse . "'";
+      $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where);
 
       $this->view(__CLASS__ . "/print", $data);
    }
