@@ -105,6 +105,9 @@ class Data_Operasi extends Controller
          $data['head'][$r]['id_afiliasi'] = 0;
       }
 
+      $pelanggan = $data['pelanggan'][$parse];
+      $data['cust_wa'] = $this->data('Validasi')->valid_wa_direct($pelanggan['no_hp']);
+
       foreach ($data['order'] as $ref => $do) {
          foreach ($do as $dd) {
             $data['head'][$ref]['cs'] = $dd['id_penerima'];
