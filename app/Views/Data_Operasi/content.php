@@ -473,7 +473,7 @@
                                                             </button>
                                                             <ul class="dropdown-menu p-0 border-0 shadow rounded-0">
                                                                 <li><a data-bs-toggle="modal" data-bs-target="#exampleModalMark" class="dropdown-item markRef px-2" data-ref="<?= $ref ?>" href="#"><small>Mark</small></a></li>
-                                                                <li><a class="dropdown-item px-2" target="_blank" href="https://api.whatsapp.com/send?phone=<?= $data['cust_wa'] ?>"><small>Whatsapp (<?= $data['cust_wa'] ?>)</small></a></li>
+                                                                <li><a class="dropdown-item px-2" target="_blank" href="https://web.whatsapp.com/send?phone=<?= $data['cust_wa'] ?>"><small>Whatsapp (<?= $data['cust_wa'] ?>)</small></a></li>
                                                                 <?php if ($user_id == $this->userData['id_user'] && $do['tuntas'] == 0) { ?>
                                                                     <li><a class="dropdown-item px-2" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Tambah Order</small></a></li>
                                                                 <?php } else { ?>
