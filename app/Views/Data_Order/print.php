@@ -16,6 +16,7 @@
     <?php
     if (count($data['order']) > 0) {
         foreach ($data['order'] as $do) {
+            $get = $do;
             $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
             $id_pelanggan = $do['id_pelanggan'];
             $cs_name = $data['karyawan'][$do['id_penerima']]['nama'];
@@ -27,6 +28,7 @@
             foreach ($data['paket'] as $pref => $do) {
                 if (isset($do['order'])) {
                     foreach ($do['order'] as $pdo) {
+                        $get = $pdo;
                         $id_pelanggan = $pdo['id_pelanggan'];
                         $cs_name = $data['karyawan'][$pdo['id_penerima']]['nama'];
                         $cs = substr($cs_name, 0, 2) . "-" . $pdo['id_penerima'];
@@ -36,6 +38,7 @@
                 }
                 if (isset($do['barang'])) {
                     foreach ($do['barang'] as $pdo) {
+                        $get = $pdo;
                         $id_pelanggan = $pdo['id_target'];
                         $cs_name = $data['karyawan'][$pdo['cs_id']]['nama'];
                         $cs = substr($cs_name, 0, 2) . "-" . $pdo['cs_id'];
@@ -46,6 +49,7 @@
             }
         } else {
             foreach ($data['mutasi'] as $do) {
+                $get = $do;
                 $id_pelanggan = $do['id_target'];
                 $cs_name = $data['karyawan'][$do['cs_id']]['nama'];
                 $cs = substr($cs_name, 0, 2) . "-" . $do['cs_id'];
@@ -54,9 +58,7 @@
         }
     }
 
-    if (count($do) == 0) {
-        $do = $pdo;
-    }
+    $do = $get;
 
     $pelanggan = $data['pelanggan'][$id_pelanggan]['nama'];
     $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
