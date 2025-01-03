@@ -54,6 +54,10 @@
         }
     }
 
+    if (count($do) == 0) {
+        $do = $pdo;
+    }
+
     $pelanggan = $data['pelanggan'][$id_pelanggan]['nama'];
     $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
     $in_toko = "";
