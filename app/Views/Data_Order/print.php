@@ -28,6 +28,8 @@
                 if (isset($do['order'])) {
                     foreach ($do['order'] as $pdo) {
                         $id_pelanggan = $pdo['id_pelanggan'];
+                        $cs_name = $data['karyawan'][$pdo['id_penerima']]['nama'];
+                        $cs = substr($cs_name, 0, 2) . "-" . $pdo['id_penerima'];
                         break;
                     }
                     break;
@@ -35,6 +37,8 @@
                 if (isset($do['barang'])) {
                     foreach ($do['barang'] as $pdo) {
                         $id_pelanggan = $pdo['id_target'];
+                        $cs_name = $data['karyawan'][$pdo['cs_id']]['nama'];
+                        $cs = substr($cs_name, 0, 2) . "-" . $pdo['cs_id'];
                         break;
                     }
                     break;
