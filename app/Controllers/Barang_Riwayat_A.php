@@ -18,7 +18,7 @@ class Barang_Riwayat_A extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Barang - Riwayat Bulanan (A)"
+         "title" => "Barang - Riwayat Audit"
       ]);
 
       $this->viewer();
