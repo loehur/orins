@@ -199,8 +199,8 @@ class Data_Order extends Controller
       $data['order'] = [];
       $data['mutasi'] = [];
 
-      echo $where;
       $data['order'] = $this->db(0)->get_where('order_data', $where);
+      print_r($data['order']);
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_mutasi);
 
       $where_ref = "ref = '" . $parse . "'";
