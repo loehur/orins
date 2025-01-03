@@ -26,7 +26,17 @@
         if (count($data['paket']) > 0) {
             foreach ($data['paket'] as $pref => $do) {
                 if (isset($do['order'])) {
-                    $id_pelanggan = $do['id_pelanggan'];
+                    foreach ($do['order'] as $pdo) {
+                        $id_pelanggan = $pdo['id_pelanggan'];
+                        break;
+                    }
+                    break;
+                }
+                if (isset($do['barang'])) {
+                    foreach ($do['barang'] as $pdo) {
+                        $id_pelanggan = $pdo['id_target'];
+                        break;
+                    }
                     break;
                 }
             }
