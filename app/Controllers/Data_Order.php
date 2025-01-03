@@ -194,12 +194,12 @@ class Data_Order extends Controller
       $data['parse'] = $parse;
 
       $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND ref = '" . $parse . "' AND cancel = 0";
-      echo $parse;
       $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND ref = '" . $parse . "'";
 
       $data['order'] = [];
       $data['mutasi'] = [];
 
+      echo $where;
       $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_mutasi);
 
