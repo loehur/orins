@@ -18,7 +18,7 @@
     if (count($data['order']) > 0) {
         foreach ($data['order'] as $do) {
             $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
-            $id_pelanggan = $data['pelanggan'][$do['id_pelanggan']]['id_pelanggan'];
+            $id_pelanggan = $do['id_pelanggan'];
             $cs_name = $data['karyawan'][$do['id_penerima']]['nama'];
             $cs = substr($cs_name, 0, 2) . "-" . $do['id_penerima'];
             break;
@@ -26,7 +26,7 @@
     } else {
         foreach ($data['mutasi'] as $do) {
             $pelanggan = $data['pelanggan'][$do['id_target']]['nama'];
-            $id_pelanggan = $data['pelanggan'][$do['id_target']]['id_pelanggan'];
+            $id_pelanggan = $do['id_target'];
             $cs_name = $data['karyawan'][$do['cs_id']]['nama'];
             $cs = substr($cs_name, 0, 2) . "-" . $do['cs_id'];
             break;
