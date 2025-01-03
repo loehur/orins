@@ -14,8 +14,6 @@
     </table>
 
     <?php
-    echo count($data['order']);
-
     if (count($data['order']) > 0) {
         foreach ($data['order'] as $do) {
             $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
@@ -25,12 +23,21 @@
             break;
         }
     } else {
-        foreach ($data['mutasi'] as $do) {
-            $pelanggan = $data['pelanggan'][$do['id_target']]['nama'];
-            $id_pelanggan = $do['id_target'];
-            $cs_name = $data['karyawan'][$do['cs_id']]['nama'];
-            $cs = substr($cs_name, 0, 2) . "-" . $do['cs_id'];
-            break;
+        if (count($data['paket']) > 0) {
+            foreach ($data['paket'] as $pref => $do) {
+                if (isset($do['order'])) {
+                    $id_pelanggan = $do['id_pelanggan'];
+                    break;
+                }
+            }
+        } else {
+            foreach ($data['mutasi'] as $do) {
+                $pelanggan = $data['pelanggan'][$do['id_target']]['nama'];
+                $id_pelanggan = $do['id_target'];
+                $cs_name = $data['karyawan'][$do['cs_id']]['nama'];
+                $cs = substr($cs_name, 0, 2) . "-" . $do['cs_id'];
+                break;
+            }
         }
     }
 
