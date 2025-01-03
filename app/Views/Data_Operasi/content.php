@@ -593,7 +593,7 @@
                                         <td>Kembalian</td>
                                         <td><input id='kembalianBill' name="kembalianBill" class="text-end form form-control" type="number" readonly /></td>
                                         <td class="text-end ps-2" nowrap>
-                                            <button type="submit" id="btnBayarBill" class='btn btn-primary  '>Bayar</button>
+                                            <button type="submit" id="btnBayarBill" class='btn btn-primary'>Bayar</button>
                                         </td>
                                     </tr>
                                 </table>
@@ -683,7 +683,6 @@
     });
 
     function clearTuntas() {
-        return;
         var dataNya = '<?= serialize($arr_tuntas) ?>';
         var countArr = <?= count($arr_tuntas) ?>;
 

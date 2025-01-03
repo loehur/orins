@@ -144,8 +144,10 @@
                                 $id_toko = $do['id_sumber'];
 
                                 $jumlah = ($do['harga_jual'] * $do['qty']) + $do['margin_paket'];
-                                if ($cancel == 1) {
+                                $diskon = $do['diskon'] * $do['qty'];
+                                if ($cancel <> 2) {
                                     $bill[$ref] += $jumlah;
+                                    $bill[$ref] -= $diskon;
                                 }
 
                                 if ($no == 1) {
