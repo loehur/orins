@@ -241,7 +241,7 @@ $mgpaket = $data['margin_paket'];
                                                 <?php if ($id_pelanggan_jenis == 100) { ?>
                                                     <tr>
                                                         <?php $code = str_replace(['-', '&', '#'], '', $do['produk_code']); ?>
-                                                        <td colspan="10"><b><span data-bs-toggle="modal" data-code="<?= $do['produk_code'] ?>" data-bs-target="#exampleModalPC" style="cursor: pointer;" class="tetapkanNama px-2">N</span></b> <span class="text-danger fw-bold"><?= isset($data['barang'][$code]) ? $data['barang'][$code]['product_name'] : "" ?></span></td>
+                                                        <td colspan="10"><b><span data-bs-toggle="modal" data-code="<?= $do['produk_code'] ?>" data-bs-target="#exampleModalPC" style="cursor: pointer;" class="tetapkanNama px-2">N</span></b> <span class="text-danger fw-bold"><?= isset($data['barang_code'][$code]) ? $data['barang_code'][$code]['product_name'] : "" ?></span></td>
                                                     </tr>
                                                 <?php } ?>
                                                 <tr>
