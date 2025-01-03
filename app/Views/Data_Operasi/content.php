@@ -683,6 +683,7 @@
     });
 
     function clearTuntas() {
+        return;
         var dataNya = '<?= serialize($arr_tuntas) ?>';
         var countArr = <?= count($arr_tuntas) ?>;
 
