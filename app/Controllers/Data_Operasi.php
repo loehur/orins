@@ -63,7 +63,7 @@ class Data_Operasi extends Controller
          $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND id_target = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%' ORDER BY id DESC";
       }
 
-      if ($parse == 0 && ($parse_2 == 0 || $parse_2 == 1)) {
+      if ($parse == 0) {
          $data['order'] = [];
          $data['mutasi'] = [];
       } else {
