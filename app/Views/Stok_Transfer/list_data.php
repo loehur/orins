@@ -37,7 +37,7 @@
         <?php } ?>
         <div id="stok_data"></div>
 
-        <table class="table table-sm mx-1 bg-light">
+        <table class="table table-sm mx-1 bg-light text-sm">
             <?php
             $no = 0;
             foreach ($data['mutasi'] as $a) {
