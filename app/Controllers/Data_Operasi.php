@@ -56,11 +56,11 @@ class Data_Operasi extends Controller
       $data['barang'] = $this->db(0)->get('master_barang', 'id');
 
       if ($parse_2 < 2023) {
-         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0 ORDER BY id_order_data DESC";
-         $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND id_target = " . $parse . " AND tuntas = 0 ORDER BY id DESC";
+         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0";
+         $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND id_target = " . $parse . " AND tuntas = 0";
       } else {
-         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%' ORDER BY id_order_data DESC";
-         $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND id_target = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%' ORDER BY id DESC";
+         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%'";
+         $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND id_target = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%'";
       }
 
       if ($parse == 0) {
@@ -77,6 +77,7 @@ class Data_Operasi extends Controller
       $ref2 = array_keys($data['mutasi']);
       $refs = array_unique(array_merge($ref1, $ref2));
 
+      rsort($refs);
       if (count($refs) > 0) {
          $ref_list = "";
          foreach ($refs as $r) {
