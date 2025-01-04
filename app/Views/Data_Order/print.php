@@ -178,7 +178,7 @@
                             <?php
                             if (isset($do['barang'])) {
                                 foreach ($do['barang'] as $pdo) {
-                                    $dp = $data['barang'][$pdo['kode_barang']] ?>
+                                    $dp = $data['barang'][$pdo['id_barang']] ?>
                                     <tr>
                                         <td style="padding-left:10px;border-top: 1px solid silver;">
                                             <?= $pdo['qty'] . "x - " . trim($dp['brand'] . " " . $dp['model']) . "<br>" ?>
