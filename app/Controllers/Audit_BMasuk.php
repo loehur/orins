@@ -64,6 +64,13 @@ class Audit_BMasuk extends Controller
    function update()
    {
       $ref = $_POST['ref'];
+
+      $cek_SN = $this->db(0)->count_where("master_mutasi", "ref = '" . $ref . "' AND sn_c = 1 AND sn = ''");
+      if ($cek_SN > 0) {
+         "Mohon lengkapi SN terlebih dahulu";
+         exit();
+      }
+
       $up1 = $this->db(0)->update("master_input", "cek = 1", "id = '" . $ref . "'");
       if ($up1['errno'] <> 0) {
          echo $up1['errno'];
