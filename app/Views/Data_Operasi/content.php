@@ -446,18 +446,13 @@
                                         $showMutasi .= "<span class='text-danger'><b>Sisa Rp" . number_format($sisa) . "</b></span>";
                                     }
 
-                                    $print_mode = "A4";
-                                    if ($no <= 6) {
-                                        $print_mode = "&#189;";
-                                    }
-
                                     ?>
                                     <tr class="border-top">
                                         <td class="text-end text border-0 pb-0" colspan="3">
                                             <?php if (($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) && $dh['tuntas'] == 0) { ?>
                                                 <table>
                                                     <tr>
-                                                        <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border-0 px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
+                                                        <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border-0 px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i></a></small></td>
                                                         <?php
                                                         if ($ambil_all == false) { ?>
                                                             <td class="text-end pe-1"><small><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded border-0 text-purple px-1" data-ref="<?= $do['ref'] ?>">Ambil</span></small></td>
@@ -473,7 +468,6 @@
                                                             </button>
                                                             <ul class="dropdown-menu p-0 border-0 shadow rounded-0">
                                                                 <li><a data-bs-toggle="modal" data-bs-target="#exampleModalMark" class="dropdown-item markRef px-2" data-ref="<?= $ref ?>" href="#"><small>Mark</small></a></li>
-                                                                <li><a class="dropdown-item px-2" target="_blank" href="https://web.whatsapp.com/send?phone=<?= $data['cust_wa'] ?>"><small>Whatsapp (<?= $data['cust_wa'] ?>)</small></a></li>
                                                                 <?php if ($user_id == $this->userData['id_user'] && $do['tuntas'] == 0) { ?>
                                                                     <li><a class="dropdown-item px-2" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Tambah Order</small></a></li>
                                                                 <?php } else { ?>
@@ -484,8 +478,14 @@
                                                                 <?php } ?>
                                                             </ul>
                                                         </td>
-                                                        <td class="text-secondary text-sm">
-                                                            <small><?= $dh['user_id'] ?>#
+                                                        <td class="text-sm pe-1">
+                                                            <small><?= $dh['user_id'] ?>#</small>
+                                                        </td>
+                                                        <td class="text-sm align-middle" style="cursor: pointer;">
+                                                            <?php if ($data['cust_wa']) { ?>
+                                                                <span onclick="copy('<?= $data['cust_wa'] ?>', <?= $ref ?>)" class="text-success"><i class="fa-brands fa-whatsapp"></i></span>
+                                                                <small><span id="span_copy_<?= $ref ?>" class="text-success fw-bold" style="display: none;">Copied!</span></small>
+                                                            <?php } ?>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -854,4 +854,16 @@
         $("span#totalBill").html(totalBill.toLocaleString('en-US')).attr("data-total", totalBill);
         bayarBill();
     })
+
+    function copy(text, ref) {
+        var temp = $("<input id=temp />");
+        $("body").append(temp);
+        temp.val(text)
+        temp.select();
+        document.execCommand("copy");
+        temp.remove();
+
+        $("span#span_copy_" + ref).fadeIn(200);
+        $("span#span_copy_" + ref).fadeOut(1000);
+    }
 </script>
