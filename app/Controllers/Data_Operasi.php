@@ -67,6 +67,8 @@ class Data_Operasi extends Controller
          $data['order'] = [];
          $data['mutasi'] = [];
       } else {
+         $pelanggan = $data['pelanggan'][$parse];
+         $data['cust_wa'] = $this->data('Validasi')->valid_wa_direct($pelanggan['no_hp']);
          $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
          $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_mutasi, 'ref', 1);
       }
@@ -104,9 +106,6 @@ class Data_Operasi extends Controller
          $data['head'][$r]['cs_to'] = 0;
          $data['head'][$r]['id_afiliasi'] = 0;
       }
-
-      $pelanggan = $data['pelanggan'][$parse];
-      $data['cust_wa'] = $this->data('Validasi')->valid_wa_direct($pelanggan['no_hp']);
 
       foreach ($data['order'] as $ref => $do) {
          foreach ($do as $dd) {
