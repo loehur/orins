@@ -37,7 +37,7 @@ $yearNow = date('Y');
 						<?php if ($lanjut_c > 0) { ?>
 							<a class="nav-link <?= (str_contains($t, "SPK - Lanjutan")) ? 'active' : 'collapsed' ?> py-1" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseSPKP" aria-expanded="true" aria-controls="collapseSPKP">
 								<div class="nav-link-icon"><i data-feather="alert-triangle"></i></div>
-								SPK - Lanjutan <span class="badge bg-danger-soft text-danger ms-2"><?= $lanjut_c ?></span>
+								SPK - Prioritas <span class="badge bg-danger-soft text-danger ms-2"><?= $lanjut_c ?></span>
 								<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 							</a>
 							<div class="collapse <?= (str_contains($t, "SPK - Lanjutan")) ? 'show' : '' ?>" id="collapseSPKP" data-bs-parent="#accordionSidenav">
