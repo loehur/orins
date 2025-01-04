@@ -77,7 +77,14 @@ class Data_Operasi extends Controller
       $ref2 = array_keys($data['mutasi']);
       $refs = array_unique(array_merge($ref1, $ref2));
 
-      rsort($refs);
+      $new_refs = [];
+      foreach ($refs as $ts) {
+         $new_refs[substr($ts, 0, 7) . substr($ts, -5)] = $ts;
+      }
+
+      rsort($new_refs);
+      $refs = $new_refs;
+
       if (count($refs) > 0) {
          $ref_list = "";
          foreach ($refs as $r) {
