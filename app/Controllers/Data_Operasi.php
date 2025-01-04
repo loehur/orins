@@ -85,6 +85,8 @@ class Data_Operasi extends Controller
       rsort($new_refs);
       $refs = $new_refs;
 
+      print_r($refs);
+
       if (count($refs) > 0) {
          $ref_list = "";
          foreach ($refs as $r) {
