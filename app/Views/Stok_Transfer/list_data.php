@@ -35,9 +35,7 @@
                 </div>
             </div>
         <?php } ?>
-        <div id="stok_data" class="bg-light">
-
-        </div>
+        <div id="stok_data"></div>
 
         <table class="table table-sm mx-1 bg-light">
             <?php
