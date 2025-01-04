@@ -492,7 +492,7 @@
                                             <?php } else { ?>
                                                 <table>
                                                     <tr>
-                                                        <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm px-1"><i class="fa-solid fa-print"></i> <?= $print_mode ?></a></small></td>
+                                                        <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm px-1"><i class="fa-solid fa-print"></i></a></small></td>
                                                     </tr>
                                                 </table>
                                             <?php } ?>
