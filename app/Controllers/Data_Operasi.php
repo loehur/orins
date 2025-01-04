@@ -81,10 +81,7 @@ class Data_Operasi extends Controller
       foreach ($refs as $ts) {
          $new_refs[substr($ts, 0, 7) . substr($ts, -5)] = $ts;
       }
-
-      rsort($new_refs);
       $refs = $new_refs;
-
       print_r($refs);
 
       if (count($refs) > 0) {
