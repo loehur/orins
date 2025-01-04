@@ -408,6 +408,7 @@
                                             <tr style="<?= ($cancel_barang == 2) ? 'color:silver' : '' ?>">
                                                 <td>
                                                     <?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?>
+                                                    <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
                                                     <?php if ($dibayar == 0 && $do['stat'] == 1) { ?>
                                                         <div class="btn-group">
                                                             <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
