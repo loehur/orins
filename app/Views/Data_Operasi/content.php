@@ -406,7 +406,7 @@
 
                                         ?>
                                             <tr style="<?= ($cancel_barang == 2) ? 'color:silver' : '' ?>">
-                                                <td>
+                                                <td class="align-middle">
                                                     <?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?>
                                                     <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
                                                     <?php if ($dibayar == 0 && $do['stat'] == 1) { ?>
