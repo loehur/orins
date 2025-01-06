@@ -106,18 +106,18 @@
                         $ambil_all[$ref] = true;
                         $id_afiliasi = 0;
                         $ada = false;
-                        array_push($id[$ref], $do['id_order_data']);
 
                         if (isset($data['order'][$ref])) {
                             foreach ($data['order'][$ref] as $do) {
+
+                                array_push($id[$ref], $do['id_order_data']);
+
                                 $no++;
                                 $cancel = $do['cancel'];
                                 $id_ambil = $do['id_ambil'];
                                 $id_user_afiliasi = $do['id_user_afiliasi'];
                                 $id_afiliasi = $do['id_afiliasi'];
                                 $id_toko = $do['id_toko'];
-
-
 
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
                                 if ($cancel == 0) {
