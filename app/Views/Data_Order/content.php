@@ -71,7 +71,7 @@
     foreach ($data['kas'] as $ref => $sd) {
         foreach ($sd as $dk) {
             $dibayar[$ref] += $dk['jumlah'];
-            if ($dk['metode_mutasi'] == 1 && $dk['status_setoran'] == 1) {
+            if ($dk['metode_mutasi'] == 1 && $dk['status_setoran'] == 1 && $dk['status_mutasi'] == 1) {
                 $verify_payment[$ref] += $dk['jumlah'];
             }
             if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3 || $dk['metode_mutasi'] == 4) && $dk['status_mutasi'] == 1) {
