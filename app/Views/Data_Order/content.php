@@ -126,7 +126,7 @@
                                 }
 
                                 if ($this->userData['id_toko'] <> $do['id_toko'] && $do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
-                                    break;
+                                    continue;
                                 }
 
                                 $divisi_arr = unserialize($do['spk_dvs']);
