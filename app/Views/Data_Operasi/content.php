@@ -35,7 +35,14 @@
         $user_id = 0;
 
         foreach ($data['refs'] as $ref) {
-        ?>
+            $verify_kas_kecil[$ref] = true;
+            if (!isset($data['kas_kecil'][$ref])) {
+                $verify_kas_kecil[$ref] = false;
+            } else {
+                if ($data['kas_kecil'][$ref]['st'] <> 1) {
+                    $verify_kas_kecil[$ref] = false;
+                }
+            } ?>
             <div class="col px-1 text-sm" style="min-width:400px;">
                 <?php
                 $no = 0;
@@ -442,7 +449,6 @@
                                         $loadRekap[$id_pelanggan . "_" . $ref] = $sisa;
                                     }
 
-
                                     if ($dibayar > 0 && $lunas == false) {
                                         $showMutasi .= "<span class='text-danger'><b>Sisa Rp" . number_format($sisa) . "</b></span>";
                                     }
@@ -513,7 +519,7 @@
                     </div>
                 </div>
                 <?php
-                if ($verify_payment >= $bill && $ambil_all == true) {
+                if ($verify_payment >= $bill && $ambil_all == true && $verify_kas_kecil[$ref] == true) {
                     array_push($arr_tuntas, $ref);
                 }
                 ?>

@@ -60,6 +60,14 @@
     foreach ($data['refs'] as $ref) {
         $dibayar[$ref] = 0;
         $verify_payment[$ref] = 0;
+        $verify_kas_kecil[$ref] = true;
+        if (!isset($data['kas_kecil'][$ref])) {
+            $verify_kas_kecil[$ref] = false;
+        } else {
+            if ($data['kas_kecil'][$ref]['st'] <> 1) {
+                $verify_kas_kecil[$ref] = false;
+            }
+        }
     }
 
     foreach ($data['kas'] as $ref => $sd) {
@@ -176,7 +184,7 @@
                             } else {
                                 $lunas[$ref] = false;
                             }
-                            if ($verify_payment[$ref] >= $bill[$ref] && $ambil_all[$ref] == true) {
+                            if ($verify_payment[$ref] >= $bill[$ref] && $ambil_all[$ref] == true && $verify_kas_kecil[$ref] == true) {
                                 array_push($arr_tuntas, $ref);
                             } ?>
 

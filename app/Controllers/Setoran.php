@@ -113,7 +113,7 @@ class Setoran extends Controller
       $ref = $_POST['ref'];
       $jumlah = $_POST['jumlah'];
       //SUPPLIER
-      $cols = 'id_toko, ref,jumlah';
+      $cols = 'id_toko, ref, jumlah';
       $vals = $this->userData['id_toko'] . ",'" . $ref . "','" . $jumlah . "'";
       $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
       if ($do['errno'] == 1062) {

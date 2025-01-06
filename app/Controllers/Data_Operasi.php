@@ -102,6 +102,9 @@ class Data_Operasi extends Controller
          $where_2 = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ") GROUP BY ref_bayar";
          $data['r_kas'] = $this->db(0)->get_cols_where('kas', $cols, $where_2, 1);
 
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND ref IN (" . $ref_list . ")";
+         $data['kas_kecil'] = $this->db(0)->get_where('kas_kecil', $where, 'ref');
+
          $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
          $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi', 1);
       }
