@@ -121,7 +121,9 @@
                                 }
 
                                 $bill[$ref] -= $do['diskon'];
-                                array_push($bill_history[$ref], -$do['diskon']);
+                                if ($do['diskon'] > 0) {
+                                    array_push($bill_history[$ref], -$do['diskon']);
+                                }
 
                                 if ($this->userData['id_toko'] <> $do['id_toko'] && $do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
                                     break;
