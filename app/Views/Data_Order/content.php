@@ -241,7 +241,7 @@
 
 <script>
     $(document).ready(function() {
-        clearTuntas();
+        //clearTuntas();
     });
 
     $("#myInput").on("keyup", function() {
