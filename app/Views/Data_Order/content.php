@@ -59,7 +59,9 @@
 
     foreach ($data['refs'] as $ref) {
         $dibayar[$ref] = 0;
+
         $bill_history[$ref] = [];
+        $id[$ref] = [];
         $verify_payment[$ref] = 0;
         $verify_kas_kecil[$ref] = true;
         if (isset($data['kas_kecil'][$ref])) {
@@ -104,6 +106,7 @@
                         $ambil_all[$ref] = true;
                         $id_afiliasi = 0;
                         $ada = false;
+                        array_push($id[$ref], $do['id_order_data']);
 
                         if (isset($data['order'][$ref])) {
                             foreach ($data['order'][$ref] as $do) {
@@ -113,6 +116,8 @@
                                 $id_user_afiliasi = $do['id_user_afiliasi'];
                                 $id_afiliasi = $do['id_afiliasi'];
                                 $id_toko = $do['id_toko'];
+
+
 
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
                                 if ($cancel == 0) {
@@ -238,6 +243,11 @@
                                                 <pre>
                                                 <?php
                                                 print_r($bill_history[$ref]);
+                                                ?>
+                                            </pre>
+                                                <pre>
+                                                <?php
+                                                print_r($id[$ref]);
                                                 ?>
                                             </pre>
                                             </td>
