@@ -59,6 +59,7 @@
 
     foreach ($data['refs'] as $ref) {
         $dibayar[$ref] = 0;
+        $bill_history[$ref] = [];
         $verify_payment[$ref] = 0;
         $verify_kas_kecil[$ref] = true;
         if (isset($data['kas_kecil'][$ref])) {
@@ -98,7 +99,6 @@
 
                         <?php
                         $no = 0;
-                        $bill_history = [];
                         $bill[$ref] = 0;
                         $lunas[$ref] = false;
                         $ambil_all[$ref] = true;
