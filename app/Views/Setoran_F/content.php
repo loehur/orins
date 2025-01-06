@@ -45,7 +45,7 @@
                                         Setor Bank <span class="text-success">Rp<?= number_format($totalSetor - $ds['jumlah']) ?></span><br>
                                         <div class="text-sm">
                                             Uang Kecil <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
-                                            Total Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?>
+                                            <span class="fw-bold">Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?></span>
                                         </div>
                                     <?php } else { ?>
                                         Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?>
@@ -72,7 +72,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <table class="table table-sm mb-2 ms-2">
+                <table class="table table-sm mb-2 ms-2 text-sm">
                     <?php foreach ($data['setor_done'] as $set) {
                         if (isset($data['keluar'][$set['ref_setoran']]['count'])) {
                             $count_keluar = $data['keluar'][$set['ref_setoran']]['count'];
@@ -81,6 +81,8 @@
                             $count_keluar = 0;
                             $jumlah_keluar = 0;
                         }
+
+                        $totalSetor = $set['jumlah'] - $jumlah_keluar;
 
                         $st_setor = "";
                         switch ($set['status_setoran']) {
@@ -99,12 +101,44 @@
                         $setor = date('d/m/Y', $time);
                     ?>
                         <tr>
-                            <td class="text-primary align-middle" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
+                            <td class="text-primary pt-2" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
                             <td class="text-success"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $set['id_toko']) ?></td>
                             <td><?= $set['ref_setoran'] ?></small></td>
                             <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
-                            <td class="text-end">Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?></td>
-                            <td style="width: 80px;"><?= $st_setor ?></td>
+                            <td class="text-end">
+                                <?php
+                                if (isset($data['split'][$set['ref_setoran']])) {
+                                    $ds = $data['split'][$set['ref_setoran']];
+                                    $st_slip = "";
+                                    switch ($ds['st']) {
+                                        case 0:
+                                            $st_slip = "<span class='text-warning'><i class='fa-regular fa-circle'></i> Checking</span>";
+                                            break;
+                                        case 1:
+                                            $st_slip = "<span class='text-success'><i class='fa-solid fa-circle-check'></i> Verified</span>";
+                                            break;
+                                        default:
+                                            $st_slip = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
+                                            break;
+                                    } ?>
+
+                                    <div class="text-sm">
+                                        Setor Bank <span class="text-success">Rp<?= number_format($totalSetor - $ds['jumlah']) ?></span><br>
+                                        Uang Kecil <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
+                                        <span class="fw-bold">Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?></span>
+                                    </div>
+                                <?php } else { ?>
+                                    Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?>
+                                <?php } ?>
+                            </td>
+                            <td style="width: 80px;" class="text-sm">
+                                <?php if (!isset($data['split'][$set['ref_setoran']])) { ?>
+                                    <?= $st_setor ?>
+                                <?php } else { ?>
+                                    <?= $st_setor ?>
+                                    <?= $st_slip ?><br>
+                                <?php } ?>
+                            </td>
                         </tr>
                     <?php } ?>
                 </table>

@@ -250,8 +250,7 @@
                                         default:
                                             $st_slip = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
                                             break;
-                                    }
-                                ?>
+                                    } ?>
                                     Uang Kecil: <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?><br>
                                     </span>Setor Bank: <span class="text-success"><?= number_format($totalSetor - $ds['jumlah']) ?></span>
                                 <?php } ?>
