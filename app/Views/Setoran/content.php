@@ -386,7 +386,7 @@
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
-    $("button#setor").click(function() {
+    $("button#setor").dblclick(function() {
         $.ajax({
             url: "<?= PV::BASE_URL ?>Setoran/setor",
             data: [],

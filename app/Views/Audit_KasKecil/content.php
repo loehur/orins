@@ -29,7 +29,7 @@
                         <?= number_format($a['jumlah']) ?>
                     </td>
                     <td class="text-end" style="width:70px">
-                        <?= $a['st'] == 1 ? "VERIFIED" : "<span class='btn btn-sm btn-outline-primary'>Verify</span>" ?>
+                        <?= $a['st'] == 1 ? "VERIFIED" : "<span class='text-primary' style='cursor:pointer'>Verify</span>" ?>
                     </td>
                 </tr>
             <?php } ?>
@@ -53,8 +53,10 @@
                             <?= number_format($a['jumlah']) ?>
                         </td>
                         <td class="text-end" style="width:200px">
-                            <?= $a['status_setoran'] == 1 ? "VERIFIED" : "<span class='btn btn-sm btn-outline-primary'>Verify</span>" ?>
-                            <?= $a['status_setoran'] == 1 ? "VERIFIED" : "<span class='btn btn-sm btn-outline-dark'>Reimburse</span>" ?>
+                            <?= $a['status_setoran'] == 1 ? "VERIFIED" : "<span class='text-primary' style='cursor:pointer'>Verify</span>" ?>
+                        </td>
+                        <td class="text-end">
+                            <?= $a['status_setoran'] == 1 ? "VERIFIED" : "<span class='text-dark'>Reimburse</span>" ?>
                         </td>
                     </tr>
                 <?php } ?>
