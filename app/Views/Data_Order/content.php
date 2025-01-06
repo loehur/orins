@@ -125,10 +125,6 @@
                                     array_push($bill_history[$ref], -$do['diskon']);
                                 }
 
-                                if ($this->userData['id_toko'] <> $do['id_toko'] && $do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
-                                    continue;
-                                }
-
                                 $divisi_arr = unserialize($do['spk_dvs']);
                                 $countSPK = count($divisi_arr);
 
