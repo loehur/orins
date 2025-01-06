@@ -98,6 +98,7 @@
 
                         <?php
                         $no = 0;
+                        $bill_history = [];
                         $bill[$ref] = 0;
                         $lunas[$ref] = false;
                         $ambil_all[$ref] = true;
@@ -116,13 +117,16 @@
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
                                 if ($cancel == 0) {
                                     $bill[$ref] += $jumlah;
+                                    array_push($bill_history[$ref], $jumlah);
                                 }
+
+                                $bill[$ref] -= $do['diskon'];
+                                array_push($bill_history[$ref], -$do['diskon']);
 
                                 if ($this->userData['id_toko'] <> $do['id_toko'] && $do['id_afiliasi'] <> 0 && $id_user_afiliasi == 0) {
                                     break;
                                 }
 
-                                $bill[$ref] -= $do['diskon'];
                                 $divisi_arr = unserialize($do['spk_dvs']);
                                 $countSPK = count($divisi_arr);
 
@@ -228,7 +232,13 @@
                                             } ?>
                                         </tr>
                                         <tr>
-                                            <td colspan="10"><?= $bill[$ref] ?>|<?= $verify_payment[$ref] ?></td>
+                                            <td colspan="10"><?= $bill[$ref] ?>|<?= $verify_payment[$ref] ?>
+                                                <pre>
+                                                <?php
+                                                print_r($bill_history[$ref]);
+                                                ?>
+                                            </pre>
+                                            </td>
                                         </tr>
                                     </table>
                                 </div>
