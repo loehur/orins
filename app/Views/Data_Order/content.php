@@ -59,9 +59,6 @@
 
     foreach ($data['refs'] as $ref) {
         $dibayar[$ref] = 0;
-
-        $bill_history[$ref] = [];
-        $id[$ref] = [];
         $verify_payment[$ref] = 0;
         $verify_kas_kecil[$ref] = true;
         if (isset($data['kas_kecil'][$ref])) {
@@ -110,8 +107,6 @@
                         if (isset($data['order'][$ref])) {
                             foreach ($data['order'][$ref] as $do) {
 
-                                array_push($id[$ref], $do['id_order_data']);
-
                                 $no++;
                                 $cancel = $do['cancel'];
                                 $id_ambil = $do['id_ambil'];
@@ -122,14 +117,9 @@
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
                                 if ($cancel == 0) {
                                     $bill[$ref] += $jumlah;
-                                    array_push($bill_history[$ref], $jumlah);
                                 }
 
                                 $bill[$ref] -= $do['diskon'];
-                                if ($do['diskon'] > 0) {
-                                    array_push($bill_history[$ref], -$do['diskon']);
-                                }
-
                                 $divisi_arr = unserialize($do['spk_dvs']);
                                 $countSPK = count($divisi_arr);
 
@@ -160,11 +150,7 @@
                                 $diskon = $do['diskon'] * $do['qty'];
                                 if ($cancel <> 2) {
                                     $bill[$ref] += $jumlah;
-                                    array_push($bill_history[$ref], $jumlah);
                                     $bill[$ref] -= $diskon;
-                                    if ($diskon > 0) {
-                                        array_push($bill_history[$ref], -$jumlah);
-                                    }
                                 }
 
                                 if ($no == 1) {
@@ -192,9 +178,6 @@
                                 $lunas[$ref] = true;
                             } else {
                                 $lunas[$ref] = false;
-                            }
-                            if ($verify_payment[$ref] >= $bill[$ref] && $ambil_all[$ref] == true && $verify_kas_kecil[$ref] == true) {
-                                array_push($arr_tuntas, $ref);
                             } ?>
 
                             <div class="row mx-0">
@@ -238,20 +221,6 @@
                                             <?php }
                                             } ?>
                                         </tr>
-                                        <tr>
-                                            <td colspan="10"><?= $bill[$ref] ?>|<?= $verify_payment[$ref] ?>
-                                                <pre>
-                                                <?php
-                                                print_r($bill_history[$ref]);
-                                                ?>
-                                            </pre>
-                                                <pre>
-                                                <?php
-                                                print_r($id[$ref]);
-                                                ?>
-                                            </pre>
-                                            </td>
-                                        </tr>
                                     </table>
                                 </div>
                             </div>
@@ -265,10 +234,6 @@
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        //clearTuntas();
-    });
-
     $("#myInput").on("keyup", function() {
         var input = this.value;
         var filter = input.toLowerCase();
