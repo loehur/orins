@@ -159,7 +159,11 @@
                                 $diskon = $do['diskon'] * $do['qty'];
                                 if ($cancel <> 2) {
                                     $bill[$ref] += $jumlah;
+                                    array_push($bill_history[$ref], $jumlah);
                                     $bill[$ref] -= $diskon;
+                                    if ($diskon > 0) {
+                                        array_push($bill_history[$ref], -$jumlah);
+                                    }
                                 }
 
                                 if ($no == 1) {
