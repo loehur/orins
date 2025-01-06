@@ -72,27 +72,31 @@ class Gudang_Input extends Controller
       $sds = isset($_POST['sds']) ? $_POST['sds'] : 0;
       $error = 0;
 
+      $cek = $this->db(0)->count_where('master_supplier', "nama = '" . $supplier . "'");
+
       if (strlen($supplier_c) == 0 || strlen($supplier_c) != 8) {
          $supplier_c = substr($supplier, 0, 1) . date('ymd') . rand(0, 9);
       }
 
-      //SUPPLIER
-      $cols = 'id,nama';
-      $vals = "'" . $supplier_c . "','" . $supplier . "'";
-      $do = $this->db(0)->insertCols('master_supplier', $cols, $vals);
-      if ($do['errno'] == 1062) {
-         $set = "nama = '" . $supplier . "'";
-         $where_supplier = "id = '" . $supplier_c . "'";
-         $up = $this->db(0)->update('master_supplier', $set, $where_supplier);
-         if ($up['errno'] <> 0) {
-            $error .= $up['error'];
+      if ($cek == 0) {
+         //SUPPLIER
+         $cols = 'id,nama';
+         $vals = "'" . $supplier_c . "','" . $supplier . "'";
+         $do = $this->db(0)->insertCols('master_supplier', $cols, $vals);
+         if ($do['errno'] == 1062) {
+            $set = "nama = '" . $supplier . "'";
+            $where_supplier = "id = '" . $supplier_c . "'";
+            $up = $this->db(0)->update('master_supplier', $set, $where_supplier);
+            if ($up['errno'] <> 0) {
+               $error .= $up['error'];
+               echo $error;
+               exit();
+            }
+         } else if ($do['errno'] <> 0) {
+            $error .= $do['error'];
             echo $error;
             exit();
          }
-      } else if ($do['errno'] <> 0) {
-         $error .= $do['error'];
-         echo $error;
-         exit();
       }
 
       $id = date('ymdHis') . rand(0, 9);
