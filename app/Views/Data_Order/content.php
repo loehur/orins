@@ -227,6 +227,9 @@
                                             <?php }
                                             } ?>
                                         </tr>
+                                        <tr>
+                                            <td colspan="10"><?= $bill[$ref] ?>|<?= $verify_payment[$ref] ?></td>
+                                        </tr>
                                     </table>
                                 </div>
                             </div>
