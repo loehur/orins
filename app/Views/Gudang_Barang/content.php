@@ -114,7 +114,7 @@ $max_length = [2, 2, 2, 3];
                             <?php } ?>
                         </td>
                         <td class="">
-                            <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span><br>
+                            <span class="text-sm text-primary"><?= strtoupper($a['grup']) ?></span> <span class="text-sm text-success"><?= strtoupper($a['tipe']) ?></span><br>
                             <?php if ($a['sp'] == 0) { ?>
                                 <?= strtoupper($a['brand']) ?>
                                 <span class="cell_edit_name" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
