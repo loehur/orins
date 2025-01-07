@@ -122,7 +122,7 @@
     $("#barang").change(function() {
         var get = $(this).val();
         if (get != "") {
-            $('#stok_data').load('<?= PV::BASE_URL ?>Gudang_Penjualan/stok_data/' + val + '/' + '<?= $d['id'] ?>');
+            $('#stok_data').load('<?= PV::BASE_URL ?>Gudang_Penjualan/stok_data/' + get + '/' + '<?= $d['id'] ?>');
         }
     })
 </script>
