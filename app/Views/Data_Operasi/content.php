@@ -246,7 +246,7 @@
 
                                             $divisi_arr = unserialize($do['spk_dvs']);
                                             $divisi = [];
-                                            $countSPK =  count($divisi_arr);
+                                            $countSPK = count($divisi_arr);
                                             foreach ($divisi_arr as $key => $dv) {
                                                 foreach ($data['divisi'] as $dv_) {
                                                     if ($dv_['id_divisi'] == $key) {
@@ -516,11 +516,6 @@
                         </small>
                     </div>
                 </div>
-                <?php
-                if ($verify_payment >= $bill && $ambil_all == true && $verify_kas_kecil[$ref] == true) {
-                    array_push($arr_tuntas, $ref);
-                }
-                ?>
             </div>
         <?php } ?>
     </div>
@@ -673,10 +668,6 @@
         $('select.tize').selectize();
 
         var parse_2 = <?= $data['parse_2'] ?>;
-        if (parse_2 == 0) {
-            clearTuntas();
-        }
-
         //MULTI
         totalBill = $("span#totalBill").attr("data-total");
         json_rekap = [<?= json_encode($loadRekap) ?>];
