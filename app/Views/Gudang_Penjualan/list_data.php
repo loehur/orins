@@ -77,8 +77,6 @@
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 <script>
-    var barang = JSON.parse('<?= json_encode($data['barang']) ?>');
-
     $(document).ready(function() {
         $('select.tize').selectize();
     });
@@ -123,12 +121,8 @@
 
     $("#barang").change(function() {
         var get = $(this).val();
-        if (typeof barang[get] != "undefined") {
-            var val = barang[get].id;
-            $("#" + this.id + "_c").val(val);
-            $('#stok_data').load('<?= PV::BASE_URL ?>Stok_Transfer/stok_data/' + val + '/' + '<?= $d['id'] ?>');
-        } else {
-            $("#" + this.id + "_c").val("");
+        if (get != "") {
+            $('#stok_data').load('<?= PV::BASE_URL ?>Gudang_Penjualan/stok_data/' + val + '/' + '<?= $d['id'] ?>');
         }
     })
 </script>
