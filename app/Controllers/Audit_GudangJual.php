@@ -34,7 +34,7 @@ class Audit_GudangJual extends Controller
    {
       $data['input'] = $this->db(0)->get_where('master_input', "tipe = 3 AND cek = 0 ORDER BY tanggal DESC");
       $data['input_done'] = $this->db(0)->get_where('master_input', "tipe = 3 AND cek <> 0 ORDER BY tanggal DESC LIMIT 50");
-      $data['toko'] = $this->db(0)->get_where('pelanggan', "id_pelanggan_jenis = 2", "id_pelanggan");
+      $data['toko'] = $this->db(0)->get_where('pelanggan', "id_pelanggan_jenis = 0", "id_pelanggan");
       $this->view(__CLASS__ . '/content', $data);
    }
 
@@ -49,7 +49,7 @@ class Audit_GudangJual extends Controller
    function list_data($id)
    {
       $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
-      $data['toko'] = $this->db(0)->get_where('pelanggan', "id_pelanggan_jenis = 2", "id_pelanggan");
+      $data['toko'] = $this->db(0)->get_where('pelanggan', "id_pelanggan_jenis = 0", "id_pelanggan");
 
       $cols = "id, code, CONCAT(brand,' ',model) as nama, product_name";
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');

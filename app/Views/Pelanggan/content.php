@@ -6,8 +6,10 @@ if ($id_pelanggan_jenis == 1) {
     $pelanggan_jenis = "Umum";
 } else if ($id_pelanggan_jenis == 2) {
     $pelanggan_jenis = "Rekanan";
-} else {
+} else if ($id_pelanggan_jenis == 3) {
     $pelanggan_jenis = "Online";
+} else {
+    $pelanggan_jenis = "Gudang";
 }
 ?>
 

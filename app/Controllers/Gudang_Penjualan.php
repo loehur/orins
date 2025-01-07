@@ -31,7 +31,7 @@ class Gudang_Penjualan extends Controller
 
    public function content()
    {
-      $data['tujuan'] = $this->db(0)->get_where('pelanggan', 'id_pelanggan_jenis = 2', 'id_pelanggan');
+      $data['tujuan'] = $this->db(0)->get_where('pelanggan', 'id_pelanggan_jenis = 0', 'id_pelanggan');
       $data['input'] = $this->db(0)->get_where('master_input', 'tipe = 3 ORDER BY id DESC');
       $this->view(__CLASS__ . '/content', $data);
    }
@@ -47,7 +47,7 @@ class Gudang_Penjualan extends Controller
    function list_data($id)
    {
       $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
-      $data['tujuan'] = $this->db(0)->get_where('pelanggan', 'id_pelanggan_jenis = 2', 'id_pelanggan');
+      $data['tujuan'] = $this->db(0)->get_where('pelanggan', 'id_pelanggan_jenis = 0', 'id_pelanggan');
       $cols = "id, code, CONCAT(brand,' ',model) as nama";
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");

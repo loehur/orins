@@ -8,7 +8,7 @@ class Pelanggan extends Controller
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[3])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[3]) && !in_array($this->userData['user_tipe'], PV::PRIV[7])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -34,6 +34,11 @@ class Pelanggan extends Controller
             "content" => $this->v_content,
             "title" => "Pelanggan - Online"
          ]);
+      } else {
+         $this->view("Layouts/layout_main", [
+            "content" => $this->v_content,
+            "title" => "Pelanggan - Online"
+         ]);
       }
       $this->viewer($jenis_pelanggan);
    }
@@ -45,7 +50,11 @@ class Pelanggan extends Controller
 
    public function content($parse = "1")
    {
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse;
+      if ($parse <> 0) {
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse;
+      } else {
+         $where = "en = 1 AND id_pelanggan_jenis = " . $parse;
+      }
       $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $where);
       $data['id_jenis_pelanggan'] = $parse;
       $data["_c"] = __CLASS__;
