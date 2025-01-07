@@ -383,10 +383,9 @@ $max_length = [2, 2, 2, 3];
                     success: function(res) {
                         click = 0;
                         if (res == 0) {
-                            content();
+                            el.html(value_after);
                         } else {
                             alert(res);
-                            content();
                         }
                     },
                 });
