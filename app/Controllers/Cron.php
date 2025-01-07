@@ -91,13 +91,13 @@ class Cron extends Controller
       $tuntas_date = date("Y-m-d");
       $where = "ref = '" . $ref . "'";
       $data['paket'] = $this->db(0)->get('paket_main', "id");
-      $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where, 'ref', 1);
+      $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref');
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where, 'ref');
       $where_kas = "jenis_transaksi = 1 AND ref_transaksi = '" . $ref . "'";
-      $data['kas'] = $this->db(0)->get_where('kas', $where_kas, 'ref_transaksi', 1);
+      $data['kas'] = $this->db(0)->get_where('kas', $where_kas, 'ref_transaksi');
       $data['kas_kecil'] = $this->db(0)->get_where('kas_kecil', $where, 'ref');
       $where = "ref_transaksi = '" . $ref . "'";
-      $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi', 1);
+      $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi');
 
       //MULAI
       $verify_kas_kecil = true;
@@ -131,9 +131,6 @@ class Cron extends Controller
             }
          }
       }
-
-      print_r($data['order']);
-      exit();
 
       if (count($data['order']) > 0) {
          foreach ($data['order'] as $do) {
