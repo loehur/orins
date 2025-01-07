@@ -89,7 +89,6 @@ class Cron extends Controller
       }
 
       $tuntas_date = date("Y-m-d");
-
       $where = "ref = '" . $ref . "'";
       $data['kas'] = [];
       $data['paket'] = $this->db(0)->get('paket_main', "id");
@@ -103,7 +102,7 @@ class Cron extends Controller
 
       //MULAI
       $verify_kas_kecil = true;
-      if (isset($data['kas_kecil'])) {
+      if (count($data['kas_kecil']) > 0) {
          if ($data['kas_kecil']['st'] <> 1) {
             $verify_kas_kecil = false;
          }
