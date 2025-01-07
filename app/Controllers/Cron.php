@@ -42,6 +42,8 @@ class Cron extends Controller
       }
    }
 
+
+
    function update_idproduk($year)
    {
       $data_harga = $this->db(0)->get('produk_harga');
@@ -73,5 +75,133 @@ class Cron extends Controller
             }
          }
       }
+   }
+
+   public function cek_tuntas()
+   {
+      $where_ref = "tuntas = 0 ORDER BY cek_count ASC LIMIT 1";
+      $cek = $this->db(0)->get_where_row('ref', $where_ref, 'ref');
+
+      if (isset($cek)) {
+         $ref = $cek['ref'];
+      } else {
+         exit();
+      }
+
+      $tuntas_date = date("Y-m-d");
+
+      $where = "ref = '" . $ref . "'";
+      $data['kas'] = [];
+      $data['paket'] = $this->db(0)->get('paket_main', "id");
+      $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where, 'ref', 1);
+      $where_kas = "jenis_transaksi = 1 AND ref_transaksi = '" . $ref . "'";
+      $data['kas'] = $this->db(0)->get_where('kas', $where_kas, 'ref_transaksi', 1);
+      $data['kas_kecil'] = $this->db(0)->get_where('kas_kecil', $where, 'ref');
+      $where = "ref_transaksi = '" . $ref . "'";
+      $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi', 1);
+
+      //MULAI
+      $verify_kas_kecil = true;
+      if (isset($data['kas_kecil'])) {
+         if ($data['kas_kecil']['st'] <> 1) {
+            $verify_kas_kecil = false;
+         }
+      }
+
+      $bill = 0;
+      $ambil_all = true;
+      $verify_payment = 0;
+
+      if (count($data['kas']) > 0) {
+         foreach ($data['kas'] as $dk) {
+            if ($dk['metode_mutasi'] == 1 && $dk['status_mutasi'] == 1 &&  $dk['status_setoran'] == 1) {
+               $verify_payment += $dk['jumlah'];
+            }
+
+            if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3 || $dk['metode_mutasi'] == 4) && $dk['status_mutasi'] == 1) {
+               $verify_payment += $dk['jumlah'];
+            }
+         }
+      }
+
+      if (count($data['diskon']) > 0) {
+         foreach ($data['diskon'] as $ds) {
+            if ($ds['cancel'] == 0) {
+               $verify_payment += $ds['jumlah'];
+            }
+         }
+      }
+
+      if (isset($data['order'])) {
+         foreach ($data['order'] as $do) {
+
+            if ($do['tuntas'] == 1) {
+               $tuntas = true;
+               $tuntas_date = $do['tuntas_date'];
+               break;
+            }
+
+            $jumlah = $do['harga'] * $do['jumlah'];
+            $cancel = $do['cancel'];
+
+            if ($cancel == 0 && $do['stok'] == 0) {
+               $bill += $jumlah + $do['margin_paket'];
+            }
+
+            $bill -= $do['diskon'];
+            $id_ambil = $do['id_ambil'];
+            $divisi_arr = unserialize($do['spk_dvs']);
+            $countSPK = count($divisi_arr);
+            if ($id_ambil == 0 && $cancel == 0) {
+               if ($countSPK > 0 && $cancel == 0) {
+                  $ambil_all = false;
+               }
+            }
+         }
+      }
+
+      if (isset($data['mutasi'])) {
+         foreach ($data['mutasi'] as $do) {
+            if ($do['tuntas'] == 1) {
+               $tuntas = true;
+               $tuntas_date = $do['tuntas_date'];
+               break;
+            }
+
+            $cancel_barang = $do['stat'];
+            $jumlah = $do['qty'];
+            if ($cancel_barang <> 2) {
+               $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
+               $bill -= ($do['diskon'] * $jumlah);
+            }
+         }
+      }
+
+      if ($tuntas == true) {
+         $this->update_ref($ref, $tuntas_date);
+         exit();
+      }
+
+      if ($verify_payment >= $bill && $ambil_all == true && $verify_kas_kecil[$ref] == true) {
+         $this->clearTuntas($ref);
+      }
+   }
+
+   public function clearTuntas($ref)
+   {
+      $today = date("Y-m-d");
+      $set = "tuntas = 1, tuntas_date = '" . $today . "'";
+      $where = "ref = '" . $ref . "'";
+      $this->db(0)->update("order_data", $set, $where);
+      $this->db(0)->update("master_mutasi", $set, $where);
+      $this->update_ref($ref, $today);
+   }
+
+   function update_ref($ref, $date)
+   {
+      $set = "cek_count = cek_count + 1, tuntas = 1, tuntas_date = '" . $date . "'";
+      $where = "ref = '" . $ref . "'";
+      $this->db(0)->update("ref", $set, $where);
    }
 }
