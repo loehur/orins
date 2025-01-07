@@ -90,7 +90,6 @@ class Cron extends Controller
 
       $tuntas_date = date("Y-m-d");
       $where = "ref = '" . $ref . "'";
-      $data['kas'] = [];
       $data['paket'] = $this->db(0)->get('paket_main', "id");
       $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where, 'ref', 1);
@@ -133,9 +132,11 @@ class Cron extends Controller
          }
       }
 
+      print_r($data['order']);
+      exit();
+
       if (count($data['order']) > 0) {
          foreach ($data['order'] as $do) {
-
             if ($do['tuntas'] == 1) {
                $tuntas = true;
                $tuntas_date = $do['tuntas_date'];
