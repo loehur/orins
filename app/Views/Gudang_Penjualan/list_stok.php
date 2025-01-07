@@ -1,7 +1,7 @@
 <?php foreach ($data['stok'] as $d) { ?>
     <?php if ($d['qty'] > 0) { ?>
         <form action="<?= PV::BASE_URL ?>Stok_Transfer/add_mutasi/<?= $data['ref'] ?>" method="POST">
-            <div class="row mb-2 mx-0 text-sm border-bottom">
+            <div class="row mb-2 mx-0 px-1 text-sm border-bottom">
                 <div class="col-auto px-1 mb-2 text-center">
                     <input type="hidden" name="sds" value="<?= $d['sds'] ?>">
                     <input type="hidden" name="kode" value="<?= $d['id_barang'] ?>">
@@ -20,7 +20,7 @@
                 <div class="col text-end px-1 mb-2 text-end" id="col_qty">
                     <input id="qty" required type="number" min="1" value="<?= strlen($d['sn']) > 0 ? 1 : "" ?>" max="<?= $d['qty'] ?>" class="px-2 text-center border-bottom border-0" name="qty" style="text-transform: uppercase;">
                 </div>
-                <div class="col-auto text-end mb-2">
+                <div class="col-auto pe-0 text-end mb-2">
                     <button type="submit" class="btn btn-sm btn-outline-success">Add</button>
                 </div>
             </div>
