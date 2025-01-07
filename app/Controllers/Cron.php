@@ -133,7 +133,7 @@ class Cron extends Controller
          }
       }
 
-      if (isset($data['order'])) {
+      if (count($data['order']) > 0) {
          foreach ($data['order'] as $do) {
 
             if ($do['tuntas'] == 1) {
@@ -161,7 +161,7 @@ class Cron extends Controller
          }
       }
 
-      if (isset($data['mutasi'])) {
+      if (count($data['mutasi']) > 0) {
          foreach ($data['mutasi'] as $do) {
             if ($do['tuntas'] == 1) {
                $tuntas = true;
