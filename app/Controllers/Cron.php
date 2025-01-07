@@ -88,6 +88,10 @@ class Cron extends Controller
          exit();
       }
 
+      $set = "cek_count = cek_count + 1";
+      $where = "ref = '" . $ref . "'";
+      $this->db(0)->update("ref", $set, $where);
+
       $tuntas_date = date("Y-m-d");
       $where = "ref = '" . $ref . "'";
       $data['paket'] = $this->db(0)->get('paket_main', "id");
@@ -198,7 +202,7 @@ class Cron extends Controller
 
    function update_ref($ref, $date)
    {
-      $set = "cek_count = cek_count + 1, tuntas = 1, tuntas_date = '" . $date . "'";
+      $set = "tuntas = 1, tuntas_date = '" . $date . "'";
       $where = "ref = '" . $ref . "'";
       $this->db(0)->update("ref", $set, $where);
    }
