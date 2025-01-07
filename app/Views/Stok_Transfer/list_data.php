@@ -123,12 +123,8 @@
 
     $("#barang").change(function() {
         var get = $(this).val();
-        if (typeof barang[get] != "undefined") {
-            var val = barang[get].id;
-            $("#" + this.id + "_c").val(val);
-            $('#stok_data').load('<?= PV::BASE_URL ?>Stok_Transfer/stok_data/' + val + '/' + '<?= $d['id'] ?>');
-        } else {
-            $("#" + this.id + "_c").val("");
+        if (get != "") {
+            $('#stok_data').load('<?= PV::BASE_URL ?>Stok_Transfer/stok_data/' + get + '/' + '<?= $d['id'] ?>');
         }
     })
 </script>
