@@ -111,6 +111,7 @@ class Cron extends Controller
       $bill = 0;
       $ambil_all = true;
       $verify_payment = 0;
+      $tuntas = false;
 
       if (count($data['kas']) > 0) {
          foreach ($data['kas'] as $dk) {
