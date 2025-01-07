@@ -276,6 +276,53 @@ class Gudang_Barang extends Controller
       echo 0;
    }
 
+   function update_head()
+   {
+      //cek dulu
+      $mode = strtoupper($_POST['mode']);
+      $value = $_POST['value'];
+      $code = $_POST['code'];
+
+      switch ($mode) {
+         case 'T':
+            $set = "nama = '" . $value . "'";
+            $where = "id = '" . $code . "'";
+            $up = $this->db(0)->update('master_tipe', $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+
+            $set = "tipe = '" . strtoupper($value) . "'";
+            $where = "code_s LIKE '%#" . $mode . "-" . $code . "#%'";
+            $up = $this->db(0)->update('master_barang', $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+            break;
+         case 'G':
+            $set = "nama = '" . $value . "'";
+            $where = "id = '" . $code . "'";
+            $up = $this->db(0)->update('master_grup', $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+
+            $set = "grup = '" . strtoupper($value) . "'";
+            $where = "code_s LIKE '%" . $mode . "-" . $code . "#%'";
+            $up = $this->db(0)->update('master_barang', $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+            break;
+      }
+
+      echo 0;
+   }
+
    public function update_pbsn()
    {
       $id = $_POST['id'];

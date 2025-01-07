@@ -1,5 +1,4 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
-
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
 <style>
     .dt-search {
@@ -113,11 +112,12 @@ $max_length = [2, 2, 2, 3];
                                 </label>
                             <?php } ?>
                         </td>
+                        <?php $split_code = str_split($a['code'], 2) ?>
                         <td class="">
-                            <span class="text-sm text-primary"><?= strtoupper($a['grup']) ?></span> <span class="text-sm text-success"><?= strtoupper($a['tipe']) ?></span><br>
+                            <span class="text-sm text-primary cell_edit_head" data-code="<?= $split_code[0] ?>" data-mode="G"><?= strtoupper($a['grup']) ?></span> <span class="text-sm text-success cell_edit_head" data-code="<?= $split_code[1] ?>" data-mode="T"><?= strtoupper($a['tipe']) ?></span><br>
                             <?php if ($a['sp'] == 0) { ?>
-                                <?= strtoupper($a['brand']) ?>
-                                <span class="cell_edit_name" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
+                                <span class="fw-bold"><?= strtoupper($a['brand']) ?></span>
+                                <span class="cell_edit_name text-purple" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
                             <?php } else { ?>
                                 <span class="text-sm"><?= strtoupper($a['product_name']) ?></span>
                             <?php } ?>
@@ -225,7 +225,61 @@ $max_length = [2, 2, 2, 3];
                             el.html(value_after);
                         } else {
                             alert(res);
-                            content();
+                        }
+                    },
+                });
+            }
+        });
+    });
+
+    $(".cell_edit_head").on('dblclick', function() {
+        click = click + 1;
+        if (click != 1) {
+            return;
+        }
+
+        var mode = $(this).attr('data-mode');
+        var code = $(this).attr('data-code');
+
+        var value = $(this).html();
+        var value_before = value;
+        if (value == "[ ]") {
+            value = "";
+        }
+        var el = $(this);
+        var width = el.parent().width();
+        var align = "left";
+
+        el.css("width", width);
+        el.html("<input required type=" + tipe + " style='text-transform:uppercase;outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value='" + value + "'>");
+
+        $("#value_").focus();
+        $('#value_').keypress(function(e) {
+            if (e.which == 13) {
+                $(this).blur();
+            }
+        });
+        $("#value_").focusout(function() {
+            var value_after = $(this).val().toUpperCase();
+            if (value_after === value_before || value_after == "") {
+                el.html(value);
+                click = 0;
+            } else {
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>Gudang_Barang/update_head',
+                    data: {
+                        'value': value_after,
+                        'mode': mode,
+                        'code': code
+                    },
+                    type: 'POST',
+                    dataType: 'html',
+                    success: function(res) {
+                        click = 0;
+                        if (res == 0) {
+                            el.html(value_after);
+                        } else {
+                            alert(res);
                         }
                     },
                 });
