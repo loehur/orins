@@ -37,7 +37,7 @@ class Pelanggan extends Controller
       } else {
          $this->view("Layouts/layout_main", [
             "content" => $this->v_content,
-            "title" => "Pelanggan - Online"
+            "title" => "Pelanggan - Gudang"
          ]);
       }
       $this->viewer($jenis_pelanggan);
