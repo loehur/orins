@@ -195,9 +195,9 @@ class Cron extends Controller
          }
       } else {
          echo "Bill " . $bill . "<br>";
-         echo "Verify Payment" . $verify_payment . "<br>";
-         echo "Ambil All" . $ambil_all . "<br>";
-         echo "Verify Kas Kecil" . $verify_kas_kecil . "<br>";
+         echo "Verify Payment " . $verify_payment . "<br>";
+         echo "Ambil All " . $ambil_all . "<br>";
+         echo "Verify Kas Kecil " . $verify_kas_kecil . "<br>";
       }
    }
 
