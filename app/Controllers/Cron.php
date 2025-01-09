@@ -198,8 +198,14 @@ class Cron extends Controller
          echo "<tabel>";
          echo "<tr>";
          echo "<td>Bill " . $bill . "</td>";
+         echo "</tr>";
+         echo "<tr>";
          echo "<td>Verify Payment" . $verify_payment . "</td>";
+         echo "</tr>";
+         echo "<tr>";
          echo "<td>Ambil All" . $ambil_all . "</td>";
+         echo "</tr>";
+         echo "<tr>";
          echo "<td>Verify Kas Kecil" . $verify_kas_kecil . "</td>";
          echo "</tr>";
          echo "</tabel>";
