@@ -152,7 +152,7 @@ class Cron extends Controller
             $cancel = $do['cancel'];
 
             if ($cancel == 0 && $do['stok'] == 0) {
-               $bill += $jumlah + $do['margin_paket'];
+               $bill += ($jumlah + $do['margin_paket']);
             }
 
             $bill -= $do['diskon'];
