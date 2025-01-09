@@ -214,7 +214,7 @@
 
         if (count($data['order']) > 0) {
             foreach ($data['order'] as $do) {
-                if ($do['paket_ref'] <> "") {
+                if ($do['paket_ref'] <> "" || $do['cancel'] <> 0) {
                     continue;
                 }
                 $no += 1;
@@ -229,8 +229,7 @@
                     $disk = $ld_o['d'];
                     $akum_diskon += $disk;
                     $total_disc += $disk * $do['jumlah'];
-                }
-            ?>
+                } ?>
 
                 <tr style="border-bottom: 1px solid silver;">
                     <td style="text-align: right; vertical-align:text-top; padding-right:5px" valign="top">
