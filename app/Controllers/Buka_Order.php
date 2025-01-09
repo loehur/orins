@@ -809,7 +809,7 @@ class Buka_Order extends Controller
          $data['barang'] = $this->db(0)->get('master_barang', 'id');
          $data['order'] = $this->db(0)->get_where('order_data', $where_order);
          $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_barang);
-         $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
+         $data['paket'] = $this->db(0)->get('paket_main', "id");
 
          foreach ($data['mutasi'] as $dbr) {
             $id_sumber = $dbr['id_sumber'];
