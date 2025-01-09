@@ -142,7 +142,7 @@ class Cron extends Controller
 
       if (count($data['order']) > 0) {
          foreach ($data['order'] as $do) {
-            if ($do['tuntas'] == 1) {
+            if ($do['tuntas'] == 1 && $print == false) {
                $tuntas = true;
                $tuntas_date = $do['tuntas_date'];
                break;
