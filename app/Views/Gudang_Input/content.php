@@ -67,7 +67,7 @@
                         <?php } ?>
                     </td>
                     <td>
-                        <?= $a['sds'] == 1 ? "SDS-<b>YES</b>" : "SDS-NO" ?>
+                        <?= $a['sds'] == 1 ? "SDS" : "ABF" ?>
                     </td>
                     <td class="align-middle">
                         <?php if ($a['cek'] == 0) { ?>
