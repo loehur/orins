@@ -194,7 +194,6 @@ class Cron extends Controller
             $this->clearTuntas($ref);
          }
       } else {
-         echo "<pre>";
          echo "<tabel>";
          echo "<tr>";
          echo "<td>Bill " . $bill . "</td>";
@@ -209,7 +208,6 @@ class Cron extends Controller
          echo "<td>Verify Kas Kecil" . $verify_kas_kecil . "</td>";
          echo "</tr>";
          echo "</tabel>";
-         echo "</pre>";
       }
    }
 
