@@ -122,7 +122,7 @@ class Cron extends Controller
 
       if (count($data['kas']) > 0) {
          foreach ($data['kas'] as $dk) {
-            if ($dk['metode_mutasi'] == 1 && $dk['status_mutasi'] == 1 &&  $dk['status_setoran'] == 1) {
+            if ($dk['metode_mutasi'] == 1 && $dk['status_mutasi'] == 1 && $dk['status_setoran'] == 1) {
                $verify_payment += $dk['jumlah'];
             }
 

@@ -258,22 +258,4 @@
         var id = $(this).attr("data-id");
         window.location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + id;
     });
-
-    function clearTuntas() {
-        var dataNya = '<?= serialize($arr_tuntas) ?>';
-        var countArr = <?= count($arr_tuntas) ?>;
-
-        if (countArr > 0) {
-            $.ajax({
-                url: '<?= PV::BASE_URL ?>Data_Operasi/clearTuntas',
-                data: {
-                    'data': dataNya,
-                },
-                type: 'POST',
-                success: function() {
-                    content();
-                }
-            });
-        }
-    }
 </script>

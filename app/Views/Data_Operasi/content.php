@@ -678,24 +678,6 @@
         }
     });
 
-    function clearTuntas() {
-        var dataNya = '<?= serialize($arr_tuntas) ?>';
-        var countArr = <?= count($arr_tuntas) ?>;
-
-        if (countArr > 0) {
-            $.ajax({
-                url: '<?= PV::BASE_URL ?>Data_Operasi/clearTuntas',
-                data: {
-                    'data': dataNya,
-                },
-                type: 'POST',
-                success: function() {
-                    content();
-                }
-            });
-        }
-    }
-
     $('button.cek').click(function() {
         var parse = $("select[name=id_pelanggan]").val();
         var parse_2 = $("select[name=y]").val() || 0;
