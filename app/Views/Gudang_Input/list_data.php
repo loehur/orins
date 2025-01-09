@@ -59,7 +59,7 @@
             </form>
         <?php } ?>
 
-        <table class="table table-sm mx-1">
+        <table class="table table-sm mx-1 text-sm">
             <?php
             $nos = 0;
             foreach ($data['mutasi'] as $id_) {
