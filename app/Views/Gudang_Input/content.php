@@ -1,18 +1,17 @@
-<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
 <main>
     <!-- Main page content-->
     <div class="container">
         <form action="<?= PV::BASE_URL ?>Gudang_Input/add" method="POST">
             <div class="row mb-2">
-                <div class="col-auto text-center px-1 mb-2">
-                    <label>Code Suppiler</label><br>
-                    <input name="supplier_c" id="supplier_c" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
-                </div>
                 <div class="col-auto px-1 mb-2">
-                    <div class="autocomplete">
-                        <label>Suppiler</label><br>
-                        <input name="supplier" required class="ac border-bottom border-0" id="supplier" style="text-transform: uppercase;">
-                    </div>
+                    <label>Supplier</label><br>
+                    <select name="supplier" required class="border-0 tize" id="tujuan" style="text-transform: uppercase; width:200px">
+                        <option></option>
+                        <?php foreach ($data['supplier'] as $tj) { ?>
+                            <option value="<?= $tj['id'] ?>"><?= strtoupper($tj['nama']) ?></option>
+                        <?php } ?>
+                    </select>
                 </div>
                 <div class="col-auto px-1 mb-2 text-center">
                     <label>Tanggal</label><br>
@@ -83,15 +82,12 @@
 </main>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-<script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 
 <script>
-    var supplier = JSON.parse('<?= json_encode($data['supplier']) ?>');
-
     $(document).ready(function() {
-        autocomplete(document.getElementById("supplier"), supplier);
+        $('select.tize').selectize();
     });
-
     $("form").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
@@ -107,15 +103,6 @@
             },
         });
     });
-
-    setInterval(function() {
-        $(".ac").each(function() {
-            var val = $(this).attr('data-value');
-            if (val != "") {
-                $("#" + this.id + "_c").val(val);
-            }
-        })
-    }, 200);
 
     var click = 0;
     $(".cell_edit").on('dblclick', function() {
