@@ -198,6 +198,10 @@ class Cron extends Controller
          echo "Verify Payment " . $verify_payment . "<br>";
          echo "Ambil All " . $ambil_all . "<br>";
          echo "Verify Kas Kecil " . $verify_kas_kecil . "<br>";
+
+         echo "<pre>";
+         print_r($data['kas']);
+         echo "</pre>";
       }
    }
 
