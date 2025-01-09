@@ -77,9 +77,13 @@ class Cron extends Controller
       }
    }
 
-   public function cek_tuntas()
+   public function cek_tuntas($ref = "", $print = false)
    {
-      $where_ref = "tuntas = 0 ORDER BY cek_count ASC LIMIT 1";
+      if ($ref == "") {
+         $where_ref = "tuntas = 0 ORDER BY cek_count ASC LIMIT 1";
+      } else {
+         $where_ref = "ref = '" . $ref . "'";
+      }
       $cek = $this->db(0)->get_where_row('ref', $where_ref, 'ref');
 
       if (isset($cek)) {
@@ -180,13 +184,26 @@ class Cron extends Controller
          }
       }
 
-      if ($tuntas == true) {
-         $this->update_ref($ref, $tuntas_date);
-         exit();
-      }
+      if ($print == false) {
+         if ($tuntas == true) {
+            $this->update_ref($ref, $tuntas_date);
+            exit();
+         }
 
-      if ($verify_payment >= $bill && $ambil_all == true && $verify_kas_kecil == true) {
-         $this->clearTuntas($ref);
+         if ($verify_payment >= $bill && $ambil_all == true && $verify_kas_kecil == true) {
+            $this->clearTuntas($ref);
+         }
+      } else {
+         echo "<pre>";
+         echo "<tabel>";
+         echo "<tr>";
+         echo "<td>Bill " . $bill . "</td>";
+         echo "<td>Verify Payment" . $verify_payment . "</td>";
+         echo "<td>Ambil All" . $ambil_all . "</td>";
+         echo "<td>Verify Kas Kecil" . $verify_kas_kecil . "</td>";
+         echo "</tr>";
+         echo "</tabel>";
+         echo "</pre>";
       }
    }
 
