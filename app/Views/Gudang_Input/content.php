@@ -173,10 +173,10 @@
                             if (value_after == "") {
                                 el.html("[ ]");
                             } else {
-                                el.html(value_after);
+                                alert(res);
                             }
                         } else {
-                            el.html(res);
+                            alert(res);
                         }
                     },
                 });
