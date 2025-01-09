@@ -99,8 +99,8 @@ class Cron extends Controller
       $tuntas_date = date("Y-m-d");
       $where = "ref = '" . $ref . "'";
       $data['paket'] = $this->db(0)->get('paket_main', "id");
-      $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref');
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where, 'ref');
+      $data['order'] = $this->db(0)->get_where('order_data', $where);
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where);
       $where_kas = "jenis_transaksi = 1 AND ref_transaksi = '" . $ref . "'";
       $data['kas'] = $this->db(0)->get_where('kas', $where_kas, 'ref_transaksi');
       $data['kas_kecil'] = $this->db(0)->get_where('kas_kecil', $where, 'ref');
