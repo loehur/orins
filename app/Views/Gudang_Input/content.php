@@ -40,7 +40,7 @@
             </div>
         </form>
 
-        <table class="table table-sm">
+        <table class="table table-sm text-sm">
             <?php foreach ($data['input'] as $a) { ?>
                 <tr>
                     <td class="align-middle">
