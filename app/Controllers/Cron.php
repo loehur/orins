@@ -201,6 +201,7 @@ class Cron extends Controller
 
          echo "<pre>";
          print_r($data['kas']);
+         print_r($data['diskon']);
          echo "</pre>";
       }
    }
