@@ -272,6 +272,10 @@
         }
         if (count($data['mutasi']) > 0) {
             foreach ($data['mutasi'] as $do) {
+                if ($do['stat'] == 2) {
+                    continue;
+                }
+
                 $akum_diskon = $do['diskon'];
                 $no += 1;
                 $jumlah = $do['qty'];
