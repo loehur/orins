@@ -3,7 +3,7 @@
     <!-- Main page content-->
     <div class="container">
         <form action="<?= PV::BASE_URL ?>Gudang_Input/add" method="POST">
-            <div class="row mb-2">
+            <div class="row mb-2 mx-0">
                 <div class="col-auto px-1 mb-2">
                     <label>Supplier</label><br>
                     <select name="supplier" required class="border-0 tize" id="tujuan" style="text-transform: uppercase; width:200px">

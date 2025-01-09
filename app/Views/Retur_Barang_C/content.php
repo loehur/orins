@@ -1,17 +1,12 @@
 <main>
     <!-- Main page content-->
     <div class="container">
-        <form action="<?= PV::BASE_URL ?>Stok_Transfer/add" method="POST">
+        <form action="<?= PV::BASE_URL ?>Retur_Barang_C/add" method="POST">
             <div class="row mb-2 mx-0">
                 <div class="col-auto px-1 mb-2">
                     <div class="autocomplete">
                         <label>Tujuan</label><br>
-                        <select name="tujuan" required class="ac border-bottom border-0" id="tujuan" style="text-transform: uppercase;">
-                            <option></option>
-                            <?php foreach ($data['tujuan'] as $tj) { ?>
-                                <option value="<?= $tj['id'] ?>"><?= $tj['nama'] ?></option>
-                            <?php } ?>
-                        </select>
+                        <input value="Gudang" readonly class="form-control form-control-sm">
                     </div>
                 </div>
                 <div class="col-auto px-1 mb-2 text-center">
@@ -28,16 +23,13 @@
             <?php foreach ($data['input'] as $a) { ?>
                 <tr>
                     <td class="align-middle">
-                        <a href="<?= PV::BASE_URL ?>Stok_Transfer/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
+                        <a href="<?= PV::BASE_URL ?>Retur_Barang_C/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
                     </td>
                     <td>
                         <?= $a['id'] ?>
                     </td>
                     <td class="">
                         <?= $a['tanggal'] ?>
-                    </td>
-                    <td class="">
-                        <?= strtoupper($data['tujuan'][$a['id_target']]['nama']) ?>
                     </td>
                     <td class="align-middle">
                         <?php if ($a['cek'] == 0) { ?>
