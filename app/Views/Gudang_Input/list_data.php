@@ -193,7 +193,7 @@
                                 $("span.n" + nos + "r" + next).click();
                             }
                         } else {
-                            alert(res);
+                            el.html("[ ]");
                         }
                     },
                 });
