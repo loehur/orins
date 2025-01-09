@@ -173,10 +173,10 @@
                             if (value_after == "") {
                                 el.html("[ ]");
                             } else {
-                                el.html("[ ]");
+                                el.html(value_after);
                             }
                         } else {
-                            el.html("[ ]");
+                            el.html("REJECTED");
                         }
                     },
                 });
