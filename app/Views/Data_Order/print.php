@@ -73,7 +73,7 @@
             <td><small>Pelanggan</small><br><b><span style="color:green;"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> | <span style="color:blue;"><?= $data['mark'] ?></span> #<?= substr($id_pelanggan, -2) ?></td>
             <td><small>CS</small><br><b><?= strtoupper($cs) ?></b></td>
             <td style="text-align: right;"><small>Tanggal</small><br><b><?= date('d/m/y H:i', strtotime($do['insertTime'])) ?></b></td>
-            <td style="text-align: right;"><small>No. Referensi</small><br><b><?= substr($do['ref'], 0, -5) ?>-<span style="color: green;"><?= substr($do['ref'], -5) ?></span></b></td>
+            <td style="text-align: right;"><small>No. Referensi</small><br><b><?= substr($do['ref'], 0, -4) ?>-<span style="color: green;"><?= substr($do['ref'], -4) ?></span></b></td>
         </tr>
     </table>
     <br>
