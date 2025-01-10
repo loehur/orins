@@ -22,7 +22,7 @@
                         <?= $a['id'] ?>
                     </td>
                     <td class="">
-                        <?= $data['toko'][$a['id_sumber']]['nama_toko'] ?>
+                        <?= $data['supplier'][$a['id_target']]['nama'] ?>
                     </td>
                     <td>
                         <?= $a['no_po'] ?>
@@ -50,7 +50,7 @@
                             <?= $a['id'] ?>
                         </td>
                         <td class="">
-                            <?= $data['toko'][$a['id_sumber']]['nama_toko'] ?>
+                            <?= $data['supplier'][$a['id_target']]['nama'] ?>
                         </td>
                         <td>
                             <?= $a['no_po'] ?>
