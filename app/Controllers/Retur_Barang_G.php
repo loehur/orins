@@ -89,7 +89,9 @@ class Retur_Barang_G extends Controller
    {
       $id_barang = $_POST['kode'];
 
-      $target = 0;
+      $head = $this->db(0)->get_where_row('master_input', "id = '" . $ref . "'");
+      $target = $head['id_target'];
+
       $qty = $_POST['qty'];
       $sds = $_POST['sds'];
       $sn =  $_POST['sn'];
