@@ -21,7 +21,9 @@ $max_length = [2, 2, 2, 3];
             <div class="card card-body shadow-sm rounded-0 pb-0">
                 <form action="<?= PV::BASE_URL ?>Gudang_Barang/add" method="POST">
                     <div class="row mx-0 pb-0">
-                        <?php foreach ($input as $k => $i) { ?>
+                        <?php $tab = 0; ?>
+                        <?php foreach ($input as $k => $i) {
+                            $tab += 1; ?>
                             <div class="col px-1 mb-2">
                                 <div class="row mx-0 mb-1">
                                     <div class="col px-0 overflow-auto">
@@ -32,10 +34,10 @@ $max_length = [2, 2, 2, 3];
                                     <div class="col px-0">
                                         <div style="min-width: 100px;">
                                             <label class="text-sm"><?= strtoupper($i) ?></label>
-                                            <input <?= $required[$k] ?> name="<?= $i ?>_c" id="<?= $i ?>_c" minlength="2" class="float-end border-bottom border-0 mb-2 text-center" maxlength="<?= $max_length ?>" style="width: 50px; text-transform:uppercase">
+                                            <input tabindex="99999" <?= $required[$k] ?> name="<?= $i ?>_c" id="<?= $i ?>_c" minlength="2" class="float-end border-bottom border-0 mb-2 text-center" maxlength="<?= $max_length ?>" style="width: 50px; text-transform:uppercase">
                                         </div>
                                         <div class="autocomplete">
-                                            <input data-tab="<?= $k ?>" <?= $required[$k] ?> name="<?= $i ?>" id="<?= $i ?>" class="ac border-bottom border-0 mb-1 w-100" style="text-transform:uppercase">
+                                            <input tabindex="<?= $tab ?>" <?= $required[$k] ?> name="<?= $i ?>" id="<?= $i ?>" class="ac border-bottom border-0 mb-1 w-100" style="text-transform:uppercase">
                                         </div>
                                     </div>
                                 </div>
@@ -43,7 +45,7 @@ $max_length = [2, 2, 2, 3];
                         <?php } ?>
                         <div class="col mt-auto px-1 mb-2">
                             <label class="mb-2 text-sm">KODE BARANG PABRIK</label><br>
-                            <input name="code_f" id="<?= $i ?>" class="border-bottom border-0 mb-1" style="text-transform:uppercase">
+                            <input tabindex="<?= $tab += 1 ?>" name="code_f" id="<?= $i ?>" class="border-bottom border-0 mb-1" style="text-transform:uppercase">
                         </div>
                         <div class="col mb-2 mt-auto">
                             <div class="mb-2">
@@ -58,7 +60,7 @@ $max_length = [2, 2, 2, 3];
                                     Publish
                                 </label>
                             </div>
-                            <button type="submit" class="btn btn-outline-success">Create</button>
+                            <button type="submit" tabindex="<?= $tab += 1 ?>" class="btn btn-outline-success">Create</button>
                         </div>
                     </div>
                 </form>
