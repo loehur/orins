@@ -58,7 +58,7 @@ class Retur_Barang_G extends Controller
    function stok_data($kode, $ref)
    {
       $data['ref'] = $ref;
-      $data['stok'] = $this->data('Barang')->stok_data($kode, $this->userData['id_toko']);
+      $data['stok'] = $this->data('Barang')->stok_data($kode, 0);
       $this->view(__CLASS__ . '/list_stok', $data);
    }
 
