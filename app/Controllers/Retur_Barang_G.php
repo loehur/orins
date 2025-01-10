@@ -1,12 +1,12 @@
 <?php
 
-class Retur_Barang_C extends Controller
+class Retur_Barang_G extends Controller
 {
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[7])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -31,7 +31,8 @@ class Retur_Barang_C extends Controller
 
    public function content()
    {
-      $data['input'] = $this->db(0)->get_where('master_input', "tipe = 4 AND id_sumber = '" . $this->userData['id_toko'] . "' ORDER BY id DESC");
+      $data['supplier'] = $this->db(0)->get('master_supplier', 'id');
+      $data['input'] = $this->db(0)->get_where('master_input', 'tipe = 4 AND id_sumber = 0 ORDER BY id DESC');
       $this->view(__CLASS__ . '/content', $data);
    }
 
@@ -71,10 +72,11 @@ class Retur_Barang_C extends Controller
    {
       $tanggal = $_POST['tanggal'];
       $error = 0;
+      $supplier = strtoupper($_POST['supplier']);
 
       $id = date('ymdHi');
       $cols = 'id, tipe, id_sumber, id_target, tanggal, user_id';
-      $vals = "'" . $id . "',4," . $this->userData['id_toko'] . ",0,'" . $tanggal . "'," . $this->userData['id_user'];
+      $vals = "'" . $id . "',4,0,'" . $supplier . "','" . $tanggal . "'," . $this->userData['id_user'];
       $do = $this->db(0)->insertCols('master_input', $cols, $vals);
       if ($do['errno'] <> 0) {
          $error .= $do['error'];
@@ -96,8 +98,8 @@ class Retur_Barang_C extends Controller
          $sn_c = 1;
       }
 
-      $id_sumber = $this->userData['id_toko'];
-      $cek = $this->data('Barang')->cek($id_barang, $this->userData['id_toko'], $sn, $sds, $qty);
+      $id_sumber = 0;
+      $cek = $this->data('Barang')->cek($id_barang, 0, $sn, $sds, $qty);
       if ($cek == false) {
          echo "Stok ter-update tidak tersedia";
          exit();

@@ -31,8 +31,8 @@ class Gudang_BMasuk extends Controller
 
    public function content()
    {
-      $data['input'] = $this->db(0)->get_where('master_input', "tipe = 4 AND id_target = 0 AND cek = 0 ORDER BY id DESC");
-      $data['input_done'] = $this->db(0)->get_where('master_input', "tipe = 4 AND id_target = 0 AND cek <> 0 ORDER BY id DESC LIMIT 50");
+      $data['input'] = $this->db(0)->get_where('master_input', "tipe = 4 AND id_sumber = 0 AND cek = 0 ORDER BY id DESC");
+      $data['input_done'] = $this->db(0)->get_where('master_input', "tipe = 4 AND id_sumber = 0 AND cek <> 0 ORDER BY id DESC LIMIT 50");
       $data['toko'] = $this->db(0)->get_where('toko', 'en = 1', 'id_toko');
       $this->view(__CLASS__ . '/content', $data);
    }
