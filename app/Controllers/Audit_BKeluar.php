@@ -1,12 +1,12 @@
 <?php
 
-class Gudang_BMasuk extends Controller
+class Audit_BKeluar extends Controller
 {
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[7])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[6])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
