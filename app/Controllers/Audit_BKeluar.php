@@ -18,7 +18,7 @@ class Gudang_BMasuk extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Gudang - Barang Masuk"
+         "title" => "Audit - Barang Keluar"
       ]);
 
       $this->viewer();
@@ -40,7 +40,7 @@ class Gudang_BMasuk extends Controller
    public function list($id)
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Gudang - Barang Masuk"
+         "title" => "Audit - Barang Keluar"
       ]);
       $this->viewer($page = "list_data", $id);
    }
