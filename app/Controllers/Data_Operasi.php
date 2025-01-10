@@ -143,20 +143,6 @@ class Data_Operasi extends Controller
       $this->view($this->v_content, $data);
    }
 
-   public function clearTuntas()
-   {
-      $today = date("Y-m-d");
-      if (isset($_POST['data'])) {
-         $data = unserialize($_POST['data']);
-         foreach ($data as $a) {
-            $set = "tuntas = 1, tuntas_date = '" . $today . "'";
-            $where = "ref = '" . $a . "'";
-            $this->db(0)->update("order_data", $set, $where);
-            $this->db(0)->update("master_mutasi", $set, $where);
-         }
-      }
-   }
-
    public function bayar_multi()
    {
       if (isset($_POST['ref_multi'])) {
