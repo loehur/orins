@@ -6,7 +6,7 @@ class Gudang_BMasuk extends Controller
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[6])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[7])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
