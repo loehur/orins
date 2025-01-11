@@ -229,8 +229,23 @@
                             <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
                             <td><?= $set['ref_setoran'] ?></td>
                             <td class="text-end">
-                                <?php if ($set['status_setoran'] == 0 && !isset($data['split'][$set['ref_setoran']]) && !isset($data['setor_office'][$set['ref_setoran']])) { ?>
-                                    <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= $totalSetor ?>)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
+                                <?php if ($set['status_setoran'] == 0) { ?>
+                                    <?php
+                                    $kecil_verif = false;
+                                    if (isset($data['split'][$set['ref_setoran']])) {
+                                        if ($data['split'][$set['ref_setoran']]['st'] == 1) {
+                                            $kecil_verif = true;
+                                        }
+                                    }
+                                    if (isset($data['setor_office'][$set['ref_setoran']])) {
+                                        if ($data['setor_office'][$set['ref_setoran']]['st'] == 1) {
+                                            $kecil_verif = true;
+                                        }
+                                    }
+
+                                    if ($kecil_verif == false) { ?>
+                                        <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= $totalSetor ?>)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
+                                    <?php } ?>
                                 <?php } ?>
                             </td>
                             <td class="text-end">
