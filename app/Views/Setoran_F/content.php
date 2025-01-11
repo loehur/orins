@@ -140,7 +140,7 @@
                                             $st_slip = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
                                             break;
                                     } ?>
-
+                                    <?php $totalSetor -= $ds['jumlah'] ?>
                                     <div class="text-sm">
                                         <?= $st_slip ?> Uang Kecil <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
                                     </div>
@@ -158,6 +158,7 @@
                                             $st_slip2 = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
                                             break;
                                     } ?>
+                                    <?php $totalSetor -= $ds['jumlah'] ?>
                                     <div class="text-sm">
                                         <?= $st_slip2 ?> Kas Office <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span>
                                     </div>
