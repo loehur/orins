@@ -27,7 +27,7 @@
                                 <td><?= $set['ref_setoran'] ?></small></td>
                                 <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
                                 <td class="text-end">
-                                    <b>Rp<?= number_format($totalSetor) ?></b><br>
+                                    Rp<?= number_format($totalSetor) ?><br>
                                     <?php
                                     if (isset($data['split'][$set['ref_setoran']])) {
                                         $ds = $data['split'][$set['ref_setoran']];
@@ -125,7 +125,7 @@
                             <td><?= $set['ref_setoran'] ?></small></td>
                             <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
                             <td class="text-end">
-                                <b>Rp<?= number_format($totalSetor) ?></b><br>
+                                Rp<?= number_format($totalSetor) ?><br>
                                 <?php
                                 if (isset($data['split'][$set['ref_setoran']])) {
                                     $ds = $data['split'][$set['ref_setoran']];
