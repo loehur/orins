@@ -45,6 +45,8 @@ class Setoran_F extends Controller
 
       $whereSplit = "id_sumber = " . $this->userData['id_toko'] . " AND st = 0 AND tipe = 0 AND id_target = 1";
       $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+      $whereSplit = "id_sumber = " . $this->userData['id_toko'] . " AND st = 0 AND tipe = 0 AND id_target = 0";
+      $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
       $this->view($this->v_content, $data);
    }

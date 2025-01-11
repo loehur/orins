@@ -27,29 +27,48 @@
                                 <td><?= $set['ref_setoran'] ?></small></td>
                                 <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
                                 <td class="text-end">
+                                    <b>Rp<?= number_format($totalSetor) ?></b><br>
                                     <?php
                                     if (isset($data['split'][$set['ref_setoran']])) {
                                         $ds = $data['split'][$set['ref_setoran']];
                                         $st_slip = "";
                                         switch ($ds['st']) {
                                             case 0:
-                                                $st_slip = "<span class='text-warning'><i class='fa-regular fa-circle'></i> Checking</span>";
+                                                $st_slip = "<span class='text-warning'><i class='fa-regular fa-circle'></i></span>";
                                                 break;
                                             case 1:
-                                                $st_slip = "<span class='text-success'><i class='fa-solid fa-circle-check'></i> Verified</span>";
+                                                $st_slip = "<span class='text-success'><i class='fa-solid fa-circle-check'></i></span>";
                                                 break;
                                             default:
                                                 $st_slip = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
                                                 break;
                                         } ?>
-                                        Setor Bank <span class="text-success">Rp<?= number_format($totalSetor - $ds['jumlah']) ?></span><br>
+                                        <?php $totalSetor -= $ds['jumlah'] ?>
                                         <div class="text-sm">
                                             Uang Kecil <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
-                                            <span class="fw-bold">Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?></span>
                                         </div>
-                                    <?php } else { ?>
-                                        Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?>
+                                    <?php }
+                                    if (isset($data['setor_office'][$set['ref_setoran']])) {
+                                        $ds = $data['setor_office'][$set['ref_setoran']];
+
+                                        $st_slip = "";
+                                        switch ($ds['st']) {
+                                            case 0:
+                                                $st_slip = "<span class='text-warning'><i class='fa-regular fa-circle'></i></span>";
+                                                break;
+                                            case 1:
+                                                $st_slip = "<span class='text-success'><i class='fa-solid fa-circle-check'></i></span>";
+                                                break;
+                                            default:
+                                                $st_slip = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
+                                                break;
+                                        } ?>
+                                        <div class="text-sm">
+                                            Kas Office <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span>
+                                        </div>
+                                        <?php $totalSetor -= $ds['jumlah'] ?>
                                     <?php } ?>
+                                    <span class="fw-bold">Setor Bank <span class="text-success"><?= number_format($totalSetor) ?></span>
                                 </td>
                                 <td style="width: 80px;">
                                     <button data-id="<?= $set['ref_setoran'] ?>" data-val="1" class="verify btn btn-sm shadow-sm btn-primary bg-gradient rounded-pill">Verify</button>
@@ -87,10 +106,10 @@
                         $st_setor = "";
                         switch ($set['status_setoran']) {
                             case 0:
-                                $st_setor = "<span class='text-warning'>Finance Checking</span>";
+                                $st_setor = "<span class='text-warning'>Finance</span>";
                                 break;
                             case 1:
-                                $st_setor = "<span class='text-success'><i class='fa-solid fa-circle-check'></i> Verified</span>";
+                                $st_setor = "<span class='text-success'><i class='fa-solid fa-circle-check'></i></span>";
                                 break;
                             default:
                                 $st_setor = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
@@ -106,16 +125,16 @@
                             <td><?= $set['ref_setoran'] ?></small></td>
                             <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
                             <td class="text-end">
+                                <b>Rp<?= number_format($totalSetor) ?></b><br>
                                 <?php
                                 if (isset($data['split'][$set['ref_setoran']])) {
                                     $ds = $data['split'][$set['ref_setoran']];
-                                    $st_slip = "";
                                     switch ($ds['st']) {
                                         case 0:
-                                            $st_slip = "<span class='text-warning'><i class='fa-regular fa-circle'></i> Checking</span>";
+                                            $st_slip = "<span class='text-warning'><i class='fa-regular fa-circle'></i></span>";
                                             break;
                                         case 1:
-                                            $st_slip = "<span class='text-success'><i class='fa-solid fa-circle-check'></i> Verified</span>";
+                                            $st_slip = "<span class='text-success'><i class='fa-solid fa-circle-check'></i></span>";
                                             break;
                                         default:
                                             $st_slip = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
@@ -123,21 +142,28 @@
                                     } ?>
 
                                     <div class="text-sm">
-                                        Setor Bank <span class="text-success">Rp<?= number_format($totalSetor - $ds['jumlah']) ?></span><br>
-                                        Uang Kecil <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
-                                        <span class="fw-bold">Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?></span>
+                                        <?= $st_slip ?> Uang Kecil <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
                                     </div>
-                                <?php } else { ?>
-                                    Rp<?= number_format($set['jumlah'] - $jumlah_keluar) ?>
+                                <?php }
+                                if (isset($data['setor_office'][$set['ref_setoran']])) {
+                                    $ds = $data['setor_office'][$set['ref_setoran']];
+                                    switch ($ds['st']) {
+                                        case 0:
+                                            $st_slip2 = "<span class='text-warning'><i class='fa-regular fa-circle'></i></span>";
+                                            break;
+                                        case 1:
+                                            $st_slip2 = "<span class='text-success'><i class='fa-solid fa-circle-check'></i></span>";
+                                            break;
+                                        default:
+                                            $st_slip2 = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
+                                            break;
+                                    } ?>
+                                    <div class="text-sm">
+                                        <?= $st_slip2 ?> Kas Office <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span>
+                                    </div>
+                                    <?php $totalSetor -= $ds['jumlah'] ?>
                                 <?php } ?>
-                            </td>
-                            <td style="width: 80px;" class="text-sm">
-                                <?php if (!isset($data['split'][$set['ref_setoran']])) { ?>
-                                    <?= $st_setor ?>
-                                <?php } else { ?>
-                                    <?= $st_setor ?>
-                                    <?= $st_slip ?><br>
-                                <?php } ?>
+                                <?= $st_setor ?> <span class="fw-bold">Setor Bank <span class="text-success"><?= number_format($totalSetor) ?></span>
                             </td>
                         </tr>
                     <?php } ?>

@@ -34,13 +34,7 @@
 
         $user_id = 0;
 
-        foreach ($data['refs'] as $ref) {
-            $verify_kas_kecil[$ref] = true;
-            if (isset($data['kas_kecil'][$ref])) {
-                if ($data['kas_kecil'][$ref]['st'] <> 1) {
-                    $verify_kas_kecil[$ref] = false;
-                }
-            } ?>
+        foreach ($data['refs'] as $ref) { ?>
             <div class="col px-1 text-sm" style="min-width:400px;">
                 <?php
                 $no = 0;

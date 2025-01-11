@@ -60,12 +60,6 @@
     foreach ($data['refs'] as $ref) {
         $dibayar[$ref] = 0;
         $verify_payment[$ref] = 0;
-        $verify_kas_kecil[$ref] = true;
-        if (isset($data['kas_kecil'][$ref])) {
-            if ($data['kas_kecil'][$ref]['st'] <> 1) {
-                $verify_kas_kecil[$ref] = false;
-            }
-        }
     }
 
     foreach ($data['kas'] as $ref => $sd) {
