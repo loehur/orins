@@ -195,7 +195,7 @@ class Cron extends Controller
             exit();
          }
 
-         if ($verify_payment >= $bill && $ambil_all == true && $verify_kas_kecil == true) {
+         if ($bill > 0 && $verify_payment >= $bill && $ambil_all == true && $verify_kas_kecil == true) {
             $this->clearTuntas($ref);
          }
       } else {
