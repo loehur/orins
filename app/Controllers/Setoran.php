@@ -34,11 +34,11 @@ class Setoran extends Controller
       $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
       $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan);
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
-      $data['kas'] = $this->db(0)->get_where('kas', $where);
-
-      $whereSplit = "id_toko = " . $this->userData['id_toko'] . " AND st = 0";
+      $whereSplit = "id_sumber = " . $this->userData['id_toko'] . " AND st = 0 AND tipe = 0 AND id_target = 1";
       $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+
+      $whereSplit = "id_sumber = " . $this->userData['id_toko'] . " AND st = 0 AND tipe = 0 AND id_target = 0";
+      $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '' ORDER BY id_kas DESC";
       $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);

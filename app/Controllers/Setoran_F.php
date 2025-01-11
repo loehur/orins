@@ -43,7 +43,7 @@ class Setoran_F extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY id_toko, ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 5";
       $data['setor_done'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
 
-      $whereSplit = "id_toko = " . $this->userData['id_toko'] . " AND st = 0";
+      $whereSplit = "id_sumber = " . $this->userData['id_toko'] . " AND st = 0 AND tipe = 0 AND id_target = 1";
       $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
       $this->view($this->v_content, $data);

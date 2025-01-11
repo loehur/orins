@@ -103,15 +103,20 @@ class Cron extends Controller
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where);
       $where_kas = "jenis_transaksi = 1 AND ref_transaksi = '" . $ref . "'";
       $data['kas'] = $this->db(0)->get_where('kas', $where_kas, 'ref_transaksi');
-      $data['kas_kecil'] = $this->db(0)->get_where('kas_kecil', $where, 'ref');
+
+      $where_kasKecil = "ref = '" . $ref . "' AND tipe = 0";
+      $data['kas_kecil'] = $this->db(0)->get_where('kas_kecil', $where_kasKecil);
       $where = "ref_transaksi = '" . $ref . "'";
       $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi');
 
       //MULAI
       $verify_kas_kecil = true;
       if (count($data['kas_kecil']) > 0) {
-         if ($data['kas_kecil']['st'] <> 1) {
-            $verify_kas_kecil = false;
+         foreach ($data['kas_kecil'] as $kk) {
+            if ($kk['kas_kecil']['st'] <> 1) {
+               $verify_kas_kecil = false;
+               break;
+            }
          }
       }
 
@@ -169,7 +174,7 @@ class Cron extends Controller
 
       if (count($data['mutasi']) > 0) {
          foreach ($data['mutasi'] as $do) {
-            if ($do['tuntas'] == 1) {
+            if ($do['tuntas'] == 1 && $print == false) {
                $tuntas = true;
                $tuntas_date = $do['tuntas_date'];
                break;

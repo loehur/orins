@@ -234,7 +234,7 @@
                                 <?php } ?>
                             </td>
                             <td class="text-end">
-                                Rp<?= number_format($totalSetor) ?><br>
+                                <b>Rp<?= number_format($totalSetor) ?></b><br>
                                 <?php
                                 if (isset($data['split'][$set['ref_setoran']])) {
                                     $ds = $data['split'][$set['ref_setoran']];
@@ -366,6 +366,10 @@
                                 <input type="number" id="uangKecil" name="jumlah" class="form-control form-control-sm text-end" required>
                             </div>
                             <div class="col">
+                                <label class="form-label">Kas Finance</label>
+                                <input type="number" id="uangFinance" name="jumlah_finance" class="form-control form-control-sm text-end" required>
+                            </div>
+                            <div class="col">
                                 <label class="form-label">Setoran Bank</label>
                                 <input type="number" id="jumlah_bank" readonly class="form-control form-control-sm">
                             </div>
@@ -448,7 +452,7 @@
         $("input[name=id_kas]").val(id);
     })
 
-    $("#uangKecil").on('change keyup keypress', function() {
-        $("#jumlah_bank").val(totalSetor - $(this).val())
+    $("#uangKecil", "#uangFinance").on('change keyup keypress', function() {
+        $("#jumlah_bank").val(totalSetor - $("#uangKecil").val() - $("#uangFinance").val())
     })
 </script>
