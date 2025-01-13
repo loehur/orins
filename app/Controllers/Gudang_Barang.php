@@ -318,6 +318,23 @@ class Gudang_Barang extends Controller
                exit();
             }
             break;
+         case 'B':
+            $set = "nama = '" . $value . "'";
+            $where = "id = '" . $code . "'";
+            $up = $this->db(0)->update('master_brand', $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+
+            $set = "brand = '" . strtoupper($value) . "'";
+            $where = "code_s LIKE '%" . $mode . "-" . $code . "#%'";
+            $up = $this->db(0)->update('master_barang', $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+            break;
       }
 
       echo 0;
