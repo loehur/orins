@@ -61,45 +61,4 @@ class Audit_KasKecil extends Controller
       $update = $this->db(0)->update("kas_kecil", $set, $where);
       echo $update['errno'] == 0 ? 0 : $update['error'];
    }
-
-   public function list($id)
-   {
-      $this->view("Layouts/layout_main", [
-         "title" => "Audit - Barang Masuk"
-      ]);
-      $this->viewer($page = "list_data", $id);
-   }
-
-   function list_data($id)
-   {
-      $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
-      $cols = "id, code, CONCAT(brand,' ',model) as nama";
-      $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");
-      $data['id'] = $id;
-      $this->view(__CLASS__ . '/list_data', $data);
-   }
-
-   function load($kode, $table, $col)
-   {
-      $data = $this->db(0)->get_where($table, $col . " = '" . $kode . "'");
-      echo json_encode($data);
-   }
-
-   function update()
-   {
-      $ref = $_POST['ref'];
-      $up1 = $this->db(0)->update("master_input", "cek = 1", "id = '" . $ref . "'");
-      if ($up1['errno'] <> 0) {
-         echo $up1['errno'];
-         exit();
-      } else {
-         $up2 = $this->db(0)->update("master_mutasi", "stat = 1", "ref = '" . $ref . "'");
-         if ($up2['errno'] <> 0) {
-            echo $up2['errno'];
-            exit();
-         }
-      }
-      echo 0;
-   }
 }
