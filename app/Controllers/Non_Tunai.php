@@ -39,6 +39,8 @@ class Non_Tunai extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 10";
       $data['kas_done'] = $this->db(0)->get_where('kas', $where);
 
+      $data['toko'] = $this->db(0)->get('toko', 'id_toko');
+
       $this->view($this->v_content, $data);
    }
 

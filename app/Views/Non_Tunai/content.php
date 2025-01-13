@@ -54,7 +54,7 @@
                             ?>
                                 <tr>
                                     <td>
-                                        <span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br>
+                                        <span class="text-purple"><?= $data['toko'][$a['id_toko']]['nama_toko'] ?></span><br>
                                         <?php if ($a['jenis_transaksi'] == 1) { ?>
                                             <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" data-pelanggan="<?= $client ?>" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
                                         <?php } ?>
@@ -132,7 +132,7 @@
                         ?>
                             <tr>
                                 <td>
-                                    <span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br>
+                                    <span class="text-purple"><?= $data['toko'][$a['id_toko']]['nama_toko'] ?></span><br>
                                     <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" data-pelanggan="<?= $client ?>" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
                                 </td>
                                 <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
