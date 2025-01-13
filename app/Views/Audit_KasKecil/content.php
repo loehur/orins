@@ -17,7 +17,9 @@
                 <th colspan="10" class="text-success">Setoran Pecahan</th>
             </tr>
             <?php foreach ($data['split'] as $a) {
-                $total_setor += $a['jumlah']; ?>
+                if ($a['st'] == 1) {
+                    $total_setor += $a['jumlah'];
+                } ?>
                 <tr>
                     <td class="align-middle">
                         <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
@@ -29,7 +31,7 @@
                         <?= number_format($a['jumlah']) ?>
                     </td>
                     <td class="text-end" style="width:70px">
-                        <?= $a['st'] == 1 ? "VERIFIED" : "<span class='text-primary' style='cursor:pointer'>Verify</span>" ?>
+                        <a href="<?= PV::BASE_URL ?>Audit_KasKecil/verify_kasKecil/<?= $a['id'] ?>/1">Verify</a>
                     </td>
                 </tr>
             <?php } ?>
@@ -53,10 +55,7 @@
                             <?= number_format($a['jumlah']) ?>
                         </td>
                         <td class="text-end" style="width:200px">
-                            <?= $a['status_setoran'] == 1 ? "VERIFIED" : "<span class='text-primary' style='cursor:pointer'>Verify</span>" ?>
-                        </td>
-                        <td class="text-end">
-                            <?= $a['status_setoran'] == 1 ? "VERIFIED" : "<span class='text-dark'>Reimburse</span>" ?>
+                            <a href="<?= PV::BASE_URL ?>Audit_KasKecil/setor_pengeluaran/<?= $a['id_kas'] ?>/1">Verify</a>
                         </td>
                     </tr>
                 <?php } ?>
@@ -65,7 +64,7 @@
     </div>
     <div class="row mx-0">
         <div class="col text-end fw-bold pt-2">
-            Total Saldo <?= number_format($total_setor) ?>
+            Total Saldo <?= number_format($data['setor']) ?>
         </div>
         <div class="col"><span class="btn btn-primary">Setor</span></div>
     </div>
@@ -74,30 +73,20 @@
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
-    var click = 0;
-    $(".update_bol").on('click', function() {
-        var id = $(this).attr('data-id');
-        var primary = $(this).attr('data-primary');
-        var col = $(this).attr('data-col');
-        var tb = $(this).attr('data-tb');
-        var value = $(this).attr('data-val');;
-
+    $("a").click(function(e) {
+        e.preventDefault();
+        var href = $(this).attr('href');
         $.ajax({
-            url: '<?= PV::BASE_URL ?>Functions/updateCell',
-            data: {
-                'id': id,
-                'value': value,
-                'col': col,
-                'primary': primary,
-                'tb': tb
-            },
+            url: href,
             type: 'POST',
-            dataType: 'html',
+            data: {},
             success: function(res) {
                 if (res == 0) {
                     content();
+                } else {
+                    alert(res);
                 }
-            },
+            }
         });
-    });
+    })
 </script>
