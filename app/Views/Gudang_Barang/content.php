@@ -118,7 +118,7 @@ $max_length = [2, 2, 2, 3];
                         <td class="">
                             <span class="text-sm text-primary cell_edit_head" data-code="<?= $split_code[0] ?>" data-mode="G"><?= strtoupper($a['grup']) ?></span> <span class="text-sm text-success cell_edit_head" data-code="<?= $split_code[1] ?>" data-mode="T"><?= strtoupper($a['tipe']) ?></span><br>
                             <?php if ($a['sp'] == 0) { ?>
-                                <span class="fw-bold"><?= strtoupper($a['brand']) ?></span>
+                                <span class="fw-bold cell_edit_head" data-code="<?= $split_code[2] ?>" data-mode="B"><?= strtoupper($a['brand']) ?></span>
                                 <span class="cell_edit_name text-purple" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
                             <?php } else { ?>
                                 <span class="text-sm"><?= strtoupper($a['product_name']) ?></span>
