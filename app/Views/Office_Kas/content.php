@@ -41,7 +41,6 @@
         <div class="col text-end fw-bold pt-2">
             Total Saldo <?= number_format($data['setor']) ?>
         </div>
-        <div class="col"><span class="btn btn-primary">Setor</span></div>
     </div>
 </main>
 

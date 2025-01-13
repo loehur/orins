@@ -35,8 +35,8 @@
                         <td class="text-end">
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
                         </td>
-                        <td>
-                            <?= $data['stok'][$a['id']]['qty'] ?>
+                        <td class="text-end">
+                            <?= $data['stok'][$a['id']]['qty'] ?>/<?= $data['stok_gudang'][$a['id']]['qty'] ?>
                         </td>
                     </tr>
             <?php }
