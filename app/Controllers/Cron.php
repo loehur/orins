@@ -80,7 +80,7 @@ class Cron extends Controller
    public function cek_tuntas($ref = "", $print = false)
    {
       if ($ref == "") {
-         $where_ref = "tuntas = 0 ORDER BY cek_count ASC LIMIT 1";
+         $where_ref = "tuntas = 0 ORDER BY updateTime ASC LIMIT 1";
       } else {
          $where_ref = "ref = '" . $ref . "'";
       }
