@@ -16,10 +16,7 @@
             <tr>
                 <th colspan="10" class="text-success">Setoran Pecahan</th>
             </tr>
-            <?php foreach ($data['split'] as $a) {
-                if ($a['st'] == 1) {
-                    $total_setor += $a['jumlah'];
-                } ?>
+            <?php foreach ($data['split'] as $a) { ?>
                 <tr>
                     <td class="align-middle">
                         <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
@@ -54,11 +51,29 @@
                         <td class="text-end">
                             <?= number_format($a['jumlah']) ?>
                         </td>
-                        <td class="text-end" style="width:200px">
-                            <a class="ajax" href="<?= PV::BASE_URL ?>Audit_KasKecil/setor_pengeluaran/<?= $a['id_kas'] ?>/1">Verify</a>
-                        </td>
                     </tr>
                 <?php } ?>
+            <?php } ?>
+        </table>
+        <table class="table table-sm text-sm">
+            <tr>
+                <th colspan="10" class="text-success">Setoran Pecahan</th>
+            </tr>
+            <?php foreach ($data['split_done'] as $a) { ?>
+                <tr>
+                    <td class="align-middle">
+                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                    </td>
+                    <td>
+                        <?= $a['ref'] ?>
+                    </td>
+                    <td class="text-end">
+                        <?= number_format($a['jumlah']) ?>
+                    </td>
+                    <td class="text-end" style="width:70px">
+                        <a class="ajax" href="<?= PV::BASE_URL ?>Audit_KasKecil/verify_kasKecil/<?= $a['id'] ?>/1">Verify</a>
+                    </td>
+                </tr>
             <?php } ?>
         </table>
     </div>

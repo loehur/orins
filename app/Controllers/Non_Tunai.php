@@ -40,7 +40,6 @@ class Non_Tunai extends Controller
       $data['kas_done'] = $this->db(0)->get_where('kas', $where);
 
       $data['toko'] = $this->db(0)->get('toko', 'id_toko');
-
       $this->view($this->v_content, $data);
    }
 
