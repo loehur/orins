@@ -120,7 +120,7 @@
                             foreach ($data['stok'] as $dps) {
                                 $dp = $data['barang'][$dps['id_barang']];
                                 $harga = $dp['harga_' . $id_pelanggan_jenis] ?>
-                                <option value="<?= $dps['id_barang'] ?>"><?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name']  ?> Rp<?= number_format($harga) ?> #<?= $dp['code'] ?><?= strlen($dp['code_f']) > 0 ? "#" . $dp['code_f'] : "" ?></option>
+                                <option value="<?= $dps['id_barang'] ?>"><?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name']  ?> Rp<?= number_format($harga) ?></option>
                             <?php
                             }
                             ?>
