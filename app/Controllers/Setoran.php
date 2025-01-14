@@ -31,30 +31,41 @@ class Setoran extends Controller
 
    public function content($parse = "")
    {
-      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
-      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan);
-
-      $whereSplit = "id_sumber = " . $this->userData['id_toko'] . " AND st = 0 AND tipe = 0 AND id_target = 1";
-      $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
-
-      $whereSplit = "id_sumber = " . $this->userData['id_toko'] . " AND st = 0 AND tipe = 0 AND id_target = 0";
-      $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
-
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '' ORDER BY id_kas DESC";
-      $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
-
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND status_setoran = 2 ORDER BY id_kas DESC, id_client ASC";
       $data['kas_reject'] = $this->db(0)->get_where('kas', $where);
-
-      $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
-      $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
 
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '' ORDER BY id_kas DESC";
+      $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
+
+      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
+      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan);
+
+
+      //RIWAYAT
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND jenis_transaksi = 3 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' GROUP BY ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
+      $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
+      $refs = array_keys($data['setor']);
+
+      if (count($refs) > 0) {
+         $ref_list = "";
+         foreach ($refs as $r) {
+            $ref_list .= $r . ",";
+         }
+         $ref_list = rtrim($ref_list, ',');
+      }
+
+      $whereSplit = "ref IN (" . $ref_list . ") AND st = 0 AND tipe = 0 AND id_target = 1";
+      $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+
+      $whereSplit = "ref IN (" . $ref_list . ") AND st = 0 AND tipe = 0 AND id_target = 0";
+      $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+
+      $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
+      $where = "enis_transaksi = 3 AND ref_setoran IN (" . $ref_list . ") GROUP BY ref_setoran";
       $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
 
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');

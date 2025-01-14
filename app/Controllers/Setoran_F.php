@@ -66,8 +66,6 @@ class Setoran_F extends Controller
       $where = "jenis_transaksi = 3 AND ref_setoran IN (" . $ref_list . "," . $ref_list_done . ") GROUP BY ref_setoran";
       $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
 
-      print_r($data['keluar']);
-
       $this->view($this->v_content, $data);
    }
 
