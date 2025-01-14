@@ -18,8 +18,7 @@
                                 $count_keluar = 0;
                                 $jumlah_keluar = 0;
                             }
-                            $totalSetor = $set['jumlah'] - $jumlah_keluar;
-                        ?>
+                            $totalSetor = $set['jumlah'] - $jumlah_keluar; ?>
 
                             <tr>
                                 <td class="text-primary align-top" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid mt-1 fa-list-check"></i></small></span></td>
@@ -100,7 +99,6 @@
                             $count_keluar = 0;
                             $jumlah_keluar = 0;
                         }
-
                         $totalSetor = $set['jumlah'] - $jumlah_keluar;
 
                         $st_setor = "";

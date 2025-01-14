@@ -64,7 +64,7 @@ class Setoran_F extends Controller
 
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
       $where = "ref_setoran IN (" . $ref_list . "," . $ref_list_done . ")";
-      $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
+      $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
 
       $this->view($this->v_content, $data);
    }
