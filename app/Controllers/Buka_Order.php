@@ -967,11 +967,21 @@ class Buka_Order extends Controller
             $st_order = "";
          }
 
-         $where = "id_order_data = " . $do['id_order_data'] . " AND ref = ''";
-         $set = "margin_paket = 0, diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "', stok = " . $stok_order . $st_order;
+         //SET ORDER, HARGA DAN AFILIASI
+         $where = "id_order_data = " . $do['id_order_data'];
+         $set = "margin_paket = 0, diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", stok = " . $stok_order . $st_order;
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {
             echo $update['error'];
+            exit();
+         }
+
+         //SET REF
+         $where_ref = "id_order_data = " . $do['id_order_data'];
+         $set_ref = "ref = '" . $ref . "'";
+         $update_ref = $this->db(0)->update("order_data", $set_ref, $where_ref);
+         if ($update_ref['errno'] <> 0) {
+            echo $update_ref['error'];
             exit();
          }
 
