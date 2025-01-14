@@ -22,6 +22,13 @@
                                 $detail .= $da['detail_name'] . ", ";
                             }
 
+                            $id_pelanggan = $do['id_pelanggan'];
+                            $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
+                            $in_toko = "";
+                            if ($id_toko_pelanggan <> $this->userData['id_toko']) {
+                                $in_toko = $this->dToko[$id_toko_pelanggan]['inisial'] . " ";
+                            }
+
                             $divisi_arr = unserialize($do['spk_dvs']);
                             $divisi = [];
                             foreach ($divisi_arr as $key => $dv) {
