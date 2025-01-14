@@ -44,7 +44,7 @@ class Setoran_F extends Controller
          $ref_list = rtrim($ref_list, ',');
       }
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "ref_setoran IN ('" . $ref_list . "')";
+      $where = "ref_setoran IN (" . $ref_list . ")";
       $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
 
 
