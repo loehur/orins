@@ -1008,7 +1008,6 @@ class Buka_Order extends Controller
       }
 
       $adjuster = [];
-
       foreach ($total_per_paket as $key => $tpp) {
          $adjuster[$key] = ($data['paket'][$key]['harga_' . $id_pelanggan_jenis] * $id_margin[$key]['qty']) - $tpp;
          $id_margin[$key]['margin_paket'] = $adjuster[$key];
