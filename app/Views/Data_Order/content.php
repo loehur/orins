@@ -108,8 +108,10 @@
                                 $id_afiliasi = $do['id_afiliasi'];
                                 $id_toko = $do['id_toko'];
 
-                                if ($id_afiliasi <> 0 && $do['status_order'] <> 0) {
-                                    continue;
+                                if ($id_toko <> $this->userData['id_toko']) {
+                                    if ($id_afiliasi <> 0 && $do['status_order'] <> 0) {
+                                        continue;
+                                    }
                                 }
 
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
