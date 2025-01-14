@@ -33,19 +33,37 @@ class Setoran_F extends Controller
    {
       $cols = "id_toko, ref_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
       $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran = 0 GROUP BY id_toko, ref_setoran, status_setoran";
-      $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
+      $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
+      $refs = array_keys($data['setor']);
 
+      if (count($refs) > 0) {
+         $ref_list = "";
+         foreach ($refs as $r) {
+            $ref_list .= $r . ",";
+         }
+         $ref_list = rtrim($ref_list, ',');
+      }
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND jenis_transaksi = 3 AND ref_setoran <> '' AND status_setoran = 0 GROUP BY ref_setoran, status_setoran";
-      $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
+      $where = "ref_setoran IN ('" . $ref_list . "')";
+      $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
+
 
       $cols = "id_toko, ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY id_toko, ref_setoran, status_setoran ORDER BY ref_setoran DESC LIMIT 20";
-      $data['setor_done'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY ref_setoran ORDER BY ref_setoran DESC LIMIT 20";
+      $data['setor_done'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
 
-      $whereSplit = "id_sumber = " . $this->userData['id_toko'] . " AND st = 0 AND tipe = 0 AND id_target = 1";
+      $refs_done = array_keys($data['setor_done']);
+      if (count($refs_done) > 0) {
+         $ref_list_done = "";
+         foreach ($refs_done as $r) {
+            $ref_list_done .= $r . ",";
+         }
+         $ref_list_done = rtrim($ref_list_done, ',');
+      }
+
+      $whereSplit = "ref IN (" . $ref_list_done . ") AND tipe = 0 AND id_target = 1";
       $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
-      $whereSplit = "id_sumber = " . $this->userData['id_toko'] . " AND st = 0 AND tipe = 0 AND id_target = 0";
+      $whereSplit = "ref IN (" . $ref_list_done . ") AND tipe = 0 AND id_target = 0";
       $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
       $this->view($this->v_content, $data);
