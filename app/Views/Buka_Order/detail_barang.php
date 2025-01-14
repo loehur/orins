@@ -5,13 +5,14 @@
             <table class="table table-sm m-0 p-0">
                 <?php if (count($data['stok']) == 0) { ?>
                     <tr>
-                        <td><span class="text-danger">Stok Kosong</span></td>
+                        <td><span class="text-danger">Stok Toko Kosong</span></td>
                     </tr>
-                <?php } ?>
-                <?php foreach ($data['stok'] as $ds) { ?>
+                <?php } else { ?>
                     <tr>
                         <td colspan="10">Toko</td>
                     </tr>
+                <?php } ?>
+                <?php foreach ($data['stok'] as $ds) { ?>
                     <?php if ($ds['qty'] == 0 && $ds['sn'] <> "") {
                         continue;
                     } ?>
@@ -33,9 +34,15 @@
                 <tr>
                     <td class="border-0" colspan="10"></td>
                 </tr>
-                <tr>
-                    <td colspan="10">Gudang</td>
-                </tr>
+                <?php if (count($data['stok_gudang']) == 0) { ?>
+                    <tr>
+                        <td><span class="text-danger">Stok Gudang Kosong</span></td>
+                    </tr>
+                <?php } else { ?>
+                    <tr>
+                        <td colspan="10">Gudang</td>
+                    </tr>
+                <?php } ?>
                 <?php foreach ($data['stok_gudang'] as $ds) { ?>
                     <?php if ($ds['qty'] == 0 && $ds['sn'] <> "") {
                         continue;
