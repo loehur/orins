@@ -43,10 +43,6 @@ class Setoran_F extends Controller
          }
          $ref_list = rtrim($ref_list, ',');
       }
-      $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "ref_setoran IN (" . $ref_list . ")";
-      $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
-
 
       $cols = "id_toko, ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
       $where = "id_toko = " . $this->userData['id_toko'] . " AND status_mutasi = 1 AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran <> '' AND status_setoran <> 0 GROUP BY ref_setoran ORDER BY ref_setoran DESC LIMIT 20";
@@ -65,6 +61,10 @@ class Setoran_F extends Controller
       $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
       $whereSplit = "ref IN (" . $ref_list_done . ") AND tipe = 0 AND id_target = 0";
       $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+
+      $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
+      $where = "ref_setoran IN (" . $ref_list . "," . $ref_list_done . ")";
+      $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1);
 
       $this->view($this->v_content, $data);
    }
