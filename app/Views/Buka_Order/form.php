@@ -151,7 +151,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Produk (Afiliasi) - <b><?= $pelanggan_jenis ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/add" method="POST">
-                <div class="modal-body bg-primary bg-gradient bg-opacity-10 px-2">
+                <div class="modal-body bg-warning bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
                         <input type="hidden" name="aff_target" id="aff_target">
                         <select class="tize loadDetail_aff" name="id_produk" required>
