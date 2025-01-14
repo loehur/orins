@@ -977,7 +977,7 @@ class Buka_Order extends Controller
          }
 
          //SET REF
-         $where_ref = "id_order_data = " . $do['id_order_data'];
+         $where_ref = "id_order_data = " . $do['id_order_data'] . " AND ref = ''";
          $set_ref = "ref = '" . $ref . "'";
          $update_ref = $this->db(0)->update("order_data", $set_ref, $where_ref);
          if ($update_ref['errno'] <> 0) {
