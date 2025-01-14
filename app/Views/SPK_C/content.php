@@ -83,9 +83,14 @@
                                 $cs = $data['karyawan_all'][$do['id_penerima']]['nama'];
 
                                 $cs_af = "";
+                                if ($do['id_afiliasi'] <> 0 && $do['status_order'] <> 0) {
+                                    $cs_af = "/<span class='text-danger fw-bold'>?</span>";
+                                }
                                 if ($do['id_user_afiliasi'] <> 0) {
                                     $cs_af = "/" . $data['karyawan_all'][$do['id_user_afiliasi']]['nama'];
                                 }
+
+
                         ?>
                                 <tr>
                                     <td colspan="5" class="table-secondary">
