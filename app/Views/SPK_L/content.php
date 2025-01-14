@@ -80,7 +80,7 @@
                                     <td colspan="5" class="table-secondary">
                                         <table class="w-100 p-0 m-0">
                                             <tr>
-                                                <td><span><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
+                                                <td><span><?= substr($ref, -4) ?></span> <span class="text-primary fw-bold"><?= $in_toko ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
                                                 <td valign="top" class="text-end"><small><?= $cs  ?> <?= substr($do['insertTime'], 2, -3) ?></span></small></td>
                                             </tr>
                                         </table>

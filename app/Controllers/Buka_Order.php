@@ -927,7 +927,7 @@ class Buka_Order extends Controller
                $sn_c = 1;
             }
 
-            $where = "id = " . $dbr['id'];
+            $where = "id = " . $dbr['id'] . " AND ref = ''";
             $set = "margin_paket = 0, stat = 1, harga_jual = " . $harga . ", sn_c = " . $sn_c . ", cs_id = " . $id_karyawan . ", id_target = " . $id_pelanggan . ", jenis_target = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
             $update = $this->db(0)->update("master_mutasi", $set, $where);
             if ($update['errno'] <> 0) {
@@ -967,7 +967,7 @@ class Buka_Order extends Controller
             $st_order = "";
          }
 
-         $where = "id_order_data = " . $do['id_order_data'];
+         $where = "id_order_data = " . $do['id_order_data'] . " AND ref = ''";
          $set = "margin_paket = 0, diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", ref = '" . $ref . "', stok = " . $stok_order . $st_order;
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {
