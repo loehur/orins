@@ -402,20 +402,35 @@
                                         foreach ($data['mutasi'][$ref] as $do) {
                                             $no += 1;
                                             $user_id = $do['user_id'];
+                                            $cancel_barang = $do['stat'];
                                             $jumlah = $do['qty'];
                                             $id_pelanggan_jenis = $do['jenis_target'];
                                             $dp = $data['barang'][$do['id_barang']];
-                                            $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']); ?>
-                                            <tr>
-                                                <td>
-                                                    <?= trim($dp['brand'] . " " . $dp['model']) ?>
+
+                                            if ($cancel_barang <> 2) {
+                                                $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
+                                                $bill -= ($do['diskon'] * $jumlah);
+                                            }
+
+                                            $jumlah_semula = "";
+                                            if ($do['diskon'] > 0) {
+                                                $jumlah_semula = "<s>" . number_format(($jumlah * $do['harga_jual']) + $do['margin_paket']) . "</s><br><small>Disc. " . number_format($do['diskon'] * $jumlah) . "</small><br>";
+                                            }
+                                            $jumlah_real = ($jumlah * $do['harga_jual']) + $do['margin_paket'] - ($do['diskon'] * $jumlah);
+
+                                        ?>
+                                            <tr style="<?= ($cancel_barang == 2) ? 'color:silver' : '' ?>">
+                                                <td class="align-middle">
+                                                    <?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?>
+                                                    <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
                                                 </td>
                                                 <td class=""><small>
                                                         <?= $do['sds'] == 1 ? "S" : "" ?>#<?= $do['sn'] ?>
                                                 </td>
                                                 <td class="text-end"><?= number_format($jumlah) ?></td>
                                                 <td class="text-end">
-                                                    <?= number_format($jumlah * $do['harga_jual']) ?>
+                                                    <?= $jumlah_semula ?>
+                                                    <?= number_format($jumlah_real) ?>
                                                 </td>
                                             </tr>
                                     <?php }
