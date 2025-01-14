@@ -43,7 +43,7 @@ class SPK_Customer extends Controller
       $data['dPelanggan'] = $this->db(0)->get('pelanggan');
 
       if ($customer <> 0) {
-         $data['pelanggan'] = $this->db(0)->get_where('pelanggan', "id_pelanggan = " . $customer);
+         $data['pelanggan'] = $this->db(0)->get_where('pelanggan', "id_pelanggan = " . $customer, 'id_pelanggan');
          $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_pro DESC";
          $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan, 'id_karyawan');
          $data['karyawan_all'] = $this->db(0)->get_where('karyawan', 'en = 1', 'id_karyawan');
