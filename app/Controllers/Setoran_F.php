@@ -66,6 +66,8 @@ class Setoran_F extends Controller
       $where = "ref_setoran IN (" . $ref_list . "," . $ref_list_done . ")";
       $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
 
+      print_r($data['keluar']);
+
       $this->view($this->v_content, $data);
    }
 
