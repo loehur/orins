@@ -19,6 +19,7 @@
                         $no = 0;
                         $total = 0;
                         foreach ($data['order_'] as $key => $do) {
+
                             $no++;
                             $spkDone = 0;
                             $spkCount = 0;
@@ -29,6 +30,13 @@
                             $detail = "";
                             foreach ($detail_arr as $da) {
                                 $detail .= $da['detail_name'] . ", ";
+                            }
+
+                            $id_pelanggan = $do['id_pelanggan'];
+                            $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
+                            $in_toko = "";
+                            if ($id_toko_pelanggan <> $this->userData['id_toko']) {
+                                $in_toko = $this->dToko[$id_toko_pelanggan]['inisial'] . " ";
                             }
 
                             $divisi_arr = unserialize($do['spk_dvs']);
@@ -83,7 +91,7 @@
                                     <td colspan="5" class="table-secondary">
                                         <table class="w-100 p-0 m-0">
                                             <tr>
-                                                <td><span><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
+                                                <td><span><?= substr($ref, -4) ?></span> <span class="text-success"><?= $in_toko ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
                                                 <td valign="top" class="text-end"><small><?= $cs . $cs_af  ?> <?= substr($do['insertTime'], 2, -3) ?></span></small></td>
                                             </tr>
                                         </table>

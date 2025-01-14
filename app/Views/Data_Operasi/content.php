@@ -31,6 +31,7 @@
         $id_pelanggan_jenis = 0;
         $arr_tuntas = [];
         $loadRekap = [];
+        $markRekap = [];
 
         $user_id = 0;
 
@@ -186,10 +187,8 @@
                                 }
 
                                 $dRef = $data['ref'][$ref];
+                                $mark = "";
                                 $mark = strtoupper($dRef['mark']);
-                                if ($mark == "") {
-                                    $mark = "";
-                                }
                                 ?>
                                 <tr class="">
                                     <td colspan="5" class="table-light <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
@@ -439,6 +438,7 @@
 
                                     if ($sisa <> 0) {
                                         $loadRekap[$id_pelanggan . "_" . $ref] = $sisa;
+                                        $markRekap[$id_pelanggan . "_" . $ref] = $mark;
                                     }
 
                                     if ($dibayar > 0 && $lunas == false) {
@@ -558,7 +558,10 @@
                                     foreach ($loadRekap as $key => $value) { ?>
                                         <tr class='hoverBill'>
                                             <td><span class='text-dark'><?= $key ?></span></td>
-                                            <td class="text-end align-middle"><input type='checkbox' class='cek_multi' name="ref_multi[]" value="<?= $key ?>_<?= $value ?>" data-jumlah='<?= $value ?>' data-ref='<?= $key ?>' checked></td>
+                                            <td class="text-end align-middle">
+                                                <span class="fw-bold text-success me-1"><small><?= $markRekap[$key] ?></small></span>
+                                                <input type='checkbox' class='cek_multi form-check-input' name="ref_multi[]" value="<?= $key ?>_<?= $value ?>" data-jumlah='<?= $value ?>' data-ref='<?= $key ?>' checked>
+                                            </td>
                                             <td class='text-end ps-2'>Rp<?= number_format($value) ?></td>
                                         </tr>
                                     <?php
