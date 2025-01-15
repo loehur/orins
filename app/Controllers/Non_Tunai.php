@@ -32,14 +32,39 @@ class Non_Tunai extends Controller
    public function content($parse = "")
    {
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
-
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
-      $data['kas'] = $this->db(0)->get_where('kas', $where);
-
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 10";
-      $data['kas_done'] = $this->db(0)->get_where('kas', $where);
-
       $data['toko'] = $this->db(0)->get('toko', 'id_toko');
+
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0";
+      $data['kas'] = $this->db(0)->get_where('kas', $where, 'ref_bayar', 1);
+      $data['kas_group'] = [];
+      $refs = array_keys($data['kas']);
+      if (count($refs) > 0) {
+         $ref_list = "";
+         foreach ($refs as $r) {
+            $ref_list .= $r . ",";
+         }
+         $ref_list = rtrim($ref_list, ',');
+
+         $cols = "ref_bayar, note, SUM(jumlah) as jumlah";
+         $where = "ref_bayar IN (" . $ref_list . ") GROUP BY ref_bayar";
+         $data['kas_group'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_bayar');
+      }
+
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi <> 0 ORDER BY updateTime DESC LIMIT 20";
+      $data['kas_done'] = $this->db(0)->get_where('kas', $where, 'ref_bayar', 1);
+      $refs = array_keys($data['kas_done']);
+      if (count($refs) > 0) {
+         $ref_list = "";
+         foreach ($refs as $r) {
+            $ref_list .= $r . ",";
+         }
+         $ref_list = rtrim($ref_list, ',');
+
+         $cols = "ref_bayar, note, SUM(jumlah) as jumlah";
+         $where = "ref_bayar IN (" . $ref_list . ") GROUP BY ref_bayar";
+         $data['kas_group_done'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_bayar');
+      }
+
       $this->view($this->v_content, $data);
    }
 
@@ -68,17 +93,15 @@ class Non_Tunai extends Controller
 
    function actionMulti()
    {
-      $id = explode("_", $_POST['id']);
+      $ref_bayar = $_POST['id'];
       $val = $_POST['val'];
 
-      foreach ($id as $i) {
-         $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
-         $where = "id_kas = " . $i;
-         $update = $this->db(0)->update("kas", $set, $where);
-         if ($update['errno'] <> 0) {
-            echo $update['error'];
-            exit();
-         }
+      $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
+      $where = "ref_bayar = '" . $ref_bayar . "'";
+      $update = $this->db(0)->update("kas", $set, $where);
+      if ($update['errno'] <> 0) {
+         echo $update['error'];
+         exit();
       }
    }
 }

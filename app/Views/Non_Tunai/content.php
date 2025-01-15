@@ -1,199 +1,154 @@
 <main>
     <?php if (count($data['kas']) > 0) {
-        $rekap = [];
-        foreach ($data['kas'] as $a) {
-            $client = $a['id_client'];
-            $jumlah = $a['jumlah'];
-            if (isset($rekap[$client])) {
-                $rekap[$client]["c"] += 1;
-                $rekap[$client]["t"] += $jumlah;
-            } else {
-                $rekap[$client]["c"] = 1;
-                $rekap[$client]["t"] = $jumlah;
-            }
-        }
-    ?>
-        <div class="p-2 ms-3 mt-3 me-3 bg-white">
-            <div class="row">
-                <div class="col">
-                    <div class="row border-bottom">
-                        <div class="col ms-2">
-                            <span><b>Antrian Pengecekan Non Tunai</b></span>
+        foreach ($data['kas'] as $rb => $ref_bayar) { ?>
+            <div class="p-2 ms-3 mt-3 me-3 bg-white">
+                <div class="row">
+                    <div class="col">
+                        <div class="row border-bottom">
+                            <div class="col">
+                                <span>Antrian Pengecekan Non Tunai</span>
+                            </div>
                         </div>
+                        <small>
+                            <table class="table table-sm table-hover mt-2 text-sm">
+                                <?php
+                                $no = 0;
+                                $id_multi = "";
+                                foreach ($ref_bayar as  $a) {
+                                    $no += 1;
+                                    $id =  $a['id_kas'];
+
+                                    $client = $a['id_client'];
+                                    $jumlah = $a['jumlah'];
+
+                                    $pelanggan = "Non";
+                                    $pelanggan = $data['pelanggan'][$client]['nama'];
+
+                                ?>
+                                    <tr>
+                                        <td>
+                                            <span class="text-purple"><?= $data['toko'][$a['id_toko']]['nama_toko'] ?></span><br>
+                                            <?php if ($a['jenis_transaksi'] == 1) { ?>
+                                                <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" data-pelanggan="<?= $client ?>" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
+                                            <?php } ?>
+                                            <?php if ($a['jenis_transaksi'] == 2) { ?>
+                                                <small>Topup Deposit</small>
+                                            <?php } ?>
+                                        </td>
+                                        <td class="px-2">#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
+                                        <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
+                                    </tr>
+                                <?php
+                                } ?>
+                                <tr>
+                                    <td></td>
+                                    <td class="px-0"><button data-id="<?= $rb ?>" data-val="2" class="border-0 actionMulti btn btn-sm btn-outline-danger">Reject - <b>Rp<?= number_format($data['kas_group'][$rb]['jumlah']) ?></b></button></td>
+                                    <td class="px-0 text-end"><button data-id="<?= $rb ?>" data-val="1" class="border-0 actionMulti btn btn-sm btn-outline-success">Verify - <b>Rp<?= number_format($data['kas_group'][$rb]['jumlah']) ?></b></button></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="10" class="bg-light"></td>
+                                </tr>
+                            </table>
+                        </small>
                     </div>
-                    <small>
-                        <table class="table table-sm table-hover mt-2">
-                            <tr>
-                                <th>Toko/Ref</th>
-                                <th>Customer</th>
-                                <th class="text-end">Jumlah/Via</th>
-                                <th colspan="2" class="text-center"></th>
-                            </tr>
-                            <?php
-                            $no = 0;
-                            $id_multi = "";
-                            foreach ($data['kas'] as $a) {
+                </div>
+            </div>
+    <?php }
+    } ?>
+    <div class="p-2 ms-3 mt-3 me-3 bg-white">
+        <div class="row">
+            <div class="col">
+                <div class="row border-bottom">
+                    <div class="col">
+                        <span>Riwayat Pembayaran Terkonfirmasi</span>
+                    </div>
+                </div>
+                <small>
+                    <table class="table table-sm text-sm table-hover mt-2">
+                        <?php
+                        $no = 0;
+                        foreach ($data['kas_done'] as $rb => $ref_bayar) {
+                            foreach ($ref_bayar as $a) {
                                 $no += 1;
                                 $id =  $a['id_kas'];
 
                                 $client = $a['id_client'];
                                 $jumlah = $a['jumlah'];
-                                $count = $rekap[$client]["c"];
-                                $total = $rekap[$client]['t'];
-
-                                if ($no == $count) {
-                                    $id_multi .= $id;
-                                } else {
-                                    $id_multi .= $id . "_";
-                                }
-
+                                $ref = $a['ref_transaksi'];
 
                                 $pelanggan = "Non";
-                                $pelanggan = $data['pelanggan'][$client]['nama'];
-
-                            ?>
+                                $pelanggan = $data['pelanggan'][$client]['nama']; ?>
                                 <tr>
                                     <td>
                                         <span class="text-purple"><?= $data['toko'][$a['id_toko']]['nama_toko'] ?></span><br>
-                                        <?php if ($a['jenis_transaksi'] == 1) { ?>
-                                            <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" data-pelanggan="<?= $client ?>" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
-                                        <?php } ?>
-                                        <?php if ($a['jenis_transaksi'] == 2) { ?>
-                                            <small>Topup Deposit</small>
-                                        <?php } ?>
+                                        <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" data-pelanggan="<?= $client ?>" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
                                     </td>
                                     <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
                                     <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
-                                    <td align="left">
-                                        <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-success border-0">Verify</button>
-                                    </td>
-                                    <td align="right">
-                                        <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-danger border-0">Reject</button>
-                                    </td>
-                                </tr>
-                                <?php
-                                if (($no == $count)) {
-                                    $no = 0; ?>
-                                    <?php
-                                    if ($count > 1) {
-                                    ?>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="pe-0" align="right"><button data-id="<?= $id_multi ?>" data-val="1" class="border-0 actionMulti btn btn-sm btn-outline-primary">Multi Verify - <b>Rp<?= number_format($total) ?></b></button></td>
-                                            <td colspan="2" class="pe-0" align="right"><button data-id="<?= $id_multi ?>" data-val="2" class="border-0 actionMulti btn btn-sm btn-outline-danger">Multi Reject - <b>Rp<?= number_format($total) ?></b></button></td>
-                                        </tr>
-                                    <?php
-                                    }
-                                    ?>
-                                    <tr>
-                                        <td colspan="10" class="bg-secondary"></td>
-                                    </tr>
-                            <?php
-                                    $id_multi = "";
-                                }
-                            } ?>
-                        </table>
-                    </small>
-                </div>
-            </div>
-        </div>
-    <?php } ?>
-    <div class="p-2 ms-3 mt-3 me-3 bg-white">
-        <div class="row">
-            <div class="col">
-                <div class="row border-bottom">
-                    <div class="col ms-2">
-                        <span><b>Riwayat Pembayaran Terkonfirmasi</b></span> <small>(Last 10)</small>
-                    </div>
-                </div>
-                <small>
-                    <table class="table table-sm table-hover mt-2">
-                        <tr>
-                            <th>Toko/Ref</th>
-                            <th>Customer</th>
-                            <th class="text-end">Jumlah/Via</th>
-                            <th class="text-end">Status</th>
-                            <th class="text-end">Re-Action</th>
-                        </tr>
-                        <?php
-                        $no = 0;
-                        foreach ($data['kas_done'] as $a) {
-                            $no += 1;
-                            $id =  $a['id_kas'];
-
-                            $client = $a['id_client'];
-                            $jumlah = $a['jumlah'];
-                            $ref = $a['ref_transaksi'];
-
-                            $pelanggan = "Non";
-                            $pelanggan = $data['pelanggan'][$client]['nama'];
-
-                        ?>
-                            <tr>
-                                <td>
-                                    <span class="text-purple"><?= $data['toko'][$a['id_toko']]['nama_toko'] ?></span><br>
-                                    <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" data-pelanggan="<?= $client ?>" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
-                                </td>
-                                <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
-                                <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
-                                <td class="text-end">
-                                    <?php
-                                    switch ($a['status_mutasi']) {
-                                        case 1:
-                                            echo '<span class="text-success"><i class="fa-solid fa-check-to-slot"></i> Verified</span>';
-                                            break;
-                                        default:
-                                            echo '<span class="text-danger"><i class="fa-solid fa-xmark"></i> Rejected</span>';
-                                            break;
-                                    }
-                                    ?>
-                                    <br>
-                                    <?= $a['updateTime'] ?>
-                                </td>
-
-                                <?php
-                                $get_t = $this->db(0)->get_where_row("order_data", "ref = '" . $ref . "'");
-                                if (isset($get_t['tuntas'])) {
-                                    $tuntas = $get_t['tuntas'];
-                                } else {
-                                    $tuntas = 0;
-                                }
-
-                                if ($tuntas == 0) {
-                                    switch ($a['status_mutasi']) {
-                                        case 1:
-                                ?>
-                                            <td align="right">
-                                                <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
-                                            </td>
-                                        <?php break;
-                                        default: ?>
-                                            <td align="right">
-                                                <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
-                                                <br>
-                                                <span class="pe-2"><?= $a['note_batal'] ?></span>
-                                            </td>
-                                        <?php break;
-                                    }
-                                } else {
-                                    switch ($a['status_mutasi']) {
-                                        case 1:
+                                    <td class="text-end">
+                                        <?php
+                                        switch ($a['status_mutasi']) {
+                                            case 1:
+                                                echo '<span class="text-success"><i class="fa-solid fa-check-to-slot"></i> Verified</span>';
+                                                break;
+                                            default:
+                                                echo '<span class="text-danger"><i class="fa-solid fa-xmark"></i> Rejected</span>';
+                                                break;
+                                        }
                                         ?>
-                                            <td align="right" class="text-secondary">
-                                                <small><span class="pe-2">Transaction Complete<br><?= $a['note_office'] ?></span></small>
-                                            </td>
-                                        <?php break;
-                                        default: ?>
-                                            <td align="right">
-                                                <small><span class="pe-2">Transaction Complete<br><?= $a['note_batal'] ?></span></small>
-                                            </td>
-                                <?php break;
+                                        <br>
+                                        <?= $a['updateTime'] ?>
+                                    </td>
+
+                                    <?php
+                                    $get_t = $this->db(0)->get_where_row("order_data", "ref = '" . $ref . "'");
+                                    if (isset($get_t['tuntas'])) {
+                                        $tuntas = $get_t['tuntas'];
+                                    } else {
+                                        $get_t = $this->db(0)->get_where_row("master_mutasi", "ref = '" . $ref . "'");
+                                        if (isset($get_t['tuntas'])) {
+                                            $tuntas = $get_t['tuntas'];
+                                        } else {
+                                            $tuntas = 0;
+                                        }
                                     }
-                                }
-                                ?>
-                            </tr>
-                        <?php } ?>
+
+                                    if ($tuntas == 0) {
+                                        switch ($a['status_mutasi']) {
+                                            case 1:
+                                    ?>
+                                                <td align="right">
+                                                    <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
+                                                </td>
+                                            <?php break;
+                                            default: ?>
+                                                <td align="right">
+                                                    <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
+                                                    <br>
+                                                    <span class="pe-2"><?= $a['note_batal'] ?></span>
+                                                </td>
+                                            <?php break;
+                                        }
+                                    } else {
+                                        switch ($a['status_mutasi']) {
+                                            case 1: ?>
+                                                <td align="right" class="text-secondary">
+                                                    <small><span class="pe-2">Transaction Complete<br><?= $a['note_office'] ?></span></small>
+                                                </td>
+                                            <?php break;
+                                            default: ?>
+                                                <td align="right">
+                                                    <small><span class="pe-2">Transaction Complete<br><?= $a['note_batal'] ?></span></small>
+                                                </td>
+                                    <?php break;
+                                        }
+                                    }
+                                    ?>
+                                </tr>
+                        <?php }
+                        }
+                        ?>
                     </table>
                 </small>
             </div>
