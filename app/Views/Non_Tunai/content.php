@@ -7,10 +7,10 @@
                         <span>Antrian Pengecekan Non Tunai</span>
                     </div>
                 </div>
-                <?php if (count($data['kas']) > 0) {
-                    foreach ($data['kas'] as $rb => $ref_bayar) { ?>
-                        <small>
-                            <table class="table table-sm table-hover mt-2 text-sm">
+                <small>
+                    <table class="table table-sm table-hover mt-2 text-sm">
+                        <?php if (count($data['kas']) > 0) {
+                            foreach ($data['kas'] as $rb => $ref_bayar) { ?>
                                 <?php
                                 $no = 0;
                                 $id_multi = "";
@@ -49,10 +49,10 @@
                                 <tr>
                                     <td colspan="10" class="bg-light"></td>
                                 </tr>
-                            </table>
-                        </small>
-                <?php }
-                } ?>
+                        <?php }
+                        } ?>
+                    </table>
+                </small>
             </div>
         </div>
     </div>
