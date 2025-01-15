@@ -1,6 +1,6 @@
-<?php foreach ($data['stok'] as $d) { ?>
+<?php foreach ($data['stok'] as $key => $d) { ?>
     <?php if ($d['qty'] > 0) { ?>
-        <form action="<?= PV::BASE_URL ?>Stok_Transfer/add_mutasi/<?= $data['ref'] ?>" method="POST">
+        <form id="<?= $key ?>" action="<?= PV::BASE_URL ?>Stok_Transfer/add_mutasi/<?= $data['ref'] ?>" method="POST">
             <div class="row mb-2 mx-1 text-sm border-bottom">
                 <div class="col-auto px-1 mb-2 text-center">
                     <input type="hidden" name="sds" value="<?= $d['sds'] ?>">
@@ -32,13 +32,15 @@
 <script>
     $("form").on("submit", function(e) {
         e.preventDefault();
+        var id = $(this).attr('id');
         $.ajax({
             url: $(this).attr('action'),
             data: $(this).serialize(),
             type: $(this).attr("method"),
             success: function(result) {
                 if (result == 0) {
-                    content();
+                    $("#" + id).remove();
+                    $('#list_transfer').load('<?= PV::BASE_URL ?>Stok_Transfer/list_transfer/<?= $data['ref'] ?>');
                 } else {
                     alert(result)
                 }
