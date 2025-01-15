@@ -29,3 +29,28 @@
         </tr>
     <?php } ?>
 </table>
+
+<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script>
+    $(".cell_delete").dblclick(function() {
+        var id = $(this).attr('data-id');
+        var primary = $(this).attr('data-primary');
+        var tb = $(this).attr('data-tb');
+
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Functions/deleteCell',
+            data: {
+                'id': id,
+                'primary': primary,
+                'tb': tb
+            },
+            type: 'POST',
+            dataType: 'html',
+            success: function(res) {
+                if (res == 0) {
+                    $("#tr" + id).remove();
+                }
+            },
+        });
+    });
+</script>
