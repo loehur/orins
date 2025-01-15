@@ -159,7 +159,7 @@ class Data_Operasi extends Controller
 
       $note =  $_POST['note_multi'];
       $metode =  $_POST['metode_multi'];
-      $ref_bayar = date("Ymdhis") . rand(0, 9);
+      $ref_bayar = date("ymdhis") . rand(0, 9);
 
       if (strlen($note) == 0 && $metode == 2) {
          $note = "Non_Tunai";

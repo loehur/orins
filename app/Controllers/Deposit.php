@@ -55,6 +55,7 @@ class Deposit extends Controller
          exit();
       }
 
+      $ref_bayar = date("ymdhis") . rand(0, 9);
       $metode = $_POST['metode'];
       $note = $_POST['catatan'];
       $now = date('Y-m-d H:i');
@@ -65,8 +66,8 @@ class Deposit extends Controller
       //cek double
       $cek = $this->db(0)->count_where('kas', "jumlah = " . $jumlah . " AND insertTime LIKE '" . substr($now, 0, 16) . "%'");
       if ($cek == 0) {
-         $cols = "jenis_transaksi, jumlah, note, id_client, metode_mutasi, status_mutasi, jenis_mutasi, id_user, id_toko";
-         $vals = "2," . $jumlah . ",'" . $note . "'," . $id_pelanggan . "," . $metode . "," . $status . ",1," . $id_karyawan . "," . $this->userData['id_toko'];
+         $cols = "jenis_transaksi, jumlah, note, id_client, metode_mutasi, status_mutasi, jenis_mutasi, id_user, id_toko, ref_bayar";
+         $vals = "2," . $jumlah . ",'" . $note . "'," . $id_pelanggan . "," . $metode . "," . $status . ",1," . $id_karyawan . "," . $this->userData['id_toko'] . ", '" . $ref_bayar . "'";
          $in = $this->db(0)->insertCols('kas', $cols, $vals);
          echo $in['errno'] == 0 ? 0 : $in['error'];
       }
