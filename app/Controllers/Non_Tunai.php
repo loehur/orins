@@ -52,19 +52,6 @@ class Non_Tunai extends Controller
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi <> 0 ORDER BY updateTime DESC LIMIT 20";
       $data['kas_done'] = $this->db(0)->get_where('kas', $where, 'ref_bayar', 1);
-      $refs = array_keys($data['kas_done']);
-      if (count($refs) > 0) {
-         $ref_list = "";
-         foreach ($refs as $r) {
-            $ref_list .= $r . ",";
-         }
-         $ref_list = rtrim($ref_list, ',');
-
-         $cols = "ref_bayar, note, SUM(jumlah) as jumlah";
-         $where = "ref_bayar IN (" . $ref_list . ") GROUP BY ref_bayar";
-         $data['kas_group_done'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_bayar');
-      }
-
       $this->view($this->v_content, $data);
    }
 
