@@ -204,7 +204,7 @@
             type: "POST",
             success: function(result) {
                 if (result == 0) {
-                    $('#rb' + id_).remove();
+                    $('.rb' + id_).remove();
                 } else {
                     alert(result);
                 }
