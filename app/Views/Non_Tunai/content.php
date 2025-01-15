@@ -1,14 +1,14 @@
 <main>
-    <?php if (count($data['kas']) > 0) {
-        foreach ($data['kas'] as $rb => $ref_bayar) { ?>
-            <div class="p-2 ms-3 mt-3 me-3 bg-white">
-                <div class="row">
+    <div class="p-2 ms-3 mt-3 me-3 bg-white">
+        <div class="row">
+            <div class="col">
+                <div class="row border-bottom">
                     <div class="col">
-                        <div class="row border-bottom">
-                            <div class="col">
-                                <span>Antrian Pengecekan Non Tunai</span>
-                            </div>
-                        </div>
+                        <span>Antrian Pengecekan Non Tunai</span>
+                    </div>
+                </div>
+                <?php if (count($data['kas']) > 0) {
+                    foreach ($data['kas'] as $rb => $ref_bayar) { ?>
                         <small>
                             <table class="table table-sm table-hover mt-2 text-sm">
                                 <?php
@@ -51,11 +51,11 @@
                                 </tr>
                             </table>
                         </small>
-                    </div>
-                </div>
+                <?php }
+                } ?>
             </div>
-    <?php }
-    } ?>
+        </div>
+    </div>
     <div class="p-2 ms-3 mt-3 me-3 bg-white">
         <div class="row">
             <div class="col">
