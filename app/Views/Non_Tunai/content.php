@@ -24,7 +24,7 @@
                                     $pelanggan = "Non";
                                     $pelanggan = $data['pelanggan'][$client]['nama']; ?>
                                     <tr class="rb<?= $rb ?>">
-                                        <td>
+                                        <td class="px-0">
                                             <span class="text-purple"><?= $data['toko'][$a['id_toko']]['nama_toko'] ?></span><br>
                                             <?php if ($a['jenis_transaksi'] == 1) { ?>
                                                 <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" data-pelanggan="<?= $client ?>" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
@@ -33,14 +33,13 @@
                                                 <small>Topup Deposit</small>
                                             <?php } ?>
                                         </td>
-                                        <td class="px-2">#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
+                                        <td class="">#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
                                         <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
                                     </tr>
                                 <?php
                                 } ?>
                                 <tr class="rb<?= $rb ?>">
-                                    <td></td>
-                                    <td class="px-0"><button data-id="<?= $rb ?>" data-val="2" class="border-0 actionMulti btn btn-sm btn-outline-danger">Reject - <b>Rp<?= number_format($data['kas_group'][$rb]['jumlah']) ?></b></button></td>
+                                    <td colspan="2" class="px-0"><button data-id="<?= $rb ?>" data-val="2" class="border-0 actionMulti btn btn-sm btn-outline-danger">Reject - <b>Rp<?= number_format($data['kas_group'][$rb]['jumlah']) ?></b></button></td>
                                     <td class="px-0 text-end"><button data-id="<?= $rb ?>" data-val="1" class="border-0 actionMulti btn btn-sm btn-outline-success">Verify - <b>Rp<?= number_format($data['kas_group'][$rb]['jumlah']) ?></b></button></td>
                                     <td></td>
                                 </tr>
