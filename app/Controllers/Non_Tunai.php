@@ -102,6 +102,8 @@ class Non_Tunai extends Controller
       if ($update['errno'] <> 0) {
          echo $update['error'];
          exit();
+      } else {
+         echo 0;
       }
    }
 }

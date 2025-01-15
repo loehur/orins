@@ -22,10 +22,8 @@
                                     $jumlah = $a['jumlah'];
 
                                     $pelanggan = "Non";
-                                    $pelanggan = $data['pelanggan'][$client]['nama'];
-
-                                ?>
-                                    <tr>
+                                    $pelanggan = $data['pelanggan'][$client]['nama']; ?>
+                                    <tr class="rb<?= $rb ?>">
                                         <td>
                                             <span class="text-purple"><?= $data['toko'][$a['id_toko']]['nama_toko'] ?></span><br>
                                             <?php if ($a['jenis_transaksi'] == 1) { ?>
@@ -40,13 +38,13 @@
                                     </tr>
                                 <?php
                                 } ?>
-                                <tr>
+                                <tr class="rb<?= $rb ?>">
                                     <td></td>
                                     <td class="px-0"><button data-id="<?= $rb ?>" data-val="2" class="border-0 actionMulti btn btn-sm btn-outline-danger">Reject - <b>Rp<?= number_format($data['kas_group'][$rb]['jumlah']) ?></b></button></td>
                                     <td class="px-0 text-end"><button data-id="<?= $rb ?>" data-val="1" class="border-0 actionMulti btn btn-sm btn-outline-success">Verify - <b>Rp<?= number_format($data['kas_group'][$rb]['jumlah']) ?></b></button></td>
                                     <td></td>
                                 </tr>
-                                <tr>
+                                <tr class="rb<?= $rb ?>">
                                     <td colspan="10" class="bg-light"></td>
                                 </tr>
                         <?php }
@@ -207,7 +205,7 @@
             type: "POST",
             success: function(result) {
                 if (result == 0) {
-                    content();
+                    $('#rb' + id_).remove();
                 } else {
                     alert(result);
                 }
