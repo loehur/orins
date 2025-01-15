@@ -13,17 +13,6 @@
         </div>
         <div class="row mb-2">
             <div class="col mb-2" style="min-width:270px;max-width:350px">
-                <form action="<?php PV::BASE_URL ?>Export/export_d" method="POST">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white text-info" style="min-width: 100px;">Sales Item</span>
-                        <input name="month" type="month" min="2023-07" max="<?= date("Y-m") ?>" placeholder="YYYY-MM" class="form-control" required>
-                        <button type="submit" class="btn bg-gradient btn-info">Export</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="row mb-2">
-            <div class="col mb-2" style="min-width:270px;max-width:350px">
                 <form action="<?php PV::BASE_URL ?>Export/export_p" method="POST">
                     <div class="input-group">
                         <span class="input-group-text bg-white text-success" style="min-width: 100px;">Payment</span>

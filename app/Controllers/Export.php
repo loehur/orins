@@ -107,60 +107,6 @@ class Export extends Controller
       fpassthru($f);
    }
 
-   public function export_d() //detail
-   {
-      $month = $_POST['month'];
-      $delimiter = ",";
-      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-SALES-" . $month . ".csv";
-      $f = fopen('php://memory', 'w');
-
-      $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
-      $data = $this->db(0)->get_where("order_data", $where);
-      $tanggal = date("Y-m-d");
-
-      $fields = array('NO. REFERENSI', 'TANGGAL', 'KODE BARANG', 'MAIN ORDER', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'STATUS', 'NOTE', 'EXPORTED');
-      fputcsv($f, $fields, $delimiter);
-      foreach ($data as $a) {
-         $jumlah = $a['jumlah'];
-         $note = strtoupper($a['cancel_reason']);
-         $tgl_order = substr($a['insertTime'], 0, 10);
-         $main_order = strtoupper($a['produk']);
-
-         if ($a['cancel'] == 0) {
-            if ($a['tuntas'] == 1) {
-               $order_status = "LUNAS";
-            } else {
-               if ($a['id_ambil'] == 0) {
-                  $order_status = "AKTIF";
-               }
-               if ($a['id_ambil'] <> 0) {
-                  $order_status = "PIUTANG";
-               }
-            }
-         } else {
-            $order_status = "BATAL";
-         }
-
-         $detail_harga = unserialize($a['detail_harga']);
-         if (is_array($detail_harga)) {
-            $harga = 0;
-            foreach ($detail_harga as $dh) {
-               $cb = $dh['c_b'];
-               $nb = strtoupper($dh['n_v']);
-               $harga = $dh['h'];
-               $total = $harga * $jumlah;
-               $lineData = array("R" . $a['ref'], $tgl_order, $cb, $main_order, $nb, $jumlah, $harga, $total, $order_status, $note, $tanggal);
-               fputcsv($f, $lineData, $delimiter);
-            }
-         }
-      }
-
-      fseek($f, 0);
-      header('Content-Type: text/csv');
-      header('Content-Disposition: attachment; filename="' . $filename . '";');
-      fpassthru($f);
-   }
-
    public function export_p()
    {
       $month = $_POST['month'];

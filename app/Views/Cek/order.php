@@ -38,43 +38,12 @@
         font-family: <?= $fontStyle ?>;
     }
 
-    .selectize-control {
-        padding: 0px;
-    }
-
-    .selectize-input {
-        border: none;
-        padding-top: 12px;
-    }
-
-    .selectize-input::after {
-        visibility: hidden;
-    }
-
     main {
         margin-bottom: 20px;
     }
 
     .col-t {
         line-height: 100%;
-    }
-
-    input:focus,
-    .form-select:focus,
-    .btn:focus,
-    select:focus,
-    textarea,
-    input.form-control:focus {
-        outline: none !important;
-        outline-width: 0 !important;
-        box-shadow: none;
-        -moz-box-shadow: none;
-        -webkit-box-shadow: none;
-    }
-
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        display: none;
     }
 </style>
 </head>
