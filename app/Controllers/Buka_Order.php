@@ -209,9 +209,9 @@ class Buka_Order extends Controller
             $count_price_locker += 1;
             $harga_paket[$dm['paket_ref']] = $data['paket'][$dm['paket_ref']]['harga_' . $parse];
             $id_margin[$dm['paket_ref']]['id'] = $dm['id'];
-            $get = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $dm['paket_ref'] . "' AND price_locker = 1");
-            if (isset($get['jumlah'])) {
-               $paket_qty = $dm['jumlah'] / $get['jumlah'];
+            $get = $this->db(0)->get_where_row('paket_mutasi', "paket_ref = '" . $dm['paket_ref'] . "' AND price_locker = 1");
+            if (isset($get['qty'])) {
+               $paket_qty = $dm['qty'] / $get['qty'];
                $id_margin[$dm['paket_ref']]['qty'] = $paket_qty;
                $id_margin[$do['paket_ref']]['nama'] =  $data['paket'][$dm['paket_ref']]['nama'];
                $id_margin[$do['paket_ref']]['tb'] = "master_mutasi";
