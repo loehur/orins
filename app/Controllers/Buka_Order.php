@@ -696,7 +696,6 @@ class Buka_Order extends Controller
    function proses($id_pelanggan_jenis, $id_pelanggan = 0, $ref = "")
    {
       $id_user_afiliasi = 0;
-      $data['paket'] = $this->db(0)->get('paket_main', "id");
 
       if (isset($_POST['id_karyawan_aff'])) {
          $id_user_afiliasi = $_POST['id_karyawan_aff'];
@@ -788,7 +787,14 @@ class Buka_Order extends Controller
          $cols = 'ref';
          $vals = $ref;
          $do = $this->db(0)->insertCols('ref', $cols, $vals);
+
+         if ($do['errno'] <> 0) {
+            echo $do['error'];
+            exit();
+         }
       }
+
+      $data['paket'] = $this->db(0)->get('paket_main', "id");
 
       if ($id_pelanggan_jenis == 100 && $id_user_afiliasi == 0) {
          $tujuan = $this->userData['id_toko'];
