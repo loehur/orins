@@ -831,9 +831,9 @@ class Buka_Order extends Controller
                $id_margin[$dbr['paket_ref']]['primary'] = 'id';
                $id_margin[$dbr['paket_ref']]['tb'] = 'master_mutasi';
 
-               $get = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $dbr['paket_ref'] . "' AND price_locker = 1");
-               if (isset($get['jumlah'])) {
-                  $paket_qty = $dbr['jumlah'] / $get['jumlah'];
+               $get = $this->db(0)->get_where_row('paket_mutasi', "paket_ref = '" . $dbr['paket_ref'] . "' AND price_locker = 1");
+               if (isset($get['qty'])) {
+                  $paket_qty = $dbr['qty'] / $get['qty'];
                   $id_margin[$dbr['paket_ref']]['qty'] = $paket_qty;
                }
             }
