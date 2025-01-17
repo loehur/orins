@@ -509,9 +509,7 @@ class Paket extends Controller
          }
       }
 
-      if ($count_price_locker <> 1) {
-         die("Price Lock tidak Valid " . $count_price_locker);
-      }
+
 
       if ($ref_s == '') {
          $vals = "'" . $ref . "'," . $this->userData['id_toko'] . ",'" . $paket . "'," . $harga_paket;
