@@ -87,6 +87,12 @@ class Login_99 extends Controller
       }
       session_unset();
       session_destroy();
+
+      if (isset($_COOKIE['ORINSESSID'])) {
+         unset($_COOKIE['ORINSESSID']);
+         setcookie('ORINSESSID', '', -1, '/');
+      }
+
       header('Location: ' . PV::BASE_URL . "Home");
    }
 }
