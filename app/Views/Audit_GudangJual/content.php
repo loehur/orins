@@ -22,7 +22,7 @@
                         <?= $a['id'] ?>
                     </td>
                     <td class="">
-                        <?= strtoupper($data['toko'][$a['id_target']]['nama']) ?>
+                        <?= isset($data['toko'][$a['id_sumber']]['nama_toko']) ? $data['toko'][$a['id_sumber']]['nama_toko'] : "Gudang" ?>
                     </td>
                     <td>
                         <?= $a['no_faktur'] ?>
