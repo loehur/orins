@@ -43,7 +43,6 @@
                         </td>
                     </tr>
                 <?php } ?>
-
                 <tr>
                     <td class="border-0" colspan="10"></td>
                 </tr>

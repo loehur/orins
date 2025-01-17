@@ -696,6 +696,7 @@ class Buka_Order extends Controller
    function proses($id_pelanggan_jenis, $id_pelanggan = 0, $ref = "")
    {
       $id_user_afiliasi = 0;
+      $data['paket'] = $this->db(0)->get('paket_main', "id");
 
       if (isset($_POST['id_karyawan_aff'])) {
          $id_user_afiliasi = $_POST['id_karyawan_aff'];
@@ -807,7 +808,6 @@ class Buka_Order extends Controller
       $paket_qty = [];
       $id_margin = [];
 
-      $data['paket'] = $this->db(0)->get('paket_main', "id");
       if ($id_user_afiliasi == 0) {
          $data['barang'] = $this->db(0)->get('master_barang', 'id');
          $data['order'] = $this->db(0)->get_where('order_data', $where_order);
@@ -1010,7 +1010,12 @@ class Buka_Order extends Controller
 
       $adjuster = [];
       foreach ($total_per_paket as $key => $tpp) {
-         $adjuster[$key] = ($data['paket'][$key]['harga_' . $id_pelanggan_jenis] * $id_margin[$key]['qty']) - $tpp;
+         if (isset($adjuster[$key])) {
+            $adjuster[$key] = ($data['paket'][$key]['harga_' . $id_pelanggan_jenis] * $id_margin[$key]['qty']) - $tpp;
+         } else {
+            $adjuster[$key] = 0;
+         }
+
          $id_margin[$key]['margin_paket'] = $adjuster[$key];
       }
 
