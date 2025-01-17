@@ -52,7 +52,7 @@ class Data_Operasi extends Controller
       $data['divisi'] = $this->db(0)->get('divisi', 'id_divisi');
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $data['saldo'] = $this->data("Saldo")->deposit($parse);
-      $data['paket'] = $this->db(0)->gete('paket_main', "id");
+      $data['paket'] = $this->db(0)->get('paket_main', "id");
       $data['barang'] = $this->db(0)->get('master_barang', 'id');
 
       if ($parse_2 < 2023) {
