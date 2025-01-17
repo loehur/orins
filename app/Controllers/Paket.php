@@ -494,10 +494,10 @@ class Paket extends Controller
 
       $where = "id_sumber = " . $this->userData['id_toko'] . " AND paket_ref = '" . $ref . "'";
       $data['mutasi'] = $this->db(0)->get_where('paket_mutasi', $where);
-      $data['barang'] = $this->db(0)->get('master_barang', 'code');
+      $data['barang'] = $this->db(0)->get('master_barang', 'id');
 
       foreach ($data['mutasi'] as $dm) {
-         $db = $data['barang'][$dm['kode_barang']];
+         $db = $data['barang'][$dm['id_barang']];
          $harga = $db['harga_' . $id_pelanggan_jenis];
          $total_harga += ($db['harga_' . $id_pelanggan_jenis] * $dm['qty']);
          if ($harga == 0 && $dm['price_locker'] == 0) {
