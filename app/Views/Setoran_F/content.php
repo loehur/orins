@@ -49,7 +49,6 @@
                                     <?php }
                                     if (isset($data['setor_office'][$set['ref_setoran']])) {
                                         $ds = $data['setor_office'][$set['ref_setoran']];
-
                                         $st_slip = "";
                                         switch ($ds['st']) {
                                             case 0:
