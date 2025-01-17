@@ -583,6 +583,7 @@ class Buka_Order extends Controller
 
    function load_detail_barang($produk, $id_pelanggan_jenis)
    {
+      $data['user'] = $this->db(0)->get('user', 'id_user');
       $data['stok'] = $this->data('Barang')->stok_data($produk, $this->userData['id_toko']);
       $data['stok_gudang'] = $this->data('Barang')->stok_data($produk, 0);
       $data['id_pelanggan_jenis'] = $id_pelanggan_jenis;

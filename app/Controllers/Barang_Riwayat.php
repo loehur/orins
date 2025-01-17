@@ -38,7 +38,7 @@ class Barang_Riwayat extends Controller
    function data($kode)
    {
       $data['barang'] = $this->db(0)->get_where_row('master_barang', "sp = 0 AND id = '" . $kode . "'");
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND (id_sumber = 0 OR id_target = 0)");
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND (id_sumber = 0 OR id_target = 0) AND jenis <> 2");
       $this->view(__CLASS__ . '/data', $data);
    }
 }

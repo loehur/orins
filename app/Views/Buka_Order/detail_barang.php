@@ -16,6 +16,20 @@
                     <?php if ($ds['qty'] == 0 && $ds['sn'] <> "") {
                         continue;
                     } ?>
+                    <?php
+                    if (isset($ds['cart'])) { ?>
+                        <tr>
+                            <td class="fw-bold"><?= $ds['cart'] ?></td>
+                            <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : "<span class='text-danger'>ABF</span>" ?></td>
+                            <td><?= $ds['sn'] ?></td>
+                            <td class="text-end">
+                                <?php foreach ($ds['cart_list'] as $cs) { ?>
+                                    <?= $data['user'][$cs['user_id']]['nama'] ?>:<?= $cs['qty'] ?>&nbsp;
+                                <?php } ?>
+                            </td>
+                        </tr>
+                    <?php }
+                    ?>
                     <tr>
                         <td class="fw-bold"><?= $ds['qty'] ?></td>
                         <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : "<span class='text-danger'>ABF</span>" ?></td>
