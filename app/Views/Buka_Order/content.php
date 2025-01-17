@@ -42,10 +42,10 @@ $mgpaket = $data['margin_paket'];
                         <?php if ($id_pelanggan_jenis == 1) { ?>
                             <div class="row mb-2">
                                 <div class="col px-1" style="max-width: 300px;">
-                                    <input name="new_customer" value="<?= $_COOKIE['new_user'] ? $_COOKIE['new_user'] : '' ?>" class="form-control form-control-sm" placeholder="New Customer">
+                                    <input name="new_customer" value="<?= isset($_COOKIE['new_user']) ? $_COOKIE['new_user'] : '' ?>" class="form-control form-control-sm" placeholder="New Customer">
                                 </div>
                                 <div class="col px-1" style="max-width: 300px;">
-                                    <input name="hp" value="<?= $_COOKIE['hp'] ? $_COOKIE['hp'] : '' ?>" class="form-control form-control-sm" placeholder="Phone Number">
+                                    <input name="hp" value="<?= isset($_COOKIE['hp']) ? $_COOKIE['hp'] : '' ?>" class="form-control form-control-sm" placeholder="Phone Number">
                                 </div>
                             </div>
                         <?php } ?>
