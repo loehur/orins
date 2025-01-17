@@ -44,7 +44,7 @@ $total_item = 0;
             $nama_paket = isset($data['main'][$data['ref']]['nama']) ? $data['main'][$data['ref']]['nama'] : "";
             $harga_paket = isset($data['main'][$data['ref']]['harga_' . $id_pelanggan_jenis]) ? $data['main'][$data['ref']]['harga_' . $id_pelanggan_jenis] : "";
             ?>
-            <div class="row <?= count($data['order']) == 0 ? "d-none" : "" ?>">
+            <div class="row <?= count($data['order']) == 0 && count($data['order_barang']) == 0 ? "d-none" : "" ?>">
                 <div class="col px-2">
                     <form action="<?= PV::BASE_URL ?>Paket/save/<?= $id_pelanggan_jenis ?>/<?= $data['ref'] ?>" method="POST">
                         <div class="row pb-2">
