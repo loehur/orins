@@ -503,13 +503,16 @@ class Paket extends Controller
          if ($harga == 0 && $dm['price_locker'] == 0) {
             echo "Lengkapi harga " . trim($db['brand'] . " " . $db['model']) .  " terlebih dahulu!";
             exit();
-         }
-         if ($dm['price_locker'] == 1) {
-            $count_price_locker += 1;
+         } else {
+            if ($dm['price_locker'] == 1) {
+               $count_price_locker += 1;
+            }
          }
       }
 
-
+      if ($count_price_locker <> 1) {
+         die("Price Lock tidak Valid " . $count_price_locker);
+      }
 
       if ($ref_s == '') {
          $vals = "'" . $ref . "'," . $this->userData['id_toko'] . ",'" . $paket . "'," . $harga_paket;

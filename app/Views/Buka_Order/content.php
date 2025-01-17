@@ -336,7 +336,7 @@ $mgpaket = $data['margin_paket'];
 
                         if ($db['price_locker'] == 1) {
                             $classKeyPrice = 'text-danger';
-                            $total_order += (($dp['harga'] * $db['jumlah']) + $mgpaket[$db['paket_ref']]['margin_paket']);
+                            $total_order += (($dp['harga'] * $db['qty']) + $mgpaket[$db['paket_ref']]['margin_paket']);
                             $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $mgpaket[$db['paket_ref']]['margin_paket'];
                         } else {
                             $total_order += ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
