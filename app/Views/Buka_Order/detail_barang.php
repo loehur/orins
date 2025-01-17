@@ -13,9 +13,6 @@
                     </tr>
                 <?php } ?>
                 <?php foreach ($data['stok'] as $ds) { ?>
-                    <?php if ($ds['qty'] == 0 && $ds['sn'] <> "" && !isset($ds['cart'])) {
-                        continue;
-                    } ?>
                     <?php
                     if (isset($ds['cart'])) { ?>
                         <tr>
@@ -28,8 +25,10 @@
                                 <?php } ?>
                             </td>
                         </tr>
-                    <?php }
-                    ?>
+                    <?php } ?>
+                    <?php if ($ds['qty'] == 0 && $ds['sn'] <> "") {
+                        continue;
+                    } ?>
                     <tr>
                         <td class="fw-bold"><?= $ds['qty'] ?></td>
                         <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : "<span class='text-danger'>ABF</span>" ?></td>
