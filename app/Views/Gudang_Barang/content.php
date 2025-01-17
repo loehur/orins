@@ -71,6 +71,7 @@ $max_length = [2, 2, 2, 3];
             <table id="tb_barang" class="hover">
                 <thead>
                     <tr>
+                        <td>ID</td>
                         <td>Code</td>
                         <td>Item</td>
                         <td>Stok</td>
@@ -78,6 +79,9 @@ $max_length = [2, 2, 2, 3];
                 </thead>
                 <?php foreach ($data['barang'] as $a) { ?>
                     <tr>
+                        <td>
+                            <?= $a['id'] ?>
+                        </td>
                         <td class="align-top">
                             <table class="p-0 m-0">
                                 <tr>
