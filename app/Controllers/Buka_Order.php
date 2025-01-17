@@ -1031,6 +1031,16 @@ class Buka_Order extends Controller
          unset($_SESSION['edit']);
       }
 
+      if (isset($_COOKIE['new_user'])) {
+         unset($_COOKIE['new_user']);
+         setcookie('new_user', '', -1, '/');
+      }
+
+      if (isset($_COOKIE['hp'])) {
+         unset($_COOKIE['hp']);
+         setcookie('hp', '', -1, '/');
+      }
+
       echo $id_pelanggan;
    }
 

@@ -42,10 +42,10 @@ $mgpaket = $data['margin_paket'];
                         <?php if ($id_pelanggan_jenis == 1) { ?>
                             <div class="row mb-2">
                                 <div class="col px-1" style="max-width: 300px;">
-                                    <input name="new_customer" class="form-control form-control-sm" placeholder="New Customer">
+                                    <input name="new_customer" value="<?= $_COOKIE['new_user'] ? $_COOKIE['new_user'] : '' ?>" class="form-control form-control-sm" placeholder="New Customer">
                                 </div>
                                 <div class="col px-1" style="max-width: 300px;">
-                                    <input name="hp" class="form-control form-control-sm" placeholder="Phone Number">
+                                    <input name="hp" value="<?= $_COOKIE['hp'] ? $_COOKIE['hp'] : '' ?>" class="form-control form-control-sm" placeholder="Phone Number">
                                 </div>
                             </div>
                         <?php } ?>
@@ -404,6 +404,21 @@ $mgpaket = $data['margin_paket'];
     $('input[name=new_customer]').keypress(function() {
         $("#pelanggan")[0].selectize.clear();
     })
+
+    $('input[name=new_customer]').keyup(function() {
+        setCookie('new_user', $(this).val(), 1);
+    })
+
+    $('input[name=hp]').keyup(function() {
+        setCookie('hp', $(this).val(), 1);
+    })
+
+    function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        let expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
 
     $("button.delError").click(function() {
         var id_ = $(this).attr('data-id');
