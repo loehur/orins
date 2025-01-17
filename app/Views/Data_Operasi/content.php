@@ -602,7 +602,7 @@
         <?php } ?>
 
         <?php if (count($data['r_kas']) > 0) { ?>
-            <div class="col px-1 text-sm">
+            <div class="col px-1 text-sm" style="min-width: 400px;">
                 <div class="mb-1 text-success"><small>Riwayat Pembayaran</small></div>
                 <table class="table table-sm border text-sm">
                     <?php
