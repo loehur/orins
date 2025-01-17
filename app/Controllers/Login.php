@@ -3,6 +3,8 @@ class Login extends Controller
 {
     public function index()
     {
+        $_SESSION['secure']['encryption'] = "j499uL0v3ly&N3lyL0vEly_F0r3ver";
+        $this->cek_cookie();
         if (isset($_SESSION['login_orins'])) {
             if ($_SESSION['login_orins'] == TRUE) {
                 header('Location: ' . PV::BASE_URL . "Home");
@@ -22,7 +24,6 @@ class Login extends Controller
         $c = $_POST['c_'];
         $token = $_POST['token_'];
 
-        $_SESSION['secure']['encryption'] = "j499uL0v3ly&N3lyL0vEly_F0r3ver";
         $token_ = $this->model("Enc")->dec_2(PV::LOGIN_KEY);
 
         if ($c <> $_SESSION['captcha']) {

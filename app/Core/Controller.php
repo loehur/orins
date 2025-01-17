@@ -91,6 +91,33 @@ class Controller extends PV
         header('Location: ' . PV::BASE_URL . "Login");
     }
 
+    function cek_cookie()
+    {
+        if (isset($_COOKIE["ORINSESSID"])) {
+            $cookie_value = $this->model("Enc")->dec_2($_COOKIE["ORINSESSID"]);
+            $user_data = unserialize($cookie_value);
+
+            if (isset($user_data['user']) && isset($user_data['device'])) {
+                $device = $_SERVER['HTTP_USER_AGENT'];
+                if ($user_data['device'] == $device) {
+                    $this->set_login($user_data);
+                }
+            }
+        }
+    }
+
+    function set_login($userData = [])
+    {
+        //LOGIN
+        $where = "id_user = " . $userData['id_user'];
+        $userData = $this->db(0)->get_where_row('user', $where);
+
+        $_SESSION['login_orins'] = TRUE;
+        $_SESSION['user_data'] = $userData;
+        $this->userData = $_SESSION['user_data'];
+        $this->dataSynchrone();
+    }
+
     public function db($db = 0)
     {
         $file = "M_DB";

@@ -3,6 +3,8 @@ class Login_99 extends Controller
 {
    public function index($hp = "NULL")
    {
+      $this->cek_cookie();
+
       if ($hp == "") {
          $hp = "NULL";
       }
@@ -58,23 +60,19 @@ class Login_99 extends Controller
       } else {
          $this->model('Log')->write($hp . " Login Success");
          $this->set_login($userData);
+         $this->save_cookie($userData);
+         $this->index($userData['user']);
       }
    }
 
-
-   function set_login($userData = [])
+   function save_cookie($userData)
    {
-      //LOGIN
-      $where = "id_user = " . $userData['id_user'];
-      $userData = $this->db(0)->get_where_row('user', $where);
-
-      $_SESSION['login_orins'] = TRUE;
-      $_SESSION['user_data'] = $userData;
-      $this->userData = $_SESSION['user_data'];
-      $this->dataSynchrone();
-
-      $this->index($userData['user']);
+      $device = $_SERVER['HTTP_USER_AGENT'];
+      $userData['device'] = $device;
+      $cookie_value = $this->model("Enc")->enc_2(serialize($userData));
+      setcookie("ORINSESSID", $cookie_value, time() + 86400, "/");
    }
+
 
    public function logout()
    {
