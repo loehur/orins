@@ -213,9 +213,9 @@ class Buka_Order extends Controller
             if (isset($get['qty'])) {
                $paket_qty = $dm['qty'] / $get['qty'];
                $id_margin[$dm['paket_ref']]['qty'] = $paket_qty;
-               $id_margin[$do['paket_ref']]['nama'] =  $data['paket'][$dm['paket_ref']]['nama'];
-               $id_margin[$do['paket_ref']]['tb'] = "master_mutasi";
-               $id_margin[$do['paket_ref']]['primary'] =  "id";
+               $id_margin[$dm['paket_ref']]['nama'] =  $data['paket'][$dm['paket_ref']]['nama'];
+               $id_margin[$dm['paket_ref']]['tb'] = "master_mutasi";
+               $id_margin[$dm['paket_ref']]['primary'] =  "id";
             }
          }
 
