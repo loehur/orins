@@ -265,7 +265,7 @@ $total_item = 0;
                         if ($db['price_locker'] == 1) {
                             $classKeyPrice = 'text-danger';
                             $total_order += (($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $db['margin_paket']);
-                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $do['margin_paket'];
+                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $db['margin_paket'];
                         } else {
                             $total_order += ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
                             $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
