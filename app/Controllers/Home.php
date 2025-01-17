@@ -29,9 +29,5 @@ class Home extends Controller
    public function content()
    {
       $this->view($this->v_content);
-      $cek = $this->model("Enc")->dec_2($_COOKIE["ORINSESSID"]);
-      echo "<pre class='px-5'>";
-      print_r(unserialize($cek));
-      echo "</pre>";
    }
 }
