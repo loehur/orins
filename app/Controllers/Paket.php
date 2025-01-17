@@ -454,7 +454,7 @@ class Paket extends Controller
          $ref = $ref_s;
       }
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND paket_ref = '" . $ref_s . "'";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND paket_ref = '" . $ref . "'";
       $data['order'] = $this->db(0)->get_where('paket_order', $where);
       $data_harga = $this->db(0)->get('produk_harga');
 
@@ -498,14 +498,14 @@ class Paket extends Controller
 
       foreach ($data['mutasi'] as $dm) {
          $db = $data['barang'][$dm['id_barang']];
-         $harga = $db['harga_' . $id_pelanggan_jenis];
          $total_harga += ($db['harga_' . $id_pelanggan_jenis] * $dm['qty']);
-         if ($harga == 0 && $dm['price_locker'] == 0) {
-            echo "Lengkapi harga " . trim($db['brand'] . " " . $db['model']) .  " terlebih dahulu!";
-            exit();
-         } else {
-            if ($dm['price_locker'] == 1) {
-               $count_price_locker += 1;
+
+         if ($dm['price_locker'] == 1) {
+            $count_price_locker += 1;
+            $harga = $db['harga_' . $id_pelanggan_jenis];
+            if ($harga == 0) {
+               echo "Lengkapi harga " . trim($db['brand'] . " " . $db['model']) .  " terlebih dahulu!";
+               exit();
             }
          }
       }
