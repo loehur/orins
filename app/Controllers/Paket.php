@@ -503,10 +503,9 @@ class Paket extends Controller
          if ($harga == 0 && $dm['price_locker'] == 0) {
             echo "Lengkapi harga " . trim($db['brand'] . " " . $db['model']) .  " terlebih dahulu!";
             exit();
-         } else {
-            if ($dm['price_locker'] == 1) {
-               $count_price_locker += 1;
-            }
+         }
+         if ($dm['price_locker'] == 1) {
+            $count_price_locker += 1;
          }
       }
 
