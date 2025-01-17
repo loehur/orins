@@ -206,7 +206,7 @@ class Data_Order extends Controller
       $data['mark'] = $this->db(0)->get_where_row('ref', $where_ref, 'ref')['mark'];
 
       $data['paket'] = [];
-      $data['list_paket'] = $this->db(0)->get_where('paket_main', 'id_toko = ' . $this->userData['id_toko'], 'id');
+      $data['list_paket'] = $this->db(0)->get('paket_main', 'id');
       foreach ($data['order'] as $key => $do) {
          if ($do['paket_ref'] <> "") {
             if (isset($data['paket'][$do['paket_ref']]['harga'])) {
