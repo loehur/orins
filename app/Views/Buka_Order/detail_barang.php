@@ -13,7 +13,7 @@
                     </tr>
                 <?php } ?>
                 <?php foreach ($data['stok'] as $ds) { ?>
-                    <?php if ($ds['qty'] == 0 && $ds['sn'] <> "") {
+                    <?php if ($ds['qty'] == 0 && $ds['sn'] <> "" && !isset($ds['cart'])) {
                         continue;
                     } ?>
                     <?php
