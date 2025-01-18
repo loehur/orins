@@ -94,7 +94,7 @@ class Buka_Order extends Controller
          $whereBarang = "ref = '" . $dEdit[0] . "' OR (id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0) AND stat <> 2";
       } else {
          $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0 AND cancel = 0";
-         $whereBarang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND stat <> 2";
+         $whereBarang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND stat <> 2";
       }
 
       $data['order'] = $this->db(0)->get_where('order_data', $where);

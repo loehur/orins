@@ -38,11 +38,48 @@
         </table>
     </div>
     <div class="row mx-0">
+        <div class="col">
+            <div class="btn-group me-1">
+                <button type="button" class="btn shadow-none btn-sm btn-primary bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    Operasi Kas
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
+                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModal" class="dropdown-item" href="#">Topup Petycash</a></li>
+                </ul>
+            </div>
+        </div>
         <div class="col text-end fw-bold pt-2">
             Total Saldo <?= number_format($data['setor']) ?>
         </div>
     </div>
 </main>
+
+<div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Topup PetyCash
+            </div>
+            <form class="ajax" action="<?= PV::BASE_URL ?>Office_Kas/topupPety/<?= $id_pelanggan_jenis ?>" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" required>Jumlah</label>
+                        <input type="number" min="1" name="jumlah" class="form-control" required>
+                    </div>
+                    <select class="form form-select" name="id_toko">
+                        <?php foreach ($this->dToko as $dt) { ?>
+                            <option value="<?= $dt['id_toko'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModalAff"><?= $dt['nama_toko'] ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Proses</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
