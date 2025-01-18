@@ -2,20 +2,20 @@
     <?php if ($d['qty'] > 0) { ?>
         <form id="<?= $key ?>" action="<?= PV::BASE_URL ?>Stok_Transfer/add_mutasi/<?= $data['ref'] ?>" method="POST">
             <div class="row mb-2 mx-1 text-sm border-bottom">
+                <div class="col-auto text-center px-1 mb-2 text-end" id="col_qty">
+                    <input type="hidden" min="1" value="<?= $d['qty'] ?>" readonly class="text-center border-bottom border-0" name="qty" style="text-transform: uppercase;">
+                    <span><?= $d['qty'] ?></span>
+                </div>
                 <div class="col-auto px-1 mb-2 text-center">
                     <input type="hidden" name="sds" value="<?= $d['sds'] ?>">
                     <input type="hidden" name="kode" value="<?= $d['id_barang'] ?>">
                     <input type="hidden" name="sds_" value="<?= $d['sds'] == 1 ? "SDS" : "" ?>" readonly class="border-bottom border-0 text-center">
                     <span><?= $d['sds'] == 1 ? "SDS" : "ABF" ?></span>
                 </div>
-                <div class="col px-1 mb-2">
+                <div class="col-auto px-1 mb-2">
                     <input type="hidden" name="sn" value="<?= $d['sn'] ?>" readonly class="border-bottom border-0 w-100">
                     <input type="hidden" name="sn_" value="<?= $d['sn'] == "" ? "-" : $d['sn'] ?>" readonly class="border-bottom border-0 w-100">
                     <span><?= $d['sn'] == "" ? "-" : $d['sn'] ?></span>
-                </div>
-                <div class="col-auto text-center px-1 mb-2 text-end" id="col_qty">
-                    <input type="hidden" min="1" value="<?= $d['qty'] ?>" readonly class="text-center border-bottom border-0" name="qty" style="text-transform: uppercase;">
-                    <span><?= $d['qty'] ?></span>
                 </div>
                 <div class="col text-end px-1 mb-2 text-end" id="col_qty">
                     <input id="qty" required type="number" min="1" value="<?= strlen($d['sn']) > 0 ? 1 : "" ?>" max="<?= $d['qty'] ?>" class="px-2 text-center border-bottom border-0" name="qty" style="text-transform: uppercase;">
