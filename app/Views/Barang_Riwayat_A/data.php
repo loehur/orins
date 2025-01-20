@@ -9,7 +9,7 @@
                     case 0:
                         $txt = "success";
                         $sumber = $data['supplier'][$d['id_sumber']]['nama'];
-                        $target = "Gudang";
+                        $target = "GUDANG";
                         break;
                     case 1:
                         $txt = "warning";
@@ -18,8 +18,21 @@
                         break;
                     case 2:
                         $txt = "danger";
-                        $sumber = $data['toko'][$d['id_sumber']]['nama_toko'];
+                        if ($d['id_sumber'] == 0) {
+                            $sumber = 'GUDANG';
+                        } else {
+                            $sumber = $data['toko'][$d['id_sumber']]['nama_toko'];
+                        }
                         $target = $data['pelanggan'][$d['id_target']]['nama'];
+                        break;
+                    case 3:
+                        $txt = "primary";
+                        $sumber = $data['toko'][$d['id_sumber']]['nama_toko'];
+                        if ($d['id_target'] == 0) {
+                            $target = "GUDANG";
+                        } else {
+                            $target = $data['supplier'][$d['id_target']]['nama'];
+                        }
                         break;
                 } ?>
 
