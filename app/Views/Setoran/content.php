@@ -70,7 +70,10 @@
 
                             $jumlah = $a['jumlah'];
 
-                            $total_pengeluaran += $jumlah;
+                            if ($a['status_mutasi'] <> 2) {
+                                $total_pengeluaran += $jumlah;
+                            }
+
                             $ref = $a['ref_transaksi'];
                             $jenis = $data['jkeluar'][$ref]['nama'];
                         ?>
