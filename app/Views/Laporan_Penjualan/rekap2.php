@@ -6,8 +6,8 @@
 </style>
 
 <main class="container mt-3 pb-3">
-    <div class="row mb-0">
-        <div class="col ps-2">
+    <div class="row mb-0 mx-0">
+        <div class="col">
             <small class="fw-bold"><?= $data['range']['from'] ?> s/d <?= $data['range']['to'] ?></small>
         </div>
     </div>
