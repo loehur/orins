@@ -8,7 +8,7 @@
                     </tr>
                 <?php } ?>
                 <?php foreach ($data['stok'] as $ds) {
-                    if ($ds['qty'] > 0 && $ds['sn'] = '') { ?>
+                    if ($ds['sn'] = '') { ?>
                         <tr>
                             <td class="text-end">
                                 <form action="<?= PV::BASE_URL ?>Paket/add_barang/<?= $data['ref'] ?>" class="mb-0" method="POST">
