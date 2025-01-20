@@ -1,9 +1,6 @@
 <div class="mb-1">
     <div class="row px-2">
         <div class="col">
-            <?php
-            print_r($data['stok']);
-            ?>
             <table class="table table-sm m-0 p-0">
                 <?php if (count($data['stok']) == 0) { ?>
                     <tr>
@@ -11,7 +8,7 @@
                     </tr>
                 <?php } ?>
                 <?php foreach ($data['stok'] as $ds) {
-                    if ($ds['qty'] > 0) { ?>
+                    if ($ds['qty'] > 0 && $ds['sn'] = '') { ?>
                         <tr>
                             <td class="text-end">
                                 <form action="<?= PV::BASE_URL ?>Paket/add_barang/<?= $data['ref'] ?>" class="mb-0" method="POST">

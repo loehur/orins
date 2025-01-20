@@ -23,7 +23,7 @@ $total_item = 0;
 <main class="container">
     <!-- Main page content-->
     <div class="container px-2">
-        <div class="text-sm mb-2 text-danger">Harap tidak menambahkan produk SDS dan Produk dengan SN kedalam Paket, produk tersebut dapat di tambahkan secara manual saat melakukan orderan</div>
+        <div class="text-sm mb-2">Note: Produk ber-SN tidak dapat dimasukkan kedalam Paket, produk tersebut dapat ditambahkan secara manual saat melakukan orderan</div>
         <div class="row mb-2">
             <div class="col px-0">
                 <select name="paket" class="tize border-0" required id="paket">
