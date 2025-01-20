@@ -14,7 +14,7 @@
     <table class="table table-sm text-sm" id="dt_tb">
         <thead>
             <tr>
-                <th>Item Produksi</th>
+                <th>Barang</th>
                 <th class="text-end">Qty</th>
                 <th class="text-end">Total</th>
             </tr>
