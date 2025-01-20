@@ -1,6 +1,9 @@
 <div class="mb-1">
     <div class="row px-2">
         <div class="col">
+            <?php
+            print_r($data['stok']);
+            ?>
             <table class="table table-sm m-0 p-0">
                 <?php if (count($data['stok']) == 0) { ?>
                     <tr>
