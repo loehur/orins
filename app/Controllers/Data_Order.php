@@ -219,9 +219,9 @@ class Data_Order extends Controller
             }
             if ($do['price_locker'] == 1) {
                if (!isset($data['paket'][$do['paket_ref']]['qty'])) {
-                  echo "cek";
                   $get = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $do['paket_ref'] . "' AND price_locker = 1");
                   if (isset($get['qty'])) {
+                     echo "cek";
                      $data['paket'][$do['paket_ref']]['qty'] = $do['jumlah'] / $get['qty'];
                   }
                }
