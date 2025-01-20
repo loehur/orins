@@ -32,7 +32,7 @@
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#tb_dt').dataTable({
+        $('#dt_tb').dataTable({
             "bLengthChange": false,
             "bFilter": true,
             "bInfo": false,
