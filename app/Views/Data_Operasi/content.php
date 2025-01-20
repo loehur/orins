@@ -527,7 +527,7 @@
                                     </tr>
                                     <tr>
                                         <td>Metode</td>
-                                        <td class="pb-2">
+                                        <td class="pb-2 pt-1">
                                             <select name="metode_multi" class="form-select metodeBayar_multi" required>
                                                 <option value=""></option>
                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
