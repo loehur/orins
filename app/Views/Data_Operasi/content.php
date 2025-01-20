@@ -529,6 +529,7 @@
                                         <td>Metode</td>
                                         <td class="pb-2">
                                             <select name="metode_multi" class="form-select metodeBayar_multi" required>
+                                                <option value=""></option>
                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                     <option value="1">Tunai</option>
                                                 <?php } ?>
@@ -543,7 +544,7 @@
                                             Clear <i class="fa-regular fa-square"></i>
                                         </td>
                                     </tr>
-                                    <tr id="noteBayar_multi" class="border-top">
+                                    <tr id="noteBayar_multi" class="border-top" style="display:none">
                                         <td class="pe-2 text-danger" nowrap>Catatan Transaksi</td>
                                         <td colspan="2" class="pb-2 pt-2">
                                             <input type="text" name="note_multi" class="form-control border border-danger">
