@@ -43,7 +43,8 @@
                         <input type="hidden" name="head_id" value="<?= $d['id'] ?>">
                         <select name="barang" class="ac tize border-0 w-100" required id="barang">
                             <option></option>
-                            <?php foreach ($data['barang'] as $br) { ?>
+                            <?php foreach ($data['barang'] as $br) {
+                                $code_split = str_split($br['code'], 2); ?>
                                 <option value="<?= $br['id'] ?>"><?= $br['nama'] ?> <?= $br['code'] ?><?= $br['code_f'] <> "" ? "#" . $br['code_f'] : "" ?></option>
                             <?php } ?>
                         </select>

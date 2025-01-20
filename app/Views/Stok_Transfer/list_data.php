@@ -29,8 +29,9 @@
                     <select name="barang" class="tize border-0 w-100" required id="barang">
                         <option></option>
                         <?php foreach ($data['barang'] as $br) { ?>
-                            <?php if (strlen($br['nama']) > 1) { ?>
-                                <option value="<?= $br['id'] ?>"><?= $br['nama'] ?></option>
+                            <?php if (strlen($br['nama']) > 1) {
+                                $code_split = str_split($br['code'], 2); ?>
+                                <option value="<?= $br['id'] ?>"><?= $code_split[0] ?> <?= $br['nama'] ?></option>
                             <?php } ?>
                         <?php } ?>
                     </select>
