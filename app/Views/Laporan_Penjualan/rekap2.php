@@ -14,9 +14,9 @@
     <table class="text-sm" id="dt_tb">
         <thead>
             <tr>
-                <td>Group</td>
-                <td>Brand</td>
-                <td>Barang</td>
+                <th>Group</th>
+                <th>Brand</th>
+                <th>Barang</th>
                 <th class="text-end">Qty</th>
                 <th class="text-end">Total</th>
             </tr>
