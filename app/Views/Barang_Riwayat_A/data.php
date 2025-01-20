@@ -8,7 +8,12 @@
                 switch ($d['jenis']) {
                     case 0:
                         $txt = "success";
-                        $sumber = $data['supplier'][$d['id_sumber']]['nama'];
+                        if (isset($data['supplier'][$d['id_sumber']]['nama'])) {
+                            $sumber = $data['supplier'][$d['id_sumber']]['nama'];
+                        } else {
+                            $sumber = "GUDANG";
+                        }
+
                         $target = "GUDANG";
                         break;
                     case 1:
