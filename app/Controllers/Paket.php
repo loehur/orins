@@ -380,7 +380,7 @@ class Paket extends Controller
 
    function load_detail_barang($produk, $id_pelanggan_jenis, $ref = "")
    {
-      $data['stok'] = $this->data('Barang')->stok_data_all($produk, $this->userData['id_toko']);
+      $data['stok'] = $this->data('Barang')->stok_data($produk, $this->userData['id_toko']);
       $data['id_pelanggan_jenis'] = $id_pelanggan_jenis;
       $data['ref'] = $ref;
       $this->view(__CLASS__ . "/detail_barang", $data);
