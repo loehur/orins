@@ -143,7 +143,7 @@
             foreach ($data['paket'] as $pref => $do) {
                 $akum_diskon = 0;
                 $no += 1;
-                $jumlah = 1;
+                $jumlah = $do['qty'];
                 $total += ($jumlah * $do['harga']); ?>
 
                 <tr style="border-bottom: 1px solid silver;">
