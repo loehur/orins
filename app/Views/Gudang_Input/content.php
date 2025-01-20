@@ -1,3 +1,9 @@
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
+<style>
+    .dt-search {
+        float: right !important;
+    }
+</style>
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
 <main>
     <!-- Main page content-->
@@ -39,17 +45,28 @@
             </div>
         </form>
 
-        <table class="table table-sm text-sm">
+        <table class="text-sm" id="dt_tb">
+            <thead>
+                <tr>
+                    <th class="text-center"></th>
+                    <th>Ref/Supplier</th>
+                    <th>No. DO/Faktur</th>
+                    <th>ST</th>
+                </tr>
+            </thead>
             <?php foreach ($data['input'] as $a) { ?>
                 <tr>
-                    <td class="align-middle">
+                    <td class="align-middle text-center">
                         <a href="<?= PV::BASE_URL ?>Gudang_Input/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
+                        <br>
+                        <small><?= $a['sds'] == 1 ? "SDS" : "ABF" ?></small>
                     </td>
                     <td>
                         <?= $a['id'] ?>
-                    </td>
-                    <td class="">
-                        <?= $data['supplier'][$a['id_sumber']]['nama'] ?>
+                        <br>
+                        <span class="fw-bold">
+                            <?= $data['supplier'][$a['id_sumber']]['nama'] ?>
+                        </span>
                     </td>
                     <td>
                         <?php if ($a['cek'] == 0) { ?>
@@ -57,16 +74,12 @@
                         <?php } else { ?>
                             <?= $a['no_faktur'] ?>
                         <?php } ?>
-                    </td>
-                    <td>
+                        <br>
                         <?php if ($a['cek'] == 0) { ?>
                             <span data-id="<?= $a['id'] ?>" data-col="no_po" data-tipe="text" data-primary="id" data-tb="master_input" class="cell_edit"><?= $a['no_po'] ?></span>
                         <?php } else { ?>
                             <?= $a['no_po'] ?>
                         <?php } ?>
-                    </td>
-                    <td>
-                        <?= $a['sds'] == 1 ? "SDS" : "ABF" ?>
                     </td>
                     <td class="align-middle">
                         <?php if ($a['cek'] == 0) { ?>
@@ -83,10 +96,19 @@
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
-
+<script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 <script>
     $(document).ready(function() {
         $('select.tize').selectize();
+        $('#dt_tb').dataTable({
+            "bLengthChange": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "pageLength": 50,
+            "scrollY": 560,
+            "dom": "lfrti"
+        });
     });
     $("form").on("submit", function(e) {
         e.preventDefault();
