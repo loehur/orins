@@ -1,7 +1,7 @@
 <main class="container">
     <?php $total = 0 ?>
     <?php if (count($data['setor']) > 0) { ?>
-        <div class="pt-2 pe-2 pb-0 ms-3 mt-3 me-3 bg-white">
+        <div class="pe-2 pb-0 ms-3 me-3 bg-white">
             <div class="row border-bottom mb-2">
                 <div class="col ms-2">
                     <span class="text-danger">Setoran Kasir dalam Pengecekan</span>

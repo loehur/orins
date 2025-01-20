@@ -12,6 +12,23 @@
     ?>
     <!-- Main page content-->
     <div class="container">
+        <div class="row mx-0">
+            <div class="col text-end">
+                <div class="btn-group me-1">
+                    <button type="button" class="btn shadow-none btn-sm btn-primary bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        Operasi Kas
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
+                        <li><a data-bs-toggle="modal" data-bs-target="#exampleModal" class="dropdown-item" href="#">Topup Petycash</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-auto text-end pt-2">
+                Saldo Kas Rp<?= number_format($data['setor']) ?>
+            </div>
+        </div>
+
         <table class="table table-sm text-sm">
             <tr>
                 <th colspan="10" class="text-success">Setoran Kas Kantor</th>
@@ -36,22 +53,6 @@
                 </tr>
             <?php } ?>
         </table>
-    </div>
-    <div class="row mx-0">
-        <div class="col">
-            <div class="btn-group me-1">
-                <button type="button" class="btn shadow-none btn-sm btn-primary bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                    Operasi Kas
-                    <span class="visually-hidden">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
-                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModal" class="dropdown-item" href="#">Topup Petycash</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="col text-end fw-bold pt-2">
-            Total Saldo <?= number_format($data['setor']) ?>
-        </div>
     </div>
 </main>
 

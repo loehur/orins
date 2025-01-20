@@ -98,19 +98,15 @@ class Barang extends Controller
         return $masuk;
     }
 
-    function cek($kode, $id_toko, $sn, $sds, $qty)
+    function sisa_stok($kode, $id_toko, $sn, $sds)
     {
         $stok = $this->stok_data($kode, $id_toko);
         $unic = "U" . $sn . $sds;
         if (isset($stok[$unic])) {
-            if ($stok[$unic]['qty'] < $qty) {
-                return $stok;
-            }
+            return $stok[$unic]['qty'];
         } else {
-            return $stok;
+            return 0;
         }
-
-        return 1;
     }
 
 

@@ -99,7 +99,6 @@ class Stok_Transfer extends Controller
    function add_mutasi($ref)
    {
       $id_barang = $_POST['kode'];
-
       $head = $this->db(0)->get_where_row('master_input', "id = '" . $ref . "'");
       $target = $head['id_target'];
       $qty = $_POST['qty'];
@@ -110,13 +109,14 @@ class Stok_Transfer extends Controller
          $sn_c = 1;
       }
 
-      $id_sumber = 0;
-      $cek = $this->data('Barang')->cek($id_barang, 0, $sn, $sds, $qty);
-      if ($cek == false) {
+      $sisa_stok = $this->data('Barang')->sisa_stok($id_barang, 0, $sn, $sds);
+
+      if ($sisa_stok <= 0) {
          echo "Stok ter-update tidak tersedia";
          exit();
       }
 
+      $id_sumber = 0;
       $cols = 'ref, jenis, id_barang, id_sumber, id_target, qty, sds, sn, sn_c';
 
       $vals = "'" . $ref . "',1," . $id_barang . ",'" . $id_sumber . "','" . $target . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c;
