@@ -6,9 +6,9 @@
 </style>
 
 <main class="container mt-3 pb-3">
-    <div class="row mb-2">
-        <div class="col text-center">
-            <?= $data['range']['from'] ?> s/d <?= $data['range']['to'] ?>
+    <div class="row mb-0">
+        <div class="col">
+            <small class="fw-bold"><?= $data['range']['from'] ?> s/d <?= $data['range']['to'] ?></small>
         </div>
     </div>
     <table class="text-sm" id="dt_tb">
