@@ -45,38 +45,37 @@
                 </tr>
             <?php } ?>
         </table>
-        <div class="overflow-auto pe-2" style="height: 500px;">
-            <table class="text-sm" id="dt_tb">
-                <thead>
-                    <tr>
-                        <th class="text-center"></th>
-                        <th>Ref/Supplier</th>
-                        <th>No. DO/Faktur</th>
-                        <th>ST</th>
-                    </tr>
-                </thead>
-                <?php foreach ($data['input_done'] as $a) { ?>
-                    <tr>
-                        <td class="align-middle text-center">
-                            <a href="<?= PV::BASE_URL ?>Audit_BMasuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
-                            <br>
-                            <small><?= $a['sds'] == 1 ? "SDS" : "ABF" ?></small>
-                        </td>
-                        <td>
-                            <?= $a['id'] ?><br>
-                            <span class="fw-bold"><?= $data['supplier'][$a['id_sumber']]['nama'] ?></span>
-                        </td>
-                        <td>
-                            <?= $a['no_po'] ?><br>
-                            <?= $a['no_faktur'] ?>
-                        </td>
-                        <td>
-                            <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </table>
-        </div>
+
+        <table class="text-sm" id="dt_tb">
+            <thead>
+                <tr>
+                    <th class="text-center"></th>
+                    <th>Ref/Supplier</th>
+                    <th>No. DO/Faktur</th>
+                    <th>ST</th>
+                </tr>
+            </thead>
+            <?php foreach ($data['input_done'] as $a) { ?>
+                <tr>
+                    <td class="align-middle text-center">
+                        <a href="<?= PV::BASE_URL ?>Audit_BMasuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
+                        <br>
+                        <small><?= $a['sds'] == 1 ? "SDS" : "ABF" ?></small>
+                    </td>
+                    <td>
+                        <?= $a['id'] ?><br>
+                        <span class="fw-bold"><?= $data['supplier'][$a['id_sumber']]['nama'] ?></span>
+                    </td>
+                    <td>
+                        <?= $a['no_po'] ?><br>
+                        <?= $a['no_faktur'] ?>
+                    </td>
+                    <td>
+                        <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
+                    </td>
+                </tr>
+            <?php } ?>
+        </table>
     </div>
 </main>
 
