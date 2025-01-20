@@ -4,7 +4,7 @@
             <span class="fw-bold">Supplier</span>
             <button type="button" class="float-end btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
 
-            <table class="table table-sm">
+            <table class="table table-sm text-sm">
                 <?php
                 foreach ($data['supplier'] as $a) { ?>
                     <tr>
