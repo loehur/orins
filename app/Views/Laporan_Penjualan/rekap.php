@@ -12,11 +12,13 @@
         </div>
     </div>
     <table class="table table-sm text-sm" id="dt_tb">
-        <tr>
-            <th>Item Produksi</th>
-            <th class="text-end">Qty</th>
-            <th class="text-end">Total</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>Item Produksi</th>
+                <th class="text-end">Qty</th>
+                <th class="text-end">Total</th>
+            </tr>
+        </thead>
         <?php
         foreach ($data['order'] as $do) { ?>
             <tr>
