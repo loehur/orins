@@ -119,8 +119,9 @@
                             <?php
                             foreach ($data['stok'] as $dps) {
                                 $dp = $data['barang'][$dps['id_barang']];
+                                $code_split = str_split($dp['code'], 2);
                                 $harga = $dp['harga_' . $id_pelanggan_jenis] ?>
-                                <option value="<?= $dps['id_barang'] ?>"><?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name']  ?> Rp<?= number_format($harga) ?></option>
+                                <option value="<?= $dps['id_barang'] ?>"><?= $code_split[0] ?> <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name']  ?> Rp<?= number_format($harga) ?></option>
                             <?php
                             }
                             ?>
