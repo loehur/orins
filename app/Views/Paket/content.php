@@ -272,7 +272,7 @@ $total_item = 0;
                             $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
                         } ?>
                         <tr>
-                            <td class="text-secondary text-end ps-2"><span data-id="<?= $db['id'] ?>" data-primary="id" data-tb="paket_mutasi" data-ref="<?= $data['ref'] ?>" class="price_key <?= $classKeyPrice ?>" style="cursor: pointer;"><i class="fa-solid fa-key"></i></span> #<?= $db['id'] ?></td>
+                            <td class="text-secondary text-end ps-2"><span data-id="<?= $db['id'] ?>" data-primary="id" data-tb="paket_mutasi" data-ref="<?= $data['ref'] ?>" class="price_key <?= $classKeyPrice ?>" style="cursor: pointer;"><i class="fa-solid fa-key"></i></span> #<?= $db['id'] ?><br><b><?= $db['sds'] == 0 ? "ABF" : "SDS" ?></b></td>
                             <td><?= trim($dp['brand'] . " " . $dp['model'])  ?></td>
                             <td class="text-end"><?= number_format($db['qty']) ?>x<br><?= $db['price_locker'] == 0 ? "@" . number_format($dp['harga_' . $id_pelanggan_jenis]) : "" ?></td>
                             <td class="text-end pe-2"><?= number_format($totalnya) ?></td>

@@ -68,10 +68,8 @@
                                 $harga = $dp['harga_' . $id_pelanggan_jenis];
                                 if ($barang['sn'] == 0) { ?>
                                     <option value="<?= $dps['id_barang'] ?>"><?= trim($dp['brand'] . " " . $dp['model'])  ?> Rp<?= number_format($harga) ?> #<?= $dp['code'] ?><?= strlen($dp['code_f']) > 0 ? "#" . $dp['code_f'] : "" ?></option>
-                            <?php
-                                }
-                            }
-                            ?>
+                                <?php } ?>
+                            <?php } ?>
                         </select>
                     </div>
                     <div id="detail_barang" style="min-height: 300px;"></div>
