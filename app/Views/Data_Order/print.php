@@ -155,7 +155,10 @@
                         <table style="font-size: 13;">
                             <?php
                             if (isset($do['order'])) {
-                                foreach ($do['order'] as $pdo) { ?>
+                                foreach ($do['order'] as $pdo) {
+                                    if ($pdo['price_locker'] == 1) {
+                                        $jumlah = $pdo['jumlah'] / $data['list_paket'][$pref]['qty'];
+                                    } ?>
                                     <tr>
                                         <td style="padding-left:10px;border-top: 1px solid silver;">
                                             <?php
@@ -178,6 +181,10 @@
                             <?php
                             if (isset($do['barang'])) {
                                 foreach ($do['barang'] as $pdo) {
+                                    if ($pdo['price_locker'] == 1) {
+                                        $jumlah = $pdo['qty'] / $data['list_paket'][$pref]['qty'];
+                                    }
+
                                     $dp = $data['barang'][$pdo['id_barang']] ?>
                                     <tr>
                                         <td style="padding-left:10px;border-top: 1px solid silver;">
