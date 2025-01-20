@@ -66,7 +66,7 @@
                             foreach ($data['stok'] as $dps) {
                                 $dp = $data['barang'][$dps['id_barang']];
                                 $harga = $dp['harga_' . $id_pelanggan_jenis];
-                                if ($barang['sn'] == 0) { ?>
+                                if ($dp['sn'] == 0) { ?>
                                     <option value="<?= $dps['id_barang'] ?>"><?= trim($dp['brand'] . " " . $dp['model'])  ?> Rp<?= number_format($harga) ?> #<?= $dp['code'] ?><?= strlen($dp['code_f']) > 0 ? "#" . $dp['code_f'] : "" ?></option>
                                 <?php } ?>
                             <?php } ?>
