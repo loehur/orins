@@ -141,9 +141,6 @@
 
         if (count($data['paket']) > 0) {
             foreach ($data['paket'] as $pref => $do) {
-                echo "<pre>";
-                print_r($do);
-                echo "</pre>";
                 $akum_diskon = 0;
                 $no += 1;
                 $jumlah = $do['qty'];
