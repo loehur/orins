@@ -519,7 +519,7 @@
             <?php if (($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) && $dh['tuntas'] == 0) { ?>
                 <div class="col px-1 text-sm" id="loadMulti" style="max-width: 600px;">
                     <form action="<?= PV::BASE_URL; ?>Data_Operasi/bayar_multi" method="POST">
-                        <div class="border px-0">
+                        <div class="border px-0 pb-1">
                             <small>
                                 <table class="table table-sm mb-0 table-borderless text-sm">
                                     <tr class="table-info">
