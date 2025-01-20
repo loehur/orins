@@ -58,9 +58,10 @@
                 <?php } ?>
             <?php } ?>
         </table>
+
         <table class="table table-sm text-sm">
             <tr>
-                <th colspan="10" class="text-success">Setoran Pecahan</th>
+                <th colspan="10" class="text-success">Riwayat Setoran Pecahan</th>
             </tr>
             <?php foreach ($data['split_done'] as $a) { ?>
                 <tr>
@@ -74,6 +75,28 @@
                         <?= number_format($a['jumlah']) ?>
                     </td>
                 </tr>
+            <?php } ?>
+        </table>
+        <table class="table table-sm text-sm">
+            <tr>
+                <th colspan="10" class="text-danger">Riwayat Pengeluaran</th>
+            </tr>
+            <?php foreach ($data['pengeluaran_done'] as $ref => $keluar) { ?>
+                <?php
+                $jumlah_keluar = 0;
+                foreach ($keluar as $a) { ?>
+                    <tr>
+                        <td>
+                            <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                        </td>
+                        <td>
+                            <?= $a['note'] ?>
+                        </td>
+                        <td class="text-end">
+                            <?= number_format($a['jumlah']) ?>
+                        </td>
+                    </tr>
+                <?php } ?>
             <?php } ?>
         </table>
     </div>
