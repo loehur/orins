@@ -17,10 +17,6 @@
                                 </form>
                             </td>
                         </tr>
-                    <?php } else { ?>
-                        <tr>
-                            <td><span class="text-danger">Stok Kosong</span></td>
-                        </tr>
                 <?php }
                 } ?>
             </table>
