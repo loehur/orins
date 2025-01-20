@@ -27,10 +27,11 @@
                         break;
                     case 3:
                         $txt = "primary";
-                        $sumber = $data['toko'][$d['id_sumber']]['nama_toko'];
                         if ($d['id_target'] == 0) {
+                            $sumber = $data['toko'][$d['id_sumber']]['nama_toko'];
                             $target = "GUDANG";
                         } else {
+                            $sumber = "GUDANG";
                             $target = $data['supplier'][$d['id_target']]['nama'];
                         }
                         break;
