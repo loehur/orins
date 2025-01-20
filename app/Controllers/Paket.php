@@ -327,10 +327,11 @@ class Paket extends Controller
       $barang_c = $_POST['kode'];
       $qty = $_POST['qty'];
       $id_sumber = $this->userData['id_toko'];
+      $sds = $_POST['sds'];
 
       $data['barang'] = $this->db(0)->get('master_barang', 'id');
-      $cols = 'jenis, id_barang, id_sumber, qty, paket_ref';
-      $vals = "2,'" . $barang_c . "','" . $id_sumber . "'," . $qty . ",'" . $ref . "'";
+      $cols = 'jenis, id_barang, id_sumber, qty, paket_ref, sds';
+      $vals = "2,'" . $barang_c . "','" . $id_sumber . "'," . $qty . ",'" . $ref . "'," . $sds;
       $do = $this->db(0)->insertCols('paket_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
