@@ -11,7 +11,7 @@
             <?= $data['range']['from'] ?> s/d <?= $data['range']['to'] ?>
         </div>
     </div>
-    <table class="table table-sm text-sm" id="dt_tb">
+    <table class="text-sm" id="dt_tb">
         <thead>
             <tr>
                 <th>Item Produksi</th>
