@@ -23,7 +23,9 @@
         foreach ($data['mutasi'] as $do) {
             $db = $data['barang'][$do['id_barang']] ?>
             <tr>
-                <td><?= strtoupper($db['product_name']) ?><?= strtoupper($db['brand'] . " " . $db['model']) ?></td>
+                <td><?= $db['group'] ?></td>
+                <td><?= $db['brand'] ?></td>
+                <td><?= strtoupper($db['product_name']) ?><?= $db['model'] ?></td>
                 <td class="text-end"><?= $do['qty'] ?></td>
                 <td class="text-end"><?= number_format($do['jumlah']) ?></td>
             </tr>
@@ -41,7 +43,7 @@
             "bInfo": false,
             "bAutoWidth": false,
             "pageLength": 50,
-            "scrollY": 600,
+            "scrollY": 500,
             "dom": "lfrti"
         });
     })

@@ -40,7 +40,7 @@
             "bInfo": false,
             "bAutoWidth": false,
             "pageLength": 50,
-            "scrollY": 600,
+            "scrollY": 500,
             "dom": "lfrti"
         });
     })

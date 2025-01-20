@@ -98,14 +98,14 @@ class Laporan_Penjualan extends Controller
 
       $datediff = $to_t - $from_t;
       $jumlahHari = round($datediff / (60 * 60 * 24));
-
+      $data['barang'] = [];
       if ($jumlahHari < 32) {
+         $data['barang'] = $this->db(0)->get('master_barang', 'id');
          $cols2 = "id_barang, SUM(qty) as qty, SUM(qty*harga_jual) as jumlah";
          $where2 = "(id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND stat = 1 AND (SUBSTR(insertTime, 1, 10) BETWEEN '" . $from . "' AND '" . $to . "') GROUP BY id_barang ORDER BY id DESC";
          $data['mutasi'] = $this->db(0)->get_cols_where('master_mutasi', $cols2, $where2);
       }
 
-      $data['barang'] = $this->db(0)->get('master_barang', 'id');
       $data['range'] = $_POST;
       $this->view(__CLASS__ . "/rekap2", $data);
    }
