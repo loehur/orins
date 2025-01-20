@@ -217,14 +217,6 @@ class Data_Order extends Controller
             if (!isset($data['paket'][$do['paket_ref']]['order'])) {
                $data['paket'][$do['paket_ref']]['order'] = [];
             }
-            if ($do['price_locker'] == 1) {
-               if (!isset($data['paket'][$do['paket_ref']]['qty'])) {
-                  $get = $this->db(0)->get_where_row('paket_mutasi', "paket_ref = '" . $do['paket_ref'] . "' AND price_locker = 1");
-                  if (isset($get['qty'])) {
-                     $data['paket'][$do['paket_ref']]['qty'] = $do['jumlah'] / $get['qty'];
-                  }
-               }
-            }
             array_push($data['paket'][$do['paket_ref']]['order'], $do);
             unset($data['order'][$key]);
          }
@@ -238,15 +230,6 @@ class Data_Order extends Controller
             }
             if (!isset($data['paket'][$do['paket_ref']]['barang'])) {
                $data['paket'][$do['paket_ref']]['barang'] = [];
-            }
-
-            if ($do['price_locker'] == 1) {
-               if (!isset($data['paket'][$do['paket_ref']]['qty'])) {
-                  $get = $this->db(0)->get_where_row('paket_mutasi', "paket_ref = '" . $do['paket_ref'] . "' AND price_locker = 1");
-                  if (isset($get['qty'])) {
-                     $data['paket'][$do['paket_ref']]['qty'] = $do['qty'] / $get['qty'];
-                  }
-               }
             }
             array_push($data['paket'][$do['paket_ref']]['barang'], $do);
             unset($data['mutasi'][$key]);
