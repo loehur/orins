@@ -14,7 +14,9 @@
     <table class="text-sm" id="dt_tb">
         <thead>
             <tr>
-                <th>Barang</th>
+                <td>Group</td>
+                <td>Brand</td>
+                <td>Barang</td>
                 <th class="text-end">Qty</th>
                 <th class="text-end">Total</th>
             </tr>
@@ -23,7 +25,7 @@
         foreach ($data['mutasi'] as $do) {
             $db = $data['barang'][$do['id_barang']] ?>
             <tr>
-                <td><?= $db['group'] ?></td>
+                <td><?= $db['grup'] ?></td>
                 <td><?= $db['brand'] ?></td>
                 <td><?= strtoupper($db['product_name']) ?><?= $db['model'] ?></td>
                 <td class="text-end"><?= $do['qty'] ?></td>
