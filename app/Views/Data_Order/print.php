@@ -144,7 +144,14 @@
                 $akum_diskon = 0;
                 $no += 1;
                 $jumlah = 1;
-                $total += ($jumlah * $do['harga']); ?>
+                $total += ($jumlah * $do['harga']);
+
+                if ($do['price_locker'] == 1) {
+                    $get = $this->db(0)->get_where_row('paket_mutasi', "paket_ref = '" . $do['paket_ref'] . "' AND price_locker = 1");
+                    if (isset($get['qty'])) {
+                        $jumlah = $do['qty'] / $get['qty'];
+                    }
+                } ?>
 
                 <tr style="border-bottom: 1px solid silver;">
                     <td style="text-align: right; vertical-align:text-top; padding-right:5px" valign="top">

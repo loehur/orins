@@ -278,7 +278,6 @@ class Buka_Order extends Controller
       }
 
       foreach ($data['order'] as $do) {
-
          $_POST['id_produk'] = $do['id_produk'];
          $_POST['note'] = $do['note'];
          $_POST['note_spk'] = $do['note_spk'];
