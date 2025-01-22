@@ -161,18 +161,14 @@
                                             <?php
                                             echo $pdo['jumlah'] . "x - " . $pdo['produk'] . "<br>";
                                             $detail_arr = unserialize($pdo['produk_detail']);
-                                            ?>
-                                            <table class="border-bottom" style="margin:0;padding:0;font-size: 13;">
-                                                <tr>
-                                                    <?php
-                                                    foreach ($detail_arr as $da) { ?>
-                                                        <td class="pe-1" nowrap style="padding:0;">
-                                                            <?= "<small>" . ucwords($da['group_name']) . "</small> <br>" . strtoupper($da['detail_name']) ?>
-                                                        </td>
-                                                    <?php } ?>
-                                                </tr>
-                                            </table>
-                                            <small style="color: red;"><?= $pdo['note'] ?></small>
+                                            foreach ($detail_arr as $da) { ?>
+                                                <div style="float: left;padding-right: 4px;line-height: 100%;">
+                                                    <small><?= ucwords($da['group_name']) ?></small><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span>
+                                                </div>
+                                            <?php } ?>
+                                            <div style="float: left;padding-right: 4px;line-height: 100%;">
+                                                <small>Catatan</small><br><span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
+                                            </div>
                                         </td>
                                     </tr>
                             <?php }
@@ -241,11 +237,11 @@
                     <td style="padding-right: 5px;" valign='top'>
                         <?= $produk ?><br>
                         <?php foreach ($detail_arr as $da) { ?>
-                            <div style="float: left;padding-right: 4px;">
+                            <div style="float: left;padding-right: 4px;line-height: 100%;">
                                 <small><?= ucwords($da['group_name']) ?></small><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span>
                             </div>
                         <?php } ?>
-                        <div style="float: left;padding-right: 4px;">
+                        <div style="float: left;padding-right: 4px;line-height: 100%;">
                             <small>Catatan</small><br><span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
                         </div>
                     </td>
