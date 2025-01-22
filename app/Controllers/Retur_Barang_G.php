@@ -101,8 +101,8 @@ class Retur_Barang_G extends Controller
       }
 
       $id_sumber = 0;
-      $cek = $this->data('Barang')->cek($id_barang, 0, $sn, $sds, $qty);
-      if ($cek == false) {
+      $sisa = $this->data('Barang')->sisa_stok($id_barang, 0, $sn, $sds);
+      if ($sisa <= 0) {
          echo "Stok ter-update tidak tersedia";
          exit();
       }
