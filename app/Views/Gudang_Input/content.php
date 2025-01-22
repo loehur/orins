@@ -83,6 +83,7 @@
                     </td>
                     <td class="align-middle">
                         <?php if ($a['cek'] == 0) { ?>
+                            <span class="text-danger"><i class="fa-regular fa-circle-xmark"></i> Cancel</span><br>
                             <span class="text-warning"><i class="fa-regular fa-circle"></i> Checking</span>
                         <?php } else { ?>
                             <span class="text-success"><i class="fa-solid fa-check"></i></span>
