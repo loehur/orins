@@ -135,4 +135,26 @@ class Gudang_Input extends Controller
          echo "Duplicate SN " . $value;
       }
    }
+
+   function cancel()
+   {
+      $id = $_POST['id'];
+      $count = $this->db(0)->count_where('master_mutasi', "ref = '" . $id . "' AND stat <> 0");
+      if ($count == 0) {
+         $del = $this->db(0)->delete_where('master_input', "id = '" . $id . "'");
+         if ($del['errno'] == 0) {
+            $del = $this->db(0)->delete_where('master_mutasi', "ref = '" . $id . "'");
+            if ($del['errno'] <> 0) {
+               echo $del['error'];
+               exit();
+            }
+         } else {
+            echo $del['error'];
+            exit();
+         }
+      } else {
+         echo "No Surat (" . $id . ") sudah terverifikasi";
+         exit();
+      }
+   }
 }
