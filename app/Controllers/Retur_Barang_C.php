@@ -97,8 +97,8 @@ class Retur_Barang_C extends Controller
       }
 
       $id_sumber = $this->userData['id_toko'];
-      $cek = $this->data('Barang')->cek($id_barang, $this->userData['id_toko'], $sn, $sds, $qty);
-      if ($cek == false) {
+      $sisa_stok = $this->data('Barang')->sisa_stok($id_barang, $this->userData['id_toko'], $sn, $sds, $qty);
+      if ($sisa_stok <= 0) {
          echo "Stok ter-update tidak tersedia";
          exit();
       }
