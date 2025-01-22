@@ -102,7 +102,7 @@
         $('select.tize').selectize();
         $('#dt_tb').dataTable({
             "bLengthChange": false,
-            "bFilter": true,
+            "bFilter": false,
             "bInfo": false,
             "bAutoWidth": false,
             "pageLength": 50,
