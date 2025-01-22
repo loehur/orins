@@ -241,7 +241,7 @@
                     <td style="padding-right: 5px;" valign='top'>
                         <?= $produk ?><br>
                         <?php foreach ($detail_arr as $da) { ?>
-                            <div style="float: left;padding-right: 2px;">
+                            <div style="float: left;padding-right: 4px;">
                                 <?= "<small>" . ucwords($da['group_name']) . "</small> <br>" . strtoupper($da['detail_name']) ?>
                             </div>
                         <?php } ?>
