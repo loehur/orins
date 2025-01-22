@@ -245,7 +245,9 @@
                                 <?= "<small>" . ucwords($da['group_name']) . "</small> <br>" . strtoupper($da['detail_name']) ?>
                             </div>
                         <?php } ?>
-                        <small style="color: red;"><?= $do['note'] ?></small>
+                        <div>
+                            <small style="color: red;"><?= $do['note'] ?></small>
+                        </div>
                     </td>
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                         <?= $do['jumlah'] ?>
