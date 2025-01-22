@@ -163,11 +163,11 @@
                                             $detail_arr = unserialize($pdo['produk_detail']);
                                             foreach ($detail_arr as $da) { ?>
                                                 <div style="float: left;padding-right: 4px;line-height: 100%;">
-                                                    <small><?= ucwords($da['group_name']) ?></small><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span>
+                                                    <small><?= ucwords($da['group_name']) ?><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span></small>
                                                 </div>
                                             <?php } ?>
                                             <div style="float: left;padding-right: 4px;line-height: 100%;">
-                                                <small>Catatan</small><br><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span>
+                                                <small>Catatan<br><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span></small>
                                             </div>
                                         </td>
                                     </tr>
