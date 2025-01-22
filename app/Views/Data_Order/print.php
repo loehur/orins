@@ -246,7 +246,7 @@
                             </div>
                         <?php } ?>
                         <div>
-                            <small style="color: red;"><?= $do['note'] ?></small>
+                            <small>Catatan</small><br><span style="color: red;"><?= $do['note'] ?></span>
                         </div>
                     </td>
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px">
