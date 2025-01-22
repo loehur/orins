@@ -167,7 +167,7 @@
                                                 </div>
                                             <?php } ?>
                                             <div style="float: left;padding-right: 4px;line-height: 100%;">
-                                                <small>Catatan</small><br><span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
+                                                <small>Catatan</small><br><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span>
                                             </div>
                                         </td>
                                     </tr>
