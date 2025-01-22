@@ -40,7 +40,7 @@ class Gudang_Supplier extends Controller
 
    function add()
    {
-      $name = $_POST['nama'];
+      $name = strtoupper($_POST['nama']);
       $id = substr($name, 0, 1) . date("ymd") . rand(0, 9);
       $do = $this->db(0)->insertCols("master_supplier", "id, nama", "'" . $id . "','" . strtoupper($name) . "'");
       if ($do['errno'] <> 0) {
