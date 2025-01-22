@@ -104,6 +104,7 @@
             "bLengthChange": false,
             "bFilter": true,
             "bInfo": false,
+            "ordering": false,
             "bAutoWidth": false,
             "pageLength": 50,
             "scrollY": 530,
