@@ -166,9 +166,11 @@
                                                     <small><?= ucwords($da['group_name']) ?><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span></small>
                                                 </div>
                                             <?php } ?>
-                                            <div style="float: left;padding-right: 4px;line-height: 100%;">
-                                                <small>Catatan<br><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span></small>
-                                            </div>
+                                            <?php if (strlen($pdo['note'] > 0)) { ?>
+                                                <div style="float: left;padding-right: 4px;line-height: 100%;">
+                                                    <small>Note<br><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span></small>
+                                                </div>
+                                            <?php } ?>
                                         </td>
                                     </tr>
                             <?php }
@@ -241,9 +243,11 @@
                                 <small><?= ucwords($da['group_name']) ?></small><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span>
                             </div>
                         <?php } ?>
-                        <div style="float: left;padding-right: 4px;line-height: 100%;">
-                            <small>Catatan</small><br><span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
-                        </div>
+                        <?php if (strlen($ddo['note'] > 0)) { ?>
+                            <div style="float: left;padding-right: 4px;line-height: 100%;">
+                                <small>Note</small><br><span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
+                            </div>
+                        <?php } ?>
                     </td>
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                         <?= $do['jumlah'] ?>
