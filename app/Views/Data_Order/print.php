@@ -245,7 +245,7 @@
                                 <small><?= ucwords($da['group_name']) ?></small><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span>
                             </div>
                         <?php } ?>
-                        <div>
+                        <div style="float: left;padding-right: 4px;">
                             <small>Catatan</small><br><span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
                         </div>
                     </td>
