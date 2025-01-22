@@ -144,7 +144,7 @@
                 $akum_diskon = 0;
                 $no += 1;
                 $jumlah = $do['qty'];
-                $total += ($jumlah * $do['harga']); ?>
+                $total += $do['harga']; ?>
 
                 <tr style="border-bottom: 1px solid silver;">
                     <td style="text-align: right; vertical-align:text-top; padding-right:5px" valign="top">
@@ -197,9 +197,9 @@
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px;">
                         <?php
                         if ($akum_diskon > 0) {
-                            echo "<del>" . number_format($do['harga']) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format($do['harga']  - $akum_diskon);
+                            echo "<del>" . number_format($do['harga'] / $jumlah) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format(($do['harga'] / $jumlah)  - $akum_diskon);
                         } else {
-                            echo number_format($do['harga']);
+                            echo number_format($do['harga'] / $jumlah);
                         } ?>
                     </td>
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px">
