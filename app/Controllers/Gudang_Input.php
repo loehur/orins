@@ -32,7 +32,7 @@ class Gudang_Input extends Controller
    public function content()
    {
       $data['supplier'] = $this->db(0)->get('master_supplier', 'id');
-      $data['input'] = $this->db(0)->get_where('master_input', 'tipe = 0 ORDER BY id DESC');
+      $data['input'] = $this->db(0)->get_where('master_input', 'tipe = 0 ORDER BY insertTime DESC');
       $this->view(__CLASS__ . '/content', $data);
    }
 
