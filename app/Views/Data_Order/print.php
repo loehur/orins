@@ -242,11 +242,11 @@
                         <?= $produk ?><br>
                         <?php foreach ($detail_arr as $da) { ?>
                             <div style="float: left;padding-right: 4px;">
-                                <?= "<small>" . ucwords($da['group_name']) . "</small> <br>" . strtoupper($da['detail_name']) ?>
+                                <small><?= ucwords($da['group_name']) ?></small><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span>
                             </div>
                         <?php } ?>
                         <div>
-                            <small>Catatan</small><br><span style="color: red;"><?= $do['note'] ?></span>
+                            <small>Catatan</small><br><span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
                         </div>
                     </td>
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px">
