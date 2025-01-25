@@ -8,7 +8,7 @@
 <main>
     <!-- Main page content-->
     <div class="container text-sm">
-        <table id="tb_barang" class="hover">
+        <table id="tb_barang" class="hover text-sm">
             <thead>
                 <th>Head</th>
                 <th>Nama</th>
