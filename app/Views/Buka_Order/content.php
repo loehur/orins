@@ -334,13 +334,19 @@ $mgpaket = $data['margin_paket'];
                         $total_item += 1;
                         $dp = $data['barang'][$db['id_barang']];
 
+                        if ($db['harga_jual'] > 0) {
+                            $harga_satuan = $db['harga_jual'];
+                        } else {
+                            $harga_satuan = $dp['harga_' . $id_pelanggan_jenis];
+                        }
+
                         if ($db['price_locker'] == 1) {
                             $classKeyPrice = 'text-danger';
-                            $total_order += (($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $mgpaket[$db['paket_ref']]['margin_paket']);
-                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $mgpaket[$db['paket_ref']]['margin_paket'];
+                            $total_order += (($harga_satuan * $db['qty']) + $mgpaket[$db['paket_ref']]['margin_paket']);
+                            $totalnya = ($harga_satuan * $db['qty']) + $mgpaket[$db['paket_ref']]['margin_paket'];
                         } else {
-                            $total_order += ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
-                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
+                            $total_order += ($harga_satuan * $db['qty']);
+                            $totalnya = ($harga_satuan * $db['qty']);
                         }
 
                         $total_order -= ($db['diskon'] * $db['qty']);
@@ -358,13 +364,11 @@ $mgpaket = $data['margin_paket'];
                                 <b><span data-bs-toggle="modal" data-id="<?= $db['id'] . "_" . $dp['harga_' . $id_pelanggan_jenis] ?>" data-bs-target="#modalDiskonBarang" style="cursor: pointer;" class="tetapkanDiskonBarang pe-2">D</span></b>
 
                                 <?php
-                                $harga_satuan = $dp['harga_' . $id_pelanggan_jenis];
                                 $harga_semula = "";
                                 if ($db['diskon'] > 0) {
+                                    $harga_semula = "<s>" . number_format($harga_satuan) . "</s>";
                                     $harga_satuan -= $db['diskon'];
-                                    $harga_semula = "<s>" . number_format($dp['harga_' . $id_pelanggan_jenis]) . "</s>";
                                 }
-
 
                                 $totalnya -= ($db['diskon'] * $db['qty']);
                                 ?>
