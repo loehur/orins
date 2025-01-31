@@ -45,10 +45,13 @@ class Export extends Controller
       $data = $this->db(0)->get_where("order_data", $where);
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE HARGA', 'KODE BARANG', 'MAIN ORDER', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'AFILIASI', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE HARGA', 'KODE BARANG', 'PRODUK', 'DETAIL BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'AFILIASI', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
+         $refs = $a['ref'];
+         $ref = str_replace(['-', '&', '#'], '', $refs);
+
          $cs = strtoupper($this->model('Arr')->get($this->dKaryawan, "id_karyawan", "nama", $a['id_penerima']));
          $pelanggan = strtoupper($this->model('Arr')->get($this->dPelanggan, "id_pelanggan", "nama", $a['id_pelanggan']));
          $afiliasi = 0;
@@ -82,7 +85,7 @@ class Export extends Controller
                $nb = strtoupper($dh['n_v']);
                $harga = $dh['h'];
                $total = $harga * $jumlah;
-               $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $ch, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+               $lineData = array($a['id_order_data'], "R" . $ref, $tgl_order, $pelanggan, $ch, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
                fputcsv($f, $lineData, $delimiter);
             }
          } else {
