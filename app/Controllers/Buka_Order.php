@@ -768,7 +768,7 @@ class Buka_Order extends Controller
             $qty_ref += 1;
             $qty_ref = substr($qty_ref, -5);
             $nv = str_pad($qty_ref, 5, "0", STR_PAD_LEFT);
-            $ref = $this->userData['id_toko'] . date("ymd") . $nv;
+            $ref = $this->userData['id_toko'] . date("ymd") . rand(0, 9) . $nv;
          }
       }
 
