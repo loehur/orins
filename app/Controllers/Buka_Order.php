@@ -987,8 +987,8 @@ class Buka_Order extends Controller
             $h_beli = $barang['harga'];
             $target_id = $this->userData['id_toko'];
 
-            $cols = 'ref,jenis,id_barang,kode_barang,id_sumber,id_target,harga_beli,qty,pid';
-            $vals = "'" . $ref . "',0," . $id_barang . ",'" . $b_code . "','" . $id_sumber . "','" . $target_id . "'," . $h_beli . "," . $qty . "," . $do['id_order_data'];
+            $cols = 'ref,jenis,id_barang,id_sumber,id_target,harga_beli,qty,pid';
+            $vals = "'" . $ref . "',0," . $id_barang . ",'" . $id_sumber . "','" . $target_id . "'," . $h_beli . "," . $qty . "," . $do['id_order_data'];
             $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
 
             if ($do['errno'] <> 0) {
