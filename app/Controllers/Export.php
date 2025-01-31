@@ -38,7 +38,7 @@ class Export extends Controller
    {
       $month = $_POST['month'];
       $delimiter = ",";
-      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-SALES-" . $month . ".csv";
+      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-PRODUCTION-SALES-" . $month . ".csv";
       $f = fopen('php://memory', 'w');
 
       $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
@@ -116,7 +116,7 @@ class Export extends Controller
    {
       $month = $_POST['month'];
       $delimiter = ",";
-      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-SALES-" . $month . ".csv";
+      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-ITEM-SALES-" . $month . ".csv";
       $f = fopen('php://memory', 'w');
 
       $data['barang'] = $this->db(0)->get_where('master_barang', "en = 1", 'id');
@@ -127,6 +127,8 @@ class Export extends Controller
 
       $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'STORE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
+      echo count($data);
+      exit();
       foreach ($data as $a) {
          $jumlah = $a['qty'];
          $ref = $a['ref'];
