@@ -121,14 +121,13 @@ class Export extends Controller
 
       $data['barang'] = $this->db(0)->get_where('master_barang', "en = 1", 'id');
 
-      $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_toko = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
+      $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
       $data = $this->db(0)->get_where("master_mutasi", $where);
       $tanggal = date("Y-m-d");
 
       $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'STORE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
-      echo count($data);
-      exit();
+
       foreach ($data as $a) {
          $jumlah = $a['qty'];
          $ref = $a['ref'];
