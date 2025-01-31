@@ -79,7 +79,7 @@ class Data_Operasi extends Controller
 
       $new_refs = [];
       foreach ($refs as $ts) {
-         $new_refs[substr($ts, 0, 7) . substr($ts, -5)] = $ts;
+         $new_refs[substr($ts, 0, 7) . substr($ts, -4)] = $ts;
       }
 
       krsort($new_refs);
