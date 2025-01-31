@@ -77,7 +77,7 @@ class Controller extends PV
         $_SESSION['data_pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePel, 'id_pelanggan');
 
         $wherePelAll = "en = 1 ORDER BY freq DESC";
-        $_SESSION['data_pelanggan_all'] = $this->db(0)->get_where('pelanggan', $wherePelAll);
+        $_SESSION['data_pelanggan_all'] = $this->db(0)->get_where('pelanggan', $wherePelAll, 'id_pelanggan');
 
         $_SESSION['karyawan'] = $this->db(0)->get_where('karyawan', $whereToko . " AND en = 1", "id_karyawan");
         $_SESSION['karyawan_all'] = $this->db(0)->get_where('karyawan', "en = 1", "id_karyawan");

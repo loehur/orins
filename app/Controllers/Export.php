@@ -138,8 +138,8 @@ class Export extends Controller
          $barang = strtoupper($db['product_name'] . $db['brand'] . " " . $db['model']);
 
          $store = $a['sds'] == 1 ? "SDS" : "ABF";
-         $cs = strtoupper($this->dKaryawan[$a['cs_id']]['nama']);
-         $pelanggan = strtoupper($this->dPelanggan[$a['id_target']]['nama']);
+         $cs = strtoupper($this->dKaryawanAll[$a['cs_id']]['nama']);
+         $pelanggan = strtoupper($this->dPelangganAll[$a['id_target']]['nama']);
 
          $tgl_order = substr($a['insertTime'], 0, 10);
 
