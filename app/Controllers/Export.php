@@ -119,7 +119,7 @@ class Export extends Controller
       $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-ITEM-SALES-" . $month . ".csv";
       $f = fopen('php://memory', 'w');
 
-      $data['barang'] = $this->db(0)->get_where('master_barang', "en = 1", 'id');
+      $dBarang = $this->db(0)->get_where('master_barang', "en = 1", 'id');
 
       $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
       $data = $this->db(0)->get_where("master_mutasi", $where);
@@ -131,7 +131,7 @@ class Export extends Controller
       foreach ($data as $a) {
          $jumlah = $a['qty'];
          $ref = $a['ref'];
-         $db = $data['barang'][$a['id_barang']];
+         $db = $dBarang[$a['id_barang']];
          $barang = strtoupper($db['product_name'] . $db['brand'] . " " . $db['model']);
 
          $store = $a['sds'] == 1 ? "SDS" : "ABF";
