@@ -54,8 +54,11 @@ class Export extends Controller
          $cs = strtoupper($this->dKaryawan[$a['id_penerima']]['nama']);
          $pelanggan = strtoupper($this->dPelanggan[$a['id_pelanggan']]['nama']);
 
-         $afiliasi = 0;
-         $afiliasi = strtoupper($this->dToko[$a['id_afiliasi']], 'nama_toko');
+         if ($a['id_afiliasi'] <> 0) {
+            $afiliasi = strtoupper($this->dToko[$a['id_afiliasi']], 'nama_toko');
+         } else {
+            $afiliasi = "";
+         }
          $note = strtoupper($a['cancel_reason']);
          $tgl_order = substr($a['insertTime'], 0, 10);
          $main_order = strtoupper($a['produk']);
