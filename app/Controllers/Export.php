@@ -55,7 +55,7 @@ class Export extends Controller
          $pelanggan = strtoupper($this->dPelanggan[$a['id_pelanggan']]['nama']);
 
          if ($a['id_afiliasi'] <> 0) {
-            $afiliasi = strtoupper($this->dToko[$a['id_afiliasi']], 'nama_toko');
+            $afiliasi = strtoupper($this->dToko[$a['id_afiliasi']]['nama_toko']);
          } else {
             $afiliasi = "";
          }
