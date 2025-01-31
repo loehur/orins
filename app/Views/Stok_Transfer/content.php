@@ -1,3 +1,9 @@
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
+<style>
+    .dt-search {
+        float: right !important;
+    }
+</style>
 <main>
     <!-- Main page content-->
     <div class="container">
@@ -24,7 +30,16 @@
             </div>
         </form>
 
-        <table class="table table-sm">
+        <table class="text-sm" id="dt_tb">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Ref</th>
+                    <th>Tanggal</th>
+                    <th>Target</th>
+                    <th></th>
+                </tr>
+            </thead>
             <?php foreach ($data['input'] as $a) { ?>
                 <tr>
                     <td class="align-middle">
@@ -52,8 +67,22 @@
     </div>
 </main>
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 
 <script>
+    $(document).ready(function() {
+        $('#dt_tb').dataTable({
+            "bLengthChange": false,
+            "bFilter": true,
+            "bInfo": false,
+            "ordering": false,
+            "bAutoWidth": false,
+            "pageLength": 50,
+            "scrollY": 530,
+            "dom": "lfrti"
+        });
+    });
+
     $("form").on("submit", function(e) {
         e.preventDefault();
         $.ajax({

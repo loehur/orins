@@ -47,6 +47,7 @@ class Stok_Transfer extends Controller
    function list_data($id)
    {
       $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
+      $data['stok'] = $this->data('Barang')->stok_data_list_all($data['input']['id_target']);
       $data['tujuan'] = $this->db(0)->get_where('toko', 'en = 1', 'id_toko');
       $cols = "id, code, CONCAT(brand,' ',model) as nama";
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
