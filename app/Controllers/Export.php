@@ -49,8 +49,7 @@ class Export extends Controller
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
-         $refs = $a['ref'];
-         $ref = str_replace(['-', '&', '#'], '', $refs);
+         $ref = $a['ref'];
 
          $cs = strtoupper($this->model('Arr')->get($this->dKaryawan, "id_karyawan", "nama", $a['id_penerima']));
          $pelanggan = strtoupper($this->model('Arr')->get($this->dPelanggan, "id_pelanggan", "nama", $a['id_pelanggan']));
@@ -81,7 +80,9 @@ class Export extends Controller
             $harga = 0;
             foreach ($detail_harga as $dh) {
                $cb = $dh['c_b'];
+               $cb = str_replace(['-', '&', '#'], '', $cb);
                $ch = $dh['c_h'];
+               $ch = str_replace(['-', '&', '#'], '', $ch);
                $nb = strtoupper($dh['n_v']);
                $harga = $dh['h'];
                $total = $harga * $jumlah;
