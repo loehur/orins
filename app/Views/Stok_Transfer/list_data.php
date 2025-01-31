@@ -22,23 +22,23 @@
             </div>
         </div>
 
-        <label class="text-sm fw-bold text-danger ps-1">Stok Minus</label>
-        <table class="text-sm table table-sm">
-            <?php
-            foreach ($data['stok'] as $ds) {
-                if ($ds['qty'] < 0) {
-                    $db = $data['barang'][$ds['id_barang']] ?>
-                    <tr>
-                        <td><?= $db['code'] ?></td>
-                        <td><?= $db['nama'] ?></td>
-                        <td class="text-end"><?= $ds['qty'] ?></td>
-                    </tr>
-            <?php }
-            }
-            ?>
-        </table>
-
         <?php if ($d['cek'] == 0) { ?>
+            <label class="text-sm fw-bold text-danger ps-1">Stok Minus</label>
+            <table class="text-sm table table-sm">
+                <?php
+                foreach ($data['stok'] as $ds) {
+                    if ($ds['qty'] < 0) {
+                        $db = $data['barang'][$ds['id_barang']] ?>
+                        <tr>
+                            <td><?= $db['code'] ?></td>
+                            <td><?= $db['nama'] ?></td>
+                            <td class="text-end"><?= $ds['qty'] ?></td>
+                        </tr>
+                <?php }
+                }
+                ?>
+            </table>
+
             <div class="row mb-2 mx-0">
                 <div class="col px-1 mb-2">
                     <label>Barang</label><br>
