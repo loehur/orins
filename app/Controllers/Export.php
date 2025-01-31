@@ -38,7 +38,7 @@ class Export extends Controller
    {
       $month = $_POST['month'];
       $delimiter = ",";
-      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-SALES-" . $month . ".csv";
+      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-SALES-" . $month . ".csv";
       $f = fopen('php://memory', 'w');
 
       $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
@@ -51,10 +51,11 @@ class Export extends Controller
          $jumlah = $a['jumlah'];
          $ref = $a['ref'];
 
-         $cs = strtoupper($this->model('Arr')->get($this->dKaryawan, "id_karyawan", "nama", $a['id_penerima']));
-         $pelanggan = strtoupper($this->model('Arr')->get($this->dPelanggan, "id_pelanggan", "nama", $a['id_pelanggan']));
+         $cs = strtoupper($this->dKaryawan[$a['id_penerima']]['nama']);
+         $pelanggan = strtoupper($this->dPelanggan[$a['id_pelanggan']]['nama']);
+
          $afiliasi = 0;
-         $afiliasi = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_afiliasi']));
+         $afiliasi = strtoupper($this->dToko[$a['id_afiliasi']], 'nama_toko');
          $note = strtoupper($a['cancel_reason']);
          $tgl_order = substr($a['insertTime'], 0, 10);
          $main_order = strtoupper($a['produk']);
@@ -103,6 +104,45 @@ class Export extends Controller
             $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $cb, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
             fputcsv($f, $lineData, $delimiter);
          }
+      }
+
+      fseek($f, 0);
+      header('Content-Type: text/csv');
+      header('Content-Disposition: attachment; filename="' . $filename . '";');
+      fpassthru($f);
+   }
+
+   public function export_pbarang()
+   {
+      $month = $_POST['month'];
+      $delimiter = ",";
+      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-SALES-" . $month . ".csv";
+      $f = fopen('php://memory', 'w');
+
+      $data['barang'] = $this->db(0)->get_where('master_barang', "en = 1", 'id');
+
+      $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_toko = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
+      $data = $this->db(0)->get_where("master_mutasi", $where);
+      $tanggal = date("Y-m-d");
+
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'STORE', 'EXPORTED');
+      fputcsv($f, $fields, $delimiter);
+      foreach ($data as $a) {
+         $jumlah = $a['qty'];
+         $ref = $a['ref'];
+         $db = $data['barang'][$a['id_barang']];
+         $barang = strtoupper($db['product_name'] . $db['brand'] . " " . $db['model']);
+
+         $store = $a['sds'] == 1 ? "SDS" : "ABF";
+         $cs = strtoupper($this->dKaryawan[$a['cs_id']]['nama']);
+         $pelanggan = strtoupper($this->dPelanggan[$a['id_pelanggan']]['nama']);
+
+         $tgl_order = substr($a['insertTime'], 0, 10);
+
+         $harga = $a['harga_jual'];
+         $total = $harga * $jumlah;
+         $lineData = array($a['id'], "R" . $ref, $tgl_order, $pelanggan, $db['code'], $barang, $jumlah, $harga, $total, $cs, $store, $tanggal);
+         fputcsv($f, $lineData, $delimiter);
       }
 
       fseek($f, 0);
