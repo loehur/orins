@@ -92,6 +92,8 @@ class Cron extends Controller
          exit();
       }
 
+      $cancel_count = 0;
+
       $set = "cek_count = cek_count + 1";
       $where = "ref = '" . $ref . "'";
       $this->db(0)->update("ref", $set, $where);
@@ -165,6 +167,10 @@ class Cron extends Controller
                $bill += ($jumlah + $do['margin_paket']);
             }
 
+            if ($cancel <> 0) {
+               $cancel_count += 1;
+            }
+
             $bill -= $do['diskon'];
             $id_ambil = $do['id_ambil'];
             $divisi_arr = unserialize($do['spk_dvs']);
@@ -191,6 +197,10 @@ class Cron extends Controller
                $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
                $bill -= ($do['diskon'] * $jumlah);
             }
+
+            if ($cancel_barang == 2) {
+               $cancel_count += 1;
+            }
          }
       }
 
@@ -206,6 +216,11 @@ class Cron extends Controller
             } else {
                if ($stok == true) {
                   $this->clearTuntas($ref);
+               } else {
+                  $order_count = count($data['mutasi']) + count($data['order']);
+                  if ($order_count == $cancel_count) {
+                     $this->clearTuntas($ref);
+                  }
                }
             }
          }
