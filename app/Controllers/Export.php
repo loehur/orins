@@ -136,7 +136,7 @@ class Export extends Controller
 
          $store = $a['sds'] == 1 ? "SDS" : "ABF";
          $cs = strtoupper($this->dKaryawan[$a['cs_id']]['nama']);
-         $pelanggan = strtoupper($this->dPelanggan[$a['id_pelanggan']]['nama']);
+         $pelanggan = strtoupper($this->dPelanggan[$a['id_target']]['nama']);
 
          $tgl_order = substr($a['insertTime'], 0, 10);
 
