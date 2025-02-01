@@ -450,15 +450,15 @@ class Paket extends Controller
 
       $total_harga = 0;
 
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND paket_ref = '" . $ref_s . "'";
+      $data['order'] = $this->db(0)->get_where('paket_order', $where);
+      $data_harga = $this->db(0)->get('produk_harga');
+
       if ($ref_s == '') {
          $ref = $this->userData['id_toko'] . date("ymdHi");
       } else {
          $ref = $ref_s;
       }
-
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND paket_ref = '" . $ref . "'";
-      $data['order'] = $this->db(0)->get_where('paket_order', $where);
-      $data_harga = $this->db(0)->get('produk_harga');
 
       $detail_harga = [];
       foreach ($data['order'] as $do) {
