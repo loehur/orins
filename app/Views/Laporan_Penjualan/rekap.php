@@ -20,7 +20,9 @@
             </tr>
         </thead>
         <?php
-        foreach ($data['order'] as $do) { ?>
+        $total = 0;
+        foreach ($data['order'] as $do) {
+            $total += $do['jumlah']; ?>
             <tr>
                 <td><?= $data['produk'][$do['id_produk']]['produk'] ?></td>
                 <td class="text-end"><?= $do['qty'] ?></td>
@@ -29,6 +31,8 @@
         <?php }
         ?>
     </table>
+
+    <span class="float-end pe-2">Rp<?= number_format($total) ?></span>
 </main>
 
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>

@@ -22,8 +22,10 @@
             </tr>
         </thead>
         <?php
+        $total = 0;
         foreach ($data['mutasi'] as $do) {
-            $db = $data['barang'][$do['id_barang']] ?>
+            $db = $data['barang'][$do['id_barang']];
+            $total += $do['jumlah'] ?>
             <tr>
                 <td><?= $db['grup'] ?></td>
                 <td><?= $db['brand'] ?></td>
@@ -34,6 +36,7 @@
         <?php }
         ?>
     </table>
+    <span class="float-end pe-2">Rp<?= number_format($total) ?></span>
 </main>
 
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
