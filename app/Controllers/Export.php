@@ -51,8 +51,8 @@ class Export extends Controller
          $jumlah = $a['jumlah'];
          $ref = $a['ref'];
 
-         $cs = strtoupper($this->dKaryawan[$a['id_penerima']]['nama']);
-         $pelanggan = strtoupper($this->dPelanggan[$a['id_pelanggan']]['nama']);
+         $cs = strtoupper($this->dKaryawanAll[$a['id_penerima']]['nama']);
+         $pelanggan = strtoupper($this->dPelangganAll[$a['id_pelanggan']]['nama']);
 
          if ($a['id_afiliasi'] <> 0) {
             $afiliasi = strtoupper($this->dToko[$a['id_afiliasi']]['nama_toko']);
