@@ -29,18 +29,20 @@
                 <td class="text-end"><?= number_format($do['jumlah']) ?></td>
             </tr>
         <?php } ?>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><?= number_format($total) ?></td>
-        </tr>
+        <tfoot>
+            <tr>
+                <th style="text-align:right">Total:</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </tfoot>
     </table>
 </main>
 
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#dt_tb').dataTable({
+        new DataTable('#dt_tb', {
             "order": [],
             "bLengthChange": false,
             "bFilter": true,
@@ -48,7 +50,53 @@
             "bAutoWidth": false,
             "pageLength": 50,
             "scrollY": 560,
-            "dom": "lfrti"
+            "dom": "lfrti",
+
+            footerCallback: function(row, data, start, end, display) {
+                let api = this.api();
+                // Remove the formatting to get integer data for summation
+                let intVal = function(i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                        i :
+                        0;
+                };
+
+                // Total over all pages
+                total = api
+                    .column(2)
+                    .data()
+                    .reduce((a, b) => intVal(a) + intVal(b), 0);
+
+                qty = api
+                    .column(1)
+                    .data()
+                    .reduce((a, b) => intVal(a) + intVal(b), 0);
+
+                // Total over this page
+                pageTotal = api
+                    .column(2, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce((a, b) => intVal(a) + intVal(b), 0);
+
+                pageQty = api
+                    .column(1, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce((a, b) => intVal(a) + intVal(b), 0);
+
+                // Update footer
+                api.column(1).footer().innerHTML =
+                    pageQty + '/' + qty;
+
+                api.column(2).footer().innerHTML =
+                    pageTotal + '/' + total;
+
+            }
         });
     })
 </script>
