@@ -128,7 +128,7 @@ class Export extends Controller
       $data = $this->db(0)->get_where("master_mutasi", $where);
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'STORE', 'EXPORTED');
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'STORE', 'STATUS', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
 
       foreach ($data as $a) {
@@ -137,7 +137,17 @@ class Export extends Controller
          $db = $dBarang[$a['id_barang']];
          $barang = strtoupper($db['product_name'] . $db['brand'] . " " . $db['model']);
 
-         $store = $a['sds'] == 1 ? "SDS" : "ABF";
+         if ($a['stat'] <> 2) {
+            if ($a['tuntas'] == 1) {
+               $order_status = "LUNAS " . substr($a['tuntas_date'], 0, 10);
+            } else {
+               $order_status = "PIUTANG";
+            }
+         } else {
+            $order_status = "BATAL";
+         }
+
+         $store = $a['sds'] == 1 ? "SDS" : $this->dToko[$this->userData['id_toko']]['inisial'];
          $cs = strtoupper($this->dKaryawanAll[$a['cs_id']]['nama']);
          $pelanggan = strtoupper($this->dPelangganAll[$a['id_target']]['nama']);
 
@@ -145,7 +155,7 @@ class Export extends Controller
 
          $harga = $a['harga_jual'];
          $total = $harga * $jumlah;
-         $lineData = array($a['id'], "R" . $ref, $tgl_order, $pelanggan, $db['code'], $barang, $jumlah, $harga, $total, $cs, $store, $tanggal);
+         $lineData = array($a['id'], "R" . $ref, $tgl_order, $pelanggan, $db['code'], $barang, $jumlah, $harga, $total, $cs, $store, $order_status, $tanggal);
          fputcsv($f, $lineData, $delimiter);
       }
 
