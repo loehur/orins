@@ -36,8 +36,8 @@ class Setoran_F extends Controller
       $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
       $refs = array_keys($data['setor']);
 
+      $ref_list = "";
       if (count($refs) > 0) {
-         $ref_list = "";
          foreach ($refs as $r) {
             $ref_list .= $r . ",";
          }
@@ -57,14 +57,19 @@ class Setoran_F extends Controller
          $ref_list_done = rtrim($ref_list_done, ',');
       }
 
-      $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 0 AND id_target = 1";
-      $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
-      $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 0 AND id_target = 0";
-      $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
-
-      $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-      $where = "status_mutasi <> 2 AND jenis_transaksi = 3 AND ref_setoran IN (" . $ref_list . "," . $ref_list_done . ") GROUP BY ref_setoran";
-      $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
+      if ($ref_list <> "") {
+         $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 0 AND id_target = 1";
+         $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+         $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 0 AND id_target = 0";
+         $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+         $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
+         $where = "status_mutasi <> 2 AND jenis_transaksi = 3 AND ref_setoran IN (" . $ref_list . "," . $ref_list_done . ") GROUP BY ref_setoran";
+         $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
+      } else {
+         $data['split'] = [];
+         $data['setor_office'] = [];
+         $data['keluar'] = [];
+      }
 
       $this->view($this->v_content, $data);
    }

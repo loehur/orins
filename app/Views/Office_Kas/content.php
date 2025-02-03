@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="col-auto text-end pt-2">
-                Saldo Kas Rp<?= number_format($data['setor']) ?>
+                Saldo Kas Rp<?= number_format($data['saldo']) ?>
             </div>
         </div>
 
@@ -33,10 +33,7 @@
             <tr>
                 <th colspan="10" class="text-success">Setoran Kas Kantor</th>
             </tr>
-            <?php foreach ($data['split'] as $a) {
-                if ($a['st'] == 1) {
-                    $total_setor += $a['jumlah'];
-                } ?>
+            <?php foreach ($data['split'] as $a) { ?>
                 <tr>
                     <td class="align-middle">
                         <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
@@ -53,6 +50,56 @@
                 </tr>
             <?php } ?>
         </table>
+
+        <table class="table table-sm text-sm">
+            <tr>
+                <th colspan="10" class="text-secondary">Setoran Kas Kantor Terverifikasi</th>
+            </tr>
+            <?php foreach ($data['split_done'] as $a) { ?>
+                <tr>
+                    <td class="align-middle">
+                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                    </td>
+                    <td>
+                        <?= $a['ref'] ?>
+                    </td>
+                    <td class="text-end">
+                        <?= number_format($a['jumlah']) ?>
+                    </td>
+                    <td class="text-end" style="width:70px">
+
+                    </td>
+                </tr>
+            <?php } ?>
+        </table>
+
+        <table class="table table-sm text-sm">
+            <tr>
+                <th colspan="10" class="text-primary">Mutasi</th>
+            </tr>
+            <?php foreach ($data['keluar_list'] as $a) {
+                if ($a['st'] == 1) {
+                    $total_setor += $a['jumlah'];
+                } ?>
+                <tr>
+                    <td class="align-middle">
+                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                    </td>
+                    <td>
+                        <?= $a['tipe'] == 1 ? "Topup Petycash" : "OPO IKI" ?>
+                    </td>
+                    <td>
+                        <span class='fw-bold text-success'><i class='fa-solid fa-arrow-right'></i></span> <?= strtoupper($this->dToko[$a['id_target']]['nama_toko']) ?>
+                    </td>
+                    <td class="text-end">
+                        <?= number_format($a['jumlah']) ?>
+                    </td>
+                    <td class="text-end" style="width:70px">
+
+                    </td>
+                </tr>
+            <?php } ?>
+        </table>
     </div>
 </main>
 
@@ -62,13 +109,13 @@
             <div class="modal-header">
                 Topup PetyCash
             </div>
-            <form class="ajax" action="<?= PV::BASE_URL ?>Office_Kas/topupPety/<?= $id_pelanggan_jenis ?>" method="POST">
+            <form class="ajax" action="<?= PV::BASE_URL ?>Office_Kas/topupPety" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" required>Jumlah</label>
                         <input type="number" min="1" name="jumlah" class="form-control" required>
                     </div>
-                    <select class="form form-select" name="id_toko">
+                    <select class="form form-select" name="toko">
                         <?php foreach ($this->dToko as $dt) { ?>
                             <option value="<?= $dt['id_toko'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModalAff"><?= $dt['nama_toko'] ?></option>
                         <?php } ?>
@@ -101,4 +148,20 @@
             }
         });
     })
+
+    $("form").on("submit", function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            type: $(this).attr("method"),
+            success: function(res) {
+                if (res == 0) {
+                    content();
+                } else {
+                    alert(res);
+                }
+            }
+        });
+    });
 </script>
