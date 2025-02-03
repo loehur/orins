@@ -45,11 +45,13 @@ class Export extends Controller
       $data = $this->db(0)->get_where("order_data", $where);
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE HARGA', 'KODE BARANG', 'PRODUK', 'DETAIL BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'AFILIASI', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'PRODUK/PAKET', 'DETAIL BARANG', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
          $ref = $a['ref'];
+         $diskon = $a['diskon'];
+         $margin_paket = $a['margin_paket'];
 
          $cs = strtoupper($this->dKaryawanAll[$a['id_penerima']]['nama']);
          $pelanggan = strtoupper($this->dPelangganAll[$a['id_pelanggan']]['nama']);
@@ -90,7 +92,7 @@ class Export extends Controller
                $nb = strtoupper($dh['n_v']);
                $harga = $dh['h'];
                $total = $harga * $jumlah;
-               $lineData = array($a['id_order_data'], "R" . $ref, $tgl_order, $pelanggan, $ch, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+               $lineData = array($a['id_order_data'], "R" . $ref, $tgl_order, $pelanggan, $cb, $main_order, $nb, $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
                fputcsv($f, $lineData, $delimiter);
             }
          } else {
@@ -104,7 +106,7 @@ class Export extends Controller
             }
 
             $nb = rtrim($nb);
-            $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $cb, $cb, $main_order, $nb, $jumlah, $harga, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+            $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $cb, $main_order, $nb, $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
             fputcsv($f, $lineData, $delimiter);
          }
       }
@@ -128,12 +130,15 @@ class Export extends Controller
       $data = $this->db(0)->get_where("master_mutasi", $where);
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'NAMA BARANG', 'QTY', 'HARGA', 'TOTAL', 'CS', 'STORE', 'STATUS', 'EXPORTED');
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'PRODUK/PAKET', 'DETAIL BARANG', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
 
       foreach ($data as $a) {
          $jumlah = $a['qty'];
          $ref = $a['ref'];
+         $diskon = $a['diskon'];
+         $margin_paket = $a['margin_paket'];
+
          $db = $dBarang[$a['id_barang']];
          $barang = strtoupper($db['product_name'] . $db['brand'] . " " . $db['model']);
 
@@ -155,7 +160,7 @@ class Export extends Controller
 
          $harga = $a['harga_jual'];
          $total = $harga * $jumlah;
-         $lineData = array($a['id'], "R" . $ref, $tgl_order, $pelanggan, $db['code'], $barang, $jumlah, $harga, $total, $cs, $store, $order_status, $tanggal);
+         $lineData = array($a['id'], "R" . $ref, $tgl_order, $pelanggan, $db['code'], $a['paket_ref'], $barang, $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $store, $order_status, '', $tanggal);
          fputcsv($f, $lineData, $delimiter);
       }
 

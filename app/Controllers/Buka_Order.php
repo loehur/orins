@@ -634,10 +634,18 @@ class Buka_Order extends Controller
       $code = $_POST['code_barang'];
       $harga = $_POST['harga'];
 
-      $where = "id = '" . $code . "'";
-      $set = "harga_" . $id_pelanggan_jenis . " = " . $harga;
-      $update = $this->db(0)->update("master_barang", $set, $where);
-      echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+      $where = "id_barang = '" . $code . "' AND stat = 0 AND ref = ''";
+      $set = "harga_jual = " . $harga;
+      $update = $this->db(0)->update("master_mutasi", $set, $where);
+
+      if ($update['errno'] == 0) {
+         $where = "id = '" . $code . "'";
+         $set = "harga_" . $id_pelanggan_jenis . " = " . $harga;
+         $update = $this->db(0)->update("master_barang", $set, $where);
+         echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+      } else {
+         echo $update['error'];
+      }
    }
 
    function diskon()
