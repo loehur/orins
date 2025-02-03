@@ -33,16 +33,22 @@
                 <td class="text-end"><?= $do['qty'] ?></td>
                 <td class="text-end"><?= number_format($do['jumlah']) ?></td>
             </tr>
-        <?php }
-        ?>
+        <?php } ?>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><?= number_format($total) ?></td>
+        </tr>
     </table>
-    <span class="float-end pe-2">Rp<?= number_format($total) ?></span>
 </main>
 
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 <script>
     $(document).ready(function() {
         $('#dt_tb').dataTable({
+            "order": [],
             "bLengthChange": false,
             "bFilter": true,
             "bInfo": false,

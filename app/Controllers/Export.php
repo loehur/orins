@@ -45,7 +45,7 @@ class Export extends Controller
       $data = $this->db(0)->get_where("order_data", $where);
       $tanggal = date("Y-m-d");
 
-      $pelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
+      $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
 
       $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'PRODUK/PAKET', 'DETAIL BARANG', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
@@ -56,7 +56,7 @@ class Export extends Controller
          $margin_paket = $a['margin_paket'];
 
          $cs = strtoupper($this->dKaryawanAll[$a['id_penerima']]['nama']);
-         $pelanggan = strtoupper($pelanggan[$a['id_pelanggan']]['nama']);
+         $pelanggan = strtoupper($dPelanggan[$a['id_pelanggan']]['nama']);
 
          if ($a['id_afiliasi'] <> 0) {
             $afiliasi = strtoupper($this->dToko[$a['id_afiliasi']]['nama_toko']);
@@ -126,7 +126,7 @@ class Export extends Controller
       $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-ITEM-SALES-" . $month . ".csv";
       $f = fopen('php://memory', 'w');
 
-      $pelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
+      $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $dBarang = $this->db(0)->get_where('master_barang', "en = 1", 'id');
 
       $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
@@ -157,7 +157,7 @@ class Export extends Controller
 
          $store = $a['sds'] == 1 ? "SDS" : $this->dToko[$this->userData['id_toko']]['inisial'];
          $cs = strtoupper($this->dKaryawanAll[$a['cs_id']]['nama']);
-         $pelanggan = strtoupper($pelanggan[$a['id_target']]['nama']);
+         $pelanggan = strtoupper($dPelanggan[$a['id_target']]['nama']);
 
          $tgl_order = substr($a['insertTime'], 0, 10);
 
