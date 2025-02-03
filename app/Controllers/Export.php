@@ -65,7 +65,7 @@ class Export extends Controller
 
          if ($a['cancel'] == 0) {
             if ($a['tuntas'] == 1) {
-               $order_status = "LUNAS";
+               $order_status = "LUNAS " . substr($a['tuntas_date'], 0, 10);
             } else {
                if ($a['id_ambil'] == 0) {
                   $order_status = "AKTIF";
