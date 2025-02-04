@@ -162,10 +162,15 @@ class Data_Operasi extends Controller
       $metode =  $_POST['metode_multi'];
       $ref_bayar = date("ymdhis") . rand(0, 9);
 
-      if (isset($_POST['payment_account']) && $metode == 2) {
-         $payment_account = $_POST['payment_account'];
-         //updateFreq
-         $this->db(0)->update("payment_account", "freq = freq+1", "id = " . $payment_account);
+      if ($metode == 2) {
+         if ($_POST['payment_account'] == "") {
+            echo "Silahkan pilih akun pembayaran";
+            exit();
+         } else {
+            $payment_account = $_POST['payment_account'];
+            //updateFreq
+            $this->db(0)->update("payment_account", "freq = freq+1", "id = " . $payment_account);
+         }
       } else {
          $payment_account = "";
       }

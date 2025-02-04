@@ -266,13 +266,13 @@
                                                         <?php } ?>
                                                         <tr>
                                                             <td colspan="10">
+                                                                <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
                                                                 <?php
                                                                 if ($cancel == 1) { ?>
                                                                     <span class="text-nowrap text-success"><small><del><?= $id . "# " . ucwords($produk) ?></del></small></span>
                                                                 <?php } else { ?>
                                                                     <span class="text-nowrap text-success"><small><?= $id . "# " . ucwords($produk) ?></small></span>
                                                                 <?php } ?>
-                                                                <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
                                                                 <?php if ($dibayar == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                                     <div class="btn-group">
                                                                         <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -554,7 +554,7 @@
                                     <tr id="payment_account" class="border-top" style="display:none">
                                         <td class="pe-2 text-success" nowrap>Akun Pembayaran</td>
                                         <td colspan="2" class="pb-2 pt-2">
-                                            <select name="payment_account" class="border border-success rounded tize" required>
+                                            <select name="payment_account" class="border border-success rounded tize">
                                                 <option value=""></option>
                                                 <?php foreach ($data['payment_account'] as $pa) { ?>
                                                     <option value="<?= $pa['id'] ?>"><?= strtoupper($pa['payment_account']) ?></option>
