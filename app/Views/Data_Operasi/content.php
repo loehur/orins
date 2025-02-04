@@ -112,7 +112,13 @@
                                 break;
                         }
 
-                        $showMutasi .= "<small>" . $metod . "#" . $dk['id_kas'] . " " . $dk['note'] . " " . $statusP . $kembali_text . "</small> " . $jumlahShow;
+                        if (isset($data['payment_account'][$dk['pa']]['payment_account'])) {
+                            $payment_account = $data['payment_account'][$dk['pa']]['payment_account'] . " ";
+                        } else {
+                            $payment_account = "";
+                        }
+
+                        $showMutasi .= "<small>" . $metod . "#" . $dk['id_kas'] . " " . $payment_account . $dk['note'] . " " . $statusP . $kembali_text . "</small> " . $jumlahShow;
                     }
                 }
 
@@ -545,6 +551,18 @@
                                             Clear <i class="fa-regular fa-square"></i>
                                         </td>
                                     </tr>
+                                    <tr id="payment_account" class="border-top" style="display:none">
+                                        <td class="pe-2 text-success" nowrap>Akun Pembayaran</td>
+                                        <td colspan="2" class="pb-2 pt-2">
+                                            <select name="payment_account" class="border border-success rounded tize" required>
+                                                <option value=""></option>
+                                                <?php foreach ($data['payment_account'] as $pa) { ?>
+                                                    <option value="<?= $pa['id'] ?>"><?= strtoupper($pa['payment_account']) ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </td>
+                                        <td></td>
+                                    </tr>
                                     <tr id="noteBayar_multi" class="border-top" style="display:none">
                                         <td class="pe-2 text-danger" nowrap>Catatan Transaksi</td>
                                         <td colspan="2" class="pb-2 pt-2">
@@ -784,6 +802,12 @@
         } else {
             $("tr#noteBayar_multi").hide();
             $("input[name=note_multi").val("");
+        }
+
+        if ($(this).val() == 2) {
+            $("tr#payment_account").show();
+        } else {
+            $("tr#payment_account").hide();
         }
     });
 

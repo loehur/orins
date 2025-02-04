@@ -54,6 +54,7 @@ class Data_Operasi extends Controller
       $data['saldo'] = $this->data("Saldo")->deposit($parse);
       $data['paket'] = $this->db(0)->get('paket_main', "id");
       $data['barang'] = $this->db(0)->get('master_barang', 'id');
+      $data['payment_account'] = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "'", 'id');
 
       if ($parse_2 < 2023) {
          $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0";
@@ -161,6 +162,12 @@ class Data_Operasi extends Controller
       $metode =  $_POST['metode_multi'];
       $ref_bayar = date("ymdhis") . rand(0, 9);
 
+      if (isset($_POST['payment_account']) && $metode == 2) {
+         $payment_account = $_POST['payment_account'];
+      } else {
+         $payment_account = "";
+      }
+
       if (strlen($note) == 0 && $metode == 2) {
          $note = "Non_Tunai";
       } elseif (strlen($note) == 0 && $metode == 3) {
@@ -213,8 +220,8 @@ class Data_Operasi extends Controller
          $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $metode . " AND status_mutasi = " . $status_mutasi . " AND note = '" . $note . "'";
          $dataCount = $this->db(0)->count_where('kas', $whereCount);
 
-         $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali, id_finance_nontunai";
-         $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $bayarnya . "," . $kembalian . "," . $finance_id;
+         $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali, id_finance_nontunai, pa";
+         $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $bayarnya . "," . $kembalian . "," . $finance_id . ",'" . $payment_account . "'";
 
          if ($dataCount < 1) {
             $do = $this->db(0)->insertCols('kas', $cols, $vals);
