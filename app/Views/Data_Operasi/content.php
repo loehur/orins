@@ -483,8 +483,9 @@
                                                         <td class="text-sm align-middle" style="cursor: pointer;">
                                                             <?php if ($data['cust_wa']) { ?>
                                                                 <span onclick="copy('<?= $data['cust_wa'] ?>', <?= $ref ?>)" class="text-success"><i class="fa-brands fa-whatsapp"></i></span>
-                                                                <small><span id="span_copy_<?= $ref ?>" class="text-success fw-bold" style="display: none;">Copied!</span></small>
                                                             <?php } ?>
+                                                            <span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
+                                                            <small><span id="span_copy_<?= $ref ?>" class="text-success fw-bold" style="display: none;">Copied!</span></small>
                                                         </td>
                                                     </tr>
                                                 </table>

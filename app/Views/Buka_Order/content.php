@@ -354,10 +354,12 @@ $mgpaket = $data['margin_paket'];
                     ?>
                         <tr>
                             <td class="text-secondary text-end ps-2">
-                                <span class="badge bg-danger"><?= $db['paket_ref'] <> "" ? $data['paket'][$db['paket_ref']]['nama'] : "" ?></span>
                                 #<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?>
                             </td>
-                            <td><?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?><br><?= $db['sn'] ?></td>
+                            <td>
+                                <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?><br><?= $db['sn'] ?><br>
+                                <span class="badge bg-danger"><?= $db['paket_ref'] <> "" ? $data['paket'][$db['paket_ref']]['nama'] : "" ?></span>
+                            </td>
                             <td class="text-end">
                                 <?= number_format($db['qty']) ?>x<br>
                                 <b><span data-bs-toggle="modal" data-code="<?= $db['id_barang'] ?>" data-jenis="<?= $db['jenis_target'] ?>" data-bs-target="#exampleModalPbarang" style="cursor: pointer;" class="tetapkanHargaBarang px-2">P</span></b>
