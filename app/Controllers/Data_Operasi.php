@@ -54,7 +54,7 @@ class Data_Operasi extends Controller
       $data['saldo'] = $this->data("Saldo")->deposit($parse);
       $data['paket'] = $this->db(0)->get('paket_main', "id");
       $data['barang'] = $this->db(0)->get('master_barang', 'id');
-      $data['payment_account'] = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "'", 'id');
+      $data['payment_account'] = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
       if ($parse_2 < 2023) {
          $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0";
@@ -164,6 +164,8 @@ class Data_Operasi extends Controller
 
       if (isset($_POST['payment_account']) && $metode == 2) {
          $payment_account = $_POST['payment_account'];
+         //updateFreq
+         $this->db(0)->update("payment_account", "freq = freq+1", "id = " . $payment_account);
       } else {
          $payment_account = "";
       }
