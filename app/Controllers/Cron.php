@@ -95,8 +95,8 @@ class Cron extends Controller
 
       $cancel_count = 0;
 
-      $set = "cek_count = cek_count + 1";
-      $where = "ref = '" . $ref . "', last_check = '" . $last_check . "'";
+      $set = "cek_count = cek_count + 1, last_check = '" . $last_check . "'";
+      $where = "ref = '" . $ref . "'";
       $this->db(0)->update("ref", $set, $where);
 
       $tuntas_date = date("Y-m-d");
