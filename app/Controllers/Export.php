@@ -47,7 +47,7 @@ class Export extends Controller
 
       $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'PRODUK/PAKET', 'DETAIL BARANG', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
