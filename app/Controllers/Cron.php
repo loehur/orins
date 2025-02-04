@@ -79,8 +79,9 @@ class Cron extends Controller
 
    public function cek_tuntas($ref = "", $print = false)
    {
+      $last_check = date('ymd');
       if ($ref == "") {
-         $where_ref = "tuntas = 0 ORDER BY updateTime ASC LIMIT 1";
+         $where_ref = "tuntas = 0 AND last_check <> '" . $last_check . "' ORDER BY updateTime ASC LIMIT 1";
       } else {
          $where_ref = "ref = '" . $ref . "'";
       }
@@ -95,7 +96,7 @@ class Cron extends Controller
       $cancel_count = 0;
 
       $set = "cek_count = cek_count + 1";
-      $where = "ref = '" . $ref . "'";
+      $where = "ref = '" . $ref . "', last_check = '" . $last_check . "'";
       $this->db(0)->update("ref", $set, $where);
 
       $tuntas_date = date("Y-m-d");
