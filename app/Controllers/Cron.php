@@ -113,6 +113,7 @@ class Cron extends Controller
       $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi');
 
       $stok = false;
+      $ada_diskon = false;
       //MULAI
       $verify_kas_kecil = true;
       if (count($data['kas_kecil']) > 0) {
@@ -172,6 +173,10 @@ class Cron extends Controller
                $cancel_count += 1;
             }
 
+            if ($do['diskon'] > 0) {
+               $ada_diskon = true;
+            }
+
             $bill -= $do['diskon'];
             $id_ambil = $do['id_ambil'];
             $divisi_arr = unserialize($do['spk_dvs']);
@@ -190,6 +195,10 @@ class Cron extends Controller
                $tuntas = true;
                $tuntas_date = $do['tuntas_date'];
                break;
+            }
+
+            if ($do['diskon'] > 0) {
+               $ada_diskon = true;
             }
 
             $cancel_barang = $do['stat'];
@@ -215,7 +224,7 @@ class Cron extends Controller
             if ($bill > 0) {
                $this->clearTuntas($ref);
             } else {
-               if ($stok == true) {
+               if ($stok == true || $ada_diskon == true) {
                   $this->clearTuntas($ref);
                } else {
                   $order_count = count($data['mutasi']) + count($data['order']);
