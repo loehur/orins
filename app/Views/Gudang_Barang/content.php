@@ -93,7 +93,7 @@ $max_length = [2, 2, 2, 3];
                             <?php } ?>
                         </td>
                         <td class="align-top">
-                            <table class="p-0 m-0">
+                            <table class="p-0 m-0 text-sm">
                                 <tr>
                                     <?php
                                     if ($a['sp'] == 0) {
