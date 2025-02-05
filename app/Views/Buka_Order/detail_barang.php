@@ -20,9 +20,11 @@
                             <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : "<span class='text-danger'>ABF</span>" ?></td>
                             <td><?= $ds['sn'] ?></td>
                             <td class="text-end">
-                                <?php foreach ($ds['cart_list'] as $cs) { ?>
-                                    <?= $data['user'][$cs['user_id']]['nama'] ?>:<?= $cs['qty'] ?>&nbsp;
-                                <?php } ?>
+                                <?php foreach ($ds['cart_list'] as $cs) {
+                                    if ($cs['user_id'] <> 0) { ?>
+                                        <?= $data['user'][$cs['user_id']]['nama'] ?>:<?= $cs['qty'] ?>&nbsp;
+                                <?php }
+                                } ?>
                             </td>
                         </tr>
                     <?php } ?>
