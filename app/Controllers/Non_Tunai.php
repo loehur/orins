@@ -55,7 +55,6 @@ class Non_Tunai extends Controller
       }
 
       $ref_trx = array_keys($data['kas_trx']);
-
       $reft_list = "";
       foreach ($ref_trx as $r) {
          $reft_list .= $r . ",";

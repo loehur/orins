@@ -60,7 +60,9 @@
         </div>
     </div>
     <pre>
-        <?php print_r($data['ref']) ?>
+        <?php
+        print_r($data['ref']);
+        ?>
     </pre>
     <div class="p-2 ms-3 mt-3 me-3 bg-white">
         <div class="row">
@@ -109,10 +111,10 @@
                                     </td>
 
                                     <?php
+
                                     if ($tuntas == 0) {
                                         switch ($a['status_mutasi']) {
-                                            case 1:
-                                    ?>
+                                            case 1: ?>
                                                 <td align="right">
                                                     <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
                                                 </td>
