@@ -99,7 +99,6 @@ $yearNow = date('Y');
 					<?php } ?>
 
 					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[4])) { ?>
-						<hr class="p-0 m-0">
 						<a class="nav-link <?= (str_contains($t, "SPK_Search")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#SPK_Search" aria-expanded="true" aria-controls="SPK">
 							<div class="nav-link-icon"><i class="fa-solid fa-file-signature"></i></div>
 							SPK - Customer

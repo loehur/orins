@@ -221,7 +221,7 @@ class Cron extends Controller
          }
 
          if ($verify_payment >= $bill && $ambil_all == true && $verify_kas_kecil == true) {
-            if ($bill > 0) {
+            if ($bill > 0 && $verify_payment > 0) {
                $this->clearTuntas($ref);
             } else {
                if ($stok == true || $ada_diskon == true) {
