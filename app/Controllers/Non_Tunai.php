@@ -37,7 +37,7 @@ class Non_Tunai extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0";
       $data['kas'] = $this->db(0)->get_where('kas', $where, 'ref_bayar', 1);
 
-      $cols = "ref_transaksi";
+      $cols = "ref_transaksi, tuntas";
       $where_ref_trx = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 GROUP BY ref_transaksi";
       $data['kas_ref_trx'] = $this->db(0)->get_cols_where('kas', $cols, $where_ref_trx, 1, 'ref_transaksi');
 
