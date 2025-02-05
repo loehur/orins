@@ -33,6 +33,7 @@ class Non_Tunai_C extends Controller
    {
       $data['c_'] = __CLASS__;
       $data['pelanggan'] = $this->db(0)->get('pelanggan');
+      $data['payment_account'] = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
