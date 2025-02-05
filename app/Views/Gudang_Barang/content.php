@@ -68,7 +68,7 @@ $max_length = [2, 2, 2, 3];
         </div>
 
         <div>
-            <table id="tb_barang" class="hover">
+            <table id="tb_barang" class="hover text-sm">
                 <thead>
                     <tr>
                         <td>ID</td>
@@ -80,33 +80,7 @@ $max_length = [2, 2, 2, 3];
                 <?php foreach ($data['barang'] as $a) { ?>
                     <tr>
                         <td>
-                            <?= $a['id'] ?>
-                        </td>
-                        <td class="align-top">
-                            <table class="p-0 m-0">
-                                <tr>
-                                    <?php
-                                    if ($a['sp'] == 0) {
-                                        $no = 0;
-                                        for ($i = 0; $i <= 6; $i += 2) {
-                                            $no += 1;
-                                            if ($i == 6) { ?>
-                                                <td class="p-0">
-                                                    <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['id'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 3) ?></span><br>
-                                                </td>
-                                            <?php } else { ?>
-                                                <td class="p-0">
-                                                    <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['id'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 2) ?></span><br>
-                                                </td>
-                                            <?php } ?>
-                                        <?php
-                                        }
-                                    } else { ?>
-                                        <td class="p-0"><span class="text-sm"><?= $a['code'] ?></span></td>
-                                    <?php }
-                                    ?>
-                                </tr>
-                            </table>
+                            #<?= $a['id'] ?><br>
                             <?php if ($a['sp'] == 0) { ?>
                                 <input name="pb" class="form-check-input check" type="checkbox" data-id="<?= $a['id'] ?>" data-col="pb" value="1" <?= $a['pb'] == 1 ? "checked" : '' ?>>
                                 <label class="form-check-label" for="flexCheckDefault">
@@ -117,6 +91,34 @@ $max_length = [2, 2, 2, 3];
                                     SN
                                 </label>
                             <?php } ?>
+                        </td>
+                        <td class="align-top">
+                            <table class="p-0 m-0">
+                                <tr>
+                                    <?php
+                                    if ($a['sp'] == 0) {
+                                        $no = 0;
+                                        for ($i = 0; $i <= 6; $i += 2) {
+                                            $no += 1;
+                                            if ($i == 6) { ?>
+                                                <td class="p-0 align-top">
+                                                    <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['id'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 3) ?></span><br>
+                                                    <?= $a['code_myob'] ?>
+                                                </td>
+                                            <?php } else { ?>
+                                                <td class="p-0 align-top">
+                                                    <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['id'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 2) ?></span><br>
+                                                    <?= $a['code_myob'] ?>
+                                                </td>
+                                            <?php } ?>
+                                        <?php
+                                        }
+                                    } else { ?>
+                                        <td class="p-0 align-top"><span class="text-sm"><?= $a['code'] ?></span></td>
+                                    <?php }
+                                    ?>
+                                </tr>
+                            </table>
                         </td>
                         <?php $split_code = str_split($a['code'], 2) ?>
                         <td class="">
