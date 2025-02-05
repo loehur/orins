@@ -40,7 +40,7 @@
                                             <?php } ?>
                                         </td>
                                         <td class="">#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
-                                        <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><span class="text-success"><?= $payment_account ?></span><?= $a['note'] ?></td>
+                                        <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><span class="text-primary"><?= $payment_account ?></span><?= $a['note'] ?></td>
                                     </tr>
                                 <?php
                                 } ?>
@@ -96,7 +96,7 @@
                                         <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" data-pelanggan="<?= $client ?>" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
                                     </td>
                                     <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
-                                    <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><span class="text-success"><?= $payment_account ?></span><?= $a['note'] ?></td>
+                                    <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><span class="text-primary"><?= $payment_account ?></span><?= $a['note'] ?></td>
                                     <td class="text-end">
                                         <?php
                                         switch ($a['status_mutasi']) {
