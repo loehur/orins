@@ -59,11 +59,6 @@
             </div>
         </div>
     </div>
-    <pre>
-        <?php
-        print_r($data['ref']);
-        ?>
-    </pre>
     <div class="p-2 ms-3 mt-3 me-3 bg-white">
         <div class="row">
             <div class="col">
