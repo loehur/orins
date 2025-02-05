@@ -103,12 +103,10 @@ $max_length = [2, 2, 2, 3];
                                             if ($i == 6) { ?>
                                                 <td class="p-0 align-top">
                                                     <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['id'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 3) ?></span><br>
-                                                    <?= $a['code_myob'] ?>
                                                 </td>
                                             <?php } else { ?>
                                                 <td class="p-0 align-top">
                                                     <span class="cell_edit" data-parent="<?= substr($a['code'], 0, $i) ?>" data-id="<?= $a['id'] ?>" data-col="<?= $no ?>"><?= substr($a['code'], $i, 2) ?></span><br>
-                                                    <?= $a['code_myob'] ?>
                                                 </td>
                                             <?php } ?>
                                         <?php
@@ -119,6 +117,7 @@ $max_length = [2, 2, 2, 3];
                                     ?>
                                 </tr>
                             </table>
+                            <?= $a['code_myob'] ?>
                         </td>
                         <?php $split_code = str_split($a['code'], 2) ?>
                         <td class="">
