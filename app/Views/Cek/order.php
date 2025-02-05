@@ -135,7 +135,13 @@
                                 break;
                         }
 
-                        $showMutasi .= "<small>" . $metod . "#" . $dk['id_kas'] . " " . $dk['note'] . " " . $statusP . $kembali_text . "</small> " . $jumlahShow;
+                        if (isset($data['payment_account'][$dk['pa']]['payment_account'])) {
+                            $payment_account = strtoupper($data['payment_account'][$dk['pa']]['payment_account']) . " ";
+                        } else {
+                            $payment_account = "";
+                        }
+
+                        $showMutasi .= "<small>" . $metod . "#" . $dk['id_kas'] . " " . $payment_account . $dk['note'] . " " . $statusP . $kembali_text . "</small> " . $jumlahShow;
                     }
                 }
 

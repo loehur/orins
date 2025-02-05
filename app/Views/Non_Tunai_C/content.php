@@ -51,7 +51,7 @@
 
                         ?>
                             <tr>
-                                <td>#<?= $a['id_kas'] ?>
+                                <td><a href="<?= PV::BASE_URL ?>Cek/order/<?= $a['ref_transaksi'] ?>/<?= $a['id_client'] ?>" target="_blank">#<?= $a['id_kas'] ?></a>
                                     <?php if ($a['jenis_transaksi'] == 2) { ?>
                                         <small>Topup Deposit</small>
                                     <?php } else { ?>
@@ -59,7 +59,7 @@
                                     <?php } ?>
                                     <br><?= strtoupper($pelanggan) ?>
                                 </td>
-                                <td align="right">Rp<?= number_format($jumlah) ?><br><?= strtoupper($payment_account) . $a['note'] ?></td>
+                                <td align="right">Rp<?= number_format($jumlah) ?><br><span class="text-success"><?= strtoupper($payment_account) ?></span><?= $a['note'] ?></td>
                                 <td align="right" class="align-top">
                                     <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-danger border-0">Cancel</button>
                                 </td>
@@ -118,7 +118,7 @@
                         } ?>
 
                         <tr>
-                            <td>#<?= $a['id_kas'] ?>
+                            <td><a href="<?= PV::BASE_URL ?>Cek/order/<?= $a['ref_transaksi'] ?>/<?= $a['id_client'] ?>" target="_blank">#<?= $a['id_kas'] ?></a>
                                 <?php if ($a['jenis_transaksi'] == 2) { ?>
                                     <small>Topup Deposit</small>
                                 <?php } else { ?>
@@ -126,7 +126,7 @@
                                 <?php } ?>
                                 <br><?= strtoupper($pelanggan) ?>
                             </td>
-                            <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= strtoupper($payment_account) . $a['note'] ?></td>
+                            <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><span class="text-success"><?= strtoupper($payment_account) ?></span><?= $a['note'] ?></td>
                             <td class="text-end">
                                 <?php
                                 switch ($a['status_mutasi']) {
