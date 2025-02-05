@@ -184,9 +184,18 @@ class Export extends Controller
       $data = $this->db(0)->get_where("kas", $where);
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'JUMLAH', 'METODE', 'NOTE', 'STATUS', 'EXPORTED');
+      $pacc = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
+
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
+
+         if (isset($pacc[$a['pa']]['payment_account'])) {
+            $payment_account = strtoupper($pacc[$a['pa']]['payment_account']) . " ";
+         } else {
+            $payment_account = "";
+         }
+
          $jumlah = $a['jumlah'];
          $pelanggan = "";
          $pelanggan = strtoupper($this->model('Arr')->get($this->dPelanggan, "id_pelanggan", "nama", $a['id_client']));
@@ -218,7 +227,7 @@ class Export extends Controller
                break;
          }
 
-         $lineData = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, $jumlah, $method, $note, $st, $tanggal);
+         $lineData = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, $jumlah, $method, $payment_account, $note, $st, $tanggal);
          fputcsv($f, $lineData, $delimiter);
       }
 
