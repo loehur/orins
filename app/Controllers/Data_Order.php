@@ -191,6 +191,8 @@ class Data_Order extends Controller
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
       $data['barang'] = $this->db(0)->get('master_barang', 'id');
+      $data['payment_account'] = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
+
       $data['parse'] = $parse;
 
       $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND ref = '" . $parse . "' AND cancel = 0";

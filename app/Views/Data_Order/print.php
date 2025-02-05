@@ -112,19 +112,24 @@
                         break;
                 }
 
+                if (isset($data['payment_account'][$dk['pa']]['payment_account'])) {
+                    $payment_account = $data['payment_account'][$dk['pa']]['payment_account'] . " ";
+                } else {
+                    $payment_account = "";
+                }
 
                 if ($dk['status_mutasi'] == 0) {
-                    $showMutasi .= "<tr><td><small>* " . $note . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td><td><small><b>*Checking</b></small></td></tr>";
+                    $showMutasi .= "<tr><td><small>* " . $payment_account . $note . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td><td><small><b>*Checking</b></small></td></tr>";
                 } else {
                     if ($dk['metode_mutasi'] <> 1) {
-                        $showMutasi .= "<tr><td><small>* " . $note . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td></tr>";
+                        $showMutasi .= "<tr><td><small>* " . $payment_account . $note . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td></tr>";
                     } else {
                         if ($dk['jumlah'] <> $dk['bayar']) {
                             $pembayaran_cash = "(" . number_format($dk['bayar']) . "-" . number_format($dk['kembali']) . ")";
                         } else {
                             $pembayaran_cash = "";
                         }
-                        $showMutasi .= "<tr><td><small>* " . $note . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . " " . $pembayaran_cash . "</small></td></tr>";
+                        $showMutasi .= "<tr><td><small>* " . $payment_account . $note . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . " " . $pembayaran_cash . "</small></td></tr>";
                     }
                 }
             }
