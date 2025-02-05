@@ -144,8 +144,7 @@ $yearNow = date('Y');
 						</div>
 					<?php } ?>
 
-					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[1])) { ?>
-						<hr class="p-0 m-0">
+					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[0])) { ?>
 						<a class="nav-link <?= (str_contains($t, "User")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlowsUser" aria-expanded="false" aria-controls="collapseFlows">
 							<div class="nav-link-icon"><i data-feather="user"></i></div>
 							Orins User
@@ -158,6 +157,8 @@ $yearNow = date('Y');
 								<a class="nav-link <?= ($t == "User Produksi") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>User/index/4">Produksi</a>
 							</nav>
 						</div>
+					<?php } ?>
+					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[1])) { ?>
 						<a class="nav-link <?= (str_contains($t, "Karyawan")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseKar" aria-expanded="false" aria-controls="collapseFlows">
 							<div class="nav-link-icon"><i data-feather="user"></i></div>
 							Karyawan
