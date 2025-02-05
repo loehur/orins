@@ -11,7 +11,7 @@
     <!-- Main page content-->
     <div class="container">
         <div>
-            <table id="tb_barang" class="hover">
+            <table id="tb_barang" class="hover text-sm">
                 <thead>
                     <tr>
                         <td>Orins/MyOB</td>
@@ -22,12 +22,12 @@
                     <tr>
                         <td>
                             <small><?= $a['code'] ?></small><br>
-                            <span class="cell_edit" data-id="<?= $a['id'] ?>" data-col="code_myob" data-tipe="text" data-primary="id" data-tb="master_barang"><?= strlen($a['code_myob']) == 0 ? "[ ]" : $a['code_myob'] ?></span>
+                            <span class="cell_edit text-success" data-id="<?= $a['id'] ?>" data-col="code_myob" data-tipe="text" data-primary="id" data-tb="master_barang"><?= strlen($a['code_myob']) == 0 ? "[ ]" : $a['code_myob'] ?></span>
                         </td>
                         <td class="">
                             <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span>
                             <br>
-                            <?= strtoupper($a['brand']) ?> <?= strtoupper($a['model']) ?>
+                            <span class="text-success"><?= strtoupper($a['brand']) ?> <?= strtoupper($a['model']) ?></span>
                         </td>
                     </tr>
                 <?php } ?>
@@ -49,7 +49,7 @@
             "bInfo": false,
             "bAutoWidth": false,
             "pageLength": 30,
-            "scrollY": 610,
+            "scrollY": 700,
             "dom": "lfrti"
         });
     })
