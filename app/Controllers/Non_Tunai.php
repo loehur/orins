@@ -36,14 +36,9 @@ class Non_Tunai extends Controller
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0";
       $data['kas'] = $this->db(0)->get_where('kas', $where, 'ref_bayar', 1);
-      $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
 
       $data['kas_group'] = [];
       $data['ref'] = [];
-
-      echo "<pre>";
-      print_r($data['kas_trx']);
-      echo "</pre>";
 
       $refs = array_keys($data['kas']);
       if (count($refs) > 0) {
@@ -58,6 +53,8 @@ class Non_Tunai extends Controller
          $data['kas_group'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_bayar');
       }
 
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi <> 0 ORDER BY updateTime DESC LIMIT 20";
+      $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
       $ref_trx = array_keys($data['kas_trx']);
       $reft_list = "";
       foreach ($ref_trx as $r) {
@@ -67,7 +64,6 @@ class Non_Tunai extends Controller
       $where_ref = "ref IN (" . $reft_list . ")";
       $data['ref'] = $this->db(0)->get_where('ref', $where_ref, 'ref');
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi <> 0 ORDER BY updateTime DESC LIMIT 20";
       $data['kas_done'] = $this->db(0)->get_where('kas', $where, 'ref_bayar', 1);
       $this->view($this->v_content, $data);
    }
