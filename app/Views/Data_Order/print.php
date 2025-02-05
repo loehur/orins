@@ -248,9 +248,9 @@
                                 <small><?= ucwords($da['group_name']) ?></small><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span>
                             </div>
                         <?php } ?>
-                        <?php if (strlen($do['note'] > 0)) { ?>
+                        <?php if ($do['note'] <> "") { ?>
                             <div style="float: left;padding-right: 4px;line-height: 100%;">
-                                <small>Note</small><br><span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
+                                <span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
                             </div>
                         <?php } ?>
                     </td>
