@@ -1,5 +1,10 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
-
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
+<style>
+    .dt-search {
+        float: right !important;
+    }
+</style>
 <style>
     td {
         align-content: center;
@@ -18,17 +23,11 @@
                     <td class="align-middle">
                         <a href="<?= PV::BASE_URL ?>Barang_Masuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
                     </td>
+                    <td class="">
+                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                    </td>
                     <td>
                         <?= $a['id'] ?>
-                    </td>
-                    <td class="">
-                        <?= isset($data['toko'][$a['id_sumber']]['nama_toko']) ? $data['toko'][$a['id_sumber']]['nama_toko'] : "Gudang" ?>
-                    </td>
-                    <td>
-                        <?= $a['no_faktur'] ?>
-                    </td>
-                    <td>
-                        <?= $a['no_po'] ?>
                     </td>
                     <td>
                         <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
@@ -36,38 +35,49 @@
                 </tr>
             <?php } ?>
         </table>
-        <div class="overflow-auto" style="height: 500px;">
-            <table class="table table-sm text-sm">
-                <?php foreach ($data['input_done'] as $a) { ?>
-                    <tr>
-                        <td class="align-middle">
-                            <a href="<?= PV::BASE_URL ?>Barang_Masuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
-                        </td>
-                        <td>
-                            <?= $a['id'] ?>
-                        </td>
-                        <td class="">
-                            <?= isset($data['toko'][$a['id_sumber']]['nama_toko']) ? $data['toko'][$a['id_sumber']]['nama_toko'] : "Gudang" ?>
-                        </td>
-                        <td>
-                            <?= $a['no_faktur'] ?>
-                        </td>
-                        <td>
-                            <?= $a['no_po'] ?>
-                        </td>
-                        <td>
-                            <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </table>
-        </div>
+
+        <table class="text-sm" id="tb_barang">
+            <thead>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </thead>
+            <?php foreach ($data['input_done'] as $a) { ?>
+                <tr>
+                    <td class="align-middle">
+                        <a href="<?= PV::BASE_URL ?>Barang_Masuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
+                    </td>
+                    <td>
+                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                    </td>
+                    <td>
+                        <?= $a['id'] ?>
+                    </td>
+                    <td>
+                        <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
+                    </td>
+                </tr>
+            <?php } ?>
+        </table>
     </div>
 </main>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-
+<script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 <script>
+    $(document).ready(function() {
+        $('#tb_barang').dataTable({
+            "order": [],
+            "bLengthChange": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "pageLength": 30,
+            "scrollY": 600,
+            "dom": "lfrti"
+        });
+    })
     var click = 0;
     $(".update_bol").on('click', function() {
         var id = $(this).attr('data-id');

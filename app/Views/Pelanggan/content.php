@@ -13,48 +13,65 @@ if ($id_pelanggan_jenis == 1) {
 }
 ?>
 
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
+<style>
+    .dt-search {
+        float: right !important;
+    }
+</style>
+
 <main>
-    <div class="card mx-1 my-1 bg-light">
-        <div class="card-header ">Pelanggan <b><?= $pelanggan_jenis ?></b>
+    <div class="row mx-0">
+        <div class="col">
             <?php if ($id_pelanggan_jenis <> 3) { ?>
-                <button type="button" class="float-end btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Tambah</button>
             <?php } ?>
+            Pelanggan <b><?= $pelanggan_jenis ?></b>
         </div>
-        <div class="card-body py-1">
-            <?php
-            foreach ($data['pelanggan'] as $a) { ?>
-                <div class="row mb-1 border rounded py-1 bg-white">
-                    <div class="col col-t">
-                        <b><span class="edit" data-col="nama" data-id="<?= $a['id_pelanggan'] ?>"><?= ucwords($a['nama']) ?></span></b><br>
-                        <small>
-                            ID. <?= $a['id_pelanggan'] ?>
-                            <a class="delete" data-id="<?= $a['id_pelanggan'] ?>" data-nama="<?= $a['nama'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a>
-                        </small>
-                        <br>
-                        <small>Registered: <?= substr($a['insertTime'], 0, 10) ?></small>
-                    </div>
-                    <div class="col col-t">
-                        <small>Contact:</small> <span class="edit" data-col="no_hp" data-id="<?= $a['id_pelanggan'] ?>"><?= ucwords($a['no_hp']) ?></span>
-                        <?php if ($id_pelanggan_jenis == 2) { ?>
+    </div>
+    <div class="row mx-0">
+        <div class="col">
+            <table id="tb_barang" class="text-sm">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <?php
+                foreach ($data['pelanggan'] as $a) { ?>
+                    <tr>
+                        <td>
+                            <b><span class="edit" data-col="nama" data-id="<?= $a['id_pelanggan'] ?>"><?= ucwords($a['nama']) ?></span></b><br>
+                            <small>
+                                ID. <?= $a['id_pelanggan'] ?>
+                                <a class="delete" data-id="<?= $a['id_pelanggan'] ?>" data-nama="<?= $a['nama'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a>
+                            </small>
                             <br>
-                            <small>Usaha:</small> <span class="edit" data-col="usaha" data-id="<?= $a['id_pelanggan'] ?>"><?= ucwords($a['usaha']) ?></span>
-                            <br>
-                            <small>Alamat:</small> <span class="edit" data-col="alamat" data-id="<?= $a['id_pelanggan'] ?>"><?= ucfirst($a['alamat']) ?></span>
-                        <?php } else { ?>
-                            <br>
-                            <small>Usaha:</small> -
-                            <br>
-                            <small>Alamat:</small> -
-                        <?php } ?>
-                    </div>
-                </div>
-            <?php }
-            ?>
+                            <small><?= substr($a['insertTime'], 0, 10) ?></small>
+                        </td>
+                        <td>
+                            <small>Contact:</small> <span class="edit" data-col="no_hp" data-id="<?= $a['id_pelanggan'] ?>"><?= ucwords($a['no_hp']) ?></span>
+                            <?php if ($id_pelanggan_jenis == 2) { ?>
+                                <br>
+                                <small>Usaha:</small> <span class="edit" data-col="usaha" data-id="<?= $a['id_pelanggan'] ?>"><?= ucwords($a['usaha']) ?></span>
+                                <br>
+                                <small>Alamat:</small> <span class="edit" data-col="alamat" data-id="<?= $a['id_pelanggan'] ?>"><?= ucfirst($a['alamat']) ?></span>
+                            <?php } else { ?>
+                                <br>
+                                <small>Usaha:</small> -
+                                <br>
+                                <small>Alamat:</small> -
+                            <?php } ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </table>
         </div>
     </div>
 </main>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -94,8 +111,20 @@ if ($id_pelanggan_jenis == 1) {
 </div>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-
+<script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 <script>
+    $(document).ready(function() {
+        $('#tb_barang').dataTable({
+            "order": [],
+            "bLengthChange": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "pageLength": 30,
+            "scrollY": 600,
+            "dom": "lfrti"
+        });
+    })
     $("form").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
