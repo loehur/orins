@@ -1,10 +1,6 @@
 <nav class="topnav navbar navbar-expand shadow-sm border-bottom-1 bg-white px-2" id="sidenavAccordion">
 	<button class="border-0 bg-transparent text-secondary pt-2" id="sidebarToggle"><i class="fa-solid fa-bars"></i> Menu #<?= $this->userData['id_user'] ?></button>
-	<?php if (in_array($this->userData['user_tipe'], PV::OFFICE)) { ?>
-		<a class="ps-lg-2 ms-auto text-end me-2 border text-success p-2 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync">SYNC</a>
-	<?php } else { ?>
-		<a class="ps-lg-2 ms-auto text-end me-2 border text-success p-2 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync"><?= strtoupper($this->userData['nama_toko']) ?></a>
-	<?php } ?>
+	<a class="ps-lg-2 ms-auto text-end me-2 border text-success p-2 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></a>
 	<ul class="navbar-nav align-items-center">
 		<!-- User Dropdown-->
 		<?php if (in_array($this->userData['user_tipe'], PV::OFFICE)) { ?>
