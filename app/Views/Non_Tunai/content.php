@@ -21,6 +21,12 @@
                                     $client = $a['id_client'];
                                     $jumlah = $a['jumlah'];
 
+                                    if (isset($data['payment_account'][$a['pa']]['payment_account'])) {
+                                        $payment_account = $data['payment_account'][$a['pa']]['payment_account'] . " ";
+                                    } else {
+                                        $payment_account = "";
+                                    }
+
                                     $pelanggan = "Non";
                                     $pelanggan = $data['pelanggan'][$client]['nama']; ?>
                                     <tr class="rb<?= $rb ?>">
@@ -98,18 +104,7 @@
                                         <?= $a['updateTime'] ?>
                                     </td>
 
-                                    <?php
-                                    $get_t = $this->db(0)->get_where_row("order_data", "ref = '" . $ref . "'");
-                                    if (isset($get_t['tuntas'])) {
-                                        $tuntas = $get_t['tuntas'];
-                                    } else {
-                                        $get_t = $this->db(0)->get_where_row("master_mutasi", "ref = '" . $ref . "'");
-                                        if (isset($get_t['tuntas'])) {
-                                            $tuntas = $get_t['tuntas'];
-                                        } else {
-                                            $tuntas = 0;
-                                        }
-                                    }
+                                    <?php $tuntas = 0;
 
                                     if ($tuntas == 0) {
                                         switch ($a['status_mutasi']) {
