@@ -41,6 +41,8 @@ class Non_Tunai extends Controller
       $data['ref'] = [];
       $ref_trx = array_unique(array_column($data['kas'], 'ref_transaksi'));
 
+      print_r($ref_trx);
+
       $refs = array_keys($data['kas']);
       if (count($refs) > 0) {
          $ref_list = "";
