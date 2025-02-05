@@ -59,6 +59,9 @@
             </div>
         </div>
     </div>
+    <pre>
+        <?php print_r($data['ref']) ?>
+    </pre>
     <div class="p-2 ms-3 mt-3 me-3 bg-white">
         <div class="row">
             <div class="col">
@@ -79,6 +82,7 @@
                                 $client = $a['id_client'];
                                 $jumlah = $a['jumlah'];
                                 $ref = $a['ref_transaksi'];
+                                $tuntas = $data['ref'][$ref]['tuntas'];
 
                                 $pelanggan = "Non";
                                 $pelanggan = $data['pelanggan'][$client]['nama']; ?>
@@ -105,9 +109,6 @@
                                     </td>
 
                                     <?php
-
-                                    $tuntas = $data['ref'][$ref]['tuntas'];
-
                                     if ($tuntas == 0) {
                                         switch ($a['status_mutasi']) {
                                             case 1:

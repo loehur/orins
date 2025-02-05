@@ -37,6 +37,8 @@ class Non_Tunai extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0";
       $data['kas'] = $this->db(0)->get_where('kas', $where, 'ref_bayar', 1);
       $data['kas_group'] = [];
+      $data['ref'] = [];
+
       $refs = array_keys($data['kas']);
       if (count($refs) > 0) {
          $ref_list = "";
