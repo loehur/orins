@@ -43,6 +43,9 @@
                 foreach ($keluar as $a) { ?>
                     <tr>
                         <td>
+                            #<?= $a['id_kas'] ?>
+                        </td>
+                        <td>
                             <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
                         </td>
                         <td>
