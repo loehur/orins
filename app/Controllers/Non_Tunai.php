@@ -36,12 +36,10 @@ class Non_Tunai extends Controller
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi = 0";
       $data['kas'] = $this->db(0)->get_where('kas', $where, 'ref_bayar', 1);
+      $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
 
       $data['kas_group'] = [];
       $data['ref'] = [];
-      $ref_trx = array_unique(array_column($data['kas'], 'ref_transaksi'));
-
-      print_r($ref_trx);
 
       $refs = array_keys($data['kas']);
       if (count($refs) > 0) {
@@ -55,6 +53,8 @@ class Non_Tunai extends Controller
          $where = "ref_bayar IN (" . $ref_list . ") GROUP BY ref_bayar";
          $data['kas_group'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_bayar');
       }
+
+      $ref_trx = array_keys($data['kas_trx']);
 
       $reft_list = "";
       foreach ($ref_trx as $r) {
