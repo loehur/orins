@@ -41,6 +41,10 @@ class Non_Tunai extends Controller
       $data['kas_group'] = [];
       $data['ref'] = [];
 
+      echo "<pre>";
+      print_r($data['kas_trx']);
+      echo "</pre>";
+
       $refs = array_keys($data['kas']);
       if (count($refs) > 0) {
          $ref_list = "";
