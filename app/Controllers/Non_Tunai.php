@@ -63,6 +63,7 @@ class Non_Tunai extends Controller
          $reft_list .= $r . ",";
       }
       $reft_list = rtrim($reft_list, ',');
+      echo $reft_list;
       $where_ref = "ref IN (" . $reft_list . ")";
       $data['ref'] = $this->db(0)->get_where('ref', $where_ref, 'ref');
 
