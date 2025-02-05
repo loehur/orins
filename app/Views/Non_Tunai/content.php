@@ -84,7 +84,8 @@
                                 $client = $a['id_client'];
                                 $jumlah = $a['jumlah'];
                                 $ref = $a['ref_transaksi'];
-                                $tuntas = $data['ref'][$ref]['tuntas'];
+                                $tuntas = 0;
+                                //$tuntas = $data['ref'][$ref]['tuntas'];
 
                                 $pelanggan = "Non";
                                 $pelanggan = $data['pelanggan'][$client]['nama']; ?>
