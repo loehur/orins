@@ -1,5 +1,5 @@
 <main>
-    <div class="p-2 ms-3 mt-3 me-3 bg-white">
+    <div class="px-2 ms-3 me-3 bg-white">
         <div class="row">
             <div class="col">
                 <div class="row border-bottom">
@@ -40,7 +40,7 @@
                                             <?php } ?>
                                         </td>
                                         <td class="">#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
-                                        <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
+                                        <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><span class="text-success"><?= $payment_account ?></span><?= $a['note'] ?></td>
                                     </tr>
                                 <?php
                                 } ?>
@@ -82,6 +82,12 @@
 
                                 $tuntas = $data['ref'][$ref]['tuntas'];
 
+                                if (isset($data['payment_account'][$a['pa']]['payment_account'])) {
+                                    $payment_account = $data['payment_account'][$a['pa']]['payment_account'] . " ";
+                                } else {
+                                    $payment_account = "";
+                                }
+
                                 $pelanggan = "Non";
                                 $pelanggan = $data['pelanggan'][$client]['nama']; ?>
                                 <tr>
@@ -90,7 +96,7 @@
                                         <span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalCek" data-pelanggan="<?= $client ?>" class="cekTrx" data-ref="<?= $a['ref_transaksi'] ?>"><small><?= $a['ref_transaksi'] ?></small></span>
                                     </td>
                                     <td>#<?= $a['id_kas'] ?><br><?= strtoupper($pelanggan) ?></td>
-                                    <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><?= $a['note'] ?></td>
+                                    <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><span class="text-success"><?= $payment_account ?></span><?= $a['note'] ?></td>
                                     <td class="text-end">
                                         <?php
                                         switch ($a['status_mutasi']) {
