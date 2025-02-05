@@ -104,7 +104,9 @@
                                         <?= $a['updateTime'] ?>
                                     </td>
 
-                                    <?php $tuntas = 0;
+                                    <?php
+
+                                    $tuntas = $data['ref'][$ref]['tuntas'];
 
                                     if ($tuntas == 0) {
                                         switch ($a['status_mutasi']) {
