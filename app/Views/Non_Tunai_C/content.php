@@ -79,7 +79,7 @@
                                 }
                                 ?>
                                 <tr>
-                                    <td colspan="10" class="bg-secondary"></td>
+                                    <td colspan="10" class="bg-light"></td>
                                 </tr>
                         <?php
                                 $id_multi = "";
