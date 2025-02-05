@@ -171,9 +171,9 @@
                                                     <small><?= ucwords($da['group_name']) ?><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span></small>
                                                 </div>
                                             <?php } ?>
-                                            <?php if (strlen($pdo['note'] > 0)) { ?>
+                                            <?php if ($pdo['note'] <> "") { ?>
                                                 <div style="float: left;padding-right: 4px;line-height: 100%;">
-                                                    <small>Note<br><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span></small>
+                                                    <small><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span></small>
                                                 </div>
                                             <?php } ?>
                                         </td>
