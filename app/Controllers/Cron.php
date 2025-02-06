@@ -81,7 +81,7 @@ class Cron extends Controller
    {
       $last_check = date('ymd');
       if ($ref == "") {
-         $where_ref = "tuntas = 0 AND last_check <> '" . $last_check . "' ORDER BY updateTime ASC LIMIT 1";
+         $where_ref = "tuntas = 0 AND last_check <> '" . $last_check . "' AND CURDATE() > insertTime ORDER BY updateTime ASC LIMIT 1";
       } else {
          $where_ref = "ref = '" . $ref . "'";
       }
