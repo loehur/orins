@@ -81,6 +81,7 @@
             <td style="text-align: right;"><small>No. Referensi</small><br><b><?= substr($do['ref'], 0, -4) ?>-<span style="color: green;"><?= substr($do['ref'], -4) ?></span></b></td>
         </tr>
     </table>
+    <br>
 
     <table style="width:100%; border-collapse:collapse">
         <tr style="border-bottom: 1px solid silver;">
