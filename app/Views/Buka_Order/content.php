@@ -175,10 +175,10 @@ $mgpaket = $data['margin_paket'];
                                             <table class="table table-sm w-100 mb-0">
                                                 <tr class="<?= $do['id_afiliasi'] == 0 ? 'bg-primary' : 'bg-warning' ?> bg-gradient bg-opacity-10">
                                                     <td class="ps-2 align-middle">
+                                                        <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span>
                                                         <?php if ($do['paket_ref'] <> "") { ?>
                                                             <span class="badge bg-danger"><?= $data['paket'][$do['paket_ref']]['nama'] ?> <?= $do['price_locker'] == 1 ? '<i class="fa-solid fa-key"></i>' : '' ?></span>
                                                         <?php } ?>
-                                                        <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span>
                                                         <?php if ($do['paket_ref'] <> "") { ?>
                                                             <div class="btn-group me-1 d-none">
                                                                 <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -358,7 +358,7 @@ $mgpaket = $data['margin_paket'];
                             <td>
                                 <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?>
                                 <?= $db['sn'] <> "" ? "<br>" . $db['sn'] : "" ?>
-                                <span class="badge bg-danger"><?= $db['paket_ref'] <> "" ? "<br>" . $data['paket'][$db['paket_ref']]['nama'] : "" ?></span>
+                                <?= $db['paket_ref'] <> "" ? "<br><span class='badge bg-danger'>" . $data['paket'][$db['paket_ref']]['nama'] . "</span>" : "" ?>
                             </td>
                             <td class="text-end">
                                 <?= number_format($db['qty']) ?>x<br>
