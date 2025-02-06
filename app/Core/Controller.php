@@ -20,6 +20,7 @@ class Controller extends PV
 
     public function session_cek()
     {
+        $this->cek_cookie();
         if (isset($_SESSION['login_orins'])) {
             if ($_SESSION['login_orins'] == False) {
                 $this->logout();
