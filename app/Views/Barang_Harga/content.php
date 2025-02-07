@@ -8,6 +8,7 @@
 <main>
     <!-- Main page content-->
     <div class="container text-sm">
+        <a href="<?= PV::BASE_URL ?>Barang_Harga/print" target="_blank"><span class="btn btn-sm btn-primary">Print Stok</span></a>
         <table id="tb_barang" class="hover text-sm">
             <thead>
                 <th>Head</th>

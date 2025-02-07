@@ -1,4 +1,4 @@
-<div style="margin:auto; margin-top:5mm; width: 190mm; font-family: system-ui;">
+<div style="margin:auto; width: 190mm; font-family: system-ui;">
     <div class="header">
         <h2 style="margin:0;color:<?= $this->userData['color'] ?>"><b><?= $this->userData['nama_toko'] ?></b></h2>
         <b><?= $this->userData['sub_nama'] ?></b><br>
