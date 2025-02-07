@@ -52,6 +52,7 @@
     <div class="row mt-1 mx-2 pb-2">
         <?php
         $id_pelanggan = $data['id_pelanggan'];
+        $no_pelanggan = $data['pelanggan'][$id_pelanggan]['no_hp'];
         $arr_tuntas = [];
         $loadRekap = [];
 
@@ -208,7 +209,7 @@
                                         <table class="w-100 p-0 m-0 ">
                                             <tr>
                                                 <td>
-                                                    <span class="text-danger"><?= substr($ref, -5) ?></span> <b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> #<?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], 2) ?>
+                                                    <span class="text-danger"><?= substr($ref, -5) ?></span> <b><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> #<?= substr($data['pelanggan'][$id_pelanggan]['id_pelanggan'], 2) ?> <small><?= $no_pelanggan ?></small>
                                                 </td>
                                                 <td class="text-end text-purple"><small><b><?= strtoupper($cs) ?></b></span></small></td>
                                                 <td class="text-end ps-1" style="width: 1%; white-space:nowrap"><small><?= substr($dh['insertTime'], 2, -3) ?></small></td>
