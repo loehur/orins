@@ -46,10 +46,10 @@
                     if (isset($data['stok'][$a['id']])) { ?>
                         <tr>
                             <td class="pe-1">
-                                <?= strtoupper($a['tipe']) ?>
+                                <?= strtoupper($a['tipe']) <> "" ? strtoupper($a['tipe']) :  "PRODUKSI"  ?>
                             </td>
                             <td class="pe-1">
-                                <?= strtoupper($a['brand']) ?>
+                                <?= strtoupper($a['brand']) <> "" ? strtoupper($a['brand']) : strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?>
                             </td>
                             <td class="pe-1">
                                 <?= strtoupper($a['model']) ?><?= $a['product_name'] ?>
