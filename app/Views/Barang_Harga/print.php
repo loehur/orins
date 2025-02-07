@@ -58,7 +58,7 @@
                                 <?= $data['stok'][$a['id']]['qty'] ?>
                             </td>
                             <td class="text-end">
-                                <?= $data['stok_gudang'][$a['id']]['qty'] ?>
+                                <?= isset($data['stok_gudang'][$a['id']]['qty']) ? $data['stok_gudang'][$a['id']]['qty'] : 0 ?>
                             </td>
                         </tr>
                     <?php } ?>
