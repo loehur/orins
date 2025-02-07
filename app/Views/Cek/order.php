@@ -48,7 +48,7 @@
 </style>
 </head>
 
-<main class="container">
+<main class="container" style="max-width: 700px;">
     <div class="row mt-1 mx-2 pb-2">
         <?php
         $id_pelanggan = $data['id_pelanggan'];

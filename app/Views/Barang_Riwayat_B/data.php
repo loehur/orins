@@ -3,7 +3,7 @@
             <?php foreach ($data['mutasi'] as $d) {
                 $dp = $data['barang'][$d['id_barang']] ?>
                 <tr>
-                    <td class="">#<?= $d['id'] ?></td>
+                    <td class=""><a href="<?= PV::BASE_URL ?>Cek/order/<?= $d['ref'] ?>/<?= $d['id_target'] ?>" target="_blank">#<?= $d['id'] ?></a></td>
                     <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
                     <td class="align-middle"><?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?></td>
                     <td><?= $d['sn'] ?></td>
