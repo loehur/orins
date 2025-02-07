@@ -3,7 +3,13 @@
             <?php foreach ($data['mutasi'] as $d) {
                 $dp = $data['barang'][$d['id_barang']] ?>
                 <tr>
-                    <td class=""><a href="<?= PV::BASE_URL ?>Cek/order/<?= $d['ref'] ?>/<?= $d['id_target'] ?>" target="_blank">#<?= $d['id'] ?></a></td>
+                    <td class="">
+                        <?php if ($d['id_sumber'] == $this->userData['id_toko'] && $d['jenis'] == 2) { ?>
+                            <a href="<?= PV::BASE_URL ?>Cek/order/<?= $d['ref'] ?>/<?= $d['id_target'] ?>" target="_blank">#<?= $d['id'] ?></a>
+                        <?php } else { ?>
+                            #<?= $d['id'] ?>
+                        <?php } ?>
+                    </td>
                     <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
                     <td class="align-middle"><?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?></td>
                     <td><?= $d['sn'] ?></td>
