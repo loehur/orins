@@ -85,19 +85,6 @@ $yearNow = date('Y');
 						<?php } ?>
 					<?php } ?>
 
-					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[3])) { ?>
-						<a class="nav-link <?= (str_contains($t, "CS Fitur")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlowCSF" aria-expanded="false" aria-controls="collapseFlowCSF">
-							<div class="nav-link-icon"><i data-feather="columns"></i></div>
-							CS Fitur
-							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-						</a>
-						<div class="collapse <?= (str_contains($t, "CS Fitur")) ? 'show' : '' ?>" id="collapseFlowCSF" data-bs-parent="#accordionSidenav">
-							<nav class="sidenav-menu-nested nav">
-								<a class="nav-link <?= ($t == "CS Fitur - Item Detail") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Group_Detail_CS">Item Detail (+)</a>
-							</nav>
-						</div>
-					<?php } ?>
-
 					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[4])) { ?>
 						<a class="nav-link <?= (str_contains($t, "SPK_Search")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#SPK_Search" aria-expanded="true" aria-controls="SPK">
 							<div class="nav-link-icon"><i class="fa-solid fa-file-signature"></i></div>

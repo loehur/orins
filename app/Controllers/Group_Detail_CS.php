@@ -19,7 +19,7 @@ class Group_Detail_CS extends Controller
    {
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "CS Fitur - Item Detail"
+         "title" => "Fitur CS - Item Detail"
       ]);
 
       $this->viewer();
