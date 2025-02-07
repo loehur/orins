@@ -55,7 +55,7 @@
             "bInfo": false,
             "bAutoWidth": false,
             "pageLength": 50,
-            "scrollY": 700,
+            "scrollY": 600,
             "dom": "lfrti"
         });
     })
