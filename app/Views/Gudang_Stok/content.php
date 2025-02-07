@@ -36,7 +36,7 @@
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
                         </td>
                         <td class="text-end">
-                            <?= $data['stok'][$a['id']]['qty'] ?>/<?= $data['stok_gudang'][$a['id']]['qty'] ?>
+                            <?= $data['stok'][$a['id']]['qty'] ?>/<?= isset($data['stok_gudang'][$a['id']]['qty']) ? $data['stok_gudang'][$a['id']]['qty'] : 0 ?>
                         </td>
                     </tr>
             <?php }
