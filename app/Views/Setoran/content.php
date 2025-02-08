@@ -99,16 +99,29 @@
         </div>
     <?php } ?>
 
+    <?php
+    $total_sds = 0;
+    foreach ($data['sds'] as $ds) {
+        $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
+    }
+    ?>
+
     <?php if ($total > 0) { ?>
         <div class="pe-2 pb-0 ms-3 me-3 bg-white">
             <div class="row">
                 <div class="col">
                     <table class="table table-sm text-sm table-borderless mb-2">
                         <tr>
-                            <td class="text-end">Penjualan Tunai</td>
-                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total) ?></b></td>
+                            <td class="text-end">Penjualan Tunai <span class="text-success fw-bold"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span></td>
+                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total - $total_sds) ?></b></td>
                             <td rowspan="10" class="text-success text-sm align-middle"><button id="setor" class="btn btn-outline-success py-3 rounded-1">Buat<br>Setoran</button></td>
                         </tr>
+                        <?php if ($total_sds > 0) { ?>
+                            <tr>
+                                <td class="text-end">Penjualan Tunai <span class="text-success fw-bold">SDS</span></td>
+                                <td class="text-end" style="width:100px"><b>Rp<?= number_format($total_sds) ?></b></td>
+                            </tr>
+                        <?php } ?>
                         <tr>
                             <td class="text-end">
                                 <a data-bs-toggle="modal" data-bs-target="#modalPengeluaran" class="text-decoration-none" data-id="<?= $a['id_kas'] ?>" href="#"><i class="fa-solid text-danger fa-square-plus"></i> Pengeluaran</a>
@@ -195,6 +208,7 @@
             </div>
         </div>
     <?php } ?>
+
     <div class="pe-2 pb-0 ms-3 me-3 bg-white text-sm">
         <div class="row mb-1">
             <div class="col ms-2">
@@ -206,6 +220,11 @@
                 <table class="table table-sm mb-2 ms-2 text-sm">
                     <?php foreach ($data['setor'] as $set) {
                         $st_setor = "";
+                        $sds_done[$set['ref_setoran']] = 0;
+                        if (isset($data['sds_done'][$set['ref_setoran']])) {
+                            $sds_done[$set['ref_setoran']] = ($data['sds_done'][$set['ref_setoran']]['jumlah']);
+                        }
+
                         switch ($set['status_setoran']) {
                             case 0:
                                 $st_setor = "<span class='text-warning'><i class='fa-regular fa-circle'></i></span>";
@@ -247,7 +266,7 @@
                                     }
 
                                     if ($kecil_verif == false) { ?>
-                                        <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= $totalSetor ?>)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
+                                        <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= ($totalSetor - $sds_done[$set['ref_setoran']]) ?>)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
                                     <?php } ?>
                                 <?php } ?>
                             </td>
@@ -285,10 +304,13 @@
                                             $st_slip2 = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
                                             break;
                                     } ?>
-                                    <?= $st_slip2 ?> Kas Office <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
+                                    <?= $st_slip2 ?> Kas Kantor <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
                                     <?php $totalSetor -= $ds['jumlah'] ?>
                                 <?php } ?>
-                                <span><?= $st_setor ?> Setor Bank <span class="text-success"><?= number_format($totalSetor) ?></span>
+                                <?php if (isset($data['sds_done'][$set['ref_setoran']])) { ?>
+                                    <span><?= $st_setor ?> Setor SDS</span> <span class="text-success"><?= number_format($sds_done[$set['ref_setoran']]) ?></span><br>
+                                <?php } ?>
+                                <span><?= $st_setor ?> Setor <span class=""><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']]) ?></span>
                             </td>
                         </tr>
                     <?php } ?>
@@ -389,11 +411,11 @@
                             <div class="col">
                                 <label class="form-label">Kas Kantor</label>
                                 <input type="hidden" id="inp_ref" name="ref">
-                                <input type="number" id="uangFinance" name="jumlah_finance" class="form-control form-control-sm text-end">
+                                <input type="number" id="uangFinance" min="1" name="jumlah_finance" class="form-control form-control-sm text-end">
                             </div>
                             <div class="col">
-                                <label class="form-label">Setoran Bank</label>
-                                <input type="number" id="jumlah_bank" readonly class="form-control form-control-sm">
+                                <label class="form-label">Setoran <?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></label>
+                                <input type="number" id="jumlah_bank" readonly class="form-control form-control-sm text-end">
                             </div>
                         </div>
                         <div class="row mb-2">
@@ -467,6 +489,10 @@
     function ref(ref_nya, total) {
         $("input#inp_ref").val(ref_nya);
         totalSetor = total;
+        $("#jumlah_bank").val(totalSetor - $("#uangFinance").val())
+        $("input#uangFinance").attr({
+            "max": totalSetor
+        });
     }
 
     $("a.cancel").click(function() {
@@ -474,7 +500,7 @@
         $("input[name=id_kas]").val(id);
     })
 
-    $("#uangKecil, #uangFinance").on('change keyup keypress', function() {
-        $("#jumlah_bank").val(totalSetor - $("#uangKecil").val() - $("#uangFinance").val())
+    $("#uangFinance").on('change keyup keypress', function() {
+        $("#jumlah_bank").val(totalSetor - $("#uangFinance").val())
     })
 </script>

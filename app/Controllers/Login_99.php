@@ -70,7 +70,7 @@ class Login_99 extends Controller
       $device = $_SERVER['HTTP_USER_AGENT'];
       $userData['device'] = $device;
       $cookie_value = $this->model("Enc")->enc_2(serialize($userData));
-      setcookie("ORINSESSID", $cookie_value, time() + 86400, "/");
+      setcookie("ORINSESSID", $cookie_value, time() + (86400 * 2), "/");
    }
 
 

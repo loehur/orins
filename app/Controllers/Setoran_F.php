@@ -57,19 +57,21 @@ class Setoran_F extends Controller
          $ref_list_done = rtrim($ref_list_done, ',');
       }
 
-      if ($ref_list <> "") {
-         $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 0 AND id_target = 1";
-         $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
-         $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 0 AND id_target = 0";
-         $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
-         $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
-         $where = "status_mutasi <> 2 AND jenis_transaksi = 3 AND ref_setoran IN (" . $ref_list . "," . $ref_list_done . ") GROUP BY ref_setoran";
-         $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
-      } else {
-         $data['split'] = [];
-         $data['setor_office'] = [];
-         $data['keluar'] = [];
+      if ($ref_list == "") {
+         $ref_list = "0";
       }
+
+      $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 0 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 1";
+      $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+      $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 0 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 0";
+      $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+      $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 3 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 1";
+      $data['sds_done'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+
+      $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
+      $where = "status_mutasi <> 2 AND jenis_transaksi = 3 AND ref_setoran IN (" . $ref_list . "," . $ref_list_done . ") GROUP BY ref_setoran";
+      $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
+
 
       $this->view($this->v_content, $data);
    }
@@ -80,7 +82,12 @@ class Setoran_F extends Controller
       $set = "status_setoran = " . $status . ", id_finance_setoran = " . $this->userData['id_user'];
       $where = "ref_setoran = '" . $ref . "' AND jenis_transaksi <> 3";
       $update = $this->db(0)->update("kas", $set, $where);
-      echo $update['errno'];
+      if ($update['errno'] == 0) {
+         $set = "st = " . $status . ", id_finance = " . $this->userData['id_user'];
+         $where = "ref = '" . $ref . "' AND tipe = 3 AND id_target = 1";
+         $update = $this->db(0)->update("kas_kecil", $set, $where);
+         echo $update['errno'];
+      };
    }
 
    function cek($ref_setor)

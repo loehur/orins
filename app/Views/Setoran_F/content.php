@@ -22,11 +22,9 @@
 
                             <tr>
                                 <td class="text-primary align-top" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid mt-1 fa-list-check"></i></small></span></td>
-                                <td class="text-success"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $set['id_toko']) ?></td>
                                 <td><?= $set['ref_setoran'] ?></small></td>
                                 <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
                                 <td class="text-end">
-                                    Rp<?= number_format($totalSetor) ?><br>
                                     <?php
                                     if (isset($data['split'][$set['ref_setoran']])) {
                                         $ds = $data['split'][$set['ref_setoran']];
@@ -66,7 +64,14 @@
                                         </div>
                                         <?php $totalSetor -= $ds['jumlah'] ?>
                                     <?php } ?>
-                                    <span class="fw-bold">Setor Bank <span class="text-success"><?= number_format($totalSetor) ?></span>
+
+                                    <?php $sds_done[$set['ref_setoran']] = 0; ?>
+                                    <?php if (isset($data['sds_done'][$set['ref_setoran']])) {
+                                        $sds_done[$set['ref_setoran']] = ($data['sds_done'][$set['ref_setoran']]['jumlah']); ?>
+                                        <span>Setor SDS</span> <span class="text-success"><?= number_format($sds_done[$set['ref_setoran']]) ?></span><br>
+                                    <?php } ?>
+
+                                    <span class="">Setor <span class=""><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']]) ?></span>
                                 </td>
                                 <td style="width: 80px;">
                                     <button data-id="<?= $set['ref_setoran'] ?>" data-val="1" class="verify btn btn-sm shadow-sm btn-primary bg-gradient rounded-pill">Verify</button>
@@ -118,7 +123,6 @@
                     ?>
                         <tr>
                             <td class="text-primary pt-2" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
-                            <td class="text-success"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $set['id_toko']) ?></td>
                             <td><?= $set['ref_setoran'] ?></small></td>
                             <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
                             <td class="text-end">
@@ -161,7 +165,13 @@
                                     </div>
                                     <?php $totalSetor -= $ds['jumlah'] ?>
                                 <?php } ?>
-                                <?= $st_setor ?> <span class="fw-bold">Setor Bank <span class="text-success"><?= number_format($totalSetor) ?></span>
+                                <?php $sds_done[$set['ref_setoran']] = 0; ?>
+                                <?php if (isset($data['sds_done'][$set['ref_setoran']])) {
+                                    $sds_done[$set['ref_setoran']] = ($data['sds_done'][$set['ref_setoran']]['jumlah']); ?>
+                                    <?= $st_setor ?> <span>Setor SDS</span> <span class="text-success"><?= number_format($sds_done[$set['ref_setoran']]) ?></span><br>
+                                <?php } ?>
+
+                                <?= $st_setor ?> <span>Setor <?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']]) ?></span>
                             </td>
                         </tr>
                     <?php } ?>

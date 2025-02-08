@@ -31,10 +31,10 @@ class Audit_KasKecil extends Controller
 
    public function content()
    {
-      $whereSplit = "id_target = 1 AND tipe = 0 AND st = 0";
+      $whereSplit = "id_target = 1 AND tipe = 0 AND st = 0 AND id_sumber = " . $this->userData['id_toko'];
       $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
-      $whereSplit = "id_target = 1 AND tipe = 0 AND st <> 0";
+      $whereSplit = "id_target = 1 AND tipe = 0 AND st <> 0 AND id_sumber = " . $this->userData['id_toko'];
       $data['split_done'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
       $whereSetor = "id_target = 1 AND tipe = 0 AND st = 1 AND ref_setoran = ''";

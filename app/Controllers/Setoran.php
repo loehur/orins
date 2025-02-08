@@ -36,6 +36,22 @@ class Setoran extends Controller
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
+      $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
+
+      $ref_trx = array_keys($data['kas_trx']);
+
+      if (count($ref_trx) > 0) {
+         $reft_list = "";
+         foreach ($ref_trx as $r) {
+            $reft_list .= $r . ",";
+         }
+
+         $reft_list = rtrim($reft_list, ',');
+         $where_ref = "ref IN (" . $reft_list . ") AND sds = 1";
+         $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
+      } else {
+         $data['sds'] = [];
+      }
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '' ORDER BY id_kas DESC";
       $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
@@ -58,11 +74,14 @@ class Setoran extends Controller
          $ref_list = rtrim($ref_list, ',');
       }
 
-      $whereSplit = "ref IN (" . $ref_list . ") AND st = 0 AND tipe = 0 AND id_target = 1";
+      $whereSplit = "ref IN (" . $ref_list . ") AND tipe = 0 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 1";
       $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
-      $whereSplit = "ref IN (" . $ref_list . ") AND st = 0 AND tipe = 0 AND id_target = 0";
+      $whereSplit = "ref IN (" . $ref_list . ") AND tipe = 0 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 0";
       $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+
+      $whereSplit = "ref IN (" . $ref_list . ") AND tipe = 3 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 1";
+      $data['sds_done'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
       $where = "status_mutasi <> 2 AND jenis_transaksi = 3 AND ref_setoran IN (" . $ref_list . ") GROUP BY ref_setoran";
@@ -76,6 +95,34 @@ class Setoran extends Controller
    {
       $ref = date("ymdhis") . rand(0, 9);
       $set = "ref_setoran = '" . $ref . "'";
+
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
+      $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
+
+      $ref_trx = array_keys($data['kas_trx']);
+      $reft_list = "";
+      foreach ($ref_trx as $r) {
+         $reft_list .= $r . ",";
+      }
+      $reft_list = rtrim($reft_list, ',');
+      $where_ref = "ref IN (" . $reft_list . ") AND sds = 1";
+      $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
+
+      $total_sds = 0;
+      foreach ($data['sds'] as $ds) {
+         $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
+      }
+
+      if ($total_sds > 0) {
+         $unic = $ref . "31"; //tipe-target
+         $cols = 'id, id_sumber, id_target, tipe, ref, jumlah';
+         $vals = "'" . $unic . "'," . $this->userData['id_toko'] . ",1,3,'" . $ref . "','" . $total_sds . "'";
+         $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
+         if ($do['errno'] <> 0) {
+            echo $do['error'];
+            exit();
+         }
+      }
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = ''";
       $update = $this->db(0)->update("kas", $set, $where);
@@ -122,29 +169,29 @@ class Setoran extends Controller
    function split()
    {
       $ref = $_POST['ref'];
-      $jumlah = $_POST['jumlah'];
+      //$jumlah = $_POST['jumlah'];
       $jumlah_finance = $_POST['jumlah_finance'];
 
-      if ($jumlah > 0) {
-         $unic = $ref . "01"; //tipe-target
-         $cols = 'id, id_sumber, id_target, tipe, ref, jumlah';
-         $vals = "'" . $unic . "'," . $this->userData['id_toko'] . ",1,0,'" . $ref . "','" . $jumlah . "'";
-         $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
-         if ($do['errno'] == 1062) {
-            $set = "jumlah = '" . $jumlah . "'";
-            $where = "id = '" . $unic . "'";
-            $up = $this->db(0)->update('kas_kecil', $set, $where);
-            if ($up['errno'] <> 0) {
-               echo $up['error'];
-               exit();
-            }
-         } else {
-            if ($do['errno'] <> 0) {
-               echo $do['error'];
-               exit();
-            }
-         }
-      }
+      // if ($jumlah > 0) {
+      //    $unic = $ref . "01"; //tipe-target
+      //    $cols = 'id, id_sumber, id_target, tipe, ref, jumlah';
+      //    $vals = "'" . $unic . "'," . $this->userData['id_toko'] . ",1,0,'" . $ref . "','" . $jumlah . "'";
+      //    $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
+      //    if ($do['errno'] == 1062) {
+      //       $set = "jumlah = '" . $jumlah . "'";
+      //       $where = "id = '" . $unic . "'";
+      //       $up = $this->db(0)->update('kas_kecil', $set, $where);
+      //       if ($up['errno'] <> 0) {
+      //          echo $up['error'];
+      //          exit();
+      //       }
+      //    } else {
+      //       if ($do['errno'] <> 0) {
+      //          echo $do['error'];
+      //          exit();
+      //       }
+      //    }
+      // }
 
       if ($jumlah_finance > 0) {
          $unic = $ref . "00"; //tipe-target
