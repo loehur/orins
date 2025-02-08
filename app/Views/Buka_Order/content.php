@@ -107,9 +107,9 @@ $mgpaket = $data['margin_paket'];
                                         (&#43;) Afiliasi
                                         <span class="visually-hidden">Toggle Dropdown</span>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
+                                    <ul class="dropdown-menu dropdown-menu-start p-0">
                                         <?php foreach ($this->dToko as $dt) {
-                                            if ($dt['id_toko'] <> $this->userData['id_toko']) { ?>
+                                            if ($dt['id_toko'] <> $this->userData['id_toko'] && $dt['produksi'] == 1) { ?>
                                                 <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
                                         <?php }
                                         } ?>

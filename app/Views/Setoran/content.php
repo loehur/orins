@@ -387,12 +387,8 @@
                     <div class="container">
                         <div class="row mb-3">
                             <div class="col">
-                                <label class="form-label">Uang Kecil</label>
+                                <label class="form-label">Kas Kantor</label>
                                 <input type="hidden" id="inp_ref" name="ref">
-                                <input type="number" id="uangKecil" name="jumlah" class="form-control form-control-sm text-end">
-                            </div>
-                            <div class="col">
-                                <label class="form-label">Kas Finance</label>
                                 <input type="number" id="uangFinance" name="jumlah_finance" class="form-control form-control-sm text-end">
                             </div>
                             <div class="col">
