@@ -104,6 +104,8 @@
     foreach ($data['sds'] as $ds) {
         $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
     }
+
+    $total_sds -= $data['nontunai_sds'];
     ?>
 
     <?php if ($total > 0) { ?>
