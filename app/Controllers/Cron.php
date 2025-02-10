@@ -81,13 +81,13 @@ class Cron extends Controller
    {
       $last_check = date('ymd');
       if ($ref == "") {
-         $where_ref = "tuntas = 0 AND last_check <> '" . $last_check . "' AND CURDATE() > insertTime ORDER BY updateTime ASC LIMIT 1";
+         $where_ref = "tuntas = 0 AND last_check <> '" . $last_check . "' AND CURDATE() > (insertTime + INTERVAL 1 DAY) ORDER BY updateTime ASC LIMIT 1";
       } else {
          $where_ref = "ref = '" . $ref . "'";
       }
       $cek = $this->db(0)->get_where_row('ref', $where_ref, 'ref');
 
-      if (isset($cek)) {
+      if (isset($cek['ref'])) {
          $ref = $cek['ref'];
       } else {
          exit();
