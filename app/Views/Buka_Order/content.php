@@ -95,7 +95,7 @@ $mgpaket = $data['margin_paket'];
 
             <div class="row mb-2">
                 <div class="col px-0 text-end">
-                    <?php if ($data['count'] <= 30) {
+                    <?php if ($data['count'] <= 40) {
                         if ($id_pelanggan_jenis <> 100) { ?>
                             <button type="button" class="btn me-1 shadow-none btn-sm btn-danger bg-gradient py-1" data-bs-target="#exampleModalPaket" data-bs-toggle="modal">(&#43;) Paket</button>
                             <button type="button" class="btn me-1 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
