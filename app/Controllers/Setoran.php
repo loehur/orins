@@ -96,8 +96,12 @@ class Setoran extends Controller
       $ref = date("ymdhis") . rand(0, 9);
       $set = "ref_setoran = '" . $ref . "'";
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = ''";
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
+
+      $nontunai_sds = 0;
+      $where_kas_sds = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND sds = 1 AND id_client <> 0 AND ref_setoran = ''";
+      $nontunai_sds = $this->db(0)->sum_col_where('kas', 'jumlah', $where_kas_sds);
 
       $ref_trx = array_keys($data['kas_trx']);
       $reft_list = "";
@@ -112,6 +116,8 @@ class Setoran extends Controller
       foreach ($data['sds'] as $ds) {
          $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
       }
+
+      $total_sds -= $nontunai_sds;
 
       if ($total_sds > 0) {
          $unic = $ref . "31"; //tipe-target
