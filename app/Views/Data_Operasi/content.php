@@ -526,15 +526,15 @@
             <?php if (($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) && $dh['tuntas'] == 0) { ?>
                 <div class="col px-1 text-sm" id="loadMulti" style="max-width: 600px;">
                     <form action="<?= PV::BASE_URL; ?>Data_Operasi/bayar_multi" method="POST">
-                        <div class="border px-0 pb-1">
+                        <div class="border px-1 pb-1">
                             <small>
                                 <table class="table table-sm mb-0 table-borderless text-sm">
-                                    <tr class="table-info">
-                                        <td colspan="4" class="p-2 text-center"><b>PEMBAYARAN MULTI</b></td>
+                                    <tr class="">
+                                        <td colspan="5" class="text-end py-2"><b>PEMBAYARAN MULTI</b></td>
                                     </tr>
                                     <tr>
                                         <td>Metode</td>
-                                        <td class="pb-2 pt-2">
+                                        <td class="pb-2 pt-2" colspan="2">
                                             <select name="metode_multi" class="form-select metodeBayar_multi" required>
                                                 <option value=""></option>
                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
@@ -551,24 +551,11 @@
                                             Clear <i class="fa-regular fa-square"></i>
                                         </td>
                                     </tr>
-                                    <tr id="payment_account" class="border-top" style="display:none">
-                                        <td class="pe-2 text-success" nowrap>Akun Pembayaran</td>
-                                        <td colspan="2" class="pb-2 pt-2">
-                                            <select name="payment_account" class="border border-success rounded tize">
-                                                <option value=""></option>
-                                                <?php foreach ($data['payment_account'] as $pa) { ?>
-                                                    <option value="<?= $pa['id'] ?>"><?= strtoupper($pa['payment_account']) ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </td>
-                                        <td></td>
-                                    </tr>
                                     <tr id="noteBayar_multi" class="border-top" style="display:none">
                                         <td class="pe-2 text-danger" nowrap>Catatan Transaksi</td>
-                                        <td colspan="2" class="pb-2 pt-2">
+                                        <td colspan="4" class="pb-2 pt-2">
                                             <input type="text" name="note_multi" class="form-control border border-danger">
                                         </td>
-                                        <td></td>
                                     </tr>
                                     <tr class="border-top">
                                         <td colspan="3" class="pb-1"></td>
@@ -577,7 +564,7 @@
                                     $totalTagihan = 0;
                                     foreach ($loadRekap as $key => $value) { ?>
                                         <tr class='hoverBill'>
-                                            <td><span class='text-dark'><?= $key ?></span></td>
+                                            <td colspan="2"><span class='text-dark'><?= $key ?></span></td>
                                             <td class="text-end align-middle">
                                                 <span class="fw-bold text-success me-1"><small><?= $markRekap[$key] ?></small></span>
                                                 <input type='checkbox' class='cek_multi form-check-input' name="ref_multi[]" value="<?= $key ?>_<?= $value ?>" data-jumlah='<?= $value ?>' data-ref='<?= $key ?>' checked>
@@ -592,25 +579,43 @@
                                             <b>TOTAL TAGIHAN</b>
                                         </td>
                                         <td></td>
+                                        <td></td>
                                         <td class="text-end">
                                             <span data-total=''><b>Rp<span id="totalBill" data-total="<?= $totalTagihan ?>"><?= number_format($totalTagihan) ?></span></b>
                                         </td>
                                     </tr>
-                                    <tr class="border-top">
-                                        <td></td>
-                                        <td class="pt-2 pb-1"><span class="bayarPasMulti text-danger" style="cursor:pointer"><small>Bayar Pas (Click)</small></span></td>
-                                        <td></td>
-                                    </tr>
                                     <tr>
                                         <td>Jumlah Bayar</td>
-                                        <td class="pb-1"><input id="bayarBill" name="dibayar_multi" class="text-end form-control" type="number" min="1" value="" required /></td>
-                                        <td></td>
+                                        <td class="pb-1" colspan="2">
+                                            <span class="bayarPasMulti text-danger" style="cursor:pointer"><small>Bayar Pas (Click)</small></span>
+                                            <input id="bayarBill" name="dibayar_multi" class="text-end form-control" type="number" min="1" value="" required />
+                                        </td>
+                                        <td class="pb-2" style="width: 150px;">
+                                            <small>+ Charge</small>
+                                            <input name="charge" class="text-end form-control" type="number" min="1" value="" />
+                                        </td>
+                                    </tr>
+                                    <tr id="payment_account" class="border-top" style="display:none">
+                                        <td class="pe-2 text-success" nowrap></td>
+                                        <td colspan="2" class="pb-2 pt-2">
+                                            <span class="text-success">Akun Pembayaran</span>
+                                            <select name="payment_account" class="border border-success rounded tize">
+                                                <option value=""></option>
+                                                <?php foreach ($data['payment_account'] as $pa) { ?>
+                                                    <option value="<?= $pa['id'] ?>"><?= strtoupper($pa['payment_account']) ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </td>
+                                        <td class="pt-2" style="width: 150px;">
+                                            <span class="">Pembayaran +Charge</span>
+                                            <input id='total_aftercas' name="total_aftercas" class="text-end form form-control" type="number" readonly />
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>Kembalian</td>
-                                        <td><input id='kembalianBill' name="kembalianBill" class="text-end form form-control" type="number" readonly /></td>
-                                        <td class="text-end ps-2" nowrap>
-                                            <button type="submit" id="btnBayarBill" class='btn btn-primary'>Bayar</button>
+                                        <td colspan="2"><input id='kembalianBill' name="kembalianBill" class="text-end form form-control" type="number" readonly /></td>
+                                        <td class="text-end" nowrap>
+                                            <button type="submit" id="btnBayarBill" class='btn btn-primary w-100'>Bayar</button>
                                         </td>
                                     </tr>
                                 </table>
@@ -807,10 +812,11 @@
         if ($(this).val() == 2) {
             $("tr#payment_account").show();
         } else {
+            $("input[name=charge]").val("");
+            total_aftercas();
             $("tr#payment_account").hide();
         }
     });
-
 
     //MULTI
     $("input.cek_multi").change(function() {
@@ -843,6 +849,18 @@
         } else {
             $('input#kembalianBill').val(0);
         }
+
+        total_aftercas();
+    }
+
+    $("input[name=charge]").on("keyup change", function() {
+        total_aftercas();
+    })
+
+    function total_aftercas() {
+        var dibayar = parseInt($('input#bayarBill').val());
+        var charge = $("input[name=charge]").val();
+        $("input#total_aftercas").val(parseInt(dibayar) + parseInt(charge));
     }
 
     $("input#bayarBill").on("keyup change", function() {

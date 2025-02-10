@@ -160,6 +160,12 @@ class Data_Operasi extends Controller
 
       $note =  $_POST['note_multi'];
       $metode =  $_POST['metode_multi'];
+      $charge = isset($_POST['charge']) ? $_POST['charge'] : 0;
+
+      if ($charge == "") {
+         $charge = 0;
+      }
+
       $ref_bayar = date("ymdhis") . rand(0, 9);
       $sds = 0;
 
@@ -242,6 +248,16 @@ class Data_Operasi extends Controller
                echo $do['error'];
                exit();
             }
+         }
+      }
+
+      if ($charge > 0) {
+         $cols = "ref, id_toko, jumlah";
+         $vals = "'" . $ref_bayar . "'," . $this->userData['id_toko'] . "," . $charge;
+         $do = $this->db(0)->insertCols('trx_charge', $cols, $vals);
+         if ($do['errno'] <> 0) {
+            echo $do['error'];
+            exit();
          }
       }
 
