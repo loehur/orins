@@ -45,9 +45,12 @@ class Export extends Controller
       $data = $this->db(0)->get_where("order_data", $where);
       $tanggal = date("Y-m-d");
 
+      $where = "insertTime LIKE '" . $month . "%'";
+      $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
+
       $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'SERIAL NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'SERIAL NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
@@ -82,6 +85,18 @@ class Export extends Controller
             $order_status = "BATAL";
          }
 
+         if (isset($ref_data[$a['ref']]['mark'])) {
+            $mark = strtoupper($ref_data[$a['ref_transaksi']]['mark']);
+         } else {
+            $where = "ref = '" . $a['ref'] . "'";
+            $get_ref = $this->db(0)->get_where_row('ref', $where);
+            if (isset($get_ref['mark'])) {
+               $mark = $get_ref['mark'];
+            } else {
+               $mark = "";
+            }
+         }
+
          $detail_harga = @unserialize($a['detail_harga']);
          if ($detail_harga !== false) {
             $detail_harga = unserialize($a['detail_harga']);
@@ -94,7 +109,7 @@ class Export extends Controller
                $nb = strtoupper($dh['n_v']);
                $harga = $dh['h'];
                $total = $harga * $jumlah;
-               $lineData = array($a['id_order_data'], "R" . $ref, $tgl_order, $pelanggan, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+               $lineData = array($a['id_order_data'], "R" . $ref, $tgl_order, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
                fputcsv($f, $lineData, $delimiter);
             }
          } else {
@@ -108,7 +123,7 @@ class Export extends Controller
             }
 
             $nb = rtrim($nb);
-            $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+            $lineData = array($a['id_order_data'], "R" . $a['ref'], $tgl_order, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
             fputcsv($f, $lineData, $delimiter);
          }
       }
@@ -131,9 +146,13 @@ class Export extends Controller
 
       $where = "insertTime LIKE '" . $month . "%' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
       $data = $this->db(0)->get_where("master_mutasi", $where);
+
+      $where = "insertTime LIKE '" . $month . "%'";
+      $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
+
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'SERIAL NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'SERIAL NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
 
       foreach ($data as $a) {
@@ -163,7 +182,20 @@ class Export extends Controller
 
          $harga = $a['harga_jual'];
          $total = $harga * $jumlah;
-         $lineData = array($a['id'], "R" . $ref, $tgl_order, $pelanggan, $db['code'], $a['paket_ref'], $db['code_myob'], $barang, $a['sn'], $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $store, $order_status, '', $tanggal);
+
+         if (isset($ref_data[$a['ref']]['mark'])) {
+            $mark = strtoupper($ref_data[$a['ref_transaksi']]['mark']);
+         } else {
+            $where = "ref = '" . $a['ref'] . "'";
+            $get_ref = $this->db(0)->get_where_row('ref', $where);
+            if (isset($get_ref['mark'])) {
+               $mark = $get_ref['mark'];
+            } else {
+               $mark = "";
+            }
+         }
+
+         $lineData = array($a['id'], "R" . $ref, $tgl_order, $pelanggan, $mark, $db['code'], $a['paket_ref'], $db['code_myob'], $barang, $a['sn'], $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $store, $order_status, '', $tanggal);
          fputcsv($f, $lineData, $delimiter);
       }
 
