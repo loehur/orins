@@ -236,8 +236,8 @@ class Data_Operasi extends Controller
          $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $metode . " AND status_mutasi = " . $status_mutasi . " AND note = '" . $note . "'";
          $dataCount = $this->db(0)->count_where('kas', $whereCount);
 
-         $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali, id_finance_nontunai, pa, sds";
-         $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $bayarnya . "," . $kembalian . "," . $finance_id . ",'" . $payment_account . "'," . $sds;
+         $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali, id_finance_nontunai, pa, sds, charge";
+         $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $bayarnya . "," . $kembalian . "," . $finance_id . ",'" . $payment_account . "'," . $sds . "," . $charge;
 
          if ($dataCount < 1) {
             $do = $this->db(0)->insertCols('kas', $cols, $vals);
@@ -248,16 +248,6 @@ class Data_Operasi extends Controller
                echo $do['error'];
                exit();
             }
-         }
-      }
-
-      if ($charge > 0) {
-         $cols = "ref, id_toko, jumlah";
-         $vals = "'" . $ref_bayar . "'," . $this->userData['id_toko'] . "," . $charge;
-         $do = $this->db(0)->insertCols('trx_charge', $cols, $vals);
-         if ($do['errno'] <> 0) {
-            echo $do['error'];
-            exit();
          }
       }
 

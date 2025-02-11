@@ -97,18 +97,23 @@
                             $kembali_text = '';
                         }
 
+                        $show_charge = "";
+                        if ($dk['charge'] > 0) {
+                            $show_charge = "<small>(+" . $dk['charge'] * ($dk['jumlah'] / 100) . ")</small>";
+                        }
+
                         switch ($dk['status_mutasi']) {
                             case 0:
                                 $statusP = "<small class='text-warning'>Office Checking</small> ";
-                                $jumlahShow = "-Rp" . number_format($dk['jumlah']) . "<br>";
+                                $jumlahShow = "-Rp" . number_format($dk['jumlah']) . $show_charge . "<br>";
                                 break;
                             case 1:
                                 $statusP = '<small><i class="fa-solid fa-check text-success"></i></small> ';
-                                $jumlahShow = "-Rp" . number_format($dk['jumlah']) . "<br>";
+                                $jumlahShow = "-Rp" . number_format($dk['jumlah']) . $show_charge . "<br>";
                                 break;
                             default:
                                 $statusP = '<small><span class="text-danger">' . $dk['note_batal'] . '</span> <i class="fa-solid fa-xmark text-danger"></i></small> ';
-                                $jumlahShow = "<del>-Rp" . number_format($dk['jumlah']) . "</del><br>";
+                                $jumlahShow = "<del>-Rp" . number_format($dk['jumlah']) . $show_charge . "</del><br>";
                                 break;
                         }
 
@@ -586,29 +591,39 @@
                                     </tr>
                                     <tr>
                                         <td>Jumlah Bayar</td>
-                                        <td class="pb-1" colspan="2">
+                                        <td class="pb-2" colspan="3">
                                             <span class="bayarPasMulti text-danger" style="cursor:pointer"><small>Bayar Pas (Click)</small></span>
                                             <input id="bayarBill" name="dibayar_multi" class="text-end form-control" type="number" min="1" value="" required />
                                         </td>
-                                        <td class="pb-2" style="width: 150px;">
-                                            <small>+ Charge</small>
-                                            <input name="charge" class="text-end form-control" type="number" min="1" value="" />
-                                        </td>
+                                        <td></td>
                                     </tr>
                                     <tr id="payment_account" class="border-top" style="display:none">
-                                        <td class="pe-2 text-success" nowrap></td>
-                                        <td colspan="2" class="pb-2 pt-2">
-                                            <span class="text-success">Akun Pembayaran</span>
-                                            <select name="payment_account" class="border border-success rounded tize">
-                                                <option value=""></option>
-                                                <?php foreach ($data['payment_account'] as $pa) { ?>
-                                                    <option value="<?= $pa['id'] ?>"><?= strtoupper($pa['payment_account']) ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </td>
-                                        <td class="pt-2" style="width: 150px;">
-                                            <span class="">Pembayaran +Charge</span>
-                                            <input id='total_aftercas' name="total_aftercas" class="text-end form form-control" type="number" readonly />
+                                        <td colspan="10" class="p-0">
+                                            <table class="table p-0 text-sm">
+                                                <tr>
+                                                    <td class="pe-1">
+                                                        <span class="text-success"><small>Akun Pembayaran</small></span>
+                                                        <select name="payment_account" class="border border-success rounded tize">
+                                                            <option value=""></option>
+                                                            <?php foreach ($data['payment_account'] as $pa) { ?>
+                                                                <option value="<?= $pa['id'] ?>"><?= strtoupper($pa['payment_account']) ?></option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </td>
+                                                    <td class="pe-1" style="width: 80px;">
+                                                        <small>+Charge (%)</small>
+                                                        <input name="charge" class="text-center form-control" type="number" min="1" max="100" value="" />
+                                                    </td>
+                                                    <td class="" style="width: 100px;">
+                                                        <span class=""><small>Charge</small></span>
+                                                        <input id='total_charge' name="total_charge" class="text-end form form-control" type="number" readonly />
+                                                    </td>
+                                                    <td class="ps-1" style="width: 110px;">
+                                                        <span class=""><small>Total+Charge</small></span>
+                                                        <input id='total_aftercas' name="total_aftercas" class="text-end form form-control" type="number" readonly />
+                                                    </td>
+                                                </tr>
+                                            </table>
                                         </td>
                                     </tr>
                                     <tr>
@@ -645,6 +660,7 @@
                                 $cl_tb = "table-secondary";
                                 break;
                         }
+
                         $metod = "";
                         switch ($rk['metode_mutasi']) {
                             case 1:
@@ -860,7 +876,8 @@
     function total_aftercas() {
         var dibayar = parseInt($('input#bayarBill').val());
         var charge = $("input[name=charge]").val();
-        $("input#total_aftercas").val(parseInt(dibayar) + parseInt(charge));
+        $("input#total_aftercas").val(parseInt(dibayar) + (parseInt(dibayar) * (parseInt(charge) / 100)));
+        $("input#total_charge").val((parseInt(dibayar) * (parseInt(charge) / 100)));
     }
 
     $("input#bayarBill").on("keyup change", function() {

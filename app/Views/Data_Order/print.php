@@ -100,6 +100,7 @@
         $total_disc = 0;
         $xtraDiskon = 0;
         $showMutasi = "";
+        $total_charge = 0;
 
         foreach ($data['kas'] as $dk) {
             if ($dk['ref_transaksi'] == $do['ref'] && ($dk['status_mutasi'] == 1 || $dk['status_mutasi'] == 0)) {
@@ -123,11 +124,17 @@
                     $payment_account = "";
                 }
 
+                $show_charge = "";
+                if ($dk['charge'] > 0) {
+                    $show_charge = "<small>(+" . $dk['charge'] * ($dk['jumlah'] / 100) . ")</small>";
+                    $total_charge += ($dk['charge'] * ($dk['jumlah'] / 100));
+                }
+
                 if ($dk['status_mutasi'] == 0) {
-                    $showMutasi .= "<tr><td><small>* " . $payment_account . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td><td><small><b>*Checking</b></small></td></tr>";
+                    $showMutasi .= "<tr><td><small>* " . $payment_account . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . $show_charge . "</small></td><td><small><b>*Checking</b></small></td></tr>";
                 } else {
                     if ($dk['metode_mutasi'] <> 1) {
-                        $showMutasi .= "<tr><td><small>* " . $payment_account . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . "</small></td></tr>";
+                        $showMutasi .= "<tr><td><small>* " . $payment_account . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . $show_charge . "</small></td></tr>";
                     } else {
                         if ($dk['jumlah'] <> $dk['bayar']) {
                             $pembayaran_cash = "(" . number_format($dk['bayar']) . "-" . number_format($dk['kembali']) . ")";
@@ -344,22 +351,28 @@
                     </tr>
                     <?php if ($total_disc > 0) { ?>
                         <tr>
-                            <td style="text-align:right">Diskon :</td>
-                            <td style="text-align:right">Rp<?= number_format($total_disc) ?></td>
+                            <td style="text-align:right">Diskon : </td>
+                            <td style="text-align:right">-Rp<?= number_format($total_disc) ?></td>
+                        </tr>
+                    <?php } ?>
+                    <?php if ($total_charge > 0) { ?>
+                        <tr>
+                            <td style="text-align:right">Admin : </td>
+                            <td style="text-align:right">Rp<?= number_format($total_charge) ?></td>
                         </tr>
                     <?php } ?>
                     <?php if ($xtraDiskon > 0) { ?>
                         <tr>
-                            <td style="text-align:right">Extra Diskon :</td>
-                            <td style="text-align:right">Rp<?= number_format($xtraDiskon) ?></td>
+                            <td style="text-align:right">Extra Diskon : </td>
+                            <td style="text-align:right">-Rp<?= number_format($xtraDiskon) ?></td>
                         </tr>
                     <?php } ?>
                     <tr>
-                        <td style="text-align:right">Dibayar :</td>
-                        <td style="text-align:right">Rp<?= number_format($dibayar) ?></td>
+                        <td style="text-align:right">Dibayar : </td>
+                        <td style="text-align:right">-Rp<?= number_format($dibayar + $total_charge) ?></td>
                     </tr>
                     <tr>
-                        <td style="text-align:right"><b>Sisa :</b></td>
+                        <td style="text-align:right"><b>Sisa : </b></td>
                         <td style="text-align:right"><b>Rp<?= number_format($sisa - $total_disc) ?></b></td>
                     </tr>
                 </table>

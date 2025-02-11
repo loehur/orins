@@ -184,9 +184,15 @@ class Export extends Controller
       $data = $this->db(0)->get_where("kas", $where);
       $tanggal = date("Y-m-d");
 
+      $refs_ = array_column($data, "ref_transaksi");
+      $refs = array_unique($refs_);
+
+      $where = "insertTime LIKE '" . $month . "%'";
+      $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
+
       $pacc = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
+      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
 
@@ -227,7 +233,7 @@ class Export extends Controller
                break;
          }
 
-         $lineData = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, $jumlah, $method, $payment_account, $note, $st, $tanggal);
+         $lineData = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, strtoupper($ref_data[$a['ref_transaksi']]['mark']), $jumlah, $method, $payment_account, $note, $st, $tanggal);
          fputcsv($f, $lineData, $delimiter);
       }
 
