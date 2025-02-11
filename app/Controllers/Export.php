@@ -86,7 +86,7 @@ class Export extends Controller
          }
 
          if (isset($ref_data[$a['ref']]['mark'])) {
-            $mark = strtoupper($ref_data[$a['ref_transaksi']]['mark']);
+            $mark = strtoupper($ref_data[$a['ref']]['mark']);
          } else {
             $where = "ref = '" . $a['ref'] . "'";
             $get_ref = $this->db(0)->get_where_row('ref', $where);
@@ -184,7 +184,7 @@ class Export extends Controller
          $total = $harga * $jumlah;
 
          if (isset($ref_data[$a['ref']]['mark'])) {
-            $mark = strtoupper($ref_data[$a['ref_transaksi']]['mark']);
+            $mark = strtoupper($ref_data[$a['ref']]['mark']);
          } else {
             $where = "ref = '" . $a['ref'] . "'";
             $get_ref = $this->db(0)->get_where_row('ref', $where);
