@@ -331,7 +331,11 @@
         <?php }
         }
 
-        $sisa = $total - $dibayar - $xtraDiskon; ?>
+        $sisa = $total - $dibayar - $xtraDiskon;
+        if (isset($data['charge']['jumlah'])) {
+            $sisa += $data['charge']['jumlah'];
+        } ?>
+
     </table>
     <table style="width: 100%;border-collapse:collapse">
         <tr>
@@ -357,8 +361,14 @@
                     <?php } ?>
                     <?php if ($total_charge > 0) { ?>
                         <tr>
-                            <td style="text-align:right">Admin : </td>
+                            <td style="text-align:right">Trx. Charge : </td>
                             <td style="text-align:right">Rp<?= number_format($total_charge) ?></td>
+                        </tr>
+                    <?php } ?>
+                    <?php if (isset($data['charge']['jumlah'])) { ?>
+                        <tr>
+                            <td style="text-align:right">Admin Fee : </td>
+                            <td style="text-align:right">Rp<?= number_format($data['charge']['jumlah']) ?></td>
                         </tr>
                     <?php } ?>
                     <?php if ($xtraDiskon > 0) { ?>

@@ -172,6 +172,24 @@ class Data_Order extends Controller
       }
    }
 
+   function cancel_charge()
+   {
+      if (in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+         $id = $_POST['cancel_id_charge'];
+         $reason = $_POST['reason'];
+         $karyawan = $this->userData['id_user'];
+
+         $where = "id = " . $id;
+         $dateNow = date("Y-m-d H:i:s");
+         $set = "cancel_id = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', cancel_date = '" . $dateNow . "'";
+         $update = $this->db(0)->update("charge", $set, $where);
+         echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+      } else {
+         echo "User Forbidden";
+         exit();
+      }
+   }
+
    function ambil_semua()
    {
       $ref = $_POST['ambil_ref'];
@@ -206,6 +224,9 @@ class Data_Order extends Controller
 
       $where_ref = "ref = '" . $parse . "'";
       $data['mark'] = $this->db(0)->get_where_row('ref', $where_ref, 'ref')['mark'];
+
+      $where = "ref_transaksi = '" . $parse . "' AND cancel = 0";
+      $data['charge'] = $this->db(0)->get_where_row('charge', $where);
 
       $data['paket'] = [];
       $data['list_paket'] = $this->db(0)->get('paket_main', 'id');

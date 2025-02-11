@@ -161,6 +161,64 @@
     </div>
 </form>
 
+
+
+<form action="<?= PV::BASE_URL; ?>Data_Order/cancel_charge" method="POST">
+    <div class="modal" id="modalCancelCharge">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title text-white">Pembatalan Surcharge!</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Alasan Cancel</label>
+                                <input type="hidden" name="cancel_id_charge">
+                                <input type="text" name="reason" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-danger">Cancel Surcharge</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form action="<?= PV::BASE_URL; ?>Data_Operasi/charge" method="POST">
+    <div class="modal" id="exampleModalCharge">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white">Surcharge</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Surcharge Rp</label>
+                                <input type="number" name="charge" class="form-control form-control-sm text-end" required>
+                                <input name="ref_charge" type="hidden">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Tambah</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 <form action="<?= PV::BASE_URL; ?>Data_Operasi/mark" method="POST">
     <div class="modal" id="exampleModalMark">
         <div class="modal-dialog modal-sm">

@@ -105,6 +105,9 @@ class Data_Operasi extends Controller
 
          $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
          $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi', 1);
+
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
+         $data['charge'] = $this->db(0)->get_where('charge', $where, 'ref_transaksi', 1);
       }
 
       $data['refs'] = $refs;
@@ -276,6 +279,28 @@ class Data_Operasi extends Controller
          if ($do['errno'] == 0) {
             echo $do['errno'];
             $this->model('Log')->write($this->userData['user'] . " Extra Diskon " . $jumlah . " Success!");
+         } else {
+            echo $do['error'];
+         }
+      }
+   }
+
+   function charge()
+   {
+      $ref = $_POST['ref_charge'];
+      $jumlah = $_POST['charge'];
+
+      $whereCount = "ref_transaksi = '" . $ref . "' AND cancel = 0";
+      $dataCount = $this->db(0)->count_where('charge', $whereCount);
+
+      $cols = "id_toko, ref_transaksi, jumlah, id_user";
+      $vals = $this->userData['id_toko'] . ",'" . $ref . "'," . $jumlah . "," . $this->userData['id_user'];
+
+      if ($dataCount < 1) {
+         $do = $this->db(0)->insertCols('charge', $cols, $vals);
+         if ($do['errno'] == 0) {
+            echo $do['errno'];
+            exit();
          } else {
             echo $do['error'];
          }

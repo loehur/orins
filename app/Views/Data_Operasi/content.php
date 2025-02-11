@@ -40,6 +40,7 @@
                 <?php
                 $no = 0;
                 $bill = 0;
+                $charge[$ref] = 0;
                 $ambil = false;
                 $ambil_all = true;
 
@@ -50,6 +51,26 @@
                 $dibayar = 0;
                 $showMutasi = "";
                 $xtraDiskon = 0;
+
+                if (isset($data['charge'][$ref])) {
+                    foreach ($data['charge'][$ref] as $ds) {
+                        if ($ds['cancel'] == 0) {
+                            $bill += $ds['jumlah'];
+                            $charge[$ref] = $ds['jumlah'];
+                            if (in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+                                if ($data['ref'][$ref]['tuntas'] == 0) {
+                                    $showMutasi .= "<i class='fa-regular fa-circle-xmark cancel_charge' data-id='" . $ds['id'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelCharge'></i> <span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
+                                } else {
+                                    $showMutasi .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
+                                }
+                            } else {
+                                $showMutasi .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
+                            }
+                        } else {
+                            $showMutasi .= "<span><small>Surcharge#" . $ds['id'] . " <span class='text-danger'>" . $ds['cancel_reason'] . " <i class='fa-solid fa-xmark'></i></span></small> <del>Rp" . number_format($ds['jumlah']) . "</del><br></span>";
+                        }
+                    }
+                }
 
                 if (isset($data['kas'][$ref])) {
                     foreach ($data['kas'][$ref] as $dk) {
@@ -483,7 +504,10 @@
                                                                 <?php } else { ?>
                                                                     <li><a class="dropdown-item px-2" href="#"><small>CreatorID #<?= $user_id ?></small></a></li>
                                                                 <?php } ?>
-                                                                <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $sisa > 0) { ?>
+                                                                <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $do['tuntas'] == 0) { ?>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCharge" class="dropdown-item tambahCharge px-2" data-ref="<?= $ref ?>" href="#"><small>Surcharge</small></a></li>
+                                                                <?php } ?>
+                                                                <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $sisa > 0 && $do['tuntas'] == 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon px-2" data-sisa="<?= $sisa ?>" data-ref="<?= $ref ?>" href="#"><small>Extra Diskon</small></a></li>
                                                                 <?php } ?>
                                                             </ul>
@@ -508,7 +532,7 @@
                                                 </table>
                                             <?php } ?>
                                         </td>
-                                        <td class="text-end border-0" nowrap><?= ($lunas == true) ? '<i class="fa-solid text-success fa-circle-check"></i>' : '' ?> <b>Rp<?= number_format($bill) ?></b></td>
+                                        <td class="text-end border-0" nowrap><?= ($lunas == true) ? '<i class="fa-solid text-success fa-circle-check"></i>' : '' ?> <b>Rp<?= number_format($bill - $charge[$ref]) ?></b></td>
                                     </tr>
                                     <?php if (strlen($showMutasi) > 0) { ?>
                                         <tr>
@@ -595,13 +619,24 @@
                                             <span class="bayarPasMulti text-danger" style="cursor:pointer"><small>Bayar Pas (Click)</small></span>
                                             <input id="bayarBill" name="dibayar_multi" class="text-end form-control" type="number" min="1" value="" required />
                                         </td>
-                                        <td></td>
                                     </tr>
                                     <tr id="payment_account" class="border-top" style="display:none">
                                         <td colspan="10" class="p-0">
                                             <table class="table p-0 text-sm">
                                                 <tr>
-                                                    <td class="pe-1">
+                                                    <td class="pe-1" style="width: 80px;">
+                                                        <small>+Charge (%)</small>
+                                                        <input name="charge" class="text-center form-control" type="number" min="1" max="100" value="" />
+                                                    </td>
+                                                    <td class="pe-1" style="width: 100px;">
+                                                        <span class=""><small>Charge</small></span>
+                                                        <input id='total_charge' name="total_charge" class="text-end form form-control" type="number" readonly />
+                                                    </td>
+                                                    <td class="" style="width: 110px;">
+                                                        <span class=""><small>Total+Charge</small></span>
+                                                        <input id='total_aftercas' name="total_aftercas" class="text-end form form-control" type="number" readonly />
+                                                    </td>
+                                                    <td class="ps-1">
                                                         <span class="text-success"><small>Akun Pembayaran</small></span>
                                                         <select name="payment_account" class="border border-success rounded tize">
                                                             <option value=""></option>
@@ -609,18 +644,6 @@
                                                                 <option value="<?= $pa['id'] ?>"><?= strtoupper($pa['payment_account']) ?></option>
                                                             <?php } ?>
                                                         </select>
-                                                    </td>
-                                                    <td class="pe-1" style="width: 80px;">
-                                                        <small>+Charge (%)</small>
-                                                        <input name="charge" class="text-center form-control" type="number" min="1" max="100" value="" />
-                                                    </td>
-                                                    <td class="" style="width: 100px;">
-                                                        <span class=""><small>Charge</small></span>
-                                                        <input id='total_charge' name="total_charge" class="text-end form form-control" type="number" readonly />
-                                                    </td>
-                                                    <td class="ps-1" style="width: 110px;">
-                                                        <span class=""><small>Total+Charge</small></span>
-                                                        <input id='total_aftercas' name="total_aftercas" class="text-end form form-control" type="number" readonly />
                                                     </td>
                                                 </tr>
                                             </table>
@@ -723,10 +746,15 @@
     });
 
     $("a.xtraDiskon").click(function() {
-        ref = $(this).attr("data-ref");
-        max_diskon = $(this).attr("data-sisa");
+        var ref = $(this).attr("data-ref");
+        var max_diskon = $(this).attr("data-sisa");
         $("input[name=ref_diskon]").val(ref);
         $("input[name=max_diskon]").val(max_diskon);
+    })
+
+    $("a.tambahCharge").click(function() {
+        var ref = $(this).attr("data-ref");
+        $("input[name=ref_charge]").val(ref);
     })
 
     $("a.markRef").click(function() {
@@ -769,8 +797,13 @@
     })
 
     $(".cancel_diskon").click(function() {
-        id = $(this).attr("data-id");
+        var id = $(this).attr("data-id");
         $("input[name=cancel_id_diskon]").val(id);
+    })
+
+    $(".cancel_charge").click(function() {
+        var id = $(this).attr("data-id");
+        $("input[name=cancel_id_charge]").val(id);
     })
 
     $("span.btnAmbilSemua").click(function() {

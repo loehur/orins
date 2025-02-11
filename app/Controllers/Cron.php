@@ -112,6 +112,14 @@ class Cron extends Controller
       $where = "ref_transaksi = '" . $ref . "'";
       $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi');
 
+      $where = "ref_transaksi = '" . $ref . "' AND cancel = 0";
+      $data['charge'] = $this->db(0)->get_where_row('charge', $where);
+
+      $charge = 0;
+      if (isset($data['charge']['jumlah'])) {
+         $charge = $data['charge']['jumlah'];
+      }
+
       $stok = false;
       $ada_diskon = false;
       //MULAI
@@ -125,7 +133,7 @@ class Cron extends Controller
          }
       }
 
-      $bill = 0;
+      $bill = $charge;
       $ambil_all = true;
       $verify_payment = 0;
       $tuntas = false;
