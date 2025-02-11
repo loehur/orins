@@ -235,7 +235,11 @@ class Export extends Controller
          } else {
             $where = "ref = '" . $a['ref_transaksi'] . "'";
             $get_ref = $this->db(0)->get_where_row('ref', $where);
-            $mark = $get_ref['mark'];
+            if (isset($get_ref['mark'])) {
+               $mark = $get_ref['mark'];
+            } else {
+               $mark = "";
+            }
          }
 
          $lineData = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, $mark, $jumlah, $method, $payment_account, $note, $st, $tanggal);
