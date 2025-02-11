@@ -230,7 +230,13 @@ class Export extends Controller
                break;
          }
 
-         $mark = strtoupper($ref_data[$a['ref_transaksi']]['mark']);
+         if (isset($ref_data[$a['ref_transaksi']]['mark'])) {
+            $mark = strtoupper($ref_data[$a['ref_transaksi']]['mark']);
+         } else {
+            $where = "ref = '" . $a['ref_transaksi'] . "'";
+            $get_ref = $this->db(0)->get_where_row('ref', $where);
+            $mark = $get_ref['mark'];
+         }
 
          $lineData = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, $mark, $jumlah, $method, $payment_account, $note, $st, $tanggal);
          fputcsv($f, $lineData, $delimiter);
