@@ -187,9 +187,6 @@ class Export extends Controller
       $where = "insertTime LIKE '" . $month . "%'";
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
 
-      print_r($ref_data);
-      exit();
-
       $pacc = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
       $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
@@ -233,7 +230,9 @@ class Export extends Controller
                break;
          }
 
-         $lineData = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, strtoupper($ref_data[$a['ref_transaksi']]['mark']), $jumlah, $method, $payment_account, $note, $st, $tanggal);
+         $mark = strtoupper($ref_data[$a['ref_transaksi']]['mark']);
+
+         $lineData = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, $mark, $jumlah, $method, $payment_account, $note, $st, $tanggal);
          fputcsv($f, $lineData, $delimiter);
       }
 
