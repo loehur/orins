@@ -184,11 +184,11 @@ class Export extends Controller
       $data = $this->db(0)->get_where("kas", $where);
       $tanggal = date("Y-m-d");
 
-      $refs_ = array_column($data, "ref_transaksi");
-      $refs = array_unique($refs_);
-
       $where = "insertTime LIKE '" . $month . "%'";
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
+
+      print_r($ref_data);
+      exit();
 
       $pacc = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
