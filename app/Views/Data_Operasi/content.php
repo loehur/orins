@@ -52,6 +52,8 @@
                 $showMutasi = "";
                 $xtraDiskon = 0;
 
+                $showSurcharge = "";
+
                 if (isset($data['charge'][$ref])) {
                     foreach ($data['charge'][$ref] as $ds) {
                         if ($ds['cancel'] == 0) {
@@ -59,15 +61,15 @@
                             $charge[$ref] = $ds['jumlah'];
                             if (in_array($this->userData['user_tipe'], PV::PRIV[2])) {
                                 if ($data['ref'][$ref]['tuntas'] == 0) {
-                                    $showMutasi .= "<i class='fa-regular fa-circle-xmark cancel_charge' data-id='" . $ds['id'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelCharge'></i> <span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
+                                    $showSurcharge .= "<i class='fa-regular fa-circle-xmark cancel_charge' data-id='" . $ds['id'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelCharge'></i> <span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
                                 } else {
-                                    $showMutasi .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
+                                    $showSurcharge .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
                                 }
                             } else {
-                                $showMutasi .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
+                                $showSurcharge .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
                             }
                         } else {
-                            $showMutasi .= "<span><small>Surcharge#" . $ds['id'] . " <span class='text-danger'>" . $ds['cancel_reason'] . " <i class='fa-solid fa-xmark'></i></span></small> <del>Rp" . number_format($ds['jumlah']) . "</del><br></span>";
+                            $showMutasi .= "<span><small>Surcharge#" . $ds['id'] . " <span class='text-danger'>" . $ds['cancel_reason'] . " <i class='fa-solid fa-xmark'></i></span></small> <del>Rp" . number_format($ds['jumlah']) . "</del></span><br>";
                         }
                     }
                 }
@@ -473,7 +475,7 @@
                                         $markRekap[$id_pelanggan . "_" . $ref] = $mark;
                                     }
 
-                                    if ($dibayar > 0 && $lunas == false) {
+                                    if ($dibayar > 0 && $lunas == false && $sisa > 0) {
                                         $showMutasi .= "<span class='text-danger'><b>Sisa Rp" . number_format($sisa) . "</b></span>";
                                     }
 
@@ -532,7 +534,12 @@
                                                 </table>
                                             <?php } ?>
                                         </td>
-                                        <td class="text-end border-0" nowrap><?= ($lunas == true) ? '<i class="fa-solid text-success fa-circle-check"></i>' : '' ?> <b>Rp<?= number_format($bill - $charge[$ref]) ?></b></td>
+                                        <td class="text-end border-0" nowrap>
+                                            <?php if ($charge[$ref] > 0) { ?>
+                                                <?= $showSurcharge ?>
+                                            <?php } ?>
+                                            <?= ($lunas == true) ? '<i class="fa-solid text-success fa-circle-check"></i>' : '' ?> <b>Rp<?= number_format($bill) ?></b>
+                                        </td>
                                     </tr>
                                     <?php if (strlen($showMutasi) > 0) { ?>
                                         <tr>

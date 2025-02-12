@@ -146,6 +146,19 @@
                     }
                 }
 
+                $showSurcharge = "";
+                if (isset($data['charge'][$ref])) {
+                    foreach ($data['charge'][$ref] as $ds) {
+                        if ($ds['cancel'] == 0) {
+                            $bill += $ds['jumlah'];
+                            $charge[$ref] = $ds['jumlah'];
+                            $showSurcharge .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
+                        } else {
+                            $showMutasi .= "<span><small>Surcharge#" . $ds['id'] . " <span class='text-danger'>" . $ds['cancel_reason'] . " <i class='fa-solid fa-xmark'></i></span></small> <del>Rp" . number_format($ds['jumlah']) . "</del></span><br>";
+                        }
+                    }
+                }
+
                 foreach ($data['diskon'] as $ds) {
                     if ($ds['ref_transaksi'] == $ref) {
                         if ($ds['cancel'] == 0) {
@@ -396,7 +409,7 @@
 
                                         ?>
                                             <tr style="<?= ($cancel_barang == 2) ? 'color:silver' : '' ?>">
-                                                <td class="align-middle">
+                                                <td class="align-top">
                                                     <?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?>
                                                     <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
                                                 </td>
@@ -423,7 +436,7 @@
                                     }
 
 
-                                    if ($dibayar > 0 && $lunas == false) {
+                                    if ($dibayar > 0 && $lunas == false && $sisa > 0) {
                                         $showMutasi .= "<span class='text-danger'><b>Sisa Rp" . number_format($sisa) . "</b></span>";
                                     }
 
@@ -431,7 +444,12 @@
                                     <tr class="border-top">
                                         <td class="text-end text border-0" colspan="3">
                                         </td>
-                                        <td class="text-end border-0" nowrap><?= ($lunas == true) ? '<i class="fa-solid text-success fa-circle-check"></i>' : '' ?> <b>Rp<?= number_format($bill) ?></b></td>
+                                        <td class="text-end border-0" nowrap><?= ($lunas == true) ? '<i class="fa-solid text-success fa-circle-check"></i>' : '' ?>
+                                            <?php if (isset($charge[$ref]) && $charge[$ref] > 0) { ?>
+                                                <?= $showSurcharge ?>
+                                            <?php } ?>
+                                            <b>Rp<?= number_format($bill) ?></b>
+                                        </td>
                                     </tr>
                                     <?php if (strlen($showMutasi) > 0) { ?>
                                         <tr>

@@ -47,6 +47,9 @@ class Cek extends Controller
 
          $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
          $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where);
+
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
+         $data['charge'] = $this->db(0)->get_where('charge', $where, 'ref_transaksi', 1);
       }
 
       $data_ = [];
