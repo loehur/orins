@@ -114,6 +114,11 @@
                 <div class="col">
                     <table class="table table-sm text-sm table-borderless mb-2">
                         <tr>
+                            <td><?= $total_sds ?></td>
+                            <td><?= $data['nontunai_sds'] ?></td>
+                            <td></td>
+                        </tr>
+                        <tr>
                             <td class="text-end">Penjualan Tunai <span class="text-success fw-bold"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span></td>
                             <td class="text-end" style="width:100px"><b>Rp<?= number_format($total - $total_sds) ?></b></td>
                             <td rowspan="10" class="text-success text-sm align-middle"><button id="setor" class="btn btn-outline-success py-3 rounded-1">Buat<br>Setoran</button></td>
