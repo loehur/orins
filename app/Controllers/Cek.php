@@ -6,7 +6,7 @@ class Cek extends Controller
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[103])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
