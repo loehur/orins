@@ -114,7 +114,7 @@
                 <div class="col">
                     <table class="table table-sm text-sm table-borderless mb-2">
                         <tr>
-                            <td><?= $total_sds ?></td>
+                            <td class="text-end"><?= $total_sds ?></td>
                             <td><?= $data['nontunai_sds'] ?></td>
                             <td></td>
                         </tr>
