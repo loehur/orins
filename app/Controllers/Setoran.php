@@ -38,10 +38,6 @@ class Setoran extends Controller
       $data['kas'] = $this->db(0)->get_where('kas', $where);
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
 
-      $data['nontunai_sds'] = 0;
-      $where_kas_sds = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND sds = 1 AND id_client <> 0 AND ref_setoran = ''";
-      $data['nontunai_sds'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where_kas_sds);
-
       $ref_trx = array_keys($data['kas_trx']);
 
       if (count($ref_trx) > 0) {
@@ -53,6 +49,10 @@ class Setoran extends Controller
          $reft_list = rtrim($reft_list, ',');
          $where_ref = "ref IN (" . $reft_list . ") AND sds = 1";
          $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
+
+         $data['nontunai_sds'] = 0;
+         $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND sds = 1";
+         $data['nontunai_sds'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where_kas_sds);
       } else {
          $data['sds'] = [];
       }
