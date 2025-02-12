@@ -109,7 +109,7 @@
     ?>
 
     <?php if ($total > 0) { ?>
-        <div class="pe-2 pb-0 ms-3 me-3 bg-white">
+        <div class="pe-2 pb-0 mt-2 ms-3 me-3 bg-white">
             <div class="row">
                 <div class="col">
                     <table class="table table-sm text-sm table-borderless mb-2">
