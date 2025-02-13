@@ -69,8 +69,8 @@ class Setoran extends Controller
       $data['setor'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
       $refs = array_keys($data['setor']);
 
+      $ref_list = "0";
       if (count($refs) > 0) {
-         $ref_list = "";
          foreach ($refs as $r) {
             $ref_list .= $r . ",";
          }
