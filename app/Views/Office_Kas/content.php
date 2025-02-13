@@ -39,7 +39,10 @@
                         <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
                     </td>
                     <td>
-                        <?= $a['ref'] ?>
+                        <?= strtoupper($this->dToko[$a['id_sumber']]['nama_toko']) ?> <span class='fw-bold text-success'><i class='fa-solid fa-arrow-right'></i></span> FINANCE
+                    </td>
+                    <td>
+                        <?= $a['note'] ?>
                     </td>
                     <td class="text-end">
                         <?= number_format($a['jumlah']) ?>

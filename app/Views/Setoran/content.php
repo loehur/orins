@@ -249,9 +249,12 @@
                         $totalSetor = $set['jumlah'] - $jumlah_keluar;
                     ?>
                         <tr>
-                            <td class="text-primary" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check mt-1"></i></small></span></td>
-                            <td class="text-end"><?= $set['count'] + $count_keluar ?> Trx</td>
-                            <td><?= $set['ref_setoran'] ?></td>
+                            <td>
+                                <span data-bs-toggle="modal" style="cursor: pointer;" data-bs-target="#modalCek" class="cekTrx text-primary" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check mt-1"></i></small></span>
+                                <br>
+                                <?= $set['count'] + $count_keluar ?> Trx<br>
+                                <?= $set['ref_setoran'] ?>
+                            </td>
                             <td class="text-end">
                                 <?php if ($set['status_setoran'] == 0) { ?>
                                     <?php
@@ -271,8 +274,6 @@
                                         <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= ($totalSetor - $sds_done[$set['ref_setoran']]) ?>)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
                                     <?php } ?>
                                 <?php } ?>
-                            </td>
-                            <td class="text-end">
                                 <b>Rp<?= number_format($totalSetor) ?></b><br>
                                 <?php
                                 if (isset($data['split'][$set['ref_setoran']])) {
@@ -306,7 +307,7 @@
                                             $st_slip2 = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
                                             break;
                                     } ?>
-                                    <?= $st_slip2 ?> Kas Kantor <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
+                                    <?= $st_slip2 ?> Kas Kantor <small>(<?= $ds['note'] ?>)</small> <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
                                     <?php $totalSetor -= $ds['jumlah'] ?>
                                 <?php } ?>
                                 <?php if (isset($data['sds_done'][$set['ref_setoran']])) { ?>
@@ -409,7 +410,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="container">
-                        <div class="row mb-3">
+                        <div class="row mb-2">
                             <div class="col">
                                 <label class="form-label">Kas Kantor</label>
                                 <input type="hidden" id="inp_ref" name="ref">
@@ -418,6 +419,12 @@
                             <div class="col">
                                 <label class="form-label">Setoran <?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></label>
                                 <input type="number" id="jumlah_bank" readonly class="form-control form-control-sm text-end">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Keterangan</label>
+                                <input type="text" name="note" class="form-control form-control-sm" required>
                             </div>
                         </div>
                         <div class="row mb-2">

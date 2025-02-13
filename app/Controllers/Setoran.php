@@ -178,37 +178,17 @@ class Setoran extends Controller
    function split()
    {
       $ref = $_POST['ref'];
-      //$jumlah = $_POST['jumlah'];
+      $note = $_POST['note'];
       $jumlah_finance = $_POST['jumlah_finance'];
 
-      // if ($jumlah > 0) {
-      //    $unic = $ref . "01"; //tipe-target
-      //    $cols = 'id, id_sumber, id_target, tipe, ref, jumlah';
-      //    $vals = "'" . $unic . "'," . $this->userData['id_toko'] . ",1,0,'" . $ref . "','" . $jumlah . "'";
-      //    $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
-      //    if ($do['errno'] == 1062) {
-      //       $set = "jumlah = '" . $jumlah . "'";
-      //       $where = "id = '" . $unic . "'";
-      //       $up = $this->db(0)->update('kas_kecil', $set, $where);
-      //       if ($up['errno'] <> 0) {
-      //          echo $up['error'];
-      //          exit();
-      //       }
-      //    } else {
-      //       if ($do['errno'] <> 0) {
-      //          echo $do['error'];
-      //          exit();
-      //       }
-      //    }
-      // }
 
       if ($jumlah_finance > 0) {
          $unic = $ref . "00"; //tipe-target
-         $cols = 'id, id_sumber, id_target, tipe, ref, jumlah';
-         $vals =  "'" . $unic . "'," . $this->userData['id_toko'] . ",0,0,'" . $ref . "','" . $jumlah_finance . "'";
+         $cols = 'id, id_sumber, id_target, tipe, ref, jumlah, note';
+         $vals =  "'" . $unic . "'," . $this->userData['id_toko'] . ",0,0,'" . $ref . "','" . $jumlah_finance . "','" . $note . "'";
          $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
          if ($do['errno'] == 1062) {
-            $set = "jumlah = '" . $jumlah_finance . "'";
+            $set = "jumlah = '" . $jumlah_finance . "', note = '" . $note . "'";
             $where = "id = '" . $unic . "'";
             $up = $this->db(0)->update('kas_kecil', $set, $where);
             if ($up['errno'] <> 0) {
