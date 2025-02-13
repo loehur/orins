@@ -16,24 +16,24 @@
             <div class="col text-end">
                 <div class="btn-group me-1">
                     <button type="button" class="btn shadow-none btn-sm btn-primary bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                        Operasi Kas
+                        Operasi
                         <span class="visually-hidden">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
-                        <li><a data-bs-toggle="modal" data-bs-target="#exampleModal" class="dropdown-item" href="#">Topup Petycash</a></li>
+                        <li><a data-bs-toggle="modal" data-bs-target="#exampleModal" class="dropdown-item" href="#">Pakai</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="col-auto text-end pt-2">
-                Saldo Kas Rp<?= number_format($data['saldo']) ?>
+            <div class="col-auto text-end pt-2 pe-0">
+                Saldo Rp<?= number_format($data['saldo']) ?>
             </div>
         </div>
 
         <table class="table table-sm text-sm">
             <tr>
-                <th colspan="10" class="text-success">Setoran Kas Kantor</th>
+                <th colspan="10" class="text-success">Riwayat Topup</th>
             </tr>
-            <?php foreach ($data['split'] as $a) { ?>
+            <?php foreach ($data['topup'] as $a) { ?>
                 <tr>
                     <td class="align-middle">
                         <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
@@ -45,7 +45,13 @@
                         <?= number_format($a['jumlah']) ?>
                     </td>
                     <td class="text-end" style="width:70px">
-                        <a class="ajax" href="<?= PV::BASE_URL ?>Audit_KasKecil/verify_kasKecil/<?= $a['id'] ?>/1">Verify</a>
+                        <?php if ($a['st'] == 0) { ?>
+                            <a class="ajax" href="<?= PV::BASE_URL ?>Petty_Cash/verify/<?= $a['id'] ?>/1">Verify</a>
+                        <?php } else { ?>
+                            <?php if ($a['st'] == 1) { ?>
+                                <span class="text-sm text-success">Verified</span>
+                            <?php } ?>
+                        <?php } ?>
                     </td>
                 </tr>
             <?php } ?>
@@ -53,31 +59,10 @@
 
         <table class="table table-sm text-sm">
             <tr>
-                <th colspan="10" class="text-secondary">Setoran Kas Kantor Terverifikasi</th>
+                <th colspan="10" class="text-danger">Pemakaian</th>
             </tr>
-            <?php foreach ($data['split_done'] as $a) { ?>
-                <tr>
-                    <td class="align-middle">
-                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
-                    </td>
-                    <td>
-                        <?= $a['ref'] ?>
-                    </td>
-                    <td class="text-end">
-                        <?= number_format($a['jumlah']) ?>
-                    </td>
-                    <td class="text-end" style="width:70px">
-
-                    </td>
-                </tr>
-            <?php } ?>
-        </table>
-
-        <table class="table table-sm text-sm">
-            <tr>
-                <th colspan="10" class="text-primary">Mutasi</th>
-            </tr>
-            <?php foreach ($data['keluar_list'] as $a) {
+            <?php
+            foreach ($data['pakai'] as $a) {
                 if ($a['st'] == 1) {
                     $total_setor += $a['jumlah'];
                 } ?>
@@ -86,10 +71,10 @@
                         <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
                     </td>
                     <td>
-                        <?= $a['tipe'] == 1 ? "Topup Petycash" : "OPO IKI" ?>
+                        <span class='fw-bold text-danger'><i class='fa-solid fa-arrow-right'></i></span> <?= $data['jkeluar'][$a['id_target']]['nama'] ?>
                     </td>
                     <td>
-                        <span class='fw-bold text-success'><i class='fa-solid fa-arrow-right'></i></span> <?= strtoupper($this->dToko[$a['id_target']]['nama_toko']) ?>
+                        <?= $a['note'] ?>
                     </td>
                     <td class="text-end">
                         <?= number_format($a['jumlah']) ?>
@@ -109,31 +94,48 @@
     </div>
 </main>
 
-<div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                Topup PetyCash
-            </div>
-            <form class="ajax" action="<?= PV::BASE_URL ?>Office_Kas/topupPety" method="POST">
+<form action="<?= PV::BASE_URL; ?>Petty_Cash/pakai" method="POST">
+    <div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title text-white">Pakai</h5>
+                </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label" required>Jumlah</label>
-                        <input type="number" min="1" name="jumlah" class="form-control" required>
+                    <div class="container">
+                        <div class="row mb-2">
+                            <div class="col">
+                                <label class="form-label">Jumlah</label>
+                                <input type="number" name="jumlah" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Jenis</label>
+                                <select name="jenis" class="form-control form-control-sm" required>
+                                    <option></option>
+                                    <?php
+                                    foreach ($data['jkeluar'] as $djk) { ?>
+                                        <option value="<?= $djk['id'] ?>"><?= $djk['nama'] ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Keterangan</label>
+                                <input type="text" name="note" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-danger">Pakai</button>
+                            </div>
+                        </div>
                     </div>
-                    <select class="form form-select" name="toko">
-                        <?php foreach ($this->dToko as $dt) { ?>
-                            <option value="<?= $dt['id_toko'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModalAff"><?= $dt['nama_toko'] ?></option>
-                        <?php } ?>
-                    </select>
                 </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Proses</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
-</div>
+</form>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 

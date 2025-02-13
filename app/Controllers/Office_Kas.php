@@ -43,7 +43,7 @@ class Office_Kas extends Controller
       $whereSetor = "id_target = 0 AND tipe = 0 AND st = 1";
       $data['setor'] = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $whereSetor);
 
-      $whereSetor = "id_sumber = 0 AND tipe = 1 AND st = 1";
+      $whereSetor = "id_sumber = 0 AND tipe = 1 AND st <> 2";
       $data['keluar'] = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $whereSetor);
 
       if (!$data['setor']) {
@@ -73,16 +73,11 @@ class Office_Kas extends Controller
       $ref = date('ymd');
       $unic = $ref . "1" . $target; //tipe-target
       $cols = 'id, id_sumber, id_target, tipe, ref, jumlah, st';
-      $vals =  "'" . $unic . "',0," . $target . ",1,'" . $ref . "'," . $jumlah . ",1";
+      $vals =  "'" . $unic . "',0," . $target . ",1,'" . $ref . "'," . $jumlah . ",0";
       $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
       if ($do['errno'] == 1062) {
-         $set = "jumlah = '" . $jumlah . "'";
-         $where = "id = '" . $unic . "'";
-         $up = $this->db(0)->update('kas_kecil', $set, $where);
-         if ($up['errno'] <> 0) {
-            echo $up['error'];
-            exit();
-         }
+         echo "Tidak dapat menambah petty cash 2x dalam sehari";
+         exit();
       } else {
          if ($do['errno'] <> 0) {
             echo $do['error'];
