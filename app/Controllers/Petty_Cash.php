@@ -6,7 +6,7 @@ class Petty_Cash extends Controller
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[5])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[104])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
