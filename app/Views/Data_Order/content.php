@@ -88,7 +88,7 @@
         <div class="mx-2 rounded px-2 mt-3 pt-5">
             <div class="row">
                 <div class="col px-0 overflow-auto mt-2" style="max-width: 500px;height: 700px;">
-                    <?php foreach ($data['refs'] as $ref) { ?>
+                    <?php foreach ($data['refs'] as $key => $ref) { ?>
                         <?php
                         $no = 0;
                         $bill[$ref] = 0;
@@ -128,8 +128,9 @@
                                     $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
                                     $cs = $data['karyawan'][$do['id_penerima']]['nama']; ?>
                                 <?php } ?>
-                        <?php }
-                        } ?>
+                            <?php } ?>
+                            <?php unset($data['refs'][$key]); ?>
+                        <?php } ?>
 
                         <?php
                         if ($ada == true) {

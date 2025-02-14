@@ -58,7 +58,7 @@ class Data_Order extends Controller
          case 0:
             //DALAM PROSES 7 HARI
             $where = "id_pelanggan_jenis = " . $parse_2 . " AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND CURDATE() <= (insertTime + INTERVAL 6 DAY) ORDER BY id_order_data DESC";
-            $where2 = "jenis_target = " . $parse_2 . " AND (id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND CURDATE() <= (insertTime + INTERVAL 6 DAY)  ORDER BY id DESC";
+            $where2 = "jenis_target = " . $parse_2 . " AND (id_sumber = " . $this->userData['id_toko'] . ") AND id_target <> 0 AND jenis = 2 AND tuntas = 0 AND CURDATE() <= (insertTime + INTERVAL 6 DAY) ORDER BY id DESC";
             break;
          case 1:
             //DALAM PROSES > 7 HARI
