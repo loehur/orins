@@ -144,6 +144,14 @@ class Data_Operasi extends Controller
       $this->view($this->v_content, $data);
    }
 
+   function faktur_pajak($id, $status)
+   {
+      $set = "fp = " . $status;
+      $where = "id = " . $id;
+      $update = $this->db(0)->update("master_mutasi", $set, $where);
+      echo $update['errno'] == 0 ? 0 : $update['error'];
+   }
+
    public function bayar_multi()
    {
       if (isset($_POST['ref_multi'])) {

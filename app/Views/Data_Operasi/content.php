@@ -301,16 +301,16 @@
                                                                 <?php } else { ?>
                                                                     <span class="text-nowrap text-success"><small><?= $id . "# " . ucwords($produk) ?></small></span>
                                                                 <?php } ?>
-                                                                <?php if ($dibayar == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
-                                                                    <div class="btn-group">
-                                                                        <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                            <span class="visually-hidden">Toggle Dropdown</span>
-                                                                        </button>
-                                                                        <ul class="dropdown-menu p-0 border-0 shadow rounded-0">
+                                                                <div class="btn-group">
+                                                                    <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        <span class="visually-hidden">Toggle Dropdown</span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu p-0 border-0 shadow-sm text-sm">
+                                                                        <?php if ($dibayar == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item px-2 cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
-                                                                        </ul>
-                                                                    </div>
-                                                                <?php } ?>
+                                                                        <?php } ?>
+                                                                    </ul>
+                                                                </div>
                                                                 <?php if ($do['id_afiliasi'] <> 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) {
                                                                     $toko_aff = $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $do['id_afiliasi']);
                                                                     if ($do['status_order'] == 1) { ?>
@@ -440,17 +440,20 @@
                                             <tr style="<?= ($cancel_barang == 2) ? 'color:silver' : '' ?>">
                                                 <td class="align-top">
                                                     <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
+                                                    <small><span class="badge bg-success"><?= $do['fp'] == 1 ? "FP" : "" ?></span></small>
                                                     <?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?>
-                                                    <?php if ($dibayar == 0 && $do['stat'] == 1) { ?>
-                                                        <div class="btn-group">
-                                                            <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <span class="visually-hidden">Toggle Dropdown</span>
-                                                            </button>
-                                                            <ul class="dropdown-menu p-0 border-0 shadow rounded-0">
+
+                                                    <div class="btn-group">
+                                                        <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <span class="visually-hidden">Toggle Dropdown</span>
+                                                        </button>
+                                                        <ul class="dropdown-menu p-0 border-0 shadow-sm text-sm">
+                                                            <li><a class="dropdown-item px-2 ajax" href="<?= PV::BASE_URL ?>Data_Operasi/faktur_pajak/<?= $do['id'] ?>/<?= $do['fp'] == 1 ? 0 : 1 ?>">Faktur Pajak (<?= $do['fp'] == 1 ? "-" : "+" ?>)</a></li>
+                                                            <?php if ($dibayar == 0 && $do['stat'] == 1) { ?>
                                                                 <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancelBarang px-2" data-id="<?= $do['id'] ?>" href="#">Cancel</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    <?php } ?>
+                                                            <?php } ?>
+                                                        </ul>
+                                                    </div>
                                                 </td>
                                                 <td class=""><small>
                                                         <?= $do['sds'] == 1 ? "S" : "" ?>#<?= $do['sn'] ?>
@@ -745,6 +748,23 @@
             $("div#loadMulti").fadeOut('fast');
         }
     });
+
+    $("a.ajax").click(function(e) {
+        e.preventDefault();
+        var href = $(this).attr('href');
+        $.ajax({
+            url: href,
+            type: 'POST',
+            data: {},
+            success: function(res) {
+                if (res == 0) {
+                    content();
+                } else {
+                    alert(res);
+                }
+            }
+        });
+    })
 
     $('button.cek').click(function() {
         var parse = $("select[name=id_pelanggan]").val();
