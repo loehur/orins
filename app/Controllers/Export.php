@@ -212,7 +212,7 @@ class Export extends Controller
       $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-PAYMENT-" . $month . ".csv";
       $f = fopen('php://memory', 'w');
 
-      $where = "insertTime LIKE '" . $month . "%' AND id_toko = " . $this->userData['id_toko'];
+      $where = "insertTime LIKE '" . $month . "%' AND jenis_transaksi = 1 AND id_toko = " . $this->userData['id_toko'];
       $data = $this->db(0)->get_where("kas", $where);
       $tanggal = date("Y-m-d");
 
@@ -224,7 +224,6 @@ class Export extends Controller
       $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
-
          if (isset($pacc[$a['pa']]['payment_account'])) {
             $payment_account = strtoupper($pacc[$a['pa']]['payment_account']) . " ";
          } else {

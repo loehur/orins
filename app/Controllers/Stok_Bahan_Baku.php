@@ -1,12 +1,12 @@
 <?php
 
-class Gudang_Stok extends Controller
+class Stok_Bahan_Baku extends Controller
 {
    public function __construct()
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[101])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[4])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -19,7 +19,7 @@ class Gudang_Stok extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Gudang Stok"
+         "title" => "Stok Bahan Baku"
       ]);
 
       $this->viewer();
@@ -33,7 +33,6 @@ class Gudang_Stok extends Controller
    public function content()
    {
       $data['stok'] = $this->data('Barang')->stok_data_list_all($this->userData['id_toko']);
-      $data['stok_gudang'] = $this->data('Barang')->stok_data_list_all(0);
       $data['barang'] = $this->db(0)->get_where('master_barang', 'en = 1 ORDER BY id DESC');
       $this->view($this->v_content, $data);
    }
