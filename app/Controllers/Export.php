@@ -116,7 +116,7 @@ class Export extends Controller
             $detail_harga = unserialize($a['produk_detail']);
             $cb = $a['produk_code'];
             $harga = $a['harga'];
-            $total = $harga * $jumlah;
+            $total = ($harga * $jumlah) - $diskon;
             $nb = "";
             foreach ($detail_harga as $dh) {
                $nb .= strtoupper($dh['detail_name']) . " ";
@@ -158,7 +158,7 @@ class Export extends Controller
       foreach ($data as $a) {
          $jumlah = $a['qty'];
          $ref = $a['ref'];
-         $diskon = $a['diskon'];
+         $diskon = $a['diskon'] * $jumlah;
          $margin_paket = $a['margin_paket'];
 
          $db = $dBarang[$a['id_barang']];
@@ -181,7 +181,7 @@ class Export extends Controller
          $tgl_order = substr($a['insertTime'], 0, 10);
 
          $harga = $a['harga_jual'];
-         $total = $harga * $jumlah;
+         $total = ($harga * $jumlah) - $diskon;
 
          if (isset($ref_data[$a['ref']]['mark'])) {
             $mark = strtoupper($ref_data[$a['ref']]['mark']);
