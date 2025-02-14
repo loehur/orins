@@ -185,7 +185,7 @@
                                             <?php } ?>
                                             <?php if ($pdo['note'] <> "") { ?>
                                                 <div style="float: left;padding-right: 4px;line-height: 100%;">
-                                                    <small><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span></small>
+                                                    <small>Note<br><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span></small>
                                                 </div>
                                             <?php } ?>
                                         </td>
@@ -262,6 +262,7 @@
                         <?php } ?>
                         <?php if ($do['note'] <> "") { ?>
                             <div style="float: left;padding-right: 4px;line-height: 100%;">
+                                <small>Note</small><br>
                                 <span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
                             </div>
                         <?php } ?>
