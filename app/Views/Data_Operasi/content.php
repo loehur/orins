@@ -434,9 +434,7 @@
                                             if ($do['diskon'] > 0) {
                                                 $jumlah_semula = "<s>" . number_format(($jumlah * $do['harga_jual']) + $do['margin_paket']) . "</s><br><small>Disc. " . number_format($do['diskon'] * $jumlah) . "</small><br>";
                                             }
-                                            $jumlah_real = ($jumlah * $do['harga_jual']) + $do['margin_paket'] - ($do['diskon'] * $jumlah);
-
-                                        ?>
+                                            $jumlah_real = ($jumlah * $do['harga_jual']) + $do['margin_paket'] - ($do['diskon'] * $jumlah); ?>
                                             <tr style="<?= ($cancel_barang == 2) ? 'color:silver' : '' ?>">
                                                 <td class="align-top">
                                                     <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>

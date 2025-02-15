@@ -3,7 +3,6 @@
 <main>
     <!-- Main page content-->
     <div class="container">
-
         <div class="row mb-2 mx-0">
             <div class="col px-1 mb-2">
                 <label>Barang</label><br>
@@ -14,6 +13,14 @@
                         <option value="<?= $key ?>"><?= $code_split[0] ?> <?= trim($br['brand'] . " " . $br['model']) ?></span></option>
                     <?php } ?>
                 </select>
+            </div>
+            <div class="col-auto px-1 mb-2">
+                <label>Serial Number</label><br>
+                <input name="sn" id="sn" class="form-control form-control-sm">
+            </div>
+            <div class="col-auto px-1 mb-2">
+                <label>&nbsp;</label><br>
+                <span id="cek" class="btn btn-sm btn-success">Cek</span>
             </div>
         </div>
         <div id="data" class="bg-light mx-1 px-2"></div>
@@ -27,10 +34,11 @@
         $('select.tize').selectize();
     });
 
-    $("#barang").change(function() {
-        var get = $(this).val();
+    $("#cek").click(function() {
+        var get = $("#barang").val();
+        var sn = $("#sn").val();
         if (get != "") {
-            $('#data').load('<?= PV::BASE_URL ?>Barang_Riwayat/data/' + get);
+            $('#data').load('<?= PV::BASE_URL ?>Barang_Riwayat/data/' + get + '/' + sn);
         }
     })
 </script>

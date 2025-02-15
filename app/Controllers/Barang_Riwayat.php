@@ -35,10 +35,16 @@ class Barang_Riwayat extends Controller
       $this->view(__CLASS__ . '/content', $data);
    }
 
-   function data($kode)
+   function data($kode, $sn = "")
    {
       $data['barang'] = $this->db(0)->get_where_row('master_barang', "sp = 0 AND id = '" . $kode . "'");
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND (id_sumber = 0 OR id_target = 0) AND jenis <> 2");
+      $data['supplier'] = $this->db(0)->get_where('master_supplier', "id");
+      if ($sn == "") {
+         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND (id_sumber = 0 OR id_target = 0) AND jenis <> 2");
+      } else {
+         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND sn = '" . $sn . "' AND (id_sumber = 0 OR id_target = 0) AND jenis <> 2");
+      }
+      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', 'id_pelanggan_jenis = 0', 'id_pelanggan');
       $this->view(__CLASS__ . '/data', $data);
    }
 }
