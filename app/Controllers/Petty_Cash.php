@@ -63,7 +63,7 @@ class Petty_Cash extends Controller
       $jenis = $_POST['jenis'];
       $note = $_POST['note'];
 
-      $ref = date('ymd');
+      $ref = date('ymdHi');
       $unic = $ref . $jenis . $jumlah; //tipe-target
 
       $cols = 'id, id_sumber, id_target, tipe, ref, jumlah, st, note';
@@ -78,6 +78,26 @@ class Petty_Cash extends Controller
             echo $do['error'];
             exit();
          }
+      }
+
+      echo 0;
+   }
+
+   function update()
+   {
+      $id = $_POST['id'];
+      $col = $_POST['col'];
+      $value = $_POST['val'];
+
+      if ($value <> "") {
+         $up = $this->db(0)->update("kas_kecil", $col . " = '" . $value . "'", "id = '" . $id . "'");
+         if ($up['errno'] <> 0) {
+            echo $up['error'];
+            exit();
+         }
+      } else {
+         echo 0;
+         exit();
       }
 
       echo 0;

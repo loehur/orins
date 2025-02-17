@@ -74,7 +74,11 @@
                         <span class='fw-bold text-danger'><i class='fa-solid fa-arrow-right'></i></span> <?= $data['jkeluar'][$a['id_target']]['nama'] ?>
                     </td>
                     <td>
-                        <?= $a['note'] ?>
+                        <?php if ($a['st'] <> 0) { ?>
+                            <?= $a['note'] ?>
+                        <?php } else { ?>
+                            <span class="cell_edit" data-id="<?= $a['id'] ?>" data-col="note"><?= $a['note'] ?></span>
+                        <?php } ?>
                     </td>
                     <td class="text-end">
                         <?= number_format($a['jumlah']) ?>
@@ -169,6 +173,59 @@
                 } else {
                     alert(res);
                 }
+            }
+        });
+    });
+
+    var click = 0;
+    $(".cell_edit").on('dblclick', function() {
+        click = click + 1;
+        if (click != 1) {
+            return;
+        }
+
+        var id = $(this).attr('data-id');
+        var col = $(this).attr('data-col');
+        var value = $(this).html();
+        var tipe = "text";
+        var value_before = value;
+        var el = $(this);
+        var width = el.parent().width();
+        var align = "left";
+
+        el.parent().css("width", width);
+        el.html("<input required type=" + tipe + " style='outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value='" + value + "'>");
+
+        $("#value_").focus();
+        $('#value_').keypress(function(e) {
+            if (e.which == 13) {
+                $(this).blur();
+            }
+        });
+        $("#value_").focusout(function() {
+            var value_after = $(this).val();
+            if (value_after === value_before || value_after == "") {
+                el.html(value);
+                click = 0;
+            } else {
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>Petty_Cash/update',
+                    data: {
+                        'id': id,
+                        'col': col,
+                        'val': value_after,
+                    },
+                    type: 'POST',
+                    dataType: 'html',
+                    success: function(res) {
+                        click = 0;
+                        if (res == 0) {
+                            el.html(value_after);
+                        } else {
+                            el.html(value_before);
+                        }
+                    },
+                });
             }
         });
     });
