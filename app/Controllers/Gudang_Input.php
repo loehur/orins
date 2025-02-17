@@ -98,7 +98,7 @@ class Gudang_Input extends Controller
 
       if ($sn == 1) {
          if ($qty > 20) {
-            echo "Kuantiti Barang SN maksimal 20";
+            echo "Jumlah Barang SN maksimal 20 dalam sekali input";
             exit();
          }
       }
@@ -124,10 +124,10 @@ class Gudang_Input extends Controller
       $col = $_POST['col'];
       $primary = $_POST['primary'];
       $tb = $_POST['tb'];
-      $set = $col . " = '" . $value . "', sn_unic = '" . $kode . $value . "'";
+      $set = $col . " = '" . $value . "'";
       $where = $primary . " = " . $id;
 
-      $cek_sn = $this->db(0)->count_where('master_mutasi', "sn_unic = '" . $kode . $value . "'");
+      $cek_sn = $this->db(0)->count_where('master_mutasi', "sn = '" . $value . "' AND id_barang = '" . $kode . "' AND jenis = 0");
       if ($cek_sn == 0) {
          $up = $this->db(0)->update($tb, $set, $where);
          echo $up['errno'] == 0 ? 0 : $up['error'];

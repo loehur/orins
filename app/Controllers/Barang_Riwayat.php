@@ -47,4 +47,28 @@ class Barang_Riwayat extends Controller
       $data['pelanggan'] = $this->db(0)->get_where('pelanggan', 'id_pelanggan_jenis = 0', 'id_pelanggan');
       $this->view(__CLASS__ . '/data', $data);
    }
+
+   function update_sn()
+   {
+      $id = $_POST['id'];
+      $value = $_POST['value'];
+
+      $data = $this->db(0)->get_where_row('master_mutasi', "id = '" . $id . "'");
+
+      if (isset($data['sn'])) {
+         $cek_sn = $this->db(0)->count_where('master_mutasi', "sn = '" . $value . "' AND id_barang = '" . $data['id_barang'] . "' AND jenis = 0");
+         if ($cek_sn == 0) {
+            $where = "id_barang = '" . $data['id_barang'] . "' AND sn = '" . $data['sn'] . "'";
+            $up = $this->db(0)->update("master_mutasi", "sn = '" . strtoupper($value) . "'", $where);
+            echo $up['errno'] == 0 ? 0 : $up['error'];
+         } else {
+            echo "Duplicate SN " . $value;
+            exit();
+         }
+      } else {
+         echo "No Data";
+         exit();
+      }
+      echo 0;
+   }
 }
