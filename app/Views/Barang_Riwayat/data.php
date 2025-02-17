@@ -15,7 +15,7 @@
             <tr>
                 <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
                 <td><a href="<?= PV::BASE_URL . $target_link ?>/list/<?= $d['ref'] ?>"><?= $d['ref'] ?></a></td>
-                <td><?= $d['sn'] ?></td>
+                <td><span class="<?= strlen($d['sn']) > 0 ? 'cell_edit' : "" ?>"><?= $d['sn'] ?></span></td>
                 <td class="align-middle"><?= $d['id_target'] == 0 ? '<i class="fa-solid fa-arrow-down text-success"></i>' : '<i class="fa-solid fa-arrow-up text-danger"></i>' ?></td>
                 <td class="">
                     <?php switch ($d['jenis']) {
@@ -39,3 +39,60 @@
             </tr>
         <?php } ?>
     </table>
+
+    <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+
+    <script>
+        var click = 0;
+        $(".cell_edit").on('click', function() {
+            click = click + 1;
+            if (click != 1) {
+                return;
+            }
+
+            var id = $(this).attr('data-id');
+            var value = $(this).html();
+            var value_before = value;
+            if (value == "[ ]") {
+                value = "";
+            }
+            var el = $(this);
+            var width = el.parent().width();
+            var align = "left";
+
+            el.parent().css("width", width);
+            el.html("<input required type=" + tipe + " style='text-transform:uppercase;outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value='" + value + "'>");
+
+            $("#value_").focus();
+            $('#value_').keypress(function(e) {
+                if (e.which == 13) {
+                    $(this).blur();
+                }
+            });
+            $("#value_").focusout(function() {
+                var value_after = $(this).val().toUpperCase();
+                if (value_after === value_before) {
+                    el.html(value);
+                    click = 0;
+                } else {
+                    $.ajax({
+                        url: '<?= PV::BASE_URL ?>Barang_Riwayat/update_sn',
+                        data: {
+                            'id': id,
+                            'value': value_after,
+                        },
+                        type: 'POST',
+                        dataType: 'html',
+                        success: function(res) {
+                            click = 0;
+                            if (res == 0) {
+                                el.html(value_after);
+                            } else {
+                                el.html(value_before);
+                            }
+                        },
+                    });
+                }
+            });
+        });
+    </script>
