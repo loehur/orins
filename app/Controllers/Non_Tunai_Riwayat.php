@@ -42,7 +42,7 @@ class Non_Tunai_Riwayat extends Controller
       $data['toko'] = $this->db(0)->get('toko', 'id_toko');
       $data['payment_account'] = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
-      $where = "insertTime LIKE '%" . $month . "%' AND metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC";
+      $where = "insertTime LIKE '%" . $month . "%' AND id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC";
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
       $ref_trx = array_keys($data['kas_trx']);
       $reft_list = "0";
