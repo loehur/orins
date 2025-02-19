@@ -638,7 +638,7 @@
                                                     </td>
                                                     <td class="pe-1" style="width: 100px;">
                                                         <span class=""><small>Charge</small></span>
-                                                        <input id='total_charge' name="total_charge" class="text-end form form-control" type="number" readonly />
+                                                        <input id='total_charge' name="total_charge" class="text-end form form-control" type="number" step="0.1" readonly />
                                                     </td>
                                                     <td class="" style="width: 110px;">
                                                         <span class=""><small>Total+Charge</small></span>
