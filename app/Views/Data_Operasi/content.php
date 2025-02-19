@@ -934,8 +934,8 @@
     function total_aftercas() {
         var dibayar = parseInt($('input#bayarBill').val());
         var charge = $("input[name=charge]").val();
-        $("input#total_aftercas").val(parseInt(dibayar) + (parseInt(dibayar) * (parseInt(charge) / 100)));
-        $("input#total_charge").val((parseInt(dibayar) * (parseInt(charge) / 100)));
+        $("input#total_aftercas").val(parseInt(dibayar) + (parseInt(dibayar) * (parseFloat(charge) / 100)));
+        $("input#total_charge").val((parseInt(dibayar) * (parseFloat(charge) / 100)));
     }
 
     $("input#bayarBill").on("keyup change", function() {
