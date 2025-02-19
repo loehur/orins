@@ -38,9 +38,23 @@ class Non_Tunai_Riwayat extends Controller
       }
 
       $data['m'] = $month;
-      $data['pelanggan'] = $this->db(0)->get('pelanggan');
+      $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
+      $data['toko'] = $this->db(0)->get('toko', 'id_toko');
+      $data['payment_account'] = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
+
       $where = "insertTime LIKE '%" . $month . "%' AND metode_mutasi = 2 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC";
-      $data['kas_done'] = $this->db(0)->get_where('kas', $where);
+      $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
+      $ref_trx = array_keys($data['kas_trx']);
+      $reft_list = "0";
+      foreach ($ref_trx as $r) {
+         $reft_list .= $r . ",";
+      }
+      $reft_list = rtrim($reft_list, ',');
+      $where_ref = "ref IN (" . $reft_list . ")";
+      $data['ref'] = $this->db(0)->get_where('ref', $where_ref, 'ref');
+
+      $data['kas_done'] = $this->db(0)->get_where('kas', $where, 'ref_bayar', 1);
+
       $this->view($this->v_content, $data);
    }
 
