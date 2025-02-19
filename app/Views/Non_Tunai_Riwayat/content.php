@@ -1,5 +1,5 @@
 <main>
-    <div class="p-2 ms-3 mt-3 me-3 bg-white">
+    <div class="p-2 ms-3 me-3 bg-white">
         <div class="row">
             <div class="col mb-2" style="min-width:270px;max-width:350px">
                 <div class="input-group">
