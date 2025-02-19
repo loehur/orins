@@ -48,10 +48,10 @@ class Setoran extends Controller
          }
 
          $reft_list = rtrim($reft_list, ',');
-         $where_ref = "ref IN (" . $reft_list . ") AND sds = 1";
+         $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND status_mutasi = 1";
          $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
 
-         $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND sds = 1";
+         $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND sds = 1 AND status_mutasi <> 2";
          $data['nontunai_sds'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where_kas_sds);
       } else {
          $data['sds'] = [];
@@ -108,11 +108,11 @@ class Setoran extends Controller
          $reft_list .= $r . ",";
       }
       $reft_list = rtrim($reft_list, ',');
-      $where_ref = "ref IN (" . $reft_list . ") AND sds = 1";
+      $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND status_mutasi = 1";
       $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
 
       $nontunai_sds = 0;
-      $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND sds = 1";
+      $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND sds = 1 AND status_mutasi <> 2";
       $nontunai_sds = $this->db(0)->sum_col_where('kas', 'jumlah', $where_kas_sds);
 
       $total_sds = 0;
