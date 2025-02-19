@@ -634,11 +634,11 @@
                                                 <tr>
                                                     <td class="pe-1" style="width: 80px;">
                                                         <small>+Charge (%)</small>
-                                                        <input name="charge" class="text-center form-control" type="number" min="1" max="100" value="" />
+                                                        <input name="charge" class="text-center form-control" type="number" step="0.1" min="1" max="100" value="" />
                                                     </td>
                                                     <td class="pe-1" style="width: 100px;">
                                                         <span class=""><small>Charge</small></span>
-                                                        <input id='total_charge' name="total_charge" class="text-end form form-control" type="number" step="0.1" readonly />
+                                                        <input id='total_charge' name="total_charge" class="text-end form form-control" type="number" readonly />
                                                     </td>
                                                     <td class="" style="width: 110px;">
                                                         <span class=""><small>Total+Charge</small></span>
