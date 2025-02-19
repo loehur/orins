@@ -229,67 +229,69 @@
                     </td>
                 </tr>
 
-            <?php }
+                <?php }
         }
 
         if (count($data['order']) > 0) {
             foreach ($data['order'] as $do) {
-                if ($do['paket_ref'] <> "" || $do['cancel'] <> 0) {
-                    continue;
-                }
-                $no += 1;
-                $akum_diskon = 0;
-                $total += (($do['harga'] * $do['jumlah']));
-                $id_produk = $do['id_produk'];
-                $detail_arr = unserialize($do['produk_detail']);
-                $listDetail = unserialize($do['detail_harga']);
-                $produk = ucwords($do['produk']);
+                if ($do['id_toko'] == $this->userData['id_toko'] || $do['id_afiliasi'] == $this->userData['id_toko']) {
+                    if ($do['paket_ref'] <> "" || $do['cancel'] <> 0) {
+                        continue;
+                    }
+                    $no += 1;
+                    $akum_diskon = 0;
+                    $total += (($do['harga'] * $do['jumlah']));
+                    $id_produk = $do['id_produk'];
+                    $detail_arr = unserialize($do['produk_detail']);
+                    $listDetail = unserialize($do['detail_harga']);
+                    $produk = ucwords($do['produk']);
 
-                foreach ($listDetail as $kl => $ld_o) {
-                    $disk = $ld_o['d'];
-                    $akum_diskon += $disk;
-                    $total_disc += $disk * $do['jumlah'];
-                } ?>
+                    foreach ($listDetail as $kl => $ld_o) {
+                        $disk = $ld_o['d'];
+                        $akum_diskon += $disk;
+                        $total_disc += $disk * $do['jumlah'];
+                    } ?>
 
-                <tr style="border-bottom: 1px solid silver;">
-                    <td style="text-align: right; vertical-align:text-top; padding-right:5px" valign="top">
-                        <?= $no ?>.
-                    </td>
-                    <td style="padding-right: 5px;" valign='top'>
-                        <?= $produk ?><br>
-                        <?php foreach ($detail_arr as $da) { ?>
-                            <div style="float: left;padding-right: 4px;line-height: 100%;">
-                                <small><?= ucwords($da['group_name']) ?></small><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span>
-                            </div>
-                        <?php } ?>
-                        <?php if ($do['note'] <> "") { ?>
-                            <div style="float: left;padding-right: 4px;line-height: 100%;">
-                                <small>Note</small><br>
-                                <span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
-                            </div>
-                        <?php } ?>
-                    </td>
-                    <td style="text-align: right;vertical-align:text-top; padding-left:7px">
-                        <?= $do['jumlah'] ?>
-                    </td>
-                    <td style="text-align: right;vertical-align:text-top; padding-left:7px;">
-                        <?php
-                        if ($akum_diskon > 0) {
-                            echo "<del>" . number_format(($do['harga'] + $do['margin_paket'])) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format(($do['harga'] + $do['margin_paket']) - $akum_diskon);
-                        } else {
-                            echo number_format(($do['harga'] + $do['margin_paket']));
-                        } ?>
-                    </td>
-                    <td style="text-align: right;vertical-align:text-top; padding-left:7px">
-                        <?php
-                        if ($akum_diskon > 0) {
-                            echo "<del>" . number_format(($do['harga'] + $do['margin_paket']) * $do['jumlah']) . "</del><br><small>Disc. " . number_format($akum_diskon * $do['jumlah']) . "</small><br>" . number_format((($do['harga'] + $do['margin_paket']) * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
-                        } else {
-                            echo number_format(($do['harga'] + $do['margin_paket']) * $do['jumlah']);
-                        } ?>
-                    </td>
-                </tr>
-            <?php }
+                    <tr style="border-bottom: 1px solid silver;">
+                        <td style="text-align: right; vertical-align:text-top; padding-right:5px" valign="top">
+                            <?= $no ?>.
+                        </td>
+                        <td style="padding-right: 5px;" valign='top'>
+                            <?= $produk ?><br>
+                            <?php foreach ($detail_arr as $da) { ?>
+                                <div style="float: left;padding-right: 4px;line-height: 100%;">
+                                    <small><?= ucwords($da['group_name']) ?></small><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span>
+                                </div>
+                            <?php } ?>
+                            <?php if ($do['note'] <> "") { ?>
+                                <div style="float: left;padding-right: 4px;line-height: 100%;">
+                                    <small>Note</small><br>
+                                    <span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
+                                </div>
+                            <?php } ?>
+                        </td>
+                        <td style="text-align: right;vertical-align:text-top; padding-left:7px">
+                            <?= $do['jumlah'] ?>
+                        </td>
+                        <td style="text-align: right;vertical-align:text-top; padding-left:7px;">
+                            <?php
+                            if ($akum_diskon > 0) {
+                                echo "<del>" . number_format(($do['harga'] + $do['margin_paket'])) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format(($do['harga'] + $do['margin_paket']) - $akum_diskon);
+                            } else {
+                                echo number_format(($do['harga'] + $do['margin_paket']));
+                            } ?>
+                        </td>
+                        <td style="text-align: right;vertical-align:text-top; padding-left:7px">
+                            <?php
+                            if ($akum_diskon > 0) {
+                                echo "<del>" . number_format(($do['harga'] + $do['margin_paket']) * $do['jumlah']) . "</del><br><small>Disc. " . number_format($akum_diskon * $do['jumlah']) . "</small><br>" . number_format((($do['harga'] + $do['margin_paket']) * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                            } else {
+                                echo number_format(($do['harga'] + $do['margin_paket']) * $do['jumlah']);
+                            } ?>
+                        </td>
+                    </tr>
+                <?php }
+            }
         }
         if (count($data['mutasi']) > 0) {
             foreach ($data['mutasi'] as $do) {
