@@ -269,6 +269,7 @@ class Data_Operasi extends Controller
    {
       $ref = $_POST['ref_diskon'];
       $jumlah = $_POST['diskon'];
+      $note = $_POST['note'];
       $max = $_POST['max_diskon'];
 
       if ($jumlah > $max || $jumlah == 0) {
@@ -279,8 +280,8 @@ class Data_Operasi extends Controller
       $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah;
       $dataCount = $this->db(0)->count_where('xtra_diskon', $whereCount);
 
-      $cols = "id_toko, ref_transaksi, jumlah, id_user";
-      $vals = $this->userData['id_toko'] . ",'" . $ref . "'," . $jumlah . "," . $this->userData['id_user'];
+      $cols = "id_toko, ref_transaksi, jumlah, id_user, note";
+      $vals = $this->userData['id_toko'] . ",'" . $ref . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "'";
 
       if ($dataCount < 1) {
          $do = $this->db(0)->insertCols('xtra_diskon', $cols, $vals);

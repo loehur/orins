@@ -120,7 +120,9 @@ class Setoran extends Controller
          $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
       }
 
-      $total_sds -= $nontunai_sds;
+      if ($total_sds > 0) {
+         $total_sds -= $nontunai_sds;
+      }
 
       if ($total_sds > 0) {
          $unic = $ref . "31"; //tipe-target

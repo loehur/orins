@@ -141,12 +141,18 @@
                 </div>
                 <div class="modal-body">
                     <div class="container">
-                        <div class="row mb-3">
+                        <div class="row mb-2">
                             <div class="col">
                                 <label class="form-label">Extra Diskon Rp</label>
                                 <input type="number" name="diskon" class="form-control form-control-sm text-end" required>
                                 <input name="ref_diskon" type="hidden">
                                 <input name="max_diskon" type="hidden">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Note</label>
+                                <input type="text" name="note" class="form-control form-control-sm text-end">
                             </div>
                         </div>
                         <div class="row mb-2">
