@@ -213,7 +213,7 @@ class Data_Order extends Controller
 
       $data['parse'] = $parse;
 
-      $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND ref = '" . $parse . "' AND cancel = 0";
+      $where = "ref = '" . $parse . "' AND cancel = 0";
       $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND ref = '" . $parse . "'";
 
       $data['order'] = [];

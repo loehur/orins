@@ -173,25 +173,27 @@
                             <?php
                             if (isset($do['order'])) {
                                 foreach ($do['order'] as $pdo) { ?>
-                                    <tr>
-                                        <td style="padding-left:10px;border-top: 1px solid silver;">
-                                            <?php
-                                            echo $pdo['jumlah'] . "x - " . $pdo['produk'] . "<br>";
-                                            $detail_arr = unserialize($pdo['produk_detail']);
-                                            foreach ($detail_arr as $da) { ?>
-                                                <div style="float: left;padding-right: 4px;line-height: 100%;">
-                                                    <small><?= ucwords($da['group_name']) ?><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span></small>
-                                                </div>
-                                            <?php } ?>
-                                            <?php if ($pdo['note'] <> "") { ?>
-                                                <div style="float: left;padding-right: 4px;line-height: 100%;">
-                                                    <small>Note<br><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span></small>
-                                                </div>
-                                            <?php } ?>
-                                        </td>
-                                    </tr>
-                            <?php }
-                            } ?>
+                                    <?php if ($pdo['id_toko'] == $this->userData['id_toko'] || $pdo['id_afiliasi'] == $this->userData['id_toko']) { ?>
+                                        <tr>
+                                            <td style="padding-left:10px;border-top: 1px solid silver;">
+                                                <?php
+                                                echo $pdo['jumlah'] . "x - " . $pdo['produk'] . "<br>";
+                                                $detail_arr = unserialize($pdo['produk_detail']);
+                                                foreach ($detail_arr as $da) { ?>
+                                                    <div style="float: left;padding-right: 4px;line-height: 100%;">
+                                                        <small><?= ucwords($da['group_name']) ?><br><span style="white-space: nowrap;"><?= strtoupper($da['detail_name']) ?></span></small>
+                                                    </div>
+                                                <?php } ?>
+                                                <?php if ($pdo['note'] <> "") { ?>
+                                                    <div style="float: left;padding-right: 4px;line-height: 100%;">
+                                                        <small>Note<br><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span></small>
+                                                    </div>
+                                                <?php } ?>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                <?php } ?>
+                            <?php } ?>
 
                             <?php
                             if (isset($do['barang'])) {
