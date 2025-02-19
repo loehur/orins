@@ -19,6 +19,18 @@
                     <label>Tanggal</label><br>
                     <input type="date" name="tanggal" class="text-center border-bottom border-0" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>">
                 </div>
+                <div class="col px-1 mb-2 text-end">
+                    <label>Note</label><br>
+                    <input class="text-end border-bottom border-0 w-100" required name="note">
+                </div>
+                <div class="col-auto px-1 mb-2">
+                    <div class="pt-4">
+                        <input name="sds" class="form-check-input" type="checkbox" value="1">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            SDS
+                        </label>
+                    </div>
+                </div>
                 <div class="col mt-auto mb-2">
                     <button type="submit" class="btn btn-outline-success">Create</button>
                 </div>
@@ -28,16 +40,16 @@
         <table class="table table-sm">
             <?php foreach ($data['input'] as $a) { ?>
                 <tr>
+                    <td><a href="<?= PV::BASE_URL ?>Retur_Barang_G/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a></td>
                     <td class="align-middle">
-                        <a href="<?= PV::BASE_URL ?>Retur_Barang_G/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
-                    </td>
-                    <td>
-                        <?= $a['id'] ?>
-                    </td>
-                    <td class="">
+                        #<?= $a['id'] ?><br>
                         <?= $a['tanggal'] ?>
                     </td>
-                    <td class="align-middle">
+                    <td class="">
+                        <?= $a['sds'] == 0 ? "SDS-NO" : "SDS-YES" ?><br>
+                        <small><?= $a['note'] ?></small>
+                    </td>
+                    <td class="align-top">
                         <?php if ($a['cek'] == 0) { ?>
                             <span class="text-warning"><i class="fa-regular fa-circle"></i> Checking</span>
                         <?php } else { ?>

@@ -71,12 +71,14 @@ class Retur_Barang_G extends Controller
    function add()
    {
       $tanggal = $_POST['tanggal'];
+      $sds = $_POST['sds'];
+      $note = $_POST['note'];
       $error = 0;
       $supplier = strtoupper($_POST['supplier']);
 
       $id = date('ymdHi');
-      $cols = 'id, tipe, id_sumber, id_target, tanggal, user_id';
-      $vals = "'" . $id . "',4,0,'" . $supplier . "','" . $tanggal . "'," . $this->userData['id_user'];
+      $cols = 'id, tipe, id_sumber, id_target, tanggal, user_id, sds, note';
+      $vals = "'" . $id . "',4,0,'" . $supplier . "','" . $tanggal . "'," . $this->userData['id_user'] . "," . $sds . ",'" . $note . "'";
       $do = $this->db(0)->insertCols('master_input', $cols, $vals);
       if ($do['errno'] <> 0) {
          $error .= $do['error'];
