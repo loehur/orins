@@ -136,7 +136,7 @@ class Setoran extends Controller
          }
       }
 
-      $where = "(jenis_transaksi = 1 OR jenis_transaksi = 3) AND id_toko = " . $this->userData['id_toko'] . " AND id_client <> 0 AND ref_setoran = ''";
+      $where = "(jenis_transaksi = 1 OR jenis_transaksi = 3) AND id_toko = " . $this->userData['id_toko'] . " AND ref_setoran = ''";
       $update = $this->db(0)->update("kas", $set, $where);
       if ($update['errno'] <> 0) {
          echo $update['error'];
