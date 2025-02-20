@@ -248,9 +248,7 @@
                             $count_keluar = 0;
                             $jumlah_keluar = 0;
                         }
-                        $totalSetor = $set['jumlah'] - $jumlah_keluar;
-
-                        $boleh_split = false; ?>
+                        $totalSetor = $set['jumlah'] - $jumlah_keluar; ?>
                         <tr>
                             <td>
                                 <span data-bs-toggle="modal" style="cursor: pointer;" data-bs-target="#modalCek" class="cekTrx text-primary" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check mt-1"></i></small></span>
