@@ -67,6 +67,8 @@ class Setoran_F extends Controller
       $data['setor_office'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
       $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 3 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 1";
       $data['sds_done'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+      $whereSplit = "ref IN (" . $ref_list . ") AND tipe = 4 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 0";
+      $data['sds_tarik'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
       $where = "status_mutasi <> 2 AND jenis_transaksi = 3 AND ref_setoran IN (" . $ref_list . "," . $ref_list_done . ") GROUP BY ref_setoran";

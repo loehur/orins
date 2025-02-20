@@ -87,6 +87,9 @@ class Setoran extends Controller
       $whereSplit = "ref IN (" . $ref_list . ") AND tipe = 3 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 1";
       $data['sds_done'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
+      $whereSplit = "ref IN (" . $ref_list . ") AND tipe = 4 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 0";
+      $data['sds_tarik'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
       $where = "status_mutasi <> 2 AND jenis_transaksi = 3 AND ref_setoran IN (" . $ref_list . ") GROUP BY ref_setoran";
       $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
@@ -136,7 +139,7 @@ class Setoran extends Controller
          }
       }
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_setoran = ''";
+      $where = "(jenis_transaksi = 1 OR jenis_transaksi = 2 OR jenis_transaksi = 3) AND id_toko = " . $this->userData['id_toko'] . " AND ref_setoran = ''";
       $update = $this->db(0)->update("kas", $set, $where);
       if ($update['errno'] <> 0) {
          echo $update['error'];
@@ -175,30 +178,25 @@ class Setoran extends Controller
    {
       $ref = $_POST['ref'];
       $note = $_POST['note'];
+      $tipe = $_POST['tipe'];
       $jumlah_finance = $_POST['jumlah_finance'];
 
-
       if ($jumlah_finance > 0) {
-         $unic = $ref . "00"; //tipe-target
-         $cols = 'id, id_sumber, id_target, tipe, ref, jumlah, note';
-         $vals =  "'" . $unic . "'," . $this->userData['id_toko'] . ",0,0,'" . $ref . "','" . $jumlah_finance . "','" . $note . "'";
-         $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
-         if ($do['errno'] == 1062) {
-            $set = "jumlah = '" . $jumlah_finance . "', note = '" . $note . "'";
-            $where = "id = '" . $unic . "'";
-            $up = $this->db(0)->update('kas_kecil', $set, $where);
-            if ($up['errno'] <> 0) {
-               echo $up['error'];
-               exit();
-            }
-         } else {
+
+         $check = $this->db(0)->count_where("kas_kecil", "ref = '" . $ref . "' AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 0");
+         if ($check == 0) {
+            $cols = 'id_sumber, id_target, tipe, ref, jumlah, note';
+            $vals =  $this->userData['id_toko'] . ",0," . $tipe . ",'" . $ref . "','" . $jumlah_finance . "','" . $note . "'";
+            $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
             if ($do['errno'] <> 0) {
                echo $do['error'];
                exit();
             }
+         } else {
+            echo "Data sudah ada";
+            exit();
          }
       }
-
       echo 0;
    }
 

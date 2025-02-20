@@ -272,9 +272,7 @@
                                         }
                                     }
 
-                                    if ($kecil_verif == false) { ?>
-                                        <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= ($totalSetor - $sds_done[$set['ref_setoran']]) ?>)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
-                                    <?php } ?>
+                                    ?>
                                 <?php } ?>
                                 <b>Rp<?= number_format($totalSetor) ?></b><br>
                                 <?php
@@ -309,11 +307,47 @@
                                             $st_slip2 = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
                                             break;
                                     } ?>
+
+                                    <?= $st_slip2 ?> Kas Kantor <small>(<?= $ds['note'] ?>)</small> <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
+                                    <?php $totalSetor -= $ds['jumlah'] ?>
+                                <?php }
+                                if (isset($data['sds_tarik'][$set['ref_setoran']])) {
+                                    $ds = $data['sds_tarik'][$set['ref_setoran']];
+
+                                    switch ($ds['st']) {
+                                        case 0:
+                                            $st_slip2 = "<span class='text-warning'><i class='fa-regular fa-circle'></i></span>";
+                                            break;
+                                        case 1:
+                                            $st_slip2 = "<span class='text-success'><i class='fa-solid fa-circle-check'></i></span>";
+                                            break;
+                                        default:
+                                            $st_slip2 = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
+                                            break;
+                                    } ?>
+
                                     <?= $st_slip2 ?> Kas Kantor <small>(<?= $ds['note'] ?>)</small> <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
                                     <?php $totalSetor -= $ds['jumlah'] ?>
                                 <?php } ?>
+
+
+                                <?php
+                                $sds_tarik = 0;
+                                if (isset($data['sds_tarik'][$set['ref_setoran']])) {
+                                    $ds = $data['sds_tarik'][$set['ref_setoran']];
+                                    $sds_tarik = $ds['jumlah'];
+                                }
+                                ?>
+
                                 <?php if (isset($data['sds_done'][$set['ref_setoran']])) { ?>
-                                    <span><?= $st_setor ?> Setor SDS</span> <span class="text-success"><?= number_format($sds_done[$set['ref_setoran']]) ?></span><br>
+                                    <?php if ($kecil_verif == false) { ?>
+                                        <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= ($sds_done[$set['ref_setoran']]) ?>,4)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
+                                    <?php } ?>
+                                    <span><?= $st_setor ?> Setor SDS</span> <span class="text-success"><?= number_format($sds_done[$set['ref_setoran']] - $sds_tarik) ?></span><br>
+                                <?php } ?>
+
+                                <?php if ($kecil_verif == false) { ?>
+                                    <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= ($totalSetor - $sds_done[$set['ref_setoran']]) ?>,0)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
                                 <?php } ?>
                                 <span><?= $st_setor ?> Setor <span class=""><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']]) ?></span>
                             </td>
@@ -416,6 +450,7 @@
                             <div class="col">
                                 <label class="form-label">Kas Kantor</label>
                                 <input type="hidden" id="inp_ref" name="ref">
+                                <input type="hidden" id="tipe" name="tipe">
                                 <input type="number" id="uangFinance" min="1" name="jumlah_finance" class="form-control form-control-sm text-end">
                             </div>
                             <div class="col">
@@ -497,13 +532,15 @@
 
     var totalSetor = 0;
 
-    function ref(ref_nya, total) {
+    function ref(ref_nya, total, tipe) {
         $("input#inp_ref").val(ref_nya);
+        $("input#tipe").val(tipe);
         totalSetor = total;
         $("#jumlah_bank").val(totalSetor - $("#uangFinance").val())
         $("input#uangFinance").attr({
             "max": totalSetor
         });
+
     }
 
     $("a.cancel").click(function() {
