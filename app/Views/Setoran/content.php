@@ -326,7 +326,6 @@
                                     } ?>
 
                                     <?= $st_slip2 ?> Kas Kantor <small>(<?= $ds['note'] ?>)</small> <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span><br>
-                                    <?php $totalSetor -= $ds['jumlah'] ?>
                                 <?php } ?>
 
 

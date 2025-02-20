@@ -83,7 +83,6 @@
                                         <div class="text-sm">
                                             Kas Kantor <small>(<?= $ds['note'] ?>)</small> <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span>
                                         </div>
-                                        <?php $totalSetor -= $ds['jumlah'] ?>
                                     <?php } ?>
 
                                     <?php
@@ -91,8 +90,7 @@
                                     if (isset($data['sds_tarik'][$set['ref_setoran']])) {
                                         $ds = $data['sds_tarik'][$set['ref_setoran']];
                                         $sds_tarik = $ds['jumlah'];
-                                    }
-                                    ?>
+                                    } ?>
 
                                     <?php $sds_done[$set['ref_setoran']] = 0; ?>
                                     <?php if (isset($data['sds_done'][$set['ref_setoran']])) {
@@ -190,14 +188,42 @@
                                     } ?>
                                     <?php $totalSetor -= $ds['jumlah'] ?>
                                     <div class="text-sm">
-                                        <?= $st_slip2 ?> Kas Office <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span>
+                                        <?= $st_slip2 ?> Kas Kantor <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span>
                                     </div>
                                     <?php $totalSetor -= $ds['jumlah'] ?>
+                                <?php }
+
+                                if (isset($data['sds_tarik'][$set['ref_setoran']])) {
+                                    $ds = $data['sds_tarik'][$set['ref_setoran']];
+                                    $st_slip = "";
+                                    switch ($ds['st']) {
+                                        case 0:
+                                            $st_slip = "<span class='text-warning'><i class='fa-regular fa-circle'></i></span>";
+                                            break;
+                                        case 1:
+                                            $st_slip = "<span class='text-success'><i class='fa-solid fa-circle-check'></i></span>";
+                                            break;
+                                        default:
+                                            $st_slip = "<span class='text-danger text-nowrap'><i class='fa-solid fa-circle-xmark'></i></i> Rejected</span>";
+                                            break;
+                                    } ?>
+
+                                    <div class="text-sm">
+                                        Kas Kantor <small>(<?= $ds['note'] ?>)</small> <span class="text-primary">Rp<?= number_format($ds['jumlah']) ?></span>
+                                    </div>
                                 <?php } ?>
+
+                                <?php
+                                $sds_tarik = 0;
+                                if (isset($data['sds_tarik'][$set['ref_setoran']])) {
+                                    $ds = $data['sds_tarik'][$set['ref_setoran']];
+                                    $sds_tarik = $ds['jumlah'];
+                                } ?>
+
                                 <?php $sds_done[$set['ref_setoran']] = 0; ?>
                                 <?php if (isset($data['sds_done'][$set['ref_setoran']])) {
                                     $sds_done[$set['ref_setoran']] = ($data['sds_done'][$set['ref_setoran']]['jumlah']); ?>
-                                    <?= $st_setor ?> <span>Setor SDS</span> <span class="text-success"><?= number_format($sds_done[$set['ref_setoran']]) ?></span><br>
+                                    <?= $st_setor ?> <span>Setor SDS</span> <span class="text-success"><?= number_format($sds_done[$set['ref_setoran']] - $sds_tarik) ?></span><br>
                                 <?php } ?>
 
                                 <?= $st_setor ?> <span>Setor <?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']]) ?></span>
