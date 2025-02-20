@@ -258,27 +258,18 @@
                             </td>
                             <td class="text-end">
                                 <?php if ($set['status_setoran'] == 0) { ?>
-                                    <?php
+                                <?php
                                     $boleh_split = true;
                                     if (isset($data['split'][$set['ref_setoran']])) {
-                                        if ($data['split'][$set['ref_setoran']]['st'] == 1) {
-                                            $boleh_split = false;
-                                        }
-                                    }
-                                    if (isset($data['setor_office'][$set['ref_setoran']])) {
-                                        if ($data['setor_office'][$set['ref_setoran']]['st'] == 1) {
-                                            $boleh_split = false;
-                                        }
-                                    }
-                                    if (isset($data['sds_tarik'][$set['ref_setoran']])) {
-                                        if ($data['sds_tarik'][$set['ref_setoran']]['st'] == 1) {
-                                            $boleh_split = false;
-                                        }
-                                    } else {
                                         $boleh_split = false;
                                     }
-                                    ?>
-                                <?php } else {
+                                    if (isset($data['setor_office'][$set['ref_setoran']])) {
+                                        $boleh_split = false;
+                                    }
+                                    if (isset($data['sds_tarik'][$set['ref_setoran']])) {
+                                        $boleh_split = false;
+                                    }
+                                } else {
                                     $boleh_split = false;
                                 } ?>
 
