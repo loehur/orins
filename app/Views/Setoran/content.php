@@ -110,6 +110,10 @@
     }
     ?>
 
+    <pre>
+        <?php echo $data['nontunai_sds']; ?>
+    </pre>
+
     <?php if ($total > 0) { ?>
         <div class="pe-2 pb-0 mt-2 ms-3 me-3 bg-white">
             <div class="row">

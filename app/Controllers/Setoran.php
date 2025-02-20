@@ -37,7 +37,7 @@ class Setoran extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
+      $where = "jenis_transaksi = 1 AND id_toko = " . $this->userData['id_toko'] . " AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
 
       $ref_trx = array_keys($data['kas_trx']);
@@ -101,7 +101,7 @@ class Setoran extends Controller
       $ref = date("ymdhis") . rand(0, 9);
       $set = "ref_setoran = '" . $ref . "'";
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND id_client <> 0 AND ref_setoran = ''";
+      $where = "jenis_transaksi = 1 AND id_toko = " . $this->userData['id_toko'] . " AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
 
       $ref_trx = array_keys($data['kas_trx']);
@@ -137,18 +137,11 @@ class Setoran extends Controller
          }
       }
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND id_client <> 0 AND ref_setoran = ''";
+      $where = "(jenis_transaksi = 1 OR jenis_transaksi = 3) AND id_toko = " . $this->userData['id_toko'] . " AND id_client <> 0 AND ref_setoran = ''";
       $update = $this->db(0)->update("kas", $set, $where);
       if ($update['errno'] <> 0) {
          echo $update['error'];
          exit();
-      } else {
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 3 AND ref_setoran = ''";
-         $update = $this->db(0)->update("kas", $set, $where);
-         if ($update['errno'] <> 0) {
-            echo $update['error'];
-            exit();
-         }
       }
 
       echo 0;
