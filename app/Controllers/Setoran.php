@@ -48,7 +48,7 @@ class Setoran extends Controller
          }
 
          $reft_list = rtrim($reft_list, ',');
-         $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND stat = 1 AND jenis = 2";
+         $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND stat = 1 AND jenis = 2 id_sumber = '" . $this->userData['id_toko'] . "'";
          $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
 
          $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND sds = 1 AND status_mutasi <> 2";
@@ -108,7 +108,7 @@ class Setoran extends Controller
          $reft_list .= $r . ",";
       }
       $reft_list = rtrim($reft_list, ',');
-      $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND stat = 1 AND jenis = 2";
+      $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND stat = 1 AND jenis = 2 AND id_sumber = '" . $this->userData['id_toko'] . "'";
       $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
 
       $nontunai_sds = 0;
