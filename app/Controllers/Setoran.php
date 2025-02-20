@@ -61,6 +61,7 @@ class Setoran extends Controller
       }
 
       echo $cek_ref . "<br>";
+      echo $where_ref . "<br>";
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '' ORDER BY id_kas DESC";
       $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
