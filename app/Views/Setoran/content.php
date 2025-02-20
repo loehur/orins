@@ -261,7 +261,7 @@
                             <td class="text-end">
                                 <?php if ($set['status_setoran'] == 0) { ?>
                                     <?php
-                                    $boleh_split = false;
+                                    $boleh_split = true;
                                     if (isset($data['split'][$set['ref_setoran']])) {
                                         if ($data['split'][$set['ref_setoran']]['st'] == 1) {
                                             $boleh_split = false;
@@ -280,7 +280,9 @@
                                         $boleh_split = false;
                                     }
                                     ?>
-                                <?php } ?>
+                                <?php } else {
+                                    $boleh_split = false;
+                                } ?>
 
                                 <b>Rp<?= number_format($totalSetor) ?></b><br>
                                 <?php
