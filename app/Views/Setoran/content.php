@@ -346,7 +346,7 @@
                                     $sds_tarik = $ds['jumlah'];
                                 }
                                 ?>
-                                <?= $boleh_split ?>
+
                                 <?php if (isset($data['sds_done'][$set['ref_setoran']])) { ?>
                                     <?php if ($boleh_split == true) { ?>
                                         <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= ($sds_done[$set['ref_setoran']]) ?>,4)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
