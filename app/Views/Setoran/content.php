@@ -249,7 +249,8 @@
                             $jumlah_keluar = 0;
                         }
                         $totalSetor = $set['jumlah'] - $jumlah_keluar;
-                    ?>
+
+                        $boleh_split = false; ?>
                         <tr>
                             <td>
                                 <span data-bs-toggle="modal" style="cursor: pointer;" data-bs-target="#modalCek" class="cekTrx text-primary" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check mt-1"></i></small></span>
@@ -260,20 +261,27 @@
                             <td class="text-end">
                                 <?php if ($set['status_setoran'] == 0) { ?>
                                     <?php
-                                    $kecil_verif = false;
+                                    $boleh_split = false;
                                     if (isset($data['split'][$set['ref_setoran']])) {
                                         if ($data['split'][$set['ref_setoran']]['st'] == 1) {
-                                            $kecil_verif = true;
+                                            $boleh_split = false;
                                         }
                                     }
                                     if (isset($data['setor_office'][$set['ref_setoran']])) {
                                         if ($data['setor_office'][$set['ref_setoran']]['st'] == 1) {
-                                            $kecil_verif = true;
+                                            $boleh_split = false;
                                         }
                                     }
-
+                                    if (isset($data['sds_tarik'][$set['ref_setoran']])) {
+                                        if ($data['sds_tarik'][$set['ref_setoran']]['st'] == 1) {
+                                            $boleh_split = false;
+                                        }
+                                    } else {
+                                        $boleh_split = false;
+                                    }
                                     ?>
                                 <?php } ?>
+
                                 <b>Rp<?= number_format($totalSetor) ?></b><br>
                                 <?php
                                 if (isset($data['split'][$set['ref_setoran']])) {
@@ -340,13 +348,13 @@
                                 ?>
 
                                 <?php if (isset($data['sds_done'][$set['ref_setoran']])) { ?>
-                                    <?php if ($kecil_verif == false) { ?>
+                                    <?php if ($boleh_split == true) { ?>
                                         <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= ($sds_done[$set['ref_setoran']]) ?>,4)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
                                     <?php } ?>
                                     <span><?= $st_setor ?> Setor SDS</span> <span class="text-success"><?= number_format($sds_done[$set['ref_setoran']] - $sds_tarik) ?></span><br>
                                 <?php } ?>
 
-                                <?php if ($kecil_verif == false) { ?>
+                                <?php if ($boleh_split == true) { ?>
                                     <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= ($totalSetor - $sds_done[$set['ref_setoran']]) ?>,0)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
                                 <?php } ?>
                                 <span><?= $st_setor ?> Setor <span class=""><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']]) ?></span>
