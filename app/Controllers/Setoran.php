@@ -137,13 +137,13 @@ class Setoran extends Controller
          }
       }
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = ''";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND id_client <> 0 AND ref_setoran = ''";
       $update = $this->db(0)->update("kas", $set, $where);
       if ($update['errno'] <> 0) {
          echo $update['error'];
          exit();
       } else {
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_transaksi = 3 AND ref_setoran = ''";
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 3 AND ref_setoran = ''";
          $update = $this->db(0)->update("kas", $set, $where);
          if ($update['errno'] <> 0) {
             echo $update['error'];
