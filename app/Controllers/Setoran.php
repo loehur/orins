@@ -41,12 +41,11 @@ class Setoran extends Controller
 
       $ref_trx = array_keys($data['kas_trx']);
       $data['nontunai_sds'] = 0;
-      $cek_ref = "";
+
       if (count($ref_trx) > 0) {
          $reft_list = "";
          foreach ($ref_trx as $r) {
             $reft_list .= $r . ",";
-            $cek_ref .= $r . ", ";
          }
 
          $reft_list = rtrim($reft_list, ',');
@@ -58,9 +57,6 @@ class Setoran extends Controller
       } else {
          $data['sds'] = [];
       }
-
-      echo $cek_ref . "<br>";
-      echo $where_ref . "<br>";
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '' ORDER BY id_kas DESC";
       $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
