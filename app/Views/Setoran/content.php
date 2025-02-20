@@ -102,6 +102,7 @@
     <?php
     $total_sds = 0;
     foreach ($data['sds'] as $ds) {
+        echo (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']) . ",";
         $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
     }
 
