@@ -114,7 +114,7 @@ class Setoran extends Controller
       $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
 
       $nontunai_sds = 0;
-      $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND metode_mutasi <> 1 AND sds = 1 AND status_mutasi <> 2";
+      $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND metode_mutasi <> 1 AND sds = 1 AND status_mutasi <> 2 AND id_toko = '" . $this->userData['id_toko'] . "'";
       $nontunai_sds = $this->db(0)->sum_col_where('kas', 'jumlah', $where_kas_sds);
 
       $total_sds = 0;
