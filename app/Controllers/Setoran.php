@@ -52,7 +52,7 @@ class Setoran extends Controller
 
          $reft_list = rtrim($reft_list, ',');
          $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND stat = 1 AND jenis = 2 AND id_sumber = '" . $this->userData['id_toko'] . "'";
-         $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
+         $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref);
 
          $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND sds = 1 AND metode_mutasi <> 1 AND status_mutasi <> 2";
          $data['nontunai_sds'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where_kas_sds);
@@ -115,7 +115,7 @@ class Setoran extends Controller
       }
       $reft_list = rtrim($reft_list, ',');
       $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND stat = 1 AND jenis = 2 AND id_sumber = '" . $this->userData['id_toko'] . "'";
-      $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
+      $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref);
 
       $nontunai_sds = 0;
       $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND metode_mutasi <> 1 AND sds = 1 AND status_mutasi <> 2 AND id_toko = '" . $this->userData['id_toko'] . "'";
