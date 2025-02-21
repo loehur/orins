@@ -14,10 +14,10 @@
     </table>
 
     <?php
+    $jP = "U";
     if (count($data['order']) > 0) {
         foreach ($data['order'] as $do) {
             $get = $do;
-            $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
             $id_pelanggan = $do['id_pelanggan'];
             $cs_name = $data['karyawan'][$do['id_penerima']]['nama'];
             $cs = substr($cs_name, 0, 2) . "-" . $do['id_penerima'];
@@ -61,18 +61,30 @@
     $do = $get;
 
     $pelanggan = $data['pelanggan'][$id_pelanggan]['nama'];
+    $jenis_pelanggan = $data['pelanggan'][$do['id_pelanggan']]['id_pelanggan_jenis'];
     $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
     $no_pelanggan = $data['pelanggan'][$id_pelanggan]['no_hp'];
     $in_toko = "";
     if ($id_toko_pelanggan <> $this->userData['id_toko']) {
         $in_toko = $this->dToko[$id_toko_pelanggan]['inisial'] . " ";
     }
-    ?>
+
+    switch ($jenis_pelanggan) {
+        case 1:
+            $jP = "U";
+            break;
+        case 2:
+            $jP = "R";
+            break;
+        case 3:
+            $jP = "O";
+            break;
+    } ?>
 
     <table style="width: 100%;">
         <tr>
             <td>
-                <small>Pelanggan</small>
+                <small>Pelanggan #<?= $jP ?></small>
                 <br><b><span style="color:green;"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></b> | <span style="color:blue;"><?= $data['mark'] ?></span> #<?= substr($id_pelanggan, -2) ?>
                 <br><small><?= $no_pelanggan ?></small>
             </td>
