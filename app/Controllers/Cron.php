@@ -249,6 +249,7 @@ class Cron extends Controller
          echo "Verify Kas Kecil " . $verify_kas_kecil . "<br>";
          echo "Ada Diskon " . $ada_diskon . "<br>";
          echo "Stok Produksi " . $stok . "<br>";
+         echo "Cancel Count " . $cancel_count . "<br>";
 
          echo "<pre>";
          print_r($data['kas']);
