@@ -244,6 +244,26 @@ class Cron extends Controller
             }
          }
       } else {
+
+         if ($verify_payment == $bill && $ambil_all == true && $verify_kas_kecil == true) {
+            echo "Ready to Tuntas<br>";
+            if ($bill > 0 && $verify_payment > 0) {
+               echo "Ready to Tuntas Normal<br>";
+               $this->clearTuntas($ref);
+            } else {
+               echo "Ready to Tuntas UpNormal<br>";
+               if ($stok == true || $ada_diskon == true) {
+                  echo "Ready to Tuntas UpNormal BY STOK or DISKON<br>";
+                  $this->clearTuntas($ref);
+               } else {
+                  if ($order_count == $cancel_count) {
+                     echo "Ready to Tuntas UpNormal BY CANCEL<br>";
+                     $this->clearTuntas($ref);
+                  }
+               }
+            }
+         }
+
          echo "Bill " . $bill . "<br>";
          echo "Verify Payment " . $verify_payment . "<br>";
          echo "Ambil All " . $ambil_all . "<br>";
