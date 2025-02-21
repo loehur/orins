@@ -98,6 +98,11 @@ class Data_Order extends Controller
 
          $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
          $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi', 1);
+
+         //UPDATE BELUM TUNTAS
+         $set = "tuntas = 0, tuntas_date = ''";
+         $where = "ref IN (" . $ref_list . ")";
+         $this->db(0)->update("ref", $set, $where);
       }
 
       $data['refs'] = $refs;
