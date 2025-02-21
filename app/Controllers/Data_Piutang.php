@@ -16,29 +16,44 @@ class Data_Piutang extends Controller
       $this->v_viewer = "Layouts/viewer";
    }
 
-   public function index()
+   public function index($id_pelanggan_jenis)
    {
+      switch ($id_pelanggan_jenis) {
+         case 1:
+            $title = "Umum";
+            break;
+         case 2:
+            $title = "R/D";
+            break;
+         case 3:
+            $title = "Online";
+            break;
+         default:
+            $title = "Error";
+            break;
+      }
+
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Data Order - Piutang"
+         "title" => "Piutang - " . $title
       ]);
 
-      $this->viewer();
+      $this->viewer($id_pelanggan_jenis);
    }
 
-   public function viewer()
+   public function viewer($id_pelanggan_jenis)
    {
-      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => ""]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $id_pelanggan_jenis]);
    }
 
-   public function content()
+   public function content($id_pelanggan_jenis)
    {
-      $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND id_ambil <> 0 AND tuntas = 0 AND cancel = 0 ORDER BY id_order_data DESC";
-      $data['order'] = $this->db(0)->get_where('order_data', $where);
+      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', "id_pelanggan_jenis = " . $id_pelanggan_jenis, 'id_pelanggan');
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND id_ambil <> 0 AND id_pelanggan_jenis = " . $id_pelanggan_jenis . " AND tuntas = 0 AND cancel = 0 ORDER BY id_order_data DESC";
+      $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
 
-      $where = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND tuntas = 0 AND stat = 1 ORDER BY id DESC";
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where);
+      $where = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND jenis_target = " . $id_pelanggan_jenis . " AND tuntas = 0 AND stat = 1 ORDER BY id DESC";
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where, 'ref', 1);
 
       $this->view($this->v_content, $data);
    }

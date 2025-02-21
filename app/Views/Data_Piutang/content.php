@@ -20,15 +20,21 @@
                 <?php
                 $today = date("Y-m-d");
                 $list = [];
-                foreach ($data['order'] as $do) {
-                    $id_pelanggan = $do['id_pelanggan'];
-                    $dateTime = substr($do['insertTime'], 0, 10);
-                    if (isset($list[$id_pelanggan])) {
-                        if ($list[$id_pelanggan] > $dateTime) {
-                            $list[$id_pelanggan] = $dateTime;
-                        }
-                    } else {
-                        $list[$id_pelanggan] = $dateTime;
+
+                foreach ($data['order'] as $ref => $ref_data) {
+                    foreach ($ref_data as $do) {
+                        $id_pelanggan = $do['id_pelanggan'];
+                        $dateTime = substr($do['insertTime'], 0, 10);
+
+                        if (isset($data['pelanggan'][$id_pelanggan])) {
+                            if (isset($list[$id_pelanggan])) {
+                                if ($list[$id_pelanggan] > $dateTime) {
+                                    $list[$id_pelanggan] = $dateTime;
+                                }
+                            } else {
+                                $list[$id_pelanggan] = $dateTime;
+                            }
+                        };
                     }
                 }
 
