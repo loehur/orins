@@ -177,7 +177,7 @@ class Cron extends Controller
                $bill += ($jumlah + $do['margin_paket']);
             }
 
-            if ($cancel <> 0) {
+            if ($cancel == 1) {
                $cancel_count += 1;
             }
 
@@ -249,6 +249,7 @@ class Cron extends Controller
          echo "Verify Kas Kecil " . $verify_kas_kecil . "<br>";
          echo "Ada Diskon " . $ada_diskon . "<br>";
          echo "Stok Produksi " . $stok . "<br>";
+         echo "Order Count " . $order_count . "<br>";
          echo "Cancel Count " . $cancel_count . "<br>";
 
          echo "<pre>";
