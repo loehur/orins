@@ -61,7 +61,7 @@
     $do = $get;
 
     $pelanggan = $data['pelanggan'][$id_pelanggan]['nama'];
-    $jenis_pelanggan = $data['pelanggan'][$do['id_pelanggan']]['id_pelanggan_jenis'];
+    $jenis_pelanggan = $data['pelanggan'][$id_pelanggan]['id_pelanggan_jenis'];
     $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
     $no_pelanggan = $data['pelanggan'][$id_pelanggan]['no_hp'];
     $in_toko = "";
