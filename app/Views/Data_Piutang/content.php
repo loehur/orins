@@ -56,17 +56,17 @@
                             $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
                             if ($cancel == 0) {
                                 $bill[$ref] += $jumlah;
+                                $bill[$ref] -= $do['diskon'];
                             }
-
-                            $bill[$ref] -= $do['diskon'];
                         }
                     }
 
                     if (isset($data['mutasi'][$ref])) {
                         foreach ($data['mutasi'][$ref] as $do) {
-                            $cancel = $do['stat'];
-                            $dateTime = substr($do['insertTime'], 0, 10);
                             $id_pelanggan = $do['id_target'];
+                            $dateTime = substr($do['insertTime'], 0, 10);
+                            $cancel = $do['stat'];
+
                             $jumlah = ($do['harga_jual'] * $do['qty']) + $do['margin_paket'];
                             $diskon = $do['diskon'] * $do['qty'];
                             if ($cancel <> 2) {
@@ -77,6 +77,7 @@
                     }
 
                     $sisa[$ref] = $bill[$ref] - $dibayar[$ref];
+
                     if (isset($piutang[$id_pelanggan])) {
                         $piutang[$id_pelanggan] += $sisa[$ref];
                     } else {
@@ -114,9 +115,8 @@
 
                             if ($hari <= 2) {
                                 continue;
-                            }
+                            } ?>
 
-                        ?>
                             <tr data-id="<?= $k ?>" class="cekPLG target" style="cursor: pointer;">
                                 <td class="p-1">
                                     <span class="text-primary text-sm"><b><?= strtoupper($pelanggan) ?></b></span>

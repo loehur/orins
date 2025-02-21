@@ -50,7 +50,7 @@ class Data_Piutang extends Controller
    {
       $data['pelanggan'] = $this->db(0)->get_where('pelanggan', "id_pelanggan_jenis = " . $id_pelanggan_jenis, 'id_pelanggan');
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND id_ambil <> 0 AND id_pelanggan_jenis = " . $id_pelanggan_jenis . " AND tuntas = 0 AND cancel = 0 ORDER BY id_order_data DESC";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND id_pelanggan_jenis = " . $id_pelanggan_jenis . " AND tuntas = 0 AND cancel = 0 ORDER BY id_order_data DESC";
       $where2 = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND jenis_target = " . $id_pelanggan_jenis . " AND tuntas = 0 AND stat = 1 ORDER BY id DESC";
 
       $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
