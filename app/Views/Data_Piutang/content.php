@@ -18,14 +18,68 @@
         <div class="ms-2 rounded pb-2 me-1 border" style="max-width: 500px; margin-top:40px">
             <div class="row row-cols-1 mx-2 overflow-auto" style="height: 700px;">
                 <?php
+
+                foreach ($data['refs'] as $ref) {
+                    $dibayar[$ref] = 0;
+                }
+
+                foreach ($data['kas'] as $ref => $sd) {
+                    foreach ($sd as $dk) {
+                        if ($dk['status_mutasi'] <> 2) {
+                            $dibayar[$ref] += $dk['jumlah'];
+                        }
+                    }
+                }
+
+                foreach ($data['diskon'] as $ref => $sd) {
+                    foreach ($sd as $dk) {
+                        if ($dk['cancel'] == 0) {
+                            $dibayar[$ref] += $dk['jumlah'];
+                        }
+                    }
+                }
+
                 $today = date("Y-m-d");
                 $list = [];
 
-                foreach ($data['order'] as $ref => $ref_data) {
-                    foreach ($ref_data as $do) {
-                        $id_pelanggan = $do['id_pelanggan'];
-                        $dateTime = substr($do['insertTime'], 0, 10);
+                foreach ($data['refs'] as $ref) {
+                    $bill[$ref] = 0;
+                    $lunas[$ref] = false;
 
+                    if (isset($data['order'][$ref])) {
+                        foreach ($data['order'][$ref] as $do) {
+                            $id_pelanggan = $do['id_pelanggan'];
+                            $dateTime = substr($do['insertTime'], 0, 10);
+                            $cancel = $do['cancel'];
+
+                            $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
+                            if ($cancel == 0) {
+                                $bill[$ref] += $jumlah;
+                            }
+
+                            $bill[$ref] -= $do['diskon'];
+                        }
+                    }
+
+                    if (isset($data['mutasi'][$ref])) {
+                        foreach ($data['mutasi'][$ref] as $do) {
+                            $cancel = $do['stat'];
+                            $dateTime = substr($do['insertTime'], 0, 10);
+                            $id_pelanggan = $do['id_target'];
+                            $jumlah = ($do['harga_jual'] * $do['qty']) + $do['margin_paket'];
+                            $diskon = $do['diskon'] * $do['qty'];
+                            if ($cancel <> 2) {
+                                $bill[$ref] += $jumlah;
+                                $bill[$ref] -= $diskon;
+                            }
+                        }
+                    }
+
+                    $sisa[$ref] = $bill[$ref] - $dibayar[$ref];
+                    if ($sisa[$ref] <= 0) {
+                        $lunas[$ref] = true;
+                    } else {
+                        $lunas[$ref] = false;
                         if (isset($data['pelanggan'][$id_pelanggan])) {
                             if (isset($list[$id_pelanggan])) {
                                 if ($list[$id_pelanggan] > $dateTime) {
