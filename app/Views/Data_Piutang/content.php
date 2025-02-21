@@ -41,6 +41,7 @@
 
                 $today = date("Y-m-d");
                 $list = [];
+                $piutang = [];
 
                 foreach ($data['refs'] as $ref) {
                     $bill[$ref] = 0;
@@ -76,6 +77,12 @@
                     }
 
                     $sisa[$ref] = $bill[$ref] - $dibayar[$ref];
+                    if (isset($piutang[$id_pelanggan])) {
+                        $piutang[$id_pelanggan] += $sisa[$ref];
+                    } else {
+                        $piutang[$id_pelanggan] = $sisa[$ref];
+                    }
+
                     if ($sisa[$ref] <= 0) {
                         $lunas[$ref] = true;
                     } else {
@@ -95,7 +102,7 @@
                 asort($list);
                 ?>
                 <div class="col px-1">
-                    <table class="table table-sm w-100 mb-1 bg-white">
+                    <table class="table table-sm text-sm w-100 mb-1 bg-white">
                         <?php
                         foreach ($list as $k => $v) {
                             $pelanggan = $data['pelanggan'][$k]['nama'];
@@ -114,7 +121,8 @@
                                 <td class="p-1">
                                     <span class="text-primary text-sm"><b><?= strtoupper($pelanggan) ?></b></span>
                                 </td>
-                                <td class="text-end text-sm"> <small><?= $hari ?> Hari</small></td>
+                                <td class="text-end"><?= number_format($piutang[$k]) ?></td>
+                                <td class="text-end text-sm"><?= $hari ?> Hari</td>
                             </tr>
                         <?php } ?>
                     </table>
