@@ -222,6 +222,8 @@ class Cron extends Controller
          }
       }
 
+      $order_count = count($data['mutasi']) + count($data['order']);
+
       if ($print == false) {
          if ($tuntas == true) {
             $this->update_ref($ref, $tuntas_date);
@@ -235,7 +237,6 @@ class Cron extends Controller
                if ($stok == true || $ada_diskon == true) {
                   $this->clearTuntas($ref);
                } else {
-                  $order_count = count($data['mutasi']) + count($data['order']);
                   if ($order_count == $cancel_count) {
                      $this->clearTuntas($ref);
                   }
