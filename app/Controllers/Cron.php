@@ -84,7 +84,6 @@ class Cron extends Controller
          $hitung = $this->db(0)->count_where("master_mutasi", "ref = '" . $c['id'] . "'");
          if ($hitung == 0) {
             $this->db(0)->delete_where("master_input", "id = '" . $c['id'] . "' AND cek = 0");
-            echo $c['id'] . " " . $c['tipe'] . "<br>";
          }
       }
    }
