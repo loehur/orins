@@ -77,6 +77,18 @@ class Cron extends Controller
       }
    }
 
+   function cek_input_ref()
+   {
+      $cek = $this->db(0)->get_where("master_input", "cek = 0");
+      foreach ($cek as $c) {
+         $hitung = $this->db(0)->count_where("master_mutasi", "ref = '" . $c['id'] . "'");
+         if ($hitung == 0) {
+            $this->db(0)->delete_where("master_input", "id = '" . $c['id'] . "' AND cek = 0");
+            echo $c['id'] . " " . $c['tipe'] . "<br>";
+         }
+      }
+   }
+
    function run_cek_tuntas()
    {
       $last_check = date('ymd');
