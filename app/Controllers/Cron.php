@@ -77,6 +77,17 @@ class Cron extends Controller
       }
    }
 
+   function run_cek_tuntas()
+   {
+      $last_check = date('ymd');
+      $where_ref = "tuntas = 0 AND last_check <> '" . $last_check . "' AND CURDATE() > (insertTime + INTERVAL 1 DAY)";
+      $cek = $this->db(0)->get_where('ref', $where_ref);
+      foreach ($cek as $c) {
+         $this->cek_tuntas($c['ref']);
+         sleep(1);
+      }
+   }
+
    public function cek_tuntas($ref = "", $print = false)
    {
       $last_check = date('ymd');
