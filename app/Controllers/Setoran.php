@@ -129,9 +129,8 @@ class Setoran extends Controller
       }
 
       if ($total_sds > 0) {
-         $unic = $ref . "31"; //tipe-target
          $cols = 'id, id_sumber, id_target, tipe, ref, jumlah';
-         $vals = "'" . $unic . "'," . $this->userData['id_toko'] . ",1,3,'" . $ref . "','" . $total_sds . "'";
+         $vals = $this->userData['id_toko'] . ",1,3,'" . $ref . "','" . $total_sds . "'";
          $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
          if ($do['errno'] <> 0) {
             echo $do['error'];
