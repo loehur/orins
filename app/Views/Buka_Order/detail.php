@@ -35,7 +35,7 @@
 <?php foreach ($data['spkNote'] as $key => $d) { ?>
     <div class="row mx-0">
         <div class="col px-0 mb-2" style="min-width: 200px;">
-            <input type="text" name="d-<?= $key ?>" placeholder="Catatan - <?= $this->model('Arr')->get($data['divisi'], "id_divisi", "divisi", $key) ?>" class="form-control border-0 shadow-none form-control-sm">
+            <input type="text" name="d-<?= $key ?>" placeholder="Catatan - <?= $data['divisi'][$key]['divisi'] ?>" class="form-control border-0 shadow-none form-control-sm">
         </div>
     </div>
 <?php  } ?>

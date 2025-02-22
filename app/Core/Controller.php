@@ -69,8 +69,8 @@ class Controller extends PV
         $whereToko = "id_toko = " . $this->userData['id_toko'];
         $_SESSION['data_toko'] = $this->db(0)->get('toko', 'id_toko');
         $_SESSION['data_divisi'] = $this->db(0)->get_where('divisi', "id_toko LIKE '%|" . $this->userData['id_toko'] . "|%'", "id_divisi");
-        $_SESSION['spk_divisi'] = $this->db(0)->get('spk_dvs');
-        $_SESSION['detail_group'] = $this->db(0)->get('detail_group');
+        $_SESSION['spk_divisi'] = $this->db(0)->get('spk_dvs', 'id_spk_dvs');
+        $_SESSION['detail_group'] = $this->db(0)->get('detail_group', 'id_index');
         $_SESSION['detail_item'] = $this->db(0)->get_order('detail_item', "detail_item ASC");
         $_SESSION['data_user'] = $this->db(0)->get_where('user', $whereToko);
 

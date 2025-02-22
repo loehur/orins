@@ -555,7 +555,6 @@ class Buka_Order extends Controller
                      $varian[$di['id_detail_item']] = $varian_;
                   }
                }
-
                $groupName = $dg['detail_group'];
             }
          }
@@ -566,7 +565,7 @@ class Buka_Order extends Controller
       $data_['detail'] = $data_;
       $data_['varian'] = $varian;
       $data_['spkNote'] = $spkNote;
-      $data_['divisi'] = $this->db(0)->get('divisi');
+      $data_['divisi'] = $this->db(0)->get('divisi', 'id_divisi');
       $this->view(__CLASS__ . "/detail", $data_);
    }
 
