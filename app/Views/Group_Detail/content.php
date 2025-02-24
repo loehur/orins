@@ -76,10 +76,10 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Link Kelompok Detail</label>
-                        <select class="border tize" name="id_detail_group" required>
+                        <select class="border tize" name="id_index" required>
                             <option></option>
                             <?php foreach ($data['main'] as $d) { ?>
-                                <option value="<?= $d['id_detail_group'] ?>"><?= $d['detail_group'] ?></option>
+                                <option value="<?= $d['id_index'] ?>"><?= $d['detail_group'] ?></option>
                             <?php } ?>
                         </select>
                     </div>

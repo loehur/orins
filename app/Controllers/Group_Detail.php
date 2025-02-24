@@ -62,7 +62,10 @@ class Group_Detail extends Controller
    {
       $group = $_POST['group'];
       $note = $_POST['note'];
+      $id_index = $_POST['id_index'];
       $cols = 'id_detail_group, detail_group, pj, note';
+
+      $get = $this->db(0)->get_where_row('detail_group', "id_index = " . $id_index);
 
       if ($pj == 1) {
          $pj = $this->userData['id_toko'];
@@ -79,8 +82,9 @@ class Group_Detail extends Controller
             $id_detail_group = $max + 1;
          }
       } else {
-         $id_detail_group = $_POST['id_detail_group'];
+         $id_detail_group = $get['id_detail_group'];
       }
+
       $vals = $id_detail_group . ",'" . $group . "'," . $pj . ",'" . $note . "'";
       $do = $this->db(0)->insertCols('detail_group', $cols, $vals);
       if ($do['errno'] == 0) {
