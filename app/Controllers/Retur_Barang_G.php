@@ -76,6 +76,10 @@ class Retur_Barang_G extends Controller
       $error = 0;
       $supplier = strtoupper($_POST['supplier']);
 
+      if ($sds == "") {
+         $sds = 0;
+      }
+
       $id = date('ymdHi');
       $cols = 'id, tipe, id_sumber, id_target, tanggal, user_id, sds, note';
       $vals = "'" . $id . "',4,0,'" . $supplier . "','" . $tanggal . "'," . $this->userData['id_user'] . "," . $sds . ",'" . $note . "'";
