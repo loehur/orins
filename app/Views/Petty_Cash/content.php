@@ -66,7 +66,7 @@
                 if ($a['st'] == 1) {
                     $total_setor += $a['jumlah'];
                 } ?>
-                <tr>
+                <tr id="tr<?= $a['id'] ?>">
                     <td class="align-middle">
                         <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
                     </td>
@@ -85,7 +85,8 @@
                     </td>
                     <td class="text-end" style="width:70px">
                         <?php if ($a['st'] == 0) { ?>
-                            <span class="text-sm text-warning">Checking</span>
+                            <span data-id="<?= $a['id'] ?>" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>
+                            <span class="text-sm text-warning">Check</span>
                         <?php } else { ?>
                             <?php if ($a['st'] == 1) { ?>
                                 <span class="text-sm text-success">Verified</span>
@@ -174,6 +175,25 @@
                     alert(res);
                 }
             }
+        });
+    });
+
+    $(".cell_delete").dblclick(function() {
+        var id = $(this).attr('data-id');
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Petty_Cash/delete',
+            data: {
+                'id': id,
+            },
+            type: 'POST',
+            dataType: 'html',
+            success: function(res) {
+                if (res == 0) {
+                    $("#tr" + id).remove();
+                } else {
+                    alert(res);
+                }
+            },
         });
     });
 

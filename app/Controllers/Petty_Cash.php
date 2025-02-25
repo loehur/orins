@@ -101,4 +101,15 @@ class Petty_Cash extends Controller
 
       echo 0;
    }
+
+   function delete()
+   {
+      $id = $_POST['id'];
+      $del = $this->db(0)->delete_where("kas_kecil", "id = " . $id . " AND st = 0");
+      if ($del['errno'] == 0) {
+         echo 0;
+      } else {
+         echo $del['error'];
+      }
+   }
 }
