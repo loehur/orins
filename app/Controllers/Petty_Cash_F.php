@@ -40,7 +40,7 @@ class Petty_Cash_F extends Controller
       $whereTopupMutasi = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 ORDER BY insertTime DESC";
       $data['topup'] = $this->db(0)->get_where('kas_kecil', $whereTopupMutasi);
 
-      $wherePakaiMutasi = "id_sumber = " . $this->userData['id_toko'] . " AND tipe = 2 ORDER BY insertTime DESC";
+      $wherePakaiMutasi = "id_sumber = " . $this->userData['id_toko'] . " AND tipe = 2 AND st = 0 ORDER BY insertTime DESC";
       $data['pakai'] = $this->db(0)->get_where('kas_kecil', $wherePakaiMutasi);
 
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
