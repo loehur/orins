@@ -220,6 +220,9 @@
                         <input type="number" min="1" name="harga" class="form-control" required>
                         <input type="hidden" name="code_barang" class="form-control" required>
                     </div>
+                    <div class="mb-3 text-danger text-sm">
+                        Perubahan harga hanya berlaku pada item yang masih di dalam keranjang, tidak berdampak pada item yang sudah di proses.
+                    </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Tetapkan HARGA</button>

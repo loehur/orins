@@ -804,6 +804,7 @@ class Buka_Order extends Controller
       $harga_paket = [];
       $paket_qty = [];
       $id_margin = [];
+      $paket_ready = true;
 
       if ($id_user_afiliasi == 0) {
          $data['barang'] = $this->db(0)->get('master_barang', 'id');
@@ -822,6 +823,10 @@ class Buka_Order extends Controller
             $sn =  $dbr['sn'];
 
             if ($dbr['price_locker'] == 1) {
+               if ($data['paket'][$dbr['paket_ref']]['harga_' . $id_pelanggan_jenis] == 0) {
+                  $paket_ready = false;
+               }
+
                $harga_paket[$dbr['paket_ref']] = $data['paket'][$dbr['paket_ref']]['harga_' . $id_pelanggan_jenis];
                $id_margin[$dbr['paket_ref']]['id'] = $dbr['id'];
                $id_margin[$dbr['paket_ref']]['primary'] = 'id';
@@ -851,6 +856,7 @@ class Buka_Order extends Controller
       //===========================
 
       $data_harga = $this->db(0)->get('produk_harga');
+
       $detail_harga = [];
       foreach ($data['order'] as $do) {
          if ($id_pelanggan_jenis == 100 && $id_user_afiliasi == 0) {
@@ -868,6 +874,10 @@ class Buka_Order extends Controller
 
          if (strlen($do['paket_ref']) > 0 && $id_user_afiliasi == 0) {
             if ($do['price_locker'] == 1) {
+               if ($data['paket'][$do['paket_ref']]['harga_' . $id_pelanggan_jenis] == 0) {
+                  $paket_ready = false;
+               }
+
                $harga_paket[$do['paket_ref']] = $data['paket'][$do['paket_ref']]['harga_' . $id_pelanggan_jenis];
                $id_margin[$do['paket_ref']]['id'] = $do['id_order_data'];
                $id_margin[$do['paket_ref']]['primary'] = 'id_order_data';
@@ -879,6 +889,11 @@ class Buka_Order extends Controller
                   $id_margin[$do['paket_ref']]['qty'] = $paket_qty;
                }
             }
+         }
+
+         if ($paket_ready == false) {
+            echo "Harga paket belum ditentukan";
+            exit();
          }
 
          $detail_harga = unserialize($do['detail_harga']);
