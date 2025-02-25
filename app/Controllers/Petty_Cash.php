@@ -64,20 +64,19 @@ class Petty_Cash extends Controller
       $note = $_POST['note'];
 
       $ref = date('ymdHi');
-      $unic = $ref . $jenis . $jumlah; //tipe-target
+      $cols = 'id_sumber, id_target, tipe, ref, jumlah, st, note';
+      $vals =  "'" . $this->userData['id_toko'] . "','" . $jenis . "',2,'" . $ref . "'," . $jumlah . ",0,'" . $note . "'";
 
-      $cols = 'id, id_sumber, id_target, tipe, ref, jumlah, st, note';
-      $vals =  "'" . $unic . "','" . $this->userData['id_toko'] . "','" . $jenis . "',2,'" . $ref . "'," . $jumlah . ",0,'" . $note . "'";
-
-      $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
-      if ($do['errno'] == 1062) {
-         echo "data sudah terinput";
-         exit();
-      } else {
+      $cek = $this->db(0)->count_where("kas_kecil", "jumlah = " . $jumlah . " AND ref = '" . $ref . "' AND tipe = '" . $jenis . "'");
+      if ($cek == 0) {
+         $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
          if ($do['errno'] <> 0) {
             echo $do['error'];
             exit();
          }
+      } else {
+         echo "Data sudah di input";
+         exit();
       }
 
       echo 0;
