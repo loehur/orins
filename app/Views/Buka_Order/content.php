@@ -440,7 +440,6 @@ $mgpaket = $data['margin_paket'];
 
     $('select.loadDetail').on('change', function() {
         $("div#detail").load('<?= PV::BASE_URL ?>Load/spinner/2');
-        return;
         var produk = this.value;
         if (produk != "") {
             $("div#detail").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
