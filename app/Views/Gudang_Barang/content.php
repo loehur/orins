@@ -74,10 +74,12 @@ $max_length = [2, 2, 2, 3];
                         <td>ID</td>
                         <td>Code</td>
                         <td>Item</td>
+                        <td></td>
                         <td>Stok</td>
                     </tr>
                 </thead>
                 <?php foreach ($data['barang'] as $a) { ?>
+                    <?php $dstok = isset($data['stok'][$a['id']]) ? $data['stok'][$a['id']]['qty'] : 0; ?>
                     <tr>
                         <td>
                             #<?= $a['id'] ?><br>
@@ -129,8 +131,13 @@ $max_length = [2, 2, 2, 3];
                                 <span class="text-sm"><?= strtoupper($a['product_name']) ?></span>
                             <?php } ?>
                         </td>
-                        <td>
-                            <?= isset($data['stok'][$a['id']]) ? $data['stok'][$a['id']]['qty'] : 0 ?>
+                        <td class="align-middle text-primary">
+                            <?php if ($a['sn'] == 1 && $dstok > 0) { ?>
+                                <i class="fa-solid fa-magnifying-glass cek" data-id="<?= $a['id'] ?>" data-bs-target="#exampleModal" data-bs-toggle="modal" style="cursor: pointer;"></i>
+                            <?php } ?>
+                        </td>
+                        <td class="align-top">
+                            <?= $dstok ?>
                         </td>
                     </tr>
                 <?php } ?>
@@ -138,6 +145,14 @@ $max_length = [2, 2, 2, 3];
         </div>
     </div>
 </main>
+
+<div class="modal" id="exampleModal">
+    <div class="modal-dialog">
+        <div class="modal-content" id="load">
+
+        </div>
+    </div>
+</div>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
@@ -152,9 +167,15 @@ $max_length = [2, 2, 2, 3];
             "bInfo": false,
             "bAutoWidth": false,
             "pageLength": 30,
-            "scrollY": 400,
+            "scrollY": 408,
             "dom": "lfrti"
         });
+    })
+
+    $(".cek").click(function() {
+        var id = $(this).attr("data-id");
+        $("#load").load("<?= PV::BASE_URL ?>Gudang_Barang/cek_barang/" + id);
+
     })
 
     $('.check').change(function() {

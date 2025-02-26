@@ -167,6 +167,12 @@ class Gudang_Barang extends Controller
       echo 0;
    }
 
+   function cek_barang($id)
+   {
+      $data['stok'] = $this->data('Barang')->stok_data($id, 0);
+      $this->view(__CLASS__ . "/data_cek", $data);
+   }
+
    function update_code()
    {
       $value = $_POST['value'];
