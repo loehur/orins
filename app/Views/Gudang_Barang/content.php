@@ -74,7 +74,6 @@ $max_length = [2, 2, 2, 3];
                         <td>ID</td>
                         <td>Code</td>
                         <td>Item</td>
-                        <td></td>
                         <td>Stok</td>
                     </tr>
                 </thead>
@@ -131,12 +130,10 @@ $max_length = [2, 2, 2, 3];
                                 <span class="text-sm"><?= strtoupper($a['product_name']) ?></span>
                             <?php } ?>
                         </td>
-                        <td class="align-middle text-primary">
-                            <?php if ($a['sn'] == 1 && $dstok > 0) { ?>
-                                <i class="fa-solid fa-magnifying-glass cek" data-id="<?= $a['id'] ?>" data-bs-target="#exampleModal" data-bs-toggle="modal" style="cursor: pointer;"></i>
-                            <?php } ?>
-                        </td>
                         <td class="align-top">
+                            <?php if ($a['sn'] == 1 && $dstok > 0) { ?>
+                                <i class="fa-solid fa-magnifying-glass text-primary cek" data-id="<?= $a['id'] ?>" data-bs-target="#exampleModal" data-bs-toggle="modal" style="cursor: pointer;"></i>
+                            <?php } ?>
                             <?= $dstok ?>
                         </td>
                     </tr>
@@ -148,9 +145,7 @@ $max_length = [2, 2, 2, 3];
 
 <div class="modal" id="exampleModal">
     <div class="modal-dialog">
-        <div class="modal-content" id="load">
-
-        </div>
+        <div class="modal-content" id="load"></div>
     </div>
 </div>
 
