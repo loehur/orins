@@ -169,7 +169,11 @@ $max_length = [2, 2, 2, 3];
 
     $(".cek").click(function() {
         var id = $(this).attr("data-id");
-        $("#load").load("<?= PV::BASE_URL ?>Gudang_Barang/cek_barang/" + id);
+
+        $("#load").load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
+            $("#load").load("<?= PV::BASE_URL ?>Gudang_Barang/cek_barang/" + id);
+        });
+
 
     })
 
