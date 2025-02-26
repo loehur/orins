@@ -451,7 +451,9 @@ $mgpaket = $data['margin_paket'];
     $('select.loadDetail_aff').on('change', function() {
         var produk = this.value;
         if (produk != "") {
-            $("div#detail_aff").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+            $("div#detail_aff").load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
+                $("div#detail_aff").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+            });
         }
     });
 
