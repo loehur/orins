@@ -81,12 +81,16 @@
                             <?= $a['no_po'] ?>
                         <?php } ?>
                     </td>
-                    <td class="align-middle">
+                    <td>
                         <?php if ($a['cek'] == 0) { ?>
                             <span class="text-danger cancel" style="cursor: pointer;" data-id="<?= $a['id'] ?>"><i class="fa-regular fa-circle-xmark"></i> Cancel</span><br>
-                            <span class="text-warning"><i class="fa-regular fa-circle"></i> Checking</span>
+                            <span class="badge bg-warning">CHECKING</span>
                         <?php } else { ?>
-                            <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                            <?php if ($a['cek'] == 1) { ?>
+                                <span class="badge bg-success">VERIFIED</span>
+                            <?php } else { ?>
+                                <span class="badge bg-danger">REJECTED</span>
+                            <?php } ?>
                         <?php } ?>
                     </td>
                 </tr>

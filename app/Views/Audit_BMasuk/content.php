@@ -71,7 +71,15 @@
                         <?= $a['no_faktur'] ?>
                     </td>
                     <td>
-                        <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
+                        <?php if ($a['cek'] == 0) { ?>
+                            <span class="badge bg-warning">CHECKING</span>
+                        <?php } else { ?>
+                            <?php if ($a['cek'] == 1) { ?>
+                                <span class="badge bg-success">VERIFIED</span>
+                            <?php } else { ?>
+                                <span class="badge bg-danger">REJECTED</span>
+                            <?php } ?>
+                        <?php } ?>
                     </td>
                 </tr>
             <?php } ?>

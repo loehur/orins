@@ -89,11 +89,15 @@
                                 <?= $a['sn'] ?>
                             <?php } ?>
                         </td>
-                        <td class="align-middle text-end">
+                        <td class="align-middle">
                             <?php if ($a['stat'] == 0) { ?>
                                 <span data-id="<?= $a['id'] ?>" data-primary="id" data-tb="master_mutasi" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>
                             <?php } else { ?>
-                                <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                                <?php if ($a['stat'] == 1) { ?>
+                                    <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                                <?php } else { ?>
+                                    <span class="badge bg-danger">Rejected</span>
+                                <?php } ?>
                             <?php } ?>
                         </td>
                     </tr>

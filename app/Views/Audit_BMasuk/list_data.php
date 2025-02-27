@@ -43,7 +43,11 @@
                 <?php if ($d['cek'] == 0) { ?>
                     <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn btn-outline-success update_bol"><i class="fa-solid fa-check"></i> Verify</span>
                 <?php } else { ?>
-                    VERIFIED
+                    <?php if ($d['cek'] == 1) { ?>
+                        <span class="badge bg-success">VERIFIED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
+                    <?php } else { ?>
+                        <span class="badge bg-danger">REJECTED</span>
+                    <?php } ?>
                 <?php } ?>
             </div>
         </div>
@@ -75,6 +79,17 @@
                     <td class="text-end">
                         <?= $a['qty'] ?>
                     </td>
+                    <td class="align-middle text-end">
+                        <?php if ($a['stat'] == 0) { ?>
+                            <span class="badge bg-warning">Checking</span>
+                        <?php } else { ?>
+                            <?php if ($a['stat'] == 1) { ?>
+                                <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                            <?php } else { ?>
+                                <span class="badge bg-danger">Rejected</span>
+                            <?php } ?>
+                        <?php } ?>
+                    </td>
                 </tr>
             <?php } ?>
         </table>
@@ -89,6 +104,25 @@
         var ref = $(this).attr('data-ref');
         $.ajax({
             url: '<?= PV::BASE_URL ?>Audit_BMasuk/update',
+            data: {
+                ref: ref
+            },
+            type: 'POST',
+            dataType: 'html',
+            success: function(res) {
+                if (res == 0) {
+                    content();
+                } else {
+                    alert(res);
+                }
+            },
+        });
+    });
+
+    $(".reject_ref").on('dblclick', function() {
+        var ref = $(this).attr('data-ref');
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Audit_BMasuk/reject',
             data: {
                 ref: ref
             },

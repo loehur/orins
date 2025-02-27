@@ -58,7 +58,11 @@
                         <?php if ($a['cek'] == 0) { ?>
                             <span class="text-warning"><i class="fa-regular fa-circle"></i> Checking</span>
                         <?php } else { ?>
-                            <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                            <?php if ($a['cek'] == 1) { ?>
+                                <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                            <?php } else { ?>
+                                <span class="badge bg-danger">Rejected</span>
+                            <?php } ?>
                         <?php } ?>
                     </td>
                 </tr>
