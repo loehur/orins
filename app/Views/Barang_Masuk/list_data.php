@@ -65,6 +65,17 @@
                     <td>
                         <?= $a['sds'] == 1 ? "SDS-YES" : "SDS-NO" ?>
                     </td>
+                    <td class="align-middle text-end">
+                        <?php if ($a['stat'] == 0) { ?>
+                            <span class="badge bg-waning">Check</span>
+                        <?php } else { ?>
+                            <?php if ($a['stat'] == 1) { ?>
+                                <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                            <?php } else { ?>
+                                <span class="badge bg-danger">Rejected</span>
+                            <?php } ?>
+                        <?php } ?>
+                    </td>
                 </tr>
             <?php } ?>
         </table>
