@@ -132,7 +132,7 @@ class Cron extends Controller
       $where_kasKecil = "ref = '" . $ref . "' AND tipe = 0";
       $data['kas_kecil'] = $this->db(0)->get_where('kas_kecil', $where_kasKecil);
       $where = "ref_transaksi = '" . $ref . "'";
-      $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi');
+      $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where);
 
       $where = "ref_transaksi = '" . $ref . "' AND cancel = 0";
       $data['charge'] = $this->db(0)->get_where_row('charge', $where);
