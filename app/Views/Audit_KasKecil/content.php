@@ -49,37 +49,23 @@
                             <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
                         </td>
                         <td>
+                            <?= $data['jkeluar'][$a['ref_transaksi']]['nama'] ?>
+                        </td>
+                        <td>
                             <?= $a['note'] ?>
                         </td>
                         <td class="text-end">
                             <?= number_format($a['jumlah']) ?>
                         </td>
                         <td class="text-end" style="width:200px">
-                            <a class="ajax" href="<?= PV::BASE_URL ?>Audit_KasKecil/setor_pengeluaran/<?= $a['id_kas'] ?>/1">Verify</a>
+                            <a class="ajax" href="<?= PV::BASE_URL ?>Audit_KasKecil/setor_pengeluaran/<?= $a['id_kas'] ?>/1"><span class="badge bg-success ">Verify</span></a>
+                            <a class="ajax" href="<?= PV::BASE_URL ?>Audit_KasKecil/reimburse/<?= $a['id_kas'] ?>"><span class="badge bg-primary ">Reimburse</span></a>
                         </td>
                     </tr>
                 <?php } ?>
             <?php } ?>
         </table>
 
-        <table class="table table-sm text-sm">
-            <tr>
-                <th colspan="10" class="text-success">Riwayat Setoran Pecahan</th>
-            </tr>
-            <?php foreach ($data['split_done'] as $a) { ?>
-                <tr>
-                    <td class="align-middle">
-                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
-                    </td>
-                    <td>
-                        <?= $a['ref'] ?>
-                    </td>
-                    <td class="text-end">
-                        <?= number_format($a['jumlah']) ?>
-                    </td>
-                </tr>
-            <?php } ?>
-        </table>
         <table class="table table-sm text-sm">
             <tr>
                 <th colspan="10" class="text-danger">Riwayat Pengeluaran</th>
@@ -96,6 +82,9 @@
                             <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
                         </td>
                         <td>
+                            <?= $data['jkeluar'][$a['ref_transaksi']]['nama'] ?>
+                        </td>
+                        <td>
                             <?= $a['note'] ?>
                         </td>
                         <td class="text-end">
@@ -105,12 +94,38 @@
                 <?php } ?>
             <?php } ?>
         </table>
-    </div>
-    <div class="row mx-0">
-        <div class="col text-end fw-bold pt-2">
-            Total Saldo <?= number_format($data['setor']) ?>
+
+        <table class="table table-sm text-sm">
+            <tr>
+                <th colspan="10" class="text-primary">Riwayat Reimburse</th>
+            </tr>
+            <?php foreach ($data['reim_done'] as $a) { ?>
+                <tr>
+                    <td>
+                        #<?= $a['id'] ?>
+                    </td>
+                    <td>
+                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                    </td>
+                    <td>
+                        <?= $data['jkeluar'][$a['id_target']]['nama'] ?>
+                    </td>
+                    <td>
+                        <?= $a['note'] ?>
+                    </td>
+                    <td class="text-end">
+                        <?= number_format($a['jumlah']) ?>
+                    </td>
+                </tr>
+            <?php } ?>
+        </table>
+
+        <div class="row mx-0">
+            <div class="col text-end fw-bold pt-2">
+                Total Saldo <?= number_format($data['setor']) ?>
+            </div>
+            <div class="col"><span class="btn btn-primary">Setor</span></div>
         </div>
-        <div class="col"><span class="btn btn-primary">Setor</span></div>
     </div>
 </main>
 

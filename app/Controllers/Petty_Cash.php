@@ -34,13 +34,13 @@ class Petty_Cash extends Controller
       $whereTopup = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 AND st = 1";
       $topup = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $whereTopup);
 
-      $wherePakai = "id_sumber = " . $this->userData['id_toko'] . " AND tipe = 2 AND st <> 2";
+      $wherePakai = "id_sumber = " . $this->userData['id_toko'] . " AND (tipe = 2 OR tipe = 5) AND st <> 2";
       $pakai = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $wherePakai);
 
       $whereTopupMutasi = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 ORDER BY insertTime DESC";
       $data['topup'] = $this->db(0)->get_where('kas_kecil', $whereTopupMutasi);
 
-      $wherePakaiMutasi = "id_sumber = " . $this->userData['id_toko'] . " AND tipe = 2 AND st = 0 ORDER BY insertTime DESC";
+      $wherePakaiMutasi = "id_sumber = " . $this->userData['id_toko'] . " AND (tipe = 2 OR tipe = 5) AND st = 0 ORDER BY insertTime DESC";
       $data['pakai'] = $this->db(0)->get_where('kas_kecil', $wherePakaiMutasi);
 
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
@@ -105,7 +105,7 @@ class Petty_Cash extends Controller
    function delete()
    {
       $id = $_POST['id'];
-      $del = $this->db(0)->delete_where("kas_kecil", "id = " . $id . " AND st = 0");
+      $del = $this->db(0)->delete_where("kas_kecil", "id = " . $id . " AND st = 0 AND tipe = 2");
       if ($del['errno'] == 0) {
          echo 0;
       } else {
