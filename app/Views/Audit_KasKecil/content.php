@@ -90,6 +90,7 @@
                         <td class="text-end">
                             <?= number_format($a['jumlah']) ?>
                         </td>
+                        <td><a class="ajax" href="<?= PV::BASE_URL ?>Audit_KasKecil/reimburse/<?= $a['id_kas'] ?>"><span class="badge bg-primary ">Reimburse</span></a></td>
                     </tr>
                 <?php } ?>
             <?php } ?>
