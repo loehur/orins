@@ -12,27 +12,29 @@
     ?>
     <!-- Main page content-->
     <div class="container">
-        <table class="table table-sm text-sm">
-            <tr>
-                <th colspan="10" class="text-success">Setoran Pecahan</th>
-            </tr>
-            <?php foreach ($data['split'] as $a) { ?>
+        <?php if (count($data['split']) > 0) { ?>
+            <table class="table table-sm text-sm">
                 <tr>
-                    <td class="align-middle">
-                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
-                    </td>
-                    <td>
-                        <?= $a['ref'] ?>
-                    </td>
-                    <td class="text-end">
-                        <?= number_format($a['jumlah']) ?>
-                    </td>
-                    <td class="text-end" style="width:70px">
-                        <a class="ajax" href="<?= PV::BASE_URL ?>Audit_KasKecil/verify_kasKecil/<?= $a['id'] ?>/1">Verify</a>
-                    </td>
+                    <th colspan="10" class="text-success">Setoran Pecahan</th>
                 </tr>
-            <?php } ?>
-        </table>
+                <?php foreach ($data['split'] as $a) { ?>
+                    <tr>
+                        <td class="align-middle">
+                            <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                        </td>
+                        <td>
+                            <?= $a['ref'] ?>
+                        </td>
+                        <td class="text-end">
+                            <?= number_format($a['jumlah']) ?>
+                        </td>
+                        <td class="text-end" style="width:70px">
+                            <a class="ajax" href="<?= PV::BASE_URL ?>Audit_KasKecil/verify_kasKecil/<?= $a['id'] ?>/1">Verify</a>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </table>
+        <?php } ?>
         <table class="table table-sm text-sm">
             <tr>
                 <th colspan="10" class="text-danger">Pengeluaran</th>
