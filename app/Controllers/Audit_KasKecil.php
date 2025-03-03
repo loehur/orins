@@ -62,7 +62,8 @@ class Audit_KasKecil extends Controller
       $data['pengeluaran'] = $this->db(0)->get_where('kas', $where, 'ref_setoran', 1);
 
       $data['pengeluaran_done'] = [];
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_transaksi = 3 AND status_setoran <> 0 ORDER BY id_kas DESC";
+
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_transaksi = 3 AND status_setoran <> 0 ORDER BY id_kas DESC LIMIT 20";
       $data['pengeluaran_done'] = $this->db(0)->get_where('kas', $where, 'ref_setoran', 1);
       $this->view(__CLASS__ . '/content', $data);
    }
