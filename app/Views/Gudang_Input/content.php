@@ -21,7 +21,7 @@
                 </div>
                 <div class="col-auto px-1 mb-2 text-center">
                     <label>Tanggal</label><br>
-                    <input type="date" name="tanggal" class="text-center border-bottom border-0" max="<?= date('Y-m-d'); ?>">
+                    <input type="date" name="tanggal" class="text-center border-bottom border-0" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d'); ?>">
                 </div>
                 <div class="col-auto px-1 mb-2 text-end">
                     <label>No. DO</label><br>
