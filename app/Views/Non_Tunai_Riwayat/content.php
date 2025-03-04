@@ -121,4 +121,34 @@
         var mon = $("input[name=month]").val();
         content(mon);
     });
+
+    $("button.action").click(function() {
+        var id_ = $(this).attr("data-id");
+        var value = $(this).attr("data-val");
+        var note = "";
+
+        if (value == 2) {
+            var note = prompt("Catatan", "");
+            if (note === null) {
+                return;
+            }
+        }
+
+        $.ajax({
+            url: "<?= PV::BASE_URL ?>Non_Tunai/action",
+            data: {
+                id: id_,
+                val: value,
+                note: note
+            },
+            type: "POST",
+            success: function(result) {
+                if (result == 0) {
+                    content();
+                } else {
+                    alert(result);
+                }
+            },
+        });
+    });
 </script>
