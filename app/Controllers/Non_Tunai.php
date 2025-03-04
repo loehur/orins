@@ -96,8 +96,10 @@ class Non_Tunai extends Controller
    {
       $ref_bayar = $_POST['id'];
       $val = $_POST['val'];
+      $note = $_POST['note'];
 
-      $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
+      $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
+
       $where = "ref_bayar = '" . $ref_bayar . "'";
       $update = $this->db(0)->update("kas", $set, $where);
       if ($update['errno'] <> 0) {

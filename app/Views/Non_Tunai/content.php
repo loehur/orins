@@ -196,11 +196,22 @@
     $("button.actionMulti").click(function() {
         var id_ = $(this).attr("data-id");
         var value = $(this).attr("data-val");
+
+        if (value == 2) {
+            var note = prompt("Catatan", "");
+            if (note === null) {
+                return;
+            }
+        } else {
+            var note = "";
+        }
+
         $.ajax({
             url: "<?= PV::BASE_URL ?>Non_Tunai/actionMulti",
             data: {
                 id: id_,
-                val: value
+                val: value,
+                note: note
             },
             type: "POST",
             success: function(result) {
