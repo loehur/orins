@@ -37,7 +37,7 @@ class Office_Kas extends Controller
       $whereSplit = "id_target = 0 AND (tipe = 0 OR tipe = 4) AND st <> 0";
       $data['split_done'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
-      $whereSplit = "id_sumber = 0";
+      $whereSplit = "id_sumber = 0 ORDER BY id DESC";
       $data['keluar_list'] = $this->db(0)->get_where('kas_kecil', $whereSplit);
 
       $whereSetor = "id_target = 0 AND (tipe = 0 OR tipe = 4) AND st = 1";
