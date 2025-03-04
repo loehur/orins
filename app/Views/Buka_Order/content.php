@@ -279,7 +279,7 @@ $mgpaket = $data['margin_paket'];
                                                                                     <?php } ?>
 
                                                                                     <b><span data-bs-toggle="modal" data-id_produk="<?= $id_produk ?>" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
-                                                                                    <?php if ($harga_d > 0 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
+                                                                                    <?php if ($harga_d > 0) { ?>
                                                                                         <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
                                                                                     <?php } ?>
                                                                                 </div>

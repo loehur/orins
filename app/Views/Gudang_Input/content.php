@@ -21,7 +21,7 @@
                 </div>
                 <div class="col-auto px-1 mb-2 text-center">
                     <label>Tanggal</label><br>
-                    <input type="date" name="tanggal" class="text-center border-bottom border-0" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>">
+                    <input type="date" name="tanggal" class="text-center border-bottom border-0" max="<?= date('Y-m-d'); ?>">
                 </div>
                 <div class="col-auto px-1 mb-2 text-end">
                     <label>No. DO</label><br>
@@ -62,7 +62,7 @@
                         <small><?= $a['sds'] == 1 ? "SDS" : "ABF" ?></small>
                     </td>
                     <td>
-                        <?= $a['id'] ?>
+                        <?= $a['id'] ?> <span class="editSurat text-primary" style="cursor:pointer;" data-id="<?= $a['id'] ?>" data-bs-target="#modalEdit" data-bs-toggle="modal"><i class="fa-solid fa-pen-to-square"></i></span>
                         <br>
                         <span class="fw-bold">
                             <?= $data['supplier'][$a['id_sumber']]['nama'] ?>
@@ -99,9 +99,22 @@
     </div>
 </main>
 
+<div class="modal" id="modalEdit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Edit Surat
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="formLoad" class="p-2"></div>
+        </div>
+    </div>
+</div>
+
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
+
 <script>
     $(document).ready(function() {
         $('select.tize').selectize();
@@ -116,6 +129,7 @@
             "dom": "lfrti"
         });
     });
+
     $("form").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
@@ -131,6 +145,13 @@
             },
         });
     });
+
+    $(".editSurat").click(function() {
+        var id = $(this).attr('data-id');
+        $("div#formLoad").load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
+            $("div#formLoad").load('<?= PV::BASE_URL ?>Gudang_Input/loadEdit/' + id);
+        });
+    })
 
     var click = 0;
     $(".cell_edit").on('dblclick', function() {

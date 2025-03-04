@@ -82,6 +82,25 @@ class Gudang_Input extends Controller
       echo $error;
    }
 
+   function update()
+   {
+      $supplier = strtoupper($_POST['supplier']);
+      $tanggal = $_POST['tanggal'];
+      $no_fak = strtoupper($_POST['no_fak']);
+      $no_po = strtoupper($_POST['no_po']);
+      $error = 0;
+
+      $id = $_POST['id'];
+      $set = "id_sumber = '" . $supplier . "', no_faktur = '" . $no_fak . "', no_po = '" . $no_po . "', tanggal = '" . $tanggal . "'";
+      $where = "id = '" . $id . "'";
+      $do = $this->db(0)->update('master_input', $set, $where);
+      if ($do['errno'] <> 0) {
+         $error = $do['error'];
+      }
+
+      echo $error;
+   }
+
    function add_mutasi()
    {
       $ref = $_POST['head_id'];
@@ -134,6 +153,13 @@ class Gudang_Input extends Controller
       } else {
          echo "Duplicate SN " . $value;
       }
+   }
+
+   function loadEdit($id)
+   {
+      $data['supplier'] = $this->db(0)->get('master_supplier', 'id');
+      $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
+      $this->view(__CLASS__ . "/form", $data);
    }
 
    function cancel()
