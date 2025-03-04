@@ -31,16 +31,16 @@ class Office_Kas extends Controller
 
    public function content()
    {
-      $whereSplit = "id_target = 0 AND tipe = 0 AND st = 0";
+      $whereSplit = "id_target = 0 AND (tipe = 0 OR tipe = 4) AND st = 0";
       $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
-      $whereSplit = "id_target = 0 AND tipe = 0 AND st <> 0";
+      $whereSplit = "id_target = 0 AND (tipe = 0 OR tipe = 4) AND st <> 0";
       $data['split_done'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
       $whereSplit = "id_sumber = 0";
       $data['keluar_list'] = $this->db(0)->get_where('kas_kecil', $whereSplit);
 
-      $whereSetor = "id_target = 0 AND tipe = 0 AND st = 1";
+      $whereSetor = "id_target = 0 AND (tipe = 0 OR tipe = 4) AND st = 1";
       $data['setor'] = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $whereSetor);
 
       $whereSetor = "id_sumber = 0 AND tipe = 1 AND st <> 2";
