@@ -71,9 +71,8 @@ class Office_Kas extends Controller
       $jumlah = $_POST['jumlah'];
       $target = $_POST['toko'];
       $ref = date('ymd');
-      $unic = $ref . "1" . $target . $jumlah; //tipe-target
-      $cols = 'id, id_sumber, id_target, tipe, ref, jumlah, st';
-      $vals =  "'" . $unic . "',0," . $target . ",1,'" . $ref . "'," . $jumlah . ",0";
+      $cols = 'id_sumber, id_target, tipe, ref, jumlah, st';
+      $vals =  "0," . $target . ",1,'" . $ref . "'," . $jumlah . ",0";
       $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
       if ($do['errno'] == 1062) {
          echo "data sudah di input";
