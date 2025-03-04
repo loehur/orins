@@ -39,7 +39,11 @@
                         <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
                     </td>
                     <td>
-                        <?= strtoupper($this->dToko[$a['id_sumber']]['nama_toko']) ?> <span class='fw-bold text-success'><i class='fa-solid fa-arrow-right'></i></span> FINANCE
+                        <?php if ($a['tipe'] == 0) { ?>
+                            <?= strtoupper($this->dToko[$a['id_sumber']]['nama_toko']) ?> <span class='fw-bold text-success'><i class='fa-solid fa-arrow-right'></i></span> OFFICE
+                        <?php } else { ?>
+                            SDS <span class='fw-bold text-success'><i class='fa-solid fa-arrow-right'></i></span> OFFICE
+                        <?php } ?>
                     </td>
                     <td>
                         <?= $a['note'] ?>
