@@ -65,6 +65,9 @@
                         <?= $data['barang'][$a['id_barang']]['code'] ?>
                     </td>
                     <td class="">
+                        <?= $data['barang'][$a['id_barang']]['code_myob'] ?>
+                    </td>
+                    <td class="">
                         <?= $data['barang'][$a['id_barang']]['nama'] ?>
                     </td>
                     <td>
