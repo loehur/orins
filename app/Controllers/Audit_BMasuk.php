@@ -48,7 +48,7 @@ class Audit_BMasuk extends Controller
    function list_data($id)
    {
       $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
-      $cols = "id, code, CONCAT(brand,' ',model) as nama";
+      $cols = "id, code, code_myob, CONCAT(brand,' ',model) as nama";
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");
       $data['id'] = $id;
