@@ -41,6 +41,19 @@ class Deposit extends Controller
       $data['data'] = $this->db(0)->get_where("kas", "jenis_transaksi = 2 AND id_client = " . $id_pelanggan . " ORDER BY id_kas DESC LIMIT 10");
       $data['mutasi'] = $this->db(0)->get_where("kas", "metode_mutasi = 4 AND id_client = " . $id_pelanggan . " ORDER BY id_kas DESC LIMIT 10");
       $data['saldo'] = $this->data("Saldo")->deposit($id_pelanggan);
+      $data['refs'] = [];
+
+      if (count($data['mutasi']) > 0) {
+         $ref_list = "";
+         foreach ($data['mutasi'] as $r) {
+            $ref_list .= $r['ref_transaksi'] . ",";
+         }
+         $ref_list = rtrim($ref_list, ',');
+
+         $where = "ref IN (" . $ref_list . ")";
+         $data['refs'] = $this->db(0)->get_where('ref', $where, 'ref');
+      }
+
       $this->view(__CLASS__ . "/data", $data);
    }
 

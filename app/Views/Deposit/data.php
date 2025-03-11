@@ -50,10 +50,12 @@
                     <?= number_format($d['jumlah']) ?>
                 </div>
                 <div class="col-auto">
-                    <?php if ($d['status_mutasi'] == 1) { ?>
-                        <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="px-2 text-decoration-none text-danger cancel rounded" data-id="<?= $d['id_kas'] ?>" href="#"><i class="fa-solid fa-square-xmark"></i></a>
-                    <?php } else { ?>
-                        <small class="text-danger"><?= $d['note_batal'] ?></small>
+                    <?php if ($data['refs'][$d['ref_transaksi']]['tuntas'] == 0) { ?>
+                        <?php if ($d['status_mutasi'] == 1) { ?>
+                            <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="px-2 text-decoration-none text-danger cancel rounded" data-id="<?= $d['id_kas'] ?>" href="#"><i class="fa-solid fa-square-xmark"></i></a>
+                        <?php } else { ?>
+                            <small class="text-danger"><?= $d['note_batal'] ?></small>
+                        <?php } ?>
                     <?php } ?>
                 </div>
             </div>
