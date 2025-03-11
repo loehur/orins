@@ -202,7 +202,7 @@ class Data_Operasi extends Controller
       }
 
       $error = 0;
-      ksort($ref_multi);
+      asort($ref_multi);
       foreach ($ref_multi as $value) {
          $count_ref -= 1;
 
