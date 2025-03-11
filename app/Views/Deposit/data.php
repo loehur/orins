@@ -10,15 +10,12 @@
         </div>
     </div>
 </div>
-<div class="row mx-0 mt-2">
+<div class="row mx-0 mt-2 text-sm">
     <div class="col" style="max-width: 500px;">
+        <label class="text-success">Riwayat Topup</label>
         <?php foreach ($data['data'] as $d) { ?>
             <?php
-            foreach ($this->dKaryawanAll as $dp) {
-                if ($dp['id_karyawan'] == $d['id_user']) {
-                    $cs = $dp['nama'];
-                }
-            }
+            $cs = $this->dKaryawanAll[$d['id_user']]['nama'];
             ?>
             <div class="row border-bottom">
                 <div class="col-auto">
@@ -35,6 +32,29 @@
                     <span class="text-sm">
                         <?= $d['status_mutasi'] == 1 ? '<span class="text-success">Sukses</span>' : '<span class="text-warning">Office Checking</span>'  ?> - <?= $d['metode_mutasi'] == 1 ? 'Tunai' : 'NonTunai' ?>
                     </span>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+</div>
+
+<div class="row mx-0 mt-2 text-sm">
+    <div class="col" style="max-width: 500px;">
+        <label class="text-primary">Riwayat Pakai</label>
+        <?php foreach ($data['mutasi'] as $d) { ?>
+            <div class="row border-bottom">
+                <div class="col-auto">
+                    <?= $d['ref_transaksi'] ?>
+                </div>
+                <div class="col text-end">
+                    <?= number_format($d['jumlah']) ?>
+                </div>
+                <div class="col-auto">
+                    <?php if ($d['status_mutasi'] == 1) { ?>
+                        <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="px-2 text-decoration-none text-danger cancel rounded" data-id="<?= $d['id_kas'] ?>" href="#"><i class="fa-solid fa-square-xmark"></i></a>
+                    <?php } else { ?>
+                        <small class="text-danger"><?= $d['note_batal'] ?></small>
+                    <?php } ?>
                 </div>
             </div>
         <?php } ?>
@@ -96,6 +116,34 @@
     </div>
 </form>
 
+<form action="<?= PV::BASE_URL; ?>Setoran/cancel" method="POST">
+    <div class="modal" id="exampleModalCancel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title text-white">Pembatalan!</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Alasan Cancel</label>
+                                <input type="text" name="reason" class="form-control form-control-sm" required>
+                                <input type="hidden" name="id_kas">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-danger">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 
@@ -115,6 +163,11 @@
             }
         });
     });
+
+    $("a.cancel").click(function() {
+        id = $(this).attr("data-id");
+        $("input[name=id_kas]").val(id);
+    })
 
     $(document).ready(function() {
         $('select.tize').selectize();

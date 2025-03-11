@@ -232,6 +232,7 @@ class Data_Operasi extends Controller
                if ($jumlah > $saldo) {
                   $jumlah = $saldo;
                }
+               break;
             default:
                $status_mutasi = 0;
                break;

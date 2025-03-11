@@ -39,6 +39,7 @@ class Deposit extends Controller
    {
       $data['id_pelanggan'] = $id_pelanggan;
       $data['data'] = $this->db(0)->get_where("kas", "jenis_transaksi = 2 AND id_client = " . $id_pelanggan . " ORDER BY id_kas DESC LIMIT 10");
+      $data['mutasi'] = $this->db(0)->get_where("kas", "metode_mutasi = 4 AND id_client = " . $id_pelanggan . " ORDER BY id_kas DESC LIMIT 10");
       $data['saldo'] = $this->data("Saldo")->deposit($id_pelanggan);
       $this->view(__CLASS__ . "/data", $data);
    }
