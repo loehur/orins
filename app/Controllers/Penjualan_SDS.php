@@ -48,7 +48,7 @@ class Penjualan_SDS extends Controller
          $reft_list .= $r . ",";
       }
       $reft_list = rtrim($reft_list, ',');
-      $where = "ref_transaksi IN (" . $reft_list . ")";
+      $where = "ref_transaksi IN (" . $reft_list . ") AND cancel = 0";
 
       $data['nTunai'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where);
       $data['xtra_diskon'] = $this->db(0)->sum_col_where('xtra_diskon', 'jumlah', $where);
