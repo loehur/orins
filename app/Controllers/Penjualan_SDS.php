@@ -37,8 +37,8 @@ class Penjualan_SDS extends Controller
 
       $where_ref = "sds = 1 AND insertTime LIKE '" . $parse . "%' AND stat = 1 AND jenis = 2 AND id_sumber = '" . $this->userData['id_toko'] . "'";
       $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref);
-
       $refs = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref', 1);
+
       $ref_trx = array_keys($refs);
       $reft_list = "";
       foreach ($ref_trx as $r) {
@@ -57,6 +57,10 @@ class Penjualan_SDS extends Controller
       foreach ($data['sds'] as $ds) {
          $tunai += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
       }
+
+      echo "<pre>";
+      print_r($data['sds']);
+      echo "</pre>";
 
       $tunai -= $data['nTunai'];
       $data['tunai'] = $tunai;
