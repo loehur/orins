@@ -42,7 +42,7 @@ class Setoran extends Controller
 
       $ref_trx = array_keys($data['kas_trx']);
       $data['nontunai_sds'] = 0;
-      $data['xdiskon'] = 0;
+      $data['xDiskon'] = 0;
 
       if (count($ref_trx) > 0) {
          $reft_list = "";
