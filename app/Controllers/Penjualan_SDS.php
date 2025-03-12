@@ -59,7 +59,7 @@ class Penjualan_SDS extends Controller
       }
 
       echo "<pre>";
-      print_r($data['sds']);
+      echo $data['nTunai'];
       echo "</pre>";
 
       $tunai -= $data['nTunai'];
