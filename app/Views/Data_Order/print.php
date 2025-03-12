@@ -163,7 +163,7 @@
             if ($ds['ref_transaksi'] == $data['parse']) {
                 if ($ds['cancel'] == 0) {
                     $xtraDiskon += $ds['jumlah'];
-                    $showMutasi .= "<tr><td><small>* Extra Diskon " . $ds['insertTime'] . "</small></td><td align='right'><small>Rp" . number_format($ds['jumlah']) . "</small></tr>";
+                    $showMutasi .= "<tr><td><small>* Extra Diskon </small></td><td><small>" . date('d/m/y H:i', strtotime($ds['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($ds['jumlah']) . "</small></tr>";
                 }
             }
         }
