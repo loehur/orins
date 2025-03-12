@@ -34,8 +34,6 @@ class Penjualan_SDS extends Controller
       if ($parse == "") {
          $parse = date("Y-m-d");
       }
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND sds = 1 AND metode_mutasi = 2 AND status_mutasi <> 2 AND insertTime LIKE '" . $parse . "%'";
-      $data['nTunai'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where);
 
       $where_ref = "sds = 1 AND insertTime LIKE '" . $parse . "%' AND stat = 1 AND jenis = 2 AND id_sumber = '" . $this->userData['id_toko'] . "'";
       $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref);
@@ -51,6 +49,8 @@ class Penjualan_SDS extends Controller
       }
       $reft_list = rtrim($reft_list, ',');
       $where = "ref_transaksi IN (" . $reft_list . ")";
+
+      $data['nTunai'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where);
       $data['xtra_diskon'] = $this->db(0)->sum_col_where('xtra_diskon', 'jumlah', $where);
 
       $total_sds = 0;
