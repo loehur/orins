@@ -48,19 +48,17 @@ class Penjualan_SDS extends Controller
          $reft_list .= $r . ",";
       }
       $reft_list = rtrim($reft_list, ',');
-      $where = "ref_transaksi IN (" . $reft_list . ") AND cancel = 0";
 
+      $where = "ref_transaksi IN (" . $reft_list . ") AND status_mutasi <> 2";
       $data['nTunai'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where);
+
+      $where = "ref_transaksi IN (" . $reft_list . ") AND cancel = 0";
       $data['xtra_diskon'] = $this->db(0)->sum_col_where('xtra_diskon', 'jumlah', $where);
 
       $tunai = 0;
       foreach ($data['sds'] as $ds) {
          $tunai += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
       }
-
-      echo "<pre>";
-      echo $data['nTunai'];
-      echo "</pre>";
 
       $tunai -= $data['nTunai'];
       $data['tunai'] = $tunai;
