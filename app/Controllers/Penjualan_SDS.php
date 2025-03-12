@@ -53,16 +53,13 @@ class Penjualan_SDS extends Controller
       $data['nTunai'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where);
       $data['xtra_diskon'] = $this->db(0)->sum_col_where('xtra_diskon', 'jumlah', $where);
 
-      $total_sds = 0;
+      $tunai = 0;
       foreach ($data['sds'] as $ds) {
-         $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
+         $tunai += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
       }
 
-      if ($total_sds > 0) {
-         $total_sds -= $data['nTunai'];
-      }
-
-      $data['tunai'] = $total_sds;
+      $tunai -= $data['nTunai'];
+      $data['tunai'] = $tunai;
 
       $data['date'] = $parse;
       $this->view($this->v_content, $data);
