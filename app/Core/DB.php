@@ -350,7 +350,7 @@ class DB extends DBC
 
         $reply = $result->fetch_assoc();
         if ($result) {
-            return $reply["Total"];
+            return is_numeric($reply["Total"]) ? $reply["Total"] : 0;
         } else {
             return array('query' => $query, 'error' => $this->mysqli->error, 'errno' => $this->mysqli->errno, 'db' => $this->db_name);
         }
