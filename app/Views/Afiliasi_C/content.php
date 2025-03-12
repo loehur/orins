@@ -53,9 +53,8 @@
                                     if ($dp['id_pelanggan'] == $client) {
                                         $pelanggan = $dp['nama'];
                                     }
-                                }
+                                } ?>
 
-                            ?>
                                 <tr>
                                     <td>
                                         <span class="text-purple"><?= $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $a['id_toko']) ?></span><br>

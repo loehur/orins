@@ -104,7 +104,7 @@
                                     <button data-id="<?= $set['ref_setoran'] ?>" data-val="1" class="verify btn btn-sm shadow-sm btn-primary bg-gradient rounded-pill">Verify</button>
                                 </td>
                                 <td class="text-end">
-                                    <button data-id="<?= $set['ref_setoran'] ?>" data-val="2" class="verify btn btn-sm shadow-sm btn-outline-danger bg-gradient rounded-pill">Reject</button>
+
                                 </td>
                             </tr>
                         <?php } ?>

@@ -1,8 +1,23 @@
 <main>
+    <div class="row mx-0 mb-2 px-2">
+        <div class="col pe-0">
+            <div class="input-group">
+                <span class="input-group-text text-primary">Tanggal</span>
+                <input id="inDate" name="month" type="date" min="<?= date('Y-m-d', strtotime("-5 days")) ?>" max="<?= date('Y-m-d', strtotime("-1 days")) ?>" value="<?= date('Y-m-d', strtotime("-1 days")) ?>" placeholder="YYYY-MM-DD" class="form-control" required>
+                <button id="cek" class="btn btn-primary">Cek</button>
+            </div>
+
+        </div>
+        <div class="col-auto">
+            <button id="cekTotal" class="btn btn-success">Total</button>
+        </div>
+    </div>
+
     <?php $total = 0 ?>
     <?php $total_masalah = 0 ?>
     <?php if (count($data['kas']) > 0) { ?>
         <div class="p-2 ms-3 me-3 bg-white overflow-auto" style="max-height: 600px;">
+
             <div class="row mx-0">
                 <div class="col">
                     <table class="table table-sm text-sm">
@@ -118,7 +133,11 @@
                         <tr>
                             <td class="text-end">Penjualan Tunai <span class="text-success fw-bold"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span></td>
                             <td class="text-end" style="width:100px"><b>Rp<?= number_format($total - $total_sds) ?></b></td>
-                            <td rowspan="10" class="text-success text-sm align-middle"><button id="setor" class="btn btn-outline-success py-3 rounded-1">Buat<br>Setoran</button></td>
+                            <td rowspan="10" class="text-success text-sm align-middle" style="width: 100px;">
+                                <?php if ($data['date'] <> "") { ?>
+                                    <button id="setor" class="btn btn-outline-success py-3 rounded-1">Buat<br>Setoran</button>
+                                <?php } ?>
+                            </td>
                         </tr>
                         <?php if ($total_sds > 0) { ?>
                             <tr>
@@ -135,77 +154,6 @@
                         <tr>
                             <td class="text-end">Total</td>
                             <td class="text-end" style="width:100px"><b>Rp<?= number_format($total - $total_pengeluaran) ?></b></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-    <?php } ?>
-
-    <?php if (count($data['kas_reject']) > 0) { ?>
-        <div class="p-2 ms-3 mt-3 me-3 bg-white">
-            <div class="row mb-1">
-                <div class="col ms-2">
-                    <span class="text-purple">Setoran Bermasalah</span></small>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <table class="table table-sm">
-                        <tr>
-                            <th class="text-end">ID</th>
-                            <th>Customer</th>
-                            <th>Referensi</th>
-                            <th>Tanggal</th>
-                            <th class="text-end">Jumlah</th>
-                            <th>Action</th>
-                        </tr>
-                        <?php
-                        $no = 0;
-                        foreach ($data['kas_reject'] as $a) {
-                            $no += 1;
-
-                            $client = $a['id_client'];
-                            $jumlah = $a['jumlah'];
-                            if ($a['status_mutasi'] == 1) {
-                                $total_masalah += $jumlah;
-                            }
-                            $pelanggan = "Non";
-                            foreach ($data['pelanggan'] as $dp) {
-                                if ($dp['id_pelanggan'] == $client) {
-                                    $pelanggan = $dp['nama'];
-                                }
-                            }
-                        ?>
-                            <tr class="<?= ($a['status_mutasi'] == 2) ? 'text-secondary' : '' ?>">
-                                <td align="right">#<?= $a['id_kas'] ?></td>
-                                <td><?= strtoupper($pelanggan) ?></td>
-                                <td><?= $a['ref_transaksi'] ?></td>
-                                <td><?= $a['insertTime'] ?></td>
-                                <td align="right">Rp<?= number_format($jumlah) ?></td>
-                                <td>
-                                    <?php if ($a['status_mutasi'] == 1) { ?>
-                                        <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="px-2 text-decoration-none text-danger cancel border rounded" data-id="<?= $a['id_kas'] ?>" href="#">Batalkan</a>
-                                    <?php } else { ?>
-                                        <small>Dibatalkan</small><br>
-                                        <small class="text-primary"><?= $a['note_batal'] ?></small>
-                                    <?php } ?>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </table>
-
-                </div>
-            </div>
-        </div>
-    <?php } ?>
-    <?php if ($total_masalah > 0) { ?>
-        <div class="pe-2 pb-0 ms-3 me-3 bg-white">
-            <div class="row">
-                <div class="col">
-                    <table class="table table-sm table-borderless mb-2">
-                        <tr>
-                            <td class="text-end text-success"><button id="setor_masalah" class="btn btn-outline-danger">Buat Setoran Ulang: <b class="ms-2">Total Rp<?= number_format($total_masalah) ?></b></button></td>
                         </tr>
                     </table>
                 </div>
@@ -477,24 +425,18 @@
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
-    $("button#setor").dblclick(function() {
-        $.ajax({
-            url: "<?= PV::BASE_URL ?>Setoran/setor",
-            data: [],
-            type: "POST",
-            success: function(result) {
-                if (result == 0) {
-                    content();
-                } else {
-                    alert(result);
-                }
-            },
-        });
+    $("button#cek").click(function() {
+        var date = $('#inDate').val();
+        location.href = "<?= PV::BASE_URL ?>Setoran/index/" + date;
     });
 
-    $("button#setor_masalah").click(function() {
+    $("button#cekTotal").click(function() {
+        location.href = "<?= PV::BASE_URL ?>Setoran";
+    });
+
+    $("button#setor").dblclick(function() {
         $.ajax({
-            url: "<?= PV::BASE_URL ?>Setoran/setor_masalah",
+            url: "<?= PV::BASE_URL ?>Setoran/setor/<?= $data['date'] ?>",
             data: [],
             type: "POST",
             success: function(result) {

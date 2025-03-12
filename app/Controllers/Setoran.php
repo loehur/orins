@@ -15,13 +15,13 @@ class Setoran extends Controller
       $this->v_viewer = "Layouts/viewer";
    }
 
-   public function index()
+   public function index($date = "")
    {
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
          "title" => "Cashier - Setoran"
       ]);
-      $this->viewer();
+      $this->viewer($date);
    }
 
    public function viewer($parse = "")
@@ -31,12 +31,13 @@ class Setoran extends Controller
 
    public function content($parse = "")
    {
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND status_setoran = 2 ORDER BY id_kas DESC, id_client ASC";
-      $data['kas_reject'] = $this->db(0)->get_where('kas', $where);
+      if ($parse == "") {
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
+      } else {
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%' ORDER BY id_kas DESC, id_client ASC";
+      }
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
-
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
 
       $ref_trx = array_keys($data['kas_trx']);
@@ -95,23 +96,29 @@ class Setoran extends Controller
       $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
 
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
+
+      $data['date'] = $parse;
       $this->view($this->v_content, $data);
    }
 
-   function setor()
+   function setor($parse)
    {
       $ref = date("ymdhis") . rand(0, 9);
       $set = "ref_setoran = '" . $ref . "'";
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = ''";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%'";
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
 
       $ref_trx = array_keys($data['kas_trx']);
       $reft_list = "";
       foreach ($ref_trx as $r) {
+         if ($r == "") {
+            $r = 0;
+         }
          $reft_list .= $r . ",";
       }
       $reft_list = rtrim($reft_list, ',');
+
       $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND stat = 1 AND jenis = 2 AND id_sumber = '" . $this->userData['id_toko'] . "'";
       $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref);
 
@@ -138,7 +145,7 @@ class Setoran extends Controller
          }
       }
 
-      $where = "(jenis_transaksi = 1 OR jenis_transaksi = 2 OR jenis_transaksi = 3) AND id_toko = " . $this->userData['id_toko'] . " AND ref_setoran = ''";
+      $where = "(jenis_transaksi = 1 OR jenis_transaksi = 2 OR jenis_transaksi = 3) AND id_toko = " . $this->userData['id_toko'] . " AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%'";
       $update = $this->db(0)->update("kas", $set, $where);
       if ($update['errno'] <> 0) {
          echo $update['error'];
