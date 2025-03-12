@@ -7,28 +7,30 @@
 <main>
     <!-- Main page content-->
     <div class="container">
-        <form action="<?= PV::BASE_URL ?>Stok_Transfer/add" method="POST">
-            <div class="row mb-2 mx-0">
-                <div class="col-auto px-1 mb-2">
-                    <div class="autocomplete">
-                        <label>Tujuan</label><br>
-                        <select name="tujuan" required class="ac border-bottom border-0" id="tujuan" style="text-transform: uppercase;">
-                            <option></option>
-                            <?php foreach ($data['tujuan'] as $tj) { ?>
-                                <option value="<?= $tj['id'] ?>"><?= $tj['nama'] ?></option>
-                            <?php } ?>
-                        </select>
+        <?php if (in_array($this->userData['user_tipe'], PV::PRIV[7])) { ?>
+            <form action="<?= PV::BASE_URL ?>Stok_Transfer/add" method="POST">
+                <div class="row mb-2 mx-0">
+                    <div class="col-auto px-1 mb-2">
+                        <div class="autocomplete">
+                            <label>Tujuan</label><br>
+                            <select name="tujuan" required class="ac border-bottom border-0" id="tujuan" style="text-transform: uppercase;">
+                                <option></option>
+                                <?php foreach ($data['tujuan'] as $tj) { ?>
+                                    <option value="<?= $tj['id'] ?>"><?= $tj['nama'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-auto px-1 mb-2 text-center">
+                        <label>Tanggal</label><br>
+                        <input type="date" name="tanggal" class="text-center border-bottom border-0" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>">
+                    </div>
+                    <div class="col mt-auto mb-2">
+                        <button type="submit" class="btn btn-outline-success">Create</button>
                     </div>
                 </div>
-                <div class="col-auto px-1 mb-2 text-center">
-                    <label>Tanggal</label><br>
-                    <input type="date" name="tanggal" class="text-center border-bottom border-0" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>">
-                </div>
-                <div class="col mt-auto mb-2">
-                    <button type="submit" class="btn btn-outline-success">Create</button>
-                </div>
-            </div>
-        </form>
+            </form>
+        <?php } ?>
 
         <table class="text-sm" id="dt_tb">
             <thead>
@@ -41,6 +43,12 @@
                 </tr>
             </thead>
             <?php foreach ($data['input'] as $a) { ?>
+                <?php if (!in_array($this->userData['user_tipe'], PV::PRIV[7])) {
+                    if ($a['cek'] == 0) {
+                        continue;
+                    }
+                } ?>
+
                 <tr>
                     <td class="align-middle">
                         <a href="<?= PV::BASE_URL ?>Stok_Transfer/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
