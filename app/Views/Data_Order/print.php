@@ -133,7 +133,7 @@
                 if (isset($data['payment_account'][$dk['pa']]['payment_account'])) {
                     $payment_account = strtoupper($data['payment_account'][$dk['pa']]['payment_account']) . " ";
                 } else {
-                    $payment_account = "";
+                    $payment_account = "TUNAI";
                 }
 
                 $show_charge = "";
