@@ -16,17 +16,20 @@
             <div class="col">
                 <table class="table table-sm text-sm table-borderless mb-2">
                     <tr>
-                        <td class="text-end">Penjualan <span class="text-success fw-bold"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span></td>
-                        <td class="text-end" style="width:100px">Rp<?= number_format($data['s_toko']) ?></td>
-                    </tr>
-
-                    <tr>
-                        <td class="text-end">Penjualan <span class="text-success fw-bold">SDS</span></td>
-                        <td class="text-end" style="width:100px">Rp<?= number_format($data['s_sds']) ?></td>
+                        <td class="text-end">Tunai</td>
+                        <td class="text-end" style="width:100px">Rp<?= number_format($data['nTunai']) ?></td>
                     </tr>
                     <tr>
+                        <td class="text-end">Non Tunai</td>
+                        <td class="text-end" style="width:100px">Rp<?= number_format($data['tunai']) ?></td>
+                    </tr>
+                    <tr>
+                        <td class="text-end">Extra Diskon</td>
+                        <td class="text-end" style="width:100px">-Rp<?= number_format($data['xtra_diskon']) ?></td>
+                    </tr>
+                    <tr class="fw-bold">
                         <td class="text-end">Total</td>
-                        <td class="text-end" style="width:100px"><b>Rp<?= number_format($data['s_toko'] + $data['s_sds']) ?></b></td>
+                        <td class="text-end" style="width:100px">Rp<?= number_format($data['nTunai'] + $data['tunai'] - $data['xtra_diskon']) ?></td>
                     </tr>
                 </table>
             </div>
@@ -44,11 +47,11 @@
 <script>
     $("button#cek").click(function() {
         var date = $('#inDate').val();
-        location.href = "<?= PV::BASE_URL ?>Rekap_Harian/index/" + date;
+        location.href = "<?= PV::BASE_URL ?>Penjualan_SDS/index/" + date;
     });
 
     $("button#cekTotal").click(function() {
-        location.href = "<?= PV::BASE_URL ?>Rekap_Harian";
+        location.href = "<?= PV::BASE_URL ?>Penjualan_SDS";
     });
 
     $('span.cekTrx').click(function() {
