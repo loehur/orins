@@ -49,7 +49,7 @@ class Penjualan_SDS extends Controller
       }
       $reft_list = rtrim($reft_list, ',');
 
-      $where = "ref_transaksi IN (" . $reft_list . ") AND status_mutasi <> 2";
+      $where = "ref_transaksi IN (" . $reft_list . ") AND status_mutasi <> 2 AND sds = 1";
       $data['nTunai'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where);
 
       $where = "ref_transaksi IN (" . $reft_list . ") AND cancel = 0";
