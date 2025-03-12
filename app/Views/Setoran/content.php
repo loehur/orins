@@ -124,6 +124,11 @@
     if ($total_sds > 0) {
         $total_sds -= $data['nontunai_sds'];
     }
+
+    if (($total - $total_sds) < $data['xDiskon']) {
+        $total_sds -= $data['xDiskon'];
+    }
+
     ?>
 
     <?php if ($total > 0) { ?>
