@@ -49,20 +49,22 @@ class Penjualan_SDS extends Controller
       }
       $reft_list = rtrim($reft_list, ',');
 
-      $where = "ref_transaksi IN (" . $reft_list . ") AND status_mutasi <> 2 AND sds = 1";
+      $where = "ref_transaksi IN (" . $reft_list . ") AND metode_mutasi = 2 AND sds = 1 AND status_mutasi <> 2";
       $data['nTunai'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where);
 
-      $where = "ref_transaksi IN (" . $reft_list . ") AND cancel = 0 AND sds = 1";
-      $xdiskon = $this->db(0)->sum_col_where('xtra_diskon', 'jumlah', $where);
+      $where = "ref_transaksi IN (" . $reft_list . ") AND metode_mutasi = 1";
+      $data['tunai'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where);
 
-      $tunai = 0;
+      $total_sds = 0;
       foreach ($data['sds'] as $ds) {
-         $tunai += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
+         $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
       }
 
-      $tunai -= $xdiskon;
-      $tunai -= $data['nTunai'];
-      $data['tunai'] = $tunai;
+      $total = $data['tunai'] + $data['nTunai'];
+      if ($total > $total_sds) {
+         $selisih =  $total - $total_sds;
+         $data['tunai'] -= $selisih;
+      }
 
       $data['date'] = $parse;
       $this->view($this->v_content, $data);
