@@ -108,6 +108,11 @@ class Data_Operasi extends Controller
 
          $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
          $data['charge'] = $this->db(0)->get_where('charge', $where, 'ref_transaksi', 1);
+
+         //PASTIKAN BELUM TUNTAS INDUK REF
+         $set = "tuntas = 0";
+         $where = "ref IN (" . $ref_list . ")";
+         $this->db(0)->update("ref", $set, $where);
       }
 
       $data['refs'] = $refs;

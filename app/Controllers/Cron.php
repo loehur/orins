@@ -302,9 +302,13 @@ class Cron extends Controller
       $today = date("Y-m-d");
       $set = "tuntas = 1, tuntas_date = '" . $today . "'";
       $where = "ref = '" . $ref . "'";
-      $this->db(0)->update("order_data", $set, $where);
-      $this->db(0)->update("master_mutasi", $set, $where);
-      $this->update_ref($ref, $today);
+      $up = $this->db(0)->update("order_data", $set, $where);
+      if ($up['errno'] == 0) {
+         $up = $this->db(0)->update("master_mutasi", $set, $where);
+         if ($up['errno'] == 0) {
+            $this->update_ref($ref, $today);
+         }
+      }
    }
 
    function update_ref($ref, $date)
