@@ -23,13 +23,9 @@
                         <td class="text-end">Non Tunai</td>
                         <td class="text-end" style="width:100px">Rp<?= number_format($data['nTunai']) ?></td>
                     </tr>
-                    <tr>
-                        <td class="text-end">Extra Diskon</td>
-                        <td class="text-end" style="width:100px">-Rp<?= number_format($data['xtra_diskon']) ?></td>
-                    </tr>
                     <tr class="fw-bold">
                         <td class="text-end">Total</td>
-                        <td class="text-end" style="width:100px">Rp<?= number_format($data['nTunai'] + $data['tunai'] - $data['xtra_diskon']) ?></td>
+                        <td class="text-end" style="width:100px">Rp<?= number_format($data['nTunai'] + $data['tunai']) ?></td>
                     </tr>
                 </table>
             </div>
