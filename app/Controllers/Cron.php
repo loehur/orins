@@ -90,23 +90,17 @@ class Cron extends Controller
 
    function run_cek_tuntas()
    {
-      $last_check = date('ymd');
-      $where_ref = "tuntas = 0 AND last_check <> '" . $last_check . "' AND CURDATE() > (insertTime + INTERVAL 1 DAY)";
+      $where_ref = "tuntas = 0";
       $cek = $this->db(0)->get_where('ref', $where_ref);
       foreach ($cek as $c) {
          $this->cek_tuntas($c['ref']);
-         sleep(1);
+         sleep(2);
       }
    }
 
    public function cek_tuntas($ref = "", $print = false)
    {
-      $last_check = date('ymd');
-      if ($ref == "") {
-         $where_ref = "tuntas = 0 AND last_check <> '" . $last_check . "' AND CURDATE() > (insertTime + INTERVAL 1 DAY) ORDER BY updateTime ASC LIMIT 1";
-      } else {
-         $where_ref = "ref = '" . $ref . "'";
-      }
+      $where_ref = "ref = '" . $ref . "'";
       $cek = $this->db(0)->get_where_row('ref', $where_ref, 'ref');
 
       if (isset($cek['ref'])) {
@@ -117,7 +111,7 @@ class Cron extends Controller
 
       $cancel_count = 0;
 
-      $set = "cek_count = cek_count + 1, last_check = '" . $last_check . "'";
+      $set = "cek_count = cek_count + 1";
       $where = "ref = '" . $ref . "'";
       $this->db(0)->update("ref", $set, $where);
 
