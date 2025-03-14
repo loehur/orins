@@ -286,21 +286,30 @@ class Data_Operasi extends Controller
          exit();
       }
 
+      //data sds
+      $where_ref = "ref = '" . $ref . "' AND sds = 1 AND stat = 1";
+      $data_sds = $this->db(0)->get_where('master_mutasi', $where_ref);
+
+      //maximal transaksi sds
+      $max_sds = 0;
+      foreach ($data_sds as $ds) {
+         $max_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
+      }
+
       if ($sds == 1) {
-         $where_ref = "ref = '" . $ref . "' AND sds = 1 AND stat = 1";
-         $data_sds = $this->db(0)->get_where('master_mutasi', $where_ref);
-
-         $max = 0;
-         foreach ($data_sds as $ds) {
-            $max += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
+         //jika sds
+         if ($jumlah > $max_sds) {
+            echo "Diskon melebihi batas transaksi SDS!";
+            exit();
          }
-
-         if ($jumlah > $max || $jumlah == 0) {
-            echo "Jumlah Diskon melebihi batas transaksi SDS!";
+      } else {
+         //jika toko
+         $max_toko = $max - $max_sds;
+         if ($jumlah > $max_toko) {
+            echo "Diskon melebihi batas transaksi Toko!";
             exit();
          }
       }
-
 
       $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND cancel = 0";
       $dataCount = $this->db(0)->count_where('xtra_diskon', $whereCount);
