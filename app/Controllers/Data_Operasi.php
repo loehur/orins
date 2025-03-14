@@ -271,6 +271,7 @@ class Data_Operasi extends Controller
       $ref = $_POST['ref_diskon'];
       $jumlah = $_POST['diskon'];
       $note = $_POST['note'];
+      $sds = $_POST['sds'];
       $max = $_POST['max_diskon'];
 
       if ($jumlah > $max || $jumlah == 0) {
@@ -278,11 +279,27 @@ class Data_Operasi extends Controller
          exit();
       }
 
-      $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah;
+      if ($sds == 1) {
+         $where_ref = "ref = '" . $ref . "' AND sds = 1 AND stat = 1";
+         $data_sds = $this->db(0)->get_where('master_mutasi', $where_ref);
+
+         $max = 0;
+         foreach ($data_sds as $ds) {
+            $max += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
+         }
+
+         if ($jumlah > $max || $jumlah == 0) {
+            echo "Jumlah Diskon melebihi batas transaksi SDS!";
+            exit();
+         }
+      }
+
+
+      $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND cancel = 0";
       $dataCount = $this->db(0)->count_where('xtra_diskon', $whereCount);
 
-      $cols = "id_toko, ref_transaksi, jumlah, id_user, note";
-      $vals = $this->userData['id_toko'] . ",'" . $ref . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "'";
+      $cols = "id_toko, ref_transaksi, jumlah, id_user, note, sds";
+      $vals = $this->userData['id_toko'] . ",'" . $ref . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "'," . $sds;
 
       if ($dataCount < 1) {
          $do = $this->db(0)->insertCols('xtra_diskon', $cols, $vals);

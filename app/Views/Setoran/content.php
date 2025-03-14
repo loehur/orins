@@ -15,7 +15,6 @@
     </div>
 
     <?php $total = 0 ?>
-    <?php $total_masalah = 0 ?>
     <?php if (count($data['kas']) > 0) { ?>
         <div class="p-2 ms-3 me-3 bg-white overflow-auto" style="max-height: 600px;">
 
@@ -117,18 +116,15 @@
 
     <?php
     $total_sds = 0;
+    $total -= ($total_sds);
     foreach ($data['sds'] as $ds) {
         $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
     }
 
     if ($total_sds > 0) {
         $total_sds -= $data['nontunai_sds'];
+        $total_sds -= $data['xDiskon_sds'];
     }
-
-    if (($total - $total_sds) < $data['xDiskon']) {
-        $total_sds -= $data['xDiskon'];
-    }
-
     ?>
 
     <?php if ($total > 0) { ?>

@@ -149,6 +149,17 @@
                                 <input name="max_diskon" type="hidden">
                             </div>
                         </div>
+
+                        <div class="row mb-2 <?= $this->userData['id_toko'] <> 1 ? "d-none" : "" ?>">
+                            <div class="col">
+                                <label class="form-label">Akun</label>
+                                <select name="sds" class="form-select" required>
+                                    <option selected value="0">Toko</option>
+                                    <option value="1">SDS</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="row mb-3">
                             <div class="col">
                                 <label class="form-label">Note</label>
