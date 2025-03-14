@@ -110,9 +110,11 @@ class Data_Operasi extends Controller
          $data['charge'] = $this->db(0)->get_where('charge', $where, 'ref_transaksi', 1);
 
          //PASTIKAN BELUM TUNTAS INDUK REF
-         $set = "tuntas = 0";
-         $where = "ref IN (" . $ref_list . ")";
-         $this->db(0)->update("ref", $set, $where);
+         if ($parse_2 < 2023) {
+            $set = "tuntas = 0";
+            $where = "ref IN (" . $ref_list . ")";
+            $this->db(0)->update("ref", $set, $where);
+         }
       }
 
       $data['refs'] = $refs;
