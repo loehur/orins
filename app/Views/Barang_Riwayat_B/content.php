@@ -15,8 +15,9 @@
             <div class="col">
                 <select name="barang" class="tize border-0" id="barang">
                     <option value="">Pilih Barang</option>
-                    <?php foreach ($data['barang'] as $key => $br) { ?>
-                        <option value="<?= $key ?>"><?= trim($br['brand'] . " " . $br['model']) ?></option>
+                    <?php foreach ($data['barang'] as $key => $br) {
+                        $code_split = str_split($br['code'], 2); ?> ?>
+                        <option value="<?= $key ?>"><?= $code_split[0] ?> <?= trim($br['brand'] . " " . $br['model']) ?></option>
                     <?php } ?>
                 </select>
             </div>
