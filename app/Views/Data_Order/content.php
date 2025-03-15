@@ -57,6 +57,8 @@
     <?php
     $today = date("Y-m-d");
 
+    print_r($data['kas']);
+
     foreach ($data['refs'] as $ref) {
         $verify_payment[$ref] = 0;
         $bill[$ref] = 0;
