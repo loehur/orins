@@ -94,7 +94,7 @@ class Data_Order extends Controller
          }
          $ref_list = rtrim($ref_list, ',');
 
-         $cols = "ref_transaksi, jumlah";
+         $cols = "ref_transaksi, SUM(jumlah) as jumlah";
          $where = "ref_transaksi IN (" . $ref_list . ") AND status_mutasi <> 2 GROUP BY ref_transaksi";
          $data['kas'] = $this->db(0)->get_cols_where('kas', $cols, $where, 'ref_transaksi');
          $where = "ref_transaksi IN (" . $ref_list . ") AND cancel = 0 GROUP BY ref_transaksi";
