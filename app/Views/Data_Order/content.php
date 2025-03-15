@@ -63,13 +63,13 @@
         $bill[$ref] = 0;
 
         if (isset($data['kas'][$ref])) {
-            $verify_payment[$ref] = $data['kas'][$ref]['jumlah'];
+            $verify_payment[$ref] += $data['kas'][$ref]['jumlah'];
         }
         if (isset($data['charge'][$ref])) {
             $bill[$ref] += $data['charge'][$ref]['jumlah'];
         }
         if (isset($data['diskon'][$ref])) {
-            $verify_payment[$ref] = $data['diskon'][$ref]['jumlah'];
+            $verify_payment[$ref] += $data['diskon'][$ref]['jumlah'];
         }
     }
     ?>
