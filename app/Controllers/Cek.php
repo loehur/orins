@@ -12,8 +12,12 @@ class Cek extends Controller
       }
    }
 
-   function order($ref, $id_pelanggan)
+   function order($ref = 0, $id_pelanggan = 0)
    {
+      if ($ref == 0) {
+         $ref = $_POST['ref'];
+      }
+
       $data['kas'] = [];
       $data['r_kas'] = [];
       $data['divisi'] = $this->db(0)->get('divisi', 'id_divisi');
@@ -50,6 +54,9 @@ class Cek extends Controller
 
          $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
          $data['charge'] = $this->db(0)->get_where('charge', $where, 'ref_transaksi', 1);
+      } else {
+         echo "<div class='row'><div class='col text-center'>Tidak ada data</div></div>";
+         exit();
       }
 
       $data_ = [];
@@ -82,6 +89,7 @@ class Cek extends Controller
             $data['head'][$ref]['id_afiliasi'] = $dd['id_afiliasi'];
             $data['head'][$ref]['insertTime'] = $dd['insertTime'];
             $data['head'][$ref]['tuntas'] = $dd['tuntas'];
+            $id_pelanggan = $dd['id_pelanggan'];
             break;
          }
       }
@@ -91,10 +99,10 @@ class Cek extends Controller
             $data['head'][$ref]['cs'] = $dd['cs_id'];
             $data['head'][$ref]['insertTime'] = $dd['insertTime'];
             $data['head'][$ref]['tuntas'] = $dd['tuntas'];
+            $id_pelanggan = $dd['id_target'];
             break;
          }
       }
-
       $data['id_pelanggan'] = $id_pelanggan;
 
       $this->view(__CLASS__ . "/order", $data);
