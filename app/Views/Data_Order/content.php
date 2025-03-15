@@ -97,9 +97,9 @@
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
                                 if ($cancel == 0) {
                                     $bill[$ref] += $jumlah;
+                                    $bill[$ref] -= $do['diskon'];
                                 }
 
-                                $bill[$ref] -= $do['diskon'];
                                 $divisi_arr = unserialize($do['spk_dvs']);
                                 $countSPK = count($divisi_arr);
 
