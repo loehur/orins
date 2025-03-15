@@ -253,6 +253,9 @@ class Cron extends Controller
             if ($up['errno'] <> 0) {
                echo $up['error'] . "\n";
             } else {
+               $set = "tuntas = 1, tuntas_date = '" . $tuntas_date . "'";
+               $up = $this->db(0)->update("order_data", $set, $where);
+               $up = $this->db(0)->update("master_mutasi", $set, $where);
                echo $total_tuntas . " ORDER TUNTAS \n";
             }
          }
