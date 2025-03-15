@@ -264,6 +264,8 @@ class Cron extends Controller
       $where_ref = "ref = '" . $ref . "'";
       $cek = $this->db(0)->get_where_row('ref', $where_ref, 'ref');
 
+      echo "TUNTAS INDUK " . $cek['tuntas'] . "<br>";
+
       if (isset($cek['ref'])) {
          $ref = $cek['ref'];
       } else {
@@ -273,7 +275,6 @@ class Cron extends Controller
       $cancel_count = 0;
       $tuntas_date = date("Y-m-d");
       $where = "ref = '" . $ref . "'";
-      $data['paket'] = $this->db(0)->get('paket_main', "id");
       $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where);
       $where_kas = "jenis_transaksi = 1 AND ref_transaksi = '" . $ref . "' AND status_mutasi = 1";
@@ -416,7 +417,6 @@ class Cron extends Controller
             }
          }
       } else {
-
          if ($verify_payment == $bill && $ambil_all == true && $verify_kas_kecil == true) {
             echo "Ready to Tuntas<br>";
             if ($bill > 0 && $verify_payment > 0) {
