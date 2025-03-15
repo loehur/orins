@@ -98,8 +98,6 @@ class Cron extends Controller
       $tuntas_date = date("Y-m-d");
 
       if (count($refs) > 0) {
-         $data['paket'] = $this->db(0)->get('paket_main', "id");
-
          $ref_list = "";
          foreach ($refs as $r) {
             $ref_list .= $r . ",";
