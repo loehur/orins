@@ -87,7 +87,6 @@
 
                         if (isset($data['order'][$ref])) {
                             foreach ($data['order'][$ref] as $do) {
-                                $no++;
                                 $cancel = $do['cancel'];
                                 $id_ambil = $do['id_ambil'];
                                 $id_user_afiliasi = $do['id_user_afiliasi'];
@@ -97,6 +96,7 @@
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
 
                                 if ($cancel == 0 && $do['stok'] == 0) {
+                                    $no++;
                                     $bill[$ref] += $jumlah;
                                     $bill[$ref] -= $do['diskon'];
                                 }
@@ -198,13 +198,13 @@
 
                         if (isset($data['mutasi'][$ref])) {
                             foreach ($data['mutasi'][$ref] as $do) {
-                                $no++;
                                 $cancel = $do['stat'];
                                 $id_toko = $do['id_sumber'];
 
                                 $jumlah = ($do['harga_jual'] * $do['qty']) + $do['margin_paket'];
                                 $diskon = $do['diskon'] * $do['qty'];
                                 if ($cancel <> 2) {
+                                    $no++;
                                     $bill[$ref] += $jumlah;
                                     $bill[$ref] -= $diskon;
                                 }
