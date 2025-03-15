@@ -148,6 +148,8 @@
                                             <?php if ($id_afiliasi == 0 || $this->userData['id_toko'] == $id_toko) { ?>
                                                 <td class="text-end pe-1">
                                                     <small>
+                                                        <?= $bill[$ref] ?><br>
+                                                        <?= $verify_payment[$ref] ?>
                                                         &nbsp;
                                                         <?php if ($ambil_all[$ref] == true) { ?>
                                                             <i class="fa-solid fa-circle-check text-primary"></i>
