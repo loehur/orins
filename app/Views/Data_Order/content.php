@@ -60,28 +60,16 @@
     foreach ($data['refs'] as $ref) {
         $dibayar[$ref] = 0;
         $verify_payment[$ref] = 0;
-    }
+        $bill[$ref] = 0;
 
-    foreach ($data['kas'] as $ref => $sd) {
-        foreach ($sd as $dk) {
-            if ($dk['status_mutasi'] <> 2) {
-                $dibayar[$ref] += $dk['jumlah'];
-            }
-            if ($dk['metode_mutasi'] == 1 && $dk['status_setoran'] == 1 && $dk['status_mutasi'] == 1) {
-                $verify_payment[$ref] += $dk['jumlah'];
-            }
-            if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3 || $dk['metode_mutasi'] == 4) && $dk['status_mutasi'] == 1) {
-                $verify_payment[$ref] += $dk['jumlah'];
-            }
+        if (isset($data['kas'][$ref])) {
+            $verify_payment[$ref] = $data['kas'][$ref]['jumlah'];
         }
-    }
-
-    foreach ($data['diskon'] as $ref => $sd) {
-        foreach ($sd as $dk) {
-            if ($dk['cancel'] == 0) {
-                $dibayar[$ref] += $dk['jumlah'];
-                $verify_payment[$ref] += $dk['jumlah'];
-            }
+        if (isset($data['charge'][$ref])) {
+            $bill[$ref] += $data['charge'][$ref]['jumlah'];
+        }
+        if (isset($data['diskon'][$ref])) {
+            $verify_payment[$ref] = $data['diskon'][$ref]['jumlah'];
         }
     }
     ?>
@@ -93,7 +81,6 @@
                     <?php foreach ($data['refs'] as $key => $ref) { ?>
                         <?php
                         $no = 0;
-                        $bill[$ref] = 0;
                         $lunas[$ref] = false;
                         $ambil_all[$ref] = true;
                         $id_afiliasi = 0;
