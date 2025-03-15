@@ -95,7 +95,8 @@
                                 $id_toko = $do['id_toko'];
 
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
-                                if ($cancel == 0) {
+
+                                if ($cancel == 0 && $do['stok'] == 0) {
                                     $bill[$ref] += $jumlah;
                                     $bill[$ref] -= $do['diskon'];
                                 }
@@ -117,6 +118,7 @@
                                     $cs = $data['karyawan'][$do['id_penerima']]['nama']; ?>
                                 <?php } ?>
                             <?php } ?>
+
                             <?php unset($data['refs'][$key]); ?>
                         <?php } ?>
 

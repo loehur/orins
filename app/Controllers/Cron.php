@@ -177,17 +177,17 @@ class Cron extends Controller
 
                   if ($cancel == 0 && $do['stok'] == 0) {
                      $bill[$r] += ($jumlah + $do['margin_paket']);
+                     $bill[$r] -= $do['diskon'];
+
+                     if ($do['diskon'] > 0) {
+                        $ada_diskon[$r] = true;
+                     }
                   }
 
                   if ($cancel == 1) {
                      $cancel_count[$r] += 1;
                   }
 
-                  if ($do['diskon'] > 0) {
-                     $ada_diskon[$r] = true;
-                  }
-
-                  $bill[$r] -= $do['diskon'];
                   $id_ambil = $do['id_ambil'];
                   $divisi_arr = unserialize($do['spk_dvs']);
                   $countSPK = count($divisi_arr);
@@ -204,18 +204,16 @@ class Cron extends Controller
             if (isset($dMutasi[$r]) && count($dMutasi[$r]) > 0) {
                foreach ($dMutasi[$r] as $do) {
 
-                  if ($do['diskon'] > 0) {
-                     $ada_diskon[$r] = true;
-                  }
-
                   $cancel_barang = $do['stat'];
                   $jumlah = $do['qty'];
                   if ($cancel_barang <> 2) {
+                     if ($do['diskon'] > 0) {
+                        $ada_diskon[$r] = true;
+                     }
+
                      $bill[$r] += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
                      $bill[$r] -= ($do['diskon'] * $jumlah);
-                  }
-
-                  if ($cancel_barang == 2) {
+                  } else {
                      $cancel_count[$r] += 1;
                   }
                }
