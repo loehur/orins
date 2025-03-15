@@ -58,7 +58,6 @@
     $today = date("Y-m-d");
 
     foreach ($data['refs'] as $ref) {
-        $dibayar[$ref] = 0;
         $verify_payment[$ref] = 0;
         $bill[$ref] = 0;
 
@@ -129,7 +128,7 @@
                                 $in_toko = $this->dToko[$id_toko_pelanggan]['inisial'] . " ";
                             }
 
-                            $sisa[$ref] = $bill[$ref] - $dibayar[$ref];
+                            $sisa[$ref] = $bill[$ref] - $verify_payment[$ref];
                             if ($sisa[$ref] <= 0) {
                                 $lunas[$ref] = true;
                             } else {
@@ -226,7 +225,7 @@
                                 $in_toko = $this->dToko[$id_toko_pelanggan]['inisial'] . " ";
                             }
 
-                            $sisa[$ref] = $bill[$ref] - $dibayar[$ref];
+                            $sisa[$ref] = $bill[$ref] - $verify_payment[$ref];
                             if ($sisa[$ref] <= 0) {
                                 $lunas[$ref] = true;
                             } else {
