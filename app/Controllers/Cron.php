@@ -115,7 +115,7 @@ class Cron extends Controller
          $where_kasKecil = "ref IN (" . $ref_list . ") AND tipe = 0";
          $dKasKecil = $this->db(0)->get_where('kas_kecil', $where_kasKecil, 'ref', 1);
 
-         $cols = "ref_transaksi, jumlah";
+         $cols = "ref_transaksi, SUM(jumlah) as jumlah";
          $where = "ref_transaksi IN (" . $ref_list . ") AND cancel = 0 GROUP BY ref_transaksi";
          $dDiskon = $this->db(0)->get_cols_where('xtra_diskon', $cols, $where, 'ref_transaksi');
          $dCharge = $this->db(0)->get_cols_where('charge', $cols, $where, 'ref_transaksi');
