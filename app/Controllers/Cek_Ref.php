@@ -19,7 +19,7 @@ class Cek_Ref extends Controller
    {
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Laporan - Penjualan"
+         "title" => "Data Order - Referensi"
       ]);
       $this->viewer();
    }
