@@ -94,12 +94,12 @@ class Data_Order extends Controller
          }
          $ref_list = rtrim($ref_list, ',');
 
-         $cols = "ref_transaksi, SUM(jumlah) as jumlah";
+         $cols = "ref_transaksi, SUM(jumlah) AS jumlah";
          $where = "ref_transaksi IN (" . $ref_list . ") AND status_mutasi <> 2 GROUP BY ref_transaksi";
-         $data['kas'] = $this->db(0)->get_cols_where('kas', $cols, $where, 'ref_transaksi');
+         $data['kas'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_transaksi');
          $where = "ref_transaksi IN (" . $ref_list . ") AND cancel = 0 GROUP BY ref_transaksi";
-         $data['diskon'] = $this->db(0)->get_cols_where('xtra_diskon', $cols, $where, 'ref_transaksi');
-         $data['charge'] = $this->db(0)->get_cols_where('charge', $cols, $where, 'ref_transaksi');
+         $data['diskon'] = $this->db(0)->get_cols_where('xtra_diskon', $cols, $where, 1, 'ref_transaksi');
+         $data['charge'] = $this->db(0)->get_cols_where('charge', $cols, $where, 1, 'ref_transaksi');
 
          //UPDATE BELUM TUNTAS
          $set = "tuntas = 0, tuntas_date = ''";
