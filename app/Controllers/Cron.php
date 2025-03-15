@@ -91,10 +91,173 @@ class Cron extends Controller
    function run_cek_tuntas()
    {
       $where_ref = "tuntas = 0";
-      $cek = $this->db(0)->get_where('ref', $where_ref);
-      foreach ($cek as $c) {
-         $this->cek_tuntas($c['ref']);
-         sleep(2);
+      $cek = $this->db(0)->get_where('ref', $where_ref, "ref");
+      $ref_tuntas = [];
+
+      $refs = array_keys($cek);
+      $tuntas_date = date("Y-m-d");
+
+      if (count($refs) > 0) {
+         $data['paket'] = $this->db(0)->get('paket_main', "id");
+
+         $ref_list = "";
+         foreach ($refs as $r) {
+            $ref_list .= $r . ",";
+         }
+         $ref_list = rtrim($ref_list, ',');
+
+         $where = "ref IN (" . $ref_list . ")";
+
+         $dOrder = $this->db(0)->get_where('order_data', $where, 'ref', 1);
+         $dMutasi = $this->db(0)->get_where('master_mutasi', $where, 'ref', 1);
+
+         $where_kas = "jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ") AND status_mutasi = 1";
+         $dKas = $this->db(0)->get_where('kas', $where_kas, 'ref_transaksi', 1);
+
+         $where_kasKecil = "ref IN (" . $ref_list . ") AND tipe = 0";
+         $dKasKecil = $this->db(0)->get_where('kas_kecil', $where_kasKecil, 'ref', 1);
+
+         $cols = "ref_transaksi, jumlah";
+         $where = "ref_transaksi IN (" . $ref_list . ") AND cancel = 0 GROUP BY ref_transaksi";
+         $dDiskon = $this->db(0)->get_cols_where('charge', $cols, $where, 'ref_transaksi');
+         $dCharge = $this->db(0)->get_cols_where('charge', $cols, $where, 'ref_transaksi');
+
+         foreach ($refs as $r) {
+
+            $charge[$r] = 0;
+            if (isset($dCharge[$r]['jumlah'])) {
+               $charge[$r] = $dCharge[$r]['jumlah'];
+            }
+
+            $stok[$r] = false;
+            $ada_diskon[$r] = false;
+            $verify_kas_kecil[$r] = true;
+
+            if (isset($dKasKecil[$r]) && count($dKasKecil[$r]) > 0) {
+               foreach ($dKasKecil[$r] as $kk) {
+                  if ($kk['kas_kecil']['st'] <> 1) {
+                     $verify_kas_kecil[$r] = false;
+                     break;
+                  }
+               }
+            }
+
+            $bill[$r] = $charge[$r];
+            $ambil_all[$r] = true;
+            $verify_payment[$r] = 0;
+            $cancel_count[$r] = 0;
+            $stok[$r] = false;
+
+            if (isset($dKas[$r]) && count($dKas[$r]) > 0) {
+               foreach ($dKas[$r] as $dk) {
+                  if ($dk['metode_mutasi'] == 1 && $dk['status_mutasi'] == 1 && $dk['status_setoran'] == 1) {
+                     $verify_payment[$r] += $dk['jumlah'];
+                  }
+
+                  if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3 || $dk['metode_mutasi'] == 4) && $dk['status_mutasi'] == 1) {
+                     $verify_payment[$r] += $dk['jumlah'];
+                  }
+               }
+            }
+
+            if (isset($dDiskon[$r]) && count($dDiskon[$r]) > 0) {
+               foreach ($dDiskon[$r] as $ds) {
+                  if ($ds['cancel'] == 0) {
+                     $verify_payment[$r] += $ds['jumlah'];
+                  }
+               }
+            }
+
+            if (isset($dOrder[$r]) && count($dOrder[$r]) > 0) {
+               foreach ($dOrder[$r] as $do) {
+                  if ($do['stok'] == 1) {
+                     $stok[$r] = true;
+                  }
+
+                  $jumlah = $do['harga'] * $do['jumlah'];
+                  $cancel = $do['cancel'];
+
+                  if ($cancel == 0 && $do['stok'] == 0) {
+                     $bill[$r] += ($jumlah + $do['margin_paket']);
+                  }
+
+                  if ($cancel == 1) {
+                     $cancel_count[$r] += 1;
+                  }
+
+                  if ($do['diskon'] > 0) {
+                     $ada_diskon[$r] = true;
+                  }
+
+                  $bill[$r] -= $do['diskon'];
+                  $id_ambil = $do['id_ambil'];
+                  $divisi_arr = unserialize($do['spk_dvs']);
+                  $countSPK = count($divisi_arr);
+                  if ($id_ambil == 0 && $cancel == 0) {
+                     if ($countSPK > 0 && $cancel == 0) {
+                        $ambil_all[$r] = false;
+                     }
+                  }
+               }
+            } else {
+               $dOrder[$r] = [];
+            }
+
+            if (isset($dMutasi[$r]) && count($dMutasi[$r]) > 0) {
+               foreach ($dMutasi[$r] as $do) {
+
+                  if ($do['diskon'] > 0) {
+                     $ada_diskon[$r] = true;
+                  }
+
+                  $cancel_barang = $do['stat'];
+                  $jumlah = $do['qty'];
+                  if ($cancel_barang <> 2) {
+                     $bill[$r] += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
+                     $bill[$r] -= ($do['diskon'] * $jumlah);
+                  }
+
+                  if ($cancel_barang == 2) {
+                     $cancel_count[$r] += 1;
+                  }
+               }
+            } else {
+               $dMutasi[$r] = [];
+            }
+
+            $order_count[$r] = count($dMutasi[$r]) + count($dOrder[$r]);
+            if ($verify_payment[$r] == $bill[$r] && $ambil_all[$r] == true && $verify_kas_kecil[$r] == true) {
+               if ($bill[$r] > 0 && $verify_payment[$r] > 0) {
+                  array_push($ref_tuntas, $r);
+               } else {
+                  if ($stok[$r] == true || $ada_diskon[$r] == true) {
+                     array_push($ref_tuntas, $r);
+                  } else {
+                     if ($order_count[$r] == $cancel_count[$r]) {
+                        array_push($ref_tuntas, $r);
+                     }
+                  }
+               }
+            }
+         }
+
+         $total_tuntas = count($ref_tuntas);
+         if ($total_tuntas > 0) {
+            $rt_list = "";
+            foreach ($ref_tuntas as $r) {
+               $rt_list .= $r . ",";
+            }
+            $rt_list = rtrim($rt_list, ',');
+
+            $where = "ref IN (" . $rt_list . ")";
+            $set = "tuntas = 1, tuntas_date = '" . $tuntas_date . "'";
+            $up = $this->db(0)->update("ref", $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'] . "\n";
+            } else {
+               echo $total_tuntas . " ORDER TUNTAS \n";
+            }
+         }
       }
    }
 
@@ -110,11 +273,6 @@ class Cron extends Controller
       }
 
       $cancel_count = 0;
-
-      $set = "cek_count = cek_count + 1";
-      $where = "ref = '" . $ref . "'";
-      $this->db(0)->update("ref", $set, $where);
-
       $tuntas_date = date("Y-m-d");
       $where = "ref = '" . $ref . "'";
       $data['paket'] = $this->db(0)->get('paket_main', "id");
@@ -125,7 +283,7 @@ class Cron extends Controller
 
       $where_kasKecil = "ref = '" . $ref . "' AND tipe = 0";
       $data['kas_kecil'] = $this->db(0)->get_where('kas_kecil', $where_kasKecil);
-      $where = "ref_transaksi = '" . $ref . "'";
+      $where = "ref_transaksi = '" . $ref . "' AND cancel = 0";
       $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where);
 
       $where = "ref_transaksi = '" . $ref . "' AND cancel = 0";
