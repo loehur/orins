@@ -160,11 +160,15 @@ class Cron extends Controller
 
             if (isset($dDiskon[$r]) && count($dDiskon[$r]) > 0) {
                foreach ($dDiskon[$r] as $ds) {
+                  print_r($ds);
+                  continue;
                   if ($ds['cancel'] == 0) {
                      $verify_payment[$r] += $ds['jumlah'];
                   }
                }
             }
+
+            exit();
 
             if (isset($dOrder[$r]) && count($dOrder[$r]) > 0) {
                foreach ($dOrder[$r] as $do) {
