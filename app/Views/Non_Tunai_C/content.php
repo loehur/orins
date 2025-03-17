@@ -1,4 +1,15 @@
 <main>
+    <?php $date_choose = $data['date'] == "" ? date('Y-m-d', strtotime("-1 days")) : $data['date'] ?>
+    <div class="row mx-0 mb-2 px-0">
+        <div class="col">
+            <div class="input-group">
+                <span class="input-group-text text-primary">Tanggal</span>
+                <input id="inDate" name="month" type="date" min="2023-07-01" max="<?= date('Y-m-d') ?>" value="<?= $date_choose ?>" placeholder="YYYY-MM-DD" class="form-control" required>
+                <button id="cek" class="btn btn-primary">Cek</button>
+            </div>
+        </div>
+    </div>
+
     <?php if (count($data['kas']) > 0) {
         $rekap = [];
         foreach ($data['kas'] as $a) {
@@ -15,7 +26,6 @@
 
         <div class="row mx-0">
             <div class="col">
-                <span><b>Antrian Pengecekan Non Tunai</b></span>
                 <small>
                     <table class="text-sm table-hover table table-sm">
                         <?php
@@ -92,7 +102,6 @@
     <?php } ?>
     <div class="row mx-0">
         <div class="col">
-            <span><b>Riwayat Pembayaran Terkonfirmasi</b></span>
             <small>
                 <table class="table table-sm text-sm table-hover mt-2">
                     <?php
@@ -161,6 +170,11 @@
     $('span.cekTrx').click(function() {
         var ref = $(this).attr("data-ref");
         $("div#cekOrder").load('<?= PV::BASE_URL . $data['c_'] ?>/cekOrder/' + ref);
+    });
+
+    $("button#cek").click(function() {
+        var date = $('#inDate').val();
+        location.href = "<?= PV::BASE_URL ?>Non_Tunai_C/index/" + date;
     });
 
     $("button.action").click(function() {
