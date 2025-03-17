@@ -531,6 +531,16 @@
                                                 <table>
                                                     <tr>
                                                         <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm px-1"><i class="fa-solid fa-print"></i></a></small></td>
+                                                        <td class="text-sm pe-1">
+                                                            <small><?= $dh['user_id'] ?>#</small>
+                                                        </td>
+                                                        <td class="text-sm align-middle" style="cursor: pointer;">
+                                                            <?php if ($data['cust_wa']) { ?>
+                                                                <span onclick="copy('<?= $data['cust_wa'] ?>', <?= $ref ?>)" class="text-success"><i class="fa-brands fa-whatsapp"></i></span>
+                                                            <?php } ?>
+                                                            <span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
+                                                            <small><span id="span_copy_<?= $ref ?>" class="text-success fw-bold" style="display: none;">Copied!</span></small>
+                                                        </td>
                                                     </tr>
                                                 </table>
                                             <?php } ?>

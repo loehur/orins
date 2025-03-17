@@ -454,6 +454,25 @@ class Cron extends Controller
       }
    }
 
+   public function un_tuntas($ref = "")
+   {
+      if ($ref == "") {
+         echo "No Ref Found";
+         exit();
+      }
+
+      $where = "ref = '" . $ref . "' AND tuntas = 1";
+      $set = "tuntas = 0, tuntas_date = ''";
+      $up = $this->db(0)->update("ref", $set, $where);
+      if ($up['errno'] <> 0) {
+         echo $up['error'] . "\n";
+      } else {
+         $set = "tuntas = 0, tuntas_date = ''";
+         $up = $this->db(0)->update("order_data", $set, $where);
+         $up = $this->db(0)->update("master_mutasi", $set, $where);
+      }
+   }
+
    public function clearTuntas($ref)
    {
       $today = date("Y-m-d");
