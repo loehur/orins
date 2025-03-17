@@ -4,7 +4,7 @@
         <div class="col pe-0">
             <div class="input-group">
                 <span class="input-group-text text-primary">Tanggal</span>
-                <input id="inDate" name="month" type="date" min="<?= date('Y-m-d', strtotime("-5 days")) ?>" max="<?= date('Y-m-d', strtotime("-1 days")) ?>" value="<?= $date_choose ?>" placeholder="YYYY-MM-DD" class="form-control" required>
+                <input id="inDate" name="month" type="date" min="2023-07-01" max="<?= date('Y-m-d', strtotime("-1 days")) ?>" value="<?= $date_choose ?>" placeholder="YYYY-MM-DD" class="form-control" required>
                 <button id="cek" class="btn btn-primary">Cek</button>
             </div>
 
