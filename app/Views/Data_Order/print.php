@@ -133,7 +133,11 @@
                 if (isset($data['payment_account'][$dk['pa']]['payment_account'])) {
                     $payment_account = strtoupper($data['payment_account'][$dk['pa']]['payment_account']) . " ";
                 } else {
-                    $payment_account = "Tunai";
+                    if ($dk['metode_mutasi'] == 1) {
+                        $payment_account = "Tunai";
+                    } else {
+                        $payment_account = $note;
+                    }
                 }
 
                 $show_charge = "";
