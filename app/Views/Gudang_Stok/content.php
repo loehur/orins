@@ -8,34 +8,31 @@
 <main>
     <!-- Main page content-->
     <div class="container text-sm">
-        <table id="tb_barang" class="hover text-sm">
+        <table id="tb_barang" class="hover text-sm stripe">
             <thead>
-                <th>Head</th>
-                <th>Nama</th>
-                <th class="text-end">Umum</th>
-                <th class="text-end">R/D</th>
-                <th class="text-end">Olshop</th>
+                <th>Barang</th>
+                <th class="text-end">U</th>
+                <th class="text-end">D</th>
+                <th class="text-end">O</th>
                 <th>Stok</th>
             </thead>
             <?php foreach ($data['barang'] as $a) {
                 if (isset($data['stok'][$a['id']])) { ?>
                     <tr>
                         <td class="">
-                            <?= strtoupper($a['grup'] . " " . $a['tipe']) ?>
+                            <small><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></small><br>
+                            <small class="fw-bold"><?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?></small>
                         </td>
-                        <td>
-                            <?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?>
-                        </td>
-                        <td class="text-end">
+                        <td class="text-end align-top">
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_1" data-tb="master_barang"><?= $a['harga_1'] ?></span>
                         </td>
-                        <td class="text-end">
+                        <td class="text-end align-top">
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_2" data-tb="master_barang"><?= $a['harga_2'] ?></span>
                         </td>
-                        <td class="text-end">
+                        <td class="text-end align-top">
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
                         </td>
-                        <td class="text-end">
+                        <td class="text-end align-top">
                             <?= $data['stok'][$a['id']]['qty'] ?>/<?= isset($data['stok_gudang'][$a['id']]['qty']) ? $data['stok_gudang'][$a['id']]['qty'] : 0 ?>
                         </td>
                     </tr>

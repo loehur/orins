@@ -32,7 +32,7 @@ class Stok_Transfer extends Controller
    public function content()
    {
       $data['tujuan'] = $this->db(0)->get_cols_where('toko', 'id_toko, id_toko as id, nama_toko as nama', 'en = 1', 1, 'id_toko');
-      $data['input'] = $this->db(0)->get_where('master_input', 'tipe = 1 ORDER BY id DESC');
+      $data['input'] = $this->db(0)->get_where("master_input", "tipe = 1 AND id_target = '" . $this->userData['id_toko'] . "' ORDER BY id DESC");
       $this->view(__CLASS__ . '/content', $data);
    }
 
@@ -78,17 +78,18 @@ class Stok_Transfer extends Controller
 
    function add()
    {
-      $tujuan = strtoupper($_POST['tujuan']);
+      $tujuan = $this->userData['id_toko'];
       $tanggal = $_POST['tanggal'];
       $error = 0;
+      $note = $_POST['note'];
 
       if (strlen($tujuan) == 0 || strlen($tanggal) == 0) {
          exit();
       }
 
       $id = date('ymdHi');
-      $cols = 'id, tipe, id_sumber, id_target, tanggal, user_id';
-      $vals = "'" . $id . "',1,0,'" . $tujuan . "','" . $tanggal . "'," . $this->userData['id_user'];
+      $cols = 'id, tipe, id_sumber, id_target, tanggal, user_id, note';
+      $vals = "'" . $id . "',1,0,'" . $tujuan . "','" . $tanggal . "'," . $this->userData['id_user'] . ",'" . $note . "'";
       $do = $this->db(0)->insertCols('master_input', $cols, $vals);
       if ($do['errno'] <> 0) {
          $error .= $do['error'];
