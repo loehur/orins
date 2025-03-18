@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col">
             <div class="card">
-                <div class="card-header">CS Freq Top #3</div>
+                <div class="card-header">CS Freq Top #5</div>
                 <div class="card-body">
                     <canvas id="myChart" width="400" class="chartjs-render-monitor" style="display: block;"></canvas>
                 </div>
@@ -17,7 +17,7 @@
         </div>
         <div class="col">
             <div class="card">
-                <div class="card-header">Production Freq Top #3</div>
+                <div class="card-header">Production Freq Top #5</div>
                 <div class="card-body">
                     <canvas id="myChart2" width="400" class="chartjs-render-monitor" style="display: block;"></canvas>
                 </div>
