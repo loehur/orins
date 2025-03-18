@@ -14,7 +14,7 @@
             </div>
             <div class="col-auto text-center px-1 mb-2">
                 <label>Tujuan</label><br>
-                <input value="GUDANG" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
+                <input value="<?= strtoupper($data['tujuan'][$d['id_target']]['nama']) ?>" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
             </div>
             <div class="col-auto px-1 mb-2 text-center">
                 <label>Tanggal</label><br>

@@ -37,12 +37,15 @@
             </div>
         </form>
 
-        <table class="table table-sm">
+        <table class="table table-sm text-sm">
             <?php foreach ($data['input'] as $a) { ?>
                 <tr>
-                    <td><a href="<?= PV::BASE_URL ?>Retur_Barang_G/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a></td>
+                    <td>
+                        <a href="<?= PV::BASE_URL ?>Retur_Barang_G/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
+                        <br><?= strtoupper($data['supplier'][$a['id_target']]['nama']) ?>
+                    </td>
                     <td class="align-middle">
-                        #<?= $a['id'] ?><br>
+                        <?= $a['id'] ?><br>
                         <?= $a['tanggal'] ?>
                     </td>
                     <td class="">

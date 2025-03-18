@@ -47,7 +47,7 @@ class Retur_Barang_G extends Controller
    function list_data($id)
    {
       $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
-      $data['tujuan'] = $this->db(0)->get_where('toko', 'en = 1', 'id_toko');
+      $data['tujuan'] = $this->db(0)->get('master_supplier', 'id');
       $cols = "id, code, CONCAT(brand,' ',model) as nama";
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");
