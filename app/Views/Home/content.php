@@ -7,7 +7,7 @@
 <!-- Main page content-->
 <div class="container-sm">
     <div class="row">
-        <div class="col">
+        <div class="col mb-2">
             <div class="card">
                 <div class="card-header">CS Freq Top #5</div>
                 <div class="card-body">
