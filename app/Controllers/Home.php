@@ -28,6 +28,27 @@ class Home extends Controller
 
    public function content()
    {
-      $this->view($this->v_content);
+      $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC LIMIT 5";
+      $cs = $this->db(0)->get_where('karyawan', $whereKaryawan);
+
+      $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_pro DESC LIMIT 5";
+      $pro = $this->db(0)->get_where('karyawan', $whereKaryawan);
+
+      $data['cs'] = [];
+      $data['cs_data'] = [];
+      $data['pro'] = [];
+      $data['pro_data'] = [];
+
+      foreach ($cs as $c) {
+         array_push($data['cs'], $c['nama']);
+         array_push($data['cs_data'], $c['freq_cs']);
+      }
+
+      foreach ($pro as $c) {
+         array_push($data['pro'], $c['nama']);
+         array_push($data['pro_data'], $c['freq_pro']);
+      }
+
+      $this->view($this->v_content, $data);
    }
 }
