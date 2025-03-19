@@ -155,7 +155,7 @@
                         </tr>
                         <tr>
                             <td class="text-end">Total</td>
-                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total) ?></b></td>
+                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total - $total_pengeluaran) ?></b></td>
                         </tr>
                     </table>
                 </div>

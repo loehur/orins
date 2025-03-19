@@ -309,6 +309,9 @@
                                                                         <?php if ($dibayar == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item px-2 cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
                                                                         <?php } ?>
+                                                                        <?php if ($do['tuntas'] == 1) { ?>
+                                                                            <li><a data-bs-toggle="modal" data-bs-target="#modalRefund" class="dropdown-item px-2 refund" data-id="<?= $id ?>" href="#">Refund</a></li>
+                                                                        <?php } ?>
                                                                     </ul>
                                                                 </div>
                                                                 <?php if ($do['id_afiliasi'] <> 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) {
@@ -316,8 +319,7 @@
                                                                     if ($do['status_order'] == 1) { ?>
                                                                         <span class="badge text-danger"><?= $toko_aff ?> - Checking</span></span>
                                                                     <?php } else {
-                                                                        $cs_aff = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $do['id_user_afiliasi']);
-                                                                    ?>
+                                                                        $cs_aff = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $do['id_user_afiliasi']); ?>
                                                                         <span class="badge text-success"><i class="fa-solid fa-circle-check"></i> <?= $cs_aff ?> - <?= $toko_aff ?></span>
                                                                     <?php } ?>
                                                                 <?php } ?>
@@ -825,6 +827,11 @@
         id = $(this).attr("data-id");
         $("input[name=cancel_id]").val(id);
         $("input[name=tb]").val(0);
+    })
+
+    $("a.refund").click(function() {
+        id = $(this).attr("data-id");
+        $("input[name=refund_id]").val(id);
     })
 
     $("a.cancelBarang").click(function() {

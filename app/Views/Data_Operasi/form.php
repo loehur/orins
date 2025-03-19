@@ -132,6 +132,34 @@
     </div>
 </form>
 
+<form action="<?= PV::BASE_URL; ?>Data_Order/refund" method="POST">
+    <div class="modal" id="modalRefund">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white">Refund</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Alasan Refund</label>
+                                <input type="hidden" name="refund_id">
+                                <input type="text" name="reason" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Refund</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 <form action="<?= PV::BASE_URL; ?>Data_Operasi/xtraDiskon" method="POST">
     <div class="modal" id="exampleModalDiskon">
         <div class="modal-dialog modal-sm">
