@@ -69,7 +69,12 @@ class Export extends Controller
             $afiliasi = "";
          }
          $note = strtoupper($a['cancel_reason']);
-         $tgl_order = substr($a['insertTime'], 0, 10);
+
+
+         if (!isset($tgl_order[$ref])) {
+            $tgl_order[$ref] = substr($a['insertTime'], 0, 10);
+         }
+
          $main_order = strtoupper($a['produk']);
 
          if ($a['cancel'] == 0) {
@@ -111,7 +116,7 @@ class Export extends Controller
                $nb = strtoupper($dh['n_v']);
                $harga = $dh['h'];
                $total = $harga * $jumlah;
-               $lineData = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order, $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+               $lineData = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
                fputcsv($f, $lineData, $delimiter);
             }
          } else {
@@ -125,7 +130,7 @@ class Export extends Controller
             }
 
             $nb = rtrim($nb);
-            $lineData = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order, $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+            $lineData = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
             fputcsv($f, $lineData, $delimiter);
          }
       }
@@ -184,7 +189,9 @@ class Export extends Controller
          $cs = strtoupper($this->dKaryawanAll[$a['cs_id']]['nama']);
          $pelanggan = strtoupper($dPelanggan[$a['id_target']]['nama']);
 
-         $tgl_order = substr($a['insertTime'], 0, 10);
+         if (!isset($tgl_order[$ref])) {
+            $tgl_order[$ref] = substr($a['insertTime'], 0, 10);
+         }
 
          $harga = $a['harga_jual'];
          $total = ($harga * $jumlah) - $diskon;
@@ -201,7 +208,7 @@ class Export extends Controller
             }
          }
 
-         $lineData = array($a['id'], "R" . $ref, $fp, $tgl_order, $jenis, $pelanggan, $mark, $db['code'], $a['paket_ref'], $db['code_myob'], $barang, $a['sn'], $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $store, $order_status, '', $tanggal);
+         $lineData = array($a['id'], "R" . $ref, $fp, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'], $a['paket_ref'], $db['code_myob'], $barang, $a['sn'], $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $store, $order_status, '', $tanggal);
          fputcsv($f, $lineData, $delimiter);
       }
 

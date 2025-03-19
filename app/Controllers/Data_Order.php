@@ -128,13 +128,29 @@ class Data_Order extends Controller
    function cancel()
    {
       $id = $_POST['cancel_id'];
+
+      $cek = $this->db(0)->get_where_row("order_data", "id_order_data = " . $id);
+      if (isset($cek['paket_ref'])) {
+         $pref = $cek['paket_ref'];
+         $ref = $cek['ref'];
+      } else {
+         $cek = $this->db(0)->get_where_row("master_mutasi", "id = " . $id);
+         $pref = $cek['paket_ref'];
+         $ref = $cek['ref'];
+      }
+
       $tb = $_POST['tb'];
 
       $reason = $_POST['reason'];
       $karyawan = $_POST['id_karyawan'];
       if ($tb == 0) {
          $dateNow = date("Y-m-d H:i:s");
-         $where = "id_order_data = " . $id;
+         if ($pref == "") {
+            $where = "id_order_data = " . $id;
+         } else {
+            $where = "ref = '" . $ref . "' AND paket_ref = '" . $pref . "'";
+         }
+
          $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] == 0) {
@@ -150,7 +166,11 @@ class Data_Order extends Controller
             exit();
          }
       } else {
-         $where = "id = " . $id;
+         if ($pref == "") {
+            $where = "id = " . $id;
+         } else {
+            $where = "ref = '" . $ref . "' AND paket_ref = '" . $pref . "'";
+         }
          $set = "stat = 2";
          $update = $this->db(0)->update("master_mutasi", $set, $where);
          if ($update['errno'] <> 0) {
