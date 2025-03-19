@@ -309,7 +309,7 @@
                                                                         <?php if ($dibayar == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item px-2 cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
                                                                         <?php } ?>
-                                                                        <?php if ($do['tuntas'] == 1) { ?>
+                                                                        <?php if ($do['tuntas'] == 1 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#modalRefund" class="dropdown-item px-2 refund" data-id="<?= $id ?>" href="#">Refund</a></li>
                                                                         <?php } ?>
                                                                     </ul>
