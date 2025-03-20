@@ -309,7 +309,7 @@
                                                                         <?php if ($dibayar == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item px-2 cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
                                                                         <?php } ?>
-                                                                        <?php if ($do['tuntas'] == 1 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
+                                                                        <?php if ($do['tuntas'] == 1 && $do['refund'] == 0 && $cancel == 0 && $do['stok'] == 0 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#modalRefund" class="dropdown-item px-2 refund" data-id="<?= $id ?>" href="#">Refund</a></li>
                                                                         <?php } ?>
                                                                     </ul>
@@ -397,7 +397,9 @@
                                                         } ?>
                                                     </small>
                                                 </td>
-                                                <td class="text-end"><?= number_format($do['jumlah']) ?></td>
+                                                <td class="text-end">
+                                                    <?= number_format($do['jumlah']) ?>
+                                                </td>
                                                 <td class="text-end">
                                                     <?php
                                                     if ($do['margin_paket'] == 0) {
@@ -413,6 +415,10 @@
                                                             <?= number_format($jumlah + $do['margin_paket']) ?>
                                                     <?php }
                                                     } ?>
+                                                    <br>
+                                                    <?php if ($do['refund'] > 0) { ?>
+                                                        <span class="text-danger text-sm"><small>RF<?= str_replace("-", "", $do['refund_date']) ?><br><?= number_format($do['refund']) ?></small></span>
+                                                    <?php } ?>
                                                 </td>
                                             </tr>
                                         <?php }

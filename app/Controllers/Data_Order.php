@@ -182,6 +182,49 @@ class Data_Order extends Controller
       echo 0;
    }
 
+   function refund()
+   {
+      $id = $_POST['refund_id'];
+      $refund = $_POST['refund'];
+      $metod = $_POST['metode'];
+      $reason = $_POST['reason'];
+
+      $cek = $this->db(0)->get_where_row("order_data", "id_order_data = " . $id);
+      if ($cek['refund'] > 0) {
+         echo "Transaksi sudah di refund";
+         exit();
+      }
+
+      $max = $cek['harga'] * $cek['jumlah'];
+      $max += $max + $cek['margin_paket'];
+      $max -= $cek['diskon'];
+
+      if ($refund > $max) {
+         echo "Refund melebihi jumlah transaksi!";
+         exit();
+      }
+
+      $where_kas = "insertTime LIKE '" . date("Y-m-d") . "%' AND metode_mutasi = 1 AND sds = 0 AND status_mutasi <> 2 AND id_toko = '" . $this->userData['id_toko'] . "'";
+      $cek_kas = $this->db(0)->sum_col_where('kas', 'jumlah', $where_kas);
+
+      if ($refund > $cek_kas) {
+         echo "Kas Toko tidak cukup!";
+         exit();
+      }
+
+
+      $dateNow = date("Y-m-d");
+      $where = "id_order_data = " . $id;
+
+      $set = "refund = " . $refund . ", refund_metod = " . $metod . ", refund_reason = '" . $reason . "', refund_date = '" . $dateNow . "'";
+      $update = $this->db(0)->update("order_data", $set, $where);
+      if ($update['errno'] == 0) {
+         echo $update['errno'];
+      } else {
+         echo $update['error'];
+      }
+   }
+
    function cancel_diskon()
    {
       if (in_array($this->userData['user_tipe'], PV::PRIV[2])) {

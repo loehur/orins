@@ -64,11 +64,14 @@ class Setoran extends Controller
          $data['sds'] = [];
       }
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%' ORDER BY id_kas DESC";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND refund_metod = 1 AND refund_date LIKE '" . $parse . "%'";
+      $data['refund'] = $this->db(0)->get_where('order_data', $where);
+
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%'";
       $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
 
       $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
-      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan);
+      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan, 'id_pelanggan');
 
 
       //RIWAYAT
@@ -167,6 +170,13 @@ class Setoran extends Controller
          exit();
       }
 
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_setoran = '' AND refund_date LIKE '" . $parse . "%'";
+      $update = $this->db(0)->update("order_data", $set, $where);
+      if ($update['errno'] <> 0) {
+         echo $update['error'];
+         exit();
+      }
+
       echo 0;
    }
 
@@ -182,6 +192,9 @@ class Setoran extends Controller
       $data['pengeluaran'] = [];
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '" . $ref_setor . "' ORDER BY id_kas DESC";
       $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
+
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_setoran = '" . $ref_setor . "'";
+      $data['refund'] = $this->db(0)->get_where('order_data', $where);
 
       $this->view(__CLASS__ . "/cek", $data);
    }

@@ -141,10 +141,23 @@
                 </div>
                 <div class="modal-body">
                     <div class="container">
+                        <div class="row mb-2">
+                            <div class="col">
+                                <label class="form-label">Jumlah Refund Rp</label>
+                                <input type="number" name="refund" class="form-control form-control-sm text-end" required>
+                                <input type="hidden" name="refund_id">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Metode</label>
+                                <select class="form-select form-select-sm" name="metode" required>
+                                    <option selected></option>
+                                    <option value="1">Tunai Kas Kasir</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="row mb-3">
                             <div class="col">
                                 <label class="form-label">Alasan Refund</label>
-                                <input type="hidden" name="refund_id">
                                 <input type="text" name="reason" class="form-control form-control-sm" required>
                             </div>
                         </div>

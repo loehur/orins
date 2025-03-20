@@ -382,6 +382,10 @@
                                                             <?= number_format($jumlah + $do['margin_paket']) ?>
                                                     <?php }
                                                     } ?>
+                                                    <br>
+                                                    <?php if ($do['refund'] > 0) { ?>
+                                                        <span class="text-danger text-sm"><small>RF<?= str_replace("-", "", $do['refund_date']) ?><br><?= number_format($do['refund']) ?></small></span>
+                                                    <?php } ?>
                                                 </td>
                                             </tr>
                                         <?php }
@@ -453,6 +457,11 @@
                                     </tr>
                                     <?php if (strlen($showMutasi) > 0) { ?>
                                         <tr>
+                                            <td><?php
+                                                if ($do['tuntas'] == 1) { ?>
+                                                    <span class="badge bg-success">TUNTAS</span>
+                                                <?php } ?>
+                                            </td>
                                             <td class="text-end text border-0" colspan="4">
                                                 <?= $showMutasi ?>
                                             </td>

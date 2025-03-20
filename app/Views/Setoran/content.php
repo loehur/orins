@@ -34,12 +34,7 @@
                             if ($a['status_mutasi'] == 1) {
                                 $total += $jumlah;
                             }
-                            $pelanggan = "Non";
-                            foreach ($data['pelanggan'] as $dp) {
-                                if ($dp['id_pelanggan'] == $client) {
-                                    $pelanggan = $dp['nama'];
-                                }
-                            }
+                            $pelanggan = $data['pelanggan'][$client]['nama'];
 
                             $ref = $a['ref_transaksi'];
                             if ($a['jenis_transaksi'] == 2) {
@@ -114,6 +109,39 @@
         </div>
     <?php } ?>
 
+    <?php $total_refund = 0; ?>
+    <?php if (count($data['refund']) > 0) { ?>
+        <div class="p-2 ms-3 me-3 bg-white overflow-auto" style="max-height: 600px;">
+            <div class="row mx-0">
+                <div class="col">
+                    <table class="table table-sm text-sm">
+                        <tr>
+                            <th colspan="10" class="text-primary">Refund</th>
+                        </tr>
+                        <?php
+                        $no = 0;
+                        foreach ($data['refund'] as $r) {
+                            $no += 1;
+                            $jumlah = $r['refund'];
+                            $total_refund += $jumlah;
+                            $pelanggan = $data['pelanggan'][$r['id_pelanggan']]['nama']; ?>
+                            <tr>
+                                <td align="right"><a href="<?= PV::BASE_URL ?>Cek/order/<?= $r['ref'] ?>/<?= $r['id_pelanggan'] ?>" target="_blank">#<?= $r['ref'] ?></a></td>
+                                <td><?= date('d/m/y', strtotime($r['refund_date'])) ?></td>
+                                <td><?= strtoupper($pelanggan) ?></td>
+                                <td><?= strtoupper($r['refund_reason']) ?></td>
+                                <td align="right"><?= number_format($jumlah) ?></td>
+                                <td>
+                                    <a class="px-2 text-decoration-none text-danger rounded" href="#"><i class="fa-solid fa-square-xmark"></i></a>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
+
     <?php
     $total_sds = 0;
     $total -= ($total_sds);
@@ -134,7 +162,7 @@
                     <table class="table table-sm text-sm table-borderless mb-2">
                         <tr>
                             <td class="text-end">Penjualan Tunai <span class="text-success fw-bold"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span></td>
-                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total - $total_sds - $total_pengeluaran) ?></b></td>
+                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total - $total_sds - $total_pengeluaran - $total_refund) ?></b></td>
                             <td rowspan="10" class="text-success text-sm align-middle" style="width: 100px;">
                                 <?php if ($data['date'] <> "") { ?>
                                     <button id="setor" class="btn btn-outline-success py-3 rounded-1">Buat<br>Setoran</button>
@@ -148,14 +176,14 @@
                             </tr>
                         <?php } ?>
                         <tr>
+                            <td class="text-end">Total Tunai</td>
+                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total - $total_pengeluaran - $total_refund) ?></b></td>
+                        </tr>
+                        <tr>
                             <td class="text-end">
                                 <a data-bs-toggle="modal" data-bs-target="#modalPengeluaran" class="text-decoration-none" data-id="<?= $a['id_kas'] ?>" href="#"><i class="fa-solid text-danger fa-square-plus"></i> Pengeluaran</a>
                             </td>
                             <td class="text-end" style="width:100px"><b>Rp<?= number_format($total_pengeluaran) ?></b></td>
-                        </tr>
-                        <tr>
-                            <td class="text-end">Total</td>
-                            <td class="text-end" style="width:100px"><b>Rp<?= number_format($total - $total_pengeluaran) ?></b></td>
                         </tr>
                     </table>
                 </div>
