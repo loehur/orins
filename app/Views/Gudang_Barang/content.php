@@ -122,6 +122,7 @@ $max_length = [2, 2, 2, 3];
                         </td>
                         <?php $split_code = str_split($a['code'], 2) ?>
                         <td class="">
+                            <span class="d-none"><?= $a['code'] ?></span>
                             <span class="text-sm text-primary cell_edit_head" data-code="<?= $split_code[0] ?>" data-mode="G"><?= strtoupper($a['grup']) ?></span> <span class="text-sm text-success cell_edit_head" data-code="<?= $split_code[1] ?>" data-mode="T"><?= strtoupper($a['tipe']) ?></span><br>
                             <?php if ($a['sp'] == 0) { ?>
                                 <span class="fw-bold cell_edit_head" data-code="<?= $split_code[2] ?>" data-mode="B"><?= strtoupper($a['brand']) ?></span>
