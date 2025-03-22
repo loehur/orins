@@ -226,6 +226,13 @@
                             $count_keluar = 0;
                             $jumlah_keluar = 0;
                         }
+
+                        if (isset($data['refund'][$set['ref_setoran']]['jumlah'])) {
+                            $refund = $data['refund'][$set['ref_setoran']]['jumlah'];
+                        } else {
+                            $refund = 0;
+                        }
+
                         $totalSetor = $set['jumlah'] - $jumlah_keluar; ?>
                         <tr>
                             <td>
@@ -325,7 +332,7 @@
                                 <?php if ($boleh_split == true) { ?>
                                     <span style="cursor:pointer" data-bs-toggle="modal" onclick="ref('<?= $set['ref_setoran'] ?>',<?= ($totalSetor - $sds_done[$set['ref_setoran']]) ?>,0)" data-bs-target="#modalSplit" class="badge bg-primary">Split</span>
                                 <?php } ?>
-                                <span><?= $st_setor ?> Setor <span class=""><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']]) ?></span>
+                                <span><?= $st_setor ?> Setor <span class=""><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']] - $refund) ?></span>
                             </td>
                         </tr>
                     <?php } ?>
