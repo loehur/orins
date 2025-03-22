@@ -98,6 +98,7 @@
                         </tr>
                         <?php
                         $no = 0;
+                        $total_refund = 0;
                         foreach ($data['refund'] as $r) {
                             $no += 1;
                             $jumlah = $r['refund'];
