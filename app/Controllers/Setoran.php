@@ -104,7 +104,7 @@ class Setoran extends Controller
 
       $cols = "ref_setoran, sum(refund) as jumlah";
       $where = "id_toko = " . $this->userData['id_toko'] . " AND refund_metod = 1 AND ref_setoran IN (" . $ref_list . ") GROUP BY ref_setoran";
-      $data['refund'] = $this->db(0)->get_cols_where('order_data', $cols, $where, 1, 'ref_setoran');
+      $data['refund_done'] = $this->db(0)->get_cols_where('order_data', $cols, $where, 1, 'ref_setoran');
 
       $whereSplit = "ref IN (" . $ref_list . ") AND tipe = 4 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 0";
       $data['sds_tarik'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');

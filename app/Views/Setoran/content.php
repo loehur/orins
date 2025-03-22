@@ -191,12 +191,6 @@
         </div>
     <?php } ?>
 
-    <pre>
-        <?php
-        print_r($data['refund']);
-        ?>
-    </pre>
-
     <div class="pe-2 pb-0 ms-3 me-3 bg-white text-sm">
         <div class="row mb-1">
             <div class="col ms-2">
@@ -233,8 +227,8 @@
                             $jumlah_keluar = 0;
                         }
 
-                        if (isset($data['refund'][$set['ref_setoran']]['jumlah'])) {
-                            $refund = $data['refund'][$set['ref_setoran']]['jumlah'];
+                        if (isset($data['refund_done'][$set['ref_setoran']]['jumlah'])) {
+                            $refund = $data['refund_done'][$set['ref_setoran']]['jumlah'];
                         } else {
                             $refund = 0;
                         }
