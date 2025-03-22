@@ -64,7 +64,7 @@ class Setoran extends Controller
          $data['sds'] = [];
       }
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND refund_metod = 1 AND refund_date LIKE '" . $parse . "%'";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND refund_metod = 1 AND refund_date LIKE '" . $parse . "%' AND ref_setoran = ''";
       $data['refund'] = $this->db(0)->get_where('order_data', $where);
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%'";
