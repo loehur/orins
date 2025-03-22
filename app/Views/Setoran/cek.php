@@ -110,9 +110,6 @@
                                 <td><?= strtoupper($pelanggan) ?></td>
                                 <td><?= strtoupper($r['refund_reason']) ?></td>
                                 <td align="right"><?= number_format($jumlah) ?></td>
-                                <td>
-                                    <a class="px-2 text-decoration-none text-danger rounded" href="#"><i class="fa-solid fa-square-xmark"></i></a>
-                                </td>
                             </tr>
                         <?php } ?>
                     </table>
