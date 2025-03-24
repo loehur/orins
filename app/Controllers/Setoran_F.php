@@ -108,6 +108,9 @@ class Setoran_F extends Controller
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '" . $ref_setor . "' ORDER BY id_kas DESC";
       $data['pengeluaran'] = $this->db(0)->get_where('kas', $where);
 
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_setoran = '" . $ref_setor . "'";
+      $data['refund'] = $this->db(0)->get_where('order_data', $where);
+
       $this->view(__CLASS__ . "/cek", $data);
    }
 }

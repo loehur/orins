@@ -87,4 +87,33 @@
             </div>
         </div>
     <?php } ?>
+    <?php if (count($data['refund']) > 0) { ?>
+        <div class="p-2 ms-3 me-3 bg-white overflow-auto" style="max-height: 600px;">
+            <div class="row mx-0">
+                <div class="col">
+                    <table class="table table-sm text-sm">
+                        <tr>
+                            <th colspan="10" class="text-primary">Refund</th>
+                        </tr>
+                        <?php
+                        $no = 0;
+                        $total_refund = 0;
+                        foreach ($data['refund'] as $r) {
+                            $no += 1;
+                            $jumlah = $r['refund'];
+                            $total_refund += $jumlah;
+                            $pelanggan = $data['pelanggan'][$r['id_pelanggan']]['nama']; ?>
+                            <tr>
+                                <td align="right"><a href="<?= PV::BASE_URL ?>Cek/order/<?= $r['ref'] ?>/<?= $r['id_pelanggan'] ?>" target="_blank">#<?= $r['ref'] ?></a></td>
+                                <td><?= date('d/m/y', strtotime($r['refund_date'])) ?></td>
+                                <td><?= strtoupper($pelanggan) ?></td>
+                                <td><?= strtoupper($r['refund_reason']) ?></td>
+                                <td align="right"><?= number_format($jumlah) ?></td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
 </main>
