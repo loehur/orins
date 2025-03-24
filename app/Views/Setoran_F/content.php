@@ -87,7 +87,7 @@
 
                                     <?php $total_refund[$set['ref_setoran']] = 0; ?>
                                     <?php if (isset($data['refund'][$set['ref_setoran']])) {
-                                        $total_refund[$set['ref_setoran']] = $data[$set['ref_setoran']]['jumlah']; ?>
+                                        $total_refund[$set['ref_setoran']] = $data[$set['refund']][$set['ref_setoran']]['jumlah']; ?>
                                     <?php } ?>
 
                                     <?php
