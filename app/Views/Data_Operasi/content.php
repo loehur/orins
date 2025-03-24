@@ -891,18 +891,11 @@
         });
     });
 
-    $("select.metodeBayar").on("keyup change", function() {
-        if ($(this).val() == 1 || $(this).val() == 2 || $(this).val() == 3) {
-            $("div#noteBayar").show();
-        }
-    });
-
     $("select.metodeBayar_multi").on("keyup change", function() {
-        if ($(this).val() == 2 || $(this).val() == 3) {
+        if ($(this).val() == 1 || $(this).val() == 2 || $(this).val() == 3) {
             $("tr#noteBayar_multi").show();
         } else {
             $("tr#noteBayar_multi").hide();
-            $("input[name=note_multi").val("");
         }
 
         if ($(this).val() == 2) {
