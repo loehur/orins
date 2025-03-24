@@ -31,7 +31,7 @@ class Audit_BMasuk extends Controller
 
    public function content()
    {
-      $data['input'] = $this->db(0)->get_where('master_input', 'tipe = 0 AND cek = 0 ORDER BY id DESC');
+      $data['input'] = $this->db(0)->get_where('master_input', 'tipe = 0 AND cek = 0 ORDER BY insertTime DESC');
       $data['input_done'] = $this->db(0)->get_where('master_input', "tipe = 0 AND cek <> 0 ORDER BY id DESC");
       $data['supplier'] = $this->db(0)->get('master_supplier', 'id');
       $this->view(__CLASS__ . '/content', $data);
