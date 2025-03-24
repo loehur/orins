@@ -85,6 +85,14 @@
                                         </div>
                                     <?php } ?>
 
+                                    <?php $total_refund = 0; ?>
+                                    <?php if (count($data['refund'][$set['ref_setoran']]) > 0) { ?>
+                                        <?php foreach ($data['refund'][$set['ref_setoran']] as $r) {
+                                            $jumlah = $r['refund'];
+                                            $total_refund += $jumlah; ?>
+                                        <?php } ?>
+                                    <?php } ?>
+
                                     <?php
                                     $sds_tarik = 0;
                                     if (isset($data['sds_tarik'][$set['ref_setoran']])) {

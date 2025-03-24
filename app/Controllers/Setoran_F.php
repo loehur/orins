@@ -61,6 +61,10 @@ class Setoran_F extends Controller
          $ref_list = "0";
       }
 
+      $cols = "ref_setoran, sum(refund) as jumlah";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND refund_metod = 1 AND ref_setoran IN (" . $ref_list . ") GROUP BY ref_setoran";
+      $data['refund_done'] = $this->db(0)->get_cols_where('order_data', $cols, $where, 1, 'ref_setoran');
+
       $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 0 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 1";
       $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
       $whereSplit = "ref IN (" . $ref_list . "," . $ref_list_done . ") AND tipe = 0 AND id_sumber = " . $this->userData['id_toko'] . " AND id_target = 0";
@@ -73,7 +77,6 @@ class Setoran_F extends Controller
       $cols = "ref_setoran, status_setoran, sum(jumlah) as jumlah, count(jumlah) as count";
       $where = "status_mutasi <> 2 AND jenis_transaksi = 3 AND ref_setoran IN (" . $ref_list . "," . $ref_list_done . ") GROUP BY ref_setoran";
       $data['keluar'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_setoran');
-
 
       $this->view($this->v_content, $data);
    }
