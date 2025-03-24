@@ -85,12 +85,10 @@
                                         </div>
                                     <?php } ?>
 
-                                    <?php $total_refund = 0; ?>
-                                    <?php if (isset($data['refund_done'][$set['ref_setoran']])) { ?>
-                                        <?php foreach ($data['refund_done'][$set['ref_setoran']] as $r) {
-                                            $jumlah = $r['refund'];
-                                            $total_refund += $jumlah; ?>
-                                        <?php } ?>
+                                    <?php $total_refund[$set['ref_setoran']] = 0; ?>
+                                    <?php if (isset($data['refund'][$set['ref_setoran']])) {
+                                        $total_refund[$set['ref_setoran']] = $r['jumlah']; 
+                                        } ?>
                                     <?php } ?>
 
                                     <?php
@@ -106,7 +104,7 @@
                                         <span>Setor SDS</span> <span class="text-success"><?= number_format($sds_done[$set['ref_setoran']] - $sds_tarik) ?></span><br>
                                     <?php } ?>
 
-                                    <span class="">Setor <span class=""><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']] - $total_refund) ?></span>
+                                    <span class="">Setor <span class=""><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']] - $total_refund[$set['ref_setoran']]) ?></span>
                                 </td>
                                 <td style="width: 80px;">
                                     <button data-id="<?= $set['ref_setoran'] ?>" data-val="1" class="verify btn btn-sm shadow-sm btn-primary bg-gradient rounded-pill">Verify</button>
