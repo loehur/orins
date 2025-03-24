@@ -96,7 +96,6 @@
     $(document).ready(function() {
         $('#dt_tb').dataTable({
             "bLengthChange": false,
-            "bFilter": true,
             "bInfo": false,
             "bAutoWidth": false,
             "pageLength": 50,
