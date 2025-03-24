@@ -96,8 +96,10 @@
     $(document).ready(function() {
         $('#dt_tb').dataTable({
             "bLengthChange": false,
+            "bFilter": true,
             "bInfo": false,
             "bAutoWidth": false,
+            "ordering": false,
             "pageLength": 50,
             "scrollY": 530,
             "dom": "lfrti"
