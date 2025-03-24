@@ -892,11 +892,8 @@
     });
 
     $("select.metodeBayar").on("keyup change", function() {
-        if ($(this).val() == 2 || $(this).val() == 3) {
+        if ($(this).val() == 1 || $(this).val() == 2 || $(this).val() == 3) {
             $("div#noteBayar").show();
-        } else {
-            $("div#noteBayar").hide();
-            $("input[name=note").val("");
         }
     });
 
