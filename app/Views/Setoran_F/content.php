@@ -151,8 +151,13 @@
                         }
 
                         $time = strtotime(substr($set['ref_setoran'], 0, 8));
-                        $setor = date('d/m/Y', $time);
-                    ?>
+                        $setor = date('d/m/Y', $time); ?>
+
+                        <?php $total_refund[$set['ref_setoran']] = 0; ?>
+                        <?php if (isset($data['refund'][$set['ref_setoran']])) {
+                            $total_refund[$set['ref_setoran']] = $data['refund'][$set['ref_setoran']]['jumlah']; ?>
+                        <?php } ?>
+
                         <tr>
                             <td class="text-primary pt-2" style="cursor: pointer;"><span data-bs-toggle="modal" data-bs-target="#modalCek" class="cekTrx" data-ref="<?= $set['ref_setoran'] ?>"><small><i class="fa-solid fa-list-check"></i></small></span></td>
                             <td><?= $set['ref_setoran'] ?></small></td>
@@ -231,7 +236,7 @@
                                     <?= $st_setor ?> <span>Setor SDS</span> <span class="text-success"><?= number_format($sds_done[$set['ref_setoran']] - $sds_tarik) ?></span><br>
                                 <?php } ?>
 
-                                <?= $st_setor ?> <span>Setor <?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']]) ?></span>
+                                <?= $st_setor ?> <span>Setor <?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']] - $total_refund[$set['ref_setoran']]) ?></span>
                             </td>
                         </tr>
                     <?php } ?>
