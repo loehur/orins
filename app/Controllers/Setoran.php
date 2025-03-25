@@ -114,7 +114,7 @@ class Setoran extends Controller
       $ref = date("ymdhis") . rand(0, 9);
       $set = "ref_setoran = '" . $ref . "'";
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%'";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND status_mutasi <> 2 AND id_client <> 0 AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%'";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
 
