@@ -154,7 +154,7 @@
         $total_sds -= $data['xDiskon_sds'];
     }
 
-    echo $data['xDiskon_sds'];
+    echo number_format($total_sds);
     exit();
 
     ?>
