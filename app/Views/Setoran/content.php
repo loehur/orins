@@ -26,6 +26,7 @@
                         </tr>
                         <?php
                         $no = 0;
+                        $total_sds = 0;
                         foreach ($data['kas'] as $a) {
                             $no += 1;
 
@@ -41,6 +42,10 @@
                                 $ref = "Topup Deposit";
                             }
 
+
+                            if (isset($data['sds'][$a['ref_transaksi']])) {
+                                $total_sds += $jumlah;
+                            }
                         ?>
                             <tr class="<?= ($a['status_mutasi'] == 2) ? 'text-secondary' : '' ?>">
                                 <td align="right"><a href="<?= PV::BASE_URL ?>Cek/order/<?= $a['ref_transaksi'] ?>/<?= $a['id_client'] ?>" target="_blank">#<?= $a['id_kas'] ?></a></td>
@@ -141,17 +146,6 @@
             </div>
         </div>
     <?php } ?>
-
-    <?php
-    $total_sds = 0;
-    foreach ($data['sds'] as $ds) {
-        if (isset($data['kas_trx'][$ds['ref']])) {
-            foreach ($data['kas_trx'][$ds['ref']] as $dsx) {
-                $total_sds += $dsx['jumlah'];
-            }
-        }
-    }
-    ?>
 
     <?php if ($total > 0) { ?>
         <div class="pe-2 pb-0 mt-2 ms-3 me-3 bg-white">

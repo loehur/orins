@@ -39,7 +39,6 @@ class Setoran extends Controller
 
       $data['kas'] = $this->db(0)->get_where('kas', $where);
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
-
       $ref_trx = array_keys($data['kas_trx']);
 
       if (count($ref_trx) > 0) {
@@ -50,7 +49,7 @@ class Setoran extends Controller
 
          $reft_list = rtrim($reft_list, ',');
          $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND stat = 1 AND jenis = 2 AND id_sumber = '" . $this->userData['id_toko'] . "'";
-         $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref);
+         $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
       } else {
          $data['sds'] = [];
       }
