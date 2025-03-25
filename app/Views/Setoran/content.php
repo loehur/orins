@@ -155,6 +155,14 @@
     }
     ?>
 
+
+    <pre>
+    <?php
+    echo $total_sds;
+    print_r($data['sds']) ?>
+
+</pre>
+
     <?php if ($total > 0) { ?>
         <div class="pe-2 pb-0 mt-2 ms-3 me-3 bg-white">
             <div class="row">
@@ -341,10 +349,6 @@
         </div>
     </div>
 </main>
-
-<pre>
-    <?php print_r($data['sds']) ?>
-</pre>
 
 <div class="modal" id="modalCek" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
