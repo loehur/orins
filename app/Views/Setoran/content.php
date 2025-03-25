@@ -154,7 +154,7 @@
         $total_sds -= $data['xDiskon_sds'];
     }
 
-    echo $total_sds;
+    echo $data['nontunai_sds'];
     exit();
 
     ?>
