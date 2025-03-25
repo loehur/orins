@@ -32,9 +32,9 @@ class Setoran extends Controller
    public function content($parse = "")
    {
       if ($parse == "") {
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND status_mutasi <> 2 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
       } else {
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%' ORDER BY id_kas DESC, id_client ASC";
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND status_mutasi <> 2 AND id_client <> 0 AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%' ORDER BY id_kas DESC, id_client ASC";
       }
 
       $data['kas'] = $this->db(0)->get_where('kas', $where);
