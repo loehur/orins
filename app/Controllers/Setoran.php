@@ -115,6 +115,7 @@ class Setoran extends Controller
       $set = "ref_setoran = '" . $ref . "'";
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%'";
+      $data['kas'] = $this->db(0)->get_where('kas', $where);
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
 
       $ref_trx = array_keys($data['kas_trx']);
@@ -128,23 +129,14 @@ class Setoran extends Controller
       $reft_list = rtrim($reft_list, ',');
 
       $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND stat = 1 AND jenis = 2 AND id_sumber = '" . $this->userData['id_toko'] . "'";
-      $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref);
-
-      $nontunai_sds = 0;
-      $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND metode_mutasi <> 1 AND sds = 1 AND status_mutasi <> 2 AND id_toko = '" . $this->userData['id_toko'] . "'";
-      $nontunai_sds = $this->db(0)->sum_col_where('kas', 'jumlah', $where_kas_sds);
-
-      $where_diskon = "ref_transaksi IN (" . $reft_list . ") AND cancel = 0 AND id_toko = '" . $this->userData['id_toko'] . "' AND sds = 1";
-      $diskon_sds = $this->db(0)->sum_col_where('xtra_diskon', 'jumlah', $where_diskon);
+      $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
 
       $total_sds = 0;
-      foreach ($data['sds'] as $ds) {
-         $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
-      }
-
-      if ($total_sds > 0) {
-         $total_sds -= $nontunai_sds;
-         $total_sds -= $diskon_sds;
+      foreach ($data['kas'] as $a) {
+         if (isset($data['sds'][$a['ref_transaksi']])) {
+            $jumlah = $a['jumlah'];
+            $total_sds += $jumlah;
+         }
       }
 
       if ($total_sds > 0) {
