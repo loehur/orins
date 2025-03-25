@@ -150,8 +150,8 @@
     }
 
     if ($total_sds > 0) {
-        $total_sds -= $data['nontunai_sds'];
-        $total_sds -= $data['xDiskon_sds'];
+        $total_sds = $total_sds - $data['nontunai_sds'];
+        $total_sds = $total_sds - $data['xDiskon_sds'];
     }
 
     echo number_format($total_sds);
