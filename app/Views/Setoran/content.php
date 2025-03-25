@@ -144,7 +144,6 @@
 
     <?php
     $total_sds = 0;
-    $total -= ($total_sds);
     foreach ($data['sds'] as $ds) {
         if (isset($data['kas_trx'][$ds['ref']])) {
             foreach ($data['kas_trx'][$ds['ref']] as $dsx) {
