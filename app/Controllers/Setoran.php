@@ -32,7 +32,6 @@ class Setoran extends Controller
    public function content($parse = "")
    {
       if ($parse == "") {
-         $parse = date("Y-m-d");
          $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND status_mutasi <> 2 AND id_client <> 0 AND ref_setoran = '' ORDER BY id_kas DESC, id_client ASC";
       } else {
          $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND status_mutasi <> 2 AND id_client <> 0 AND ref_setoran = '' AND insertTime LIKE '" . $parse . "%' ORDER BY id_kas DESC, id_client ASC";
