@@ -458,10 +458,15 @@
         </div>
     </div>
 </form>
-
+<?php $dataJ = json_encode($data) ?>
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
+    $(document).ready(function() {
+        console.log(JSON.stringify("<?= $dataJ ?>"));
+    });
+
+
     $("button#cek").click(function() {
         var date = $('#inDate').val();
         location.href = "<?= PV::BASE_URL ?>Setoran/index/" + date;
