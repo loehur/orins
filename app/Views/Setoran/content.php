@@ -146,15 +146,10 @@
     $total_sds = 0;
     $total -= ($total_sds);
     foreach ($data['sds'] as $ds) {
-        $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
+        if (isset($data['kas'][$ds['ref_transaksi']])) {
+            $total_sds += $data['kas'][$ds['jumlah']];
+        }
     }
-
-    if ($total_sds > 0) {
-        $total_sds = $total_sds - $data['nontunai_sds'];
-        $total_sds = $total_sds - $data['xDiskon_sds'];
-    }
-
-    echo number_format($data['nontunai_sds']);
     ?>
 
     <?php if ($total > 0) { ?>

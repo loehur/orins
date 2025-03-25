@@ -41,8 +41,6 @@ class Setoran extends Controller
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
 
       $ref_trx = array_keys($data['kas_trx']);
-      $data['nontunai_sds'] = 0;
-      $data['xDiskon'] = 0;
 
       if (count($ref_trx) > 0) {
          $reft_list = "";
@@ -51,15 +49,8 @@ class Setoran extends Controller
          }
 
          $reft_list = rtrim($reft_list, ',');
-
-         $where_diskon = "ref_transaksi IN (" . $reft_list . ") AND cancel = 0 AND id_toko = '" . $this->userData['id_toko'] . "' AND sds = 1";
-         $data['xDiskon_sds'] = $this->db(0)->sum_col_where('xtra_diskon', 'jumlah', $where_diskon);
-
          $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND stat = 1 AND jenis = 2 AND id_sumber = '" . $this->userData['id_toko'] . "'";
          $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref);
-
-         $where_kas_sds = "ref_transaksi IN (" . $reft_list . ") AND metode_mutasi <> 1 AND sds = 1 AND status_mutasi <> 2 AND id_toko = '" . $this->userData['id_toko'] . "'";
-         $data['nontunai_sds'] = $this->db(0)->sum_col_where('kas', 'jumlah', $where_kas_sds);
       } else {
          $data['sds'] = [];
       }
