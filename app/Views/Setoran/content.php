@@ -147,6 +147,8 @@
     $total -= ($total_sds);
     foreach ($data['sds'] as $ds) {
         $total_sds += (($ds['harga_jual'] - $ds['diskon']) * $ds['qty']);
+        echo $ds['harga_jual'];
+        exit();
     }
 
     if ($total_sds > 0) {
@@ -158,8 +160,9 @@
 
     <pre>
     <?php
-    echo $total_sds;
-    print_r($data['sds']) ?>
+    // echo $total_sds;
+    // print_r($data['sds']) 
+    ?>
 
 </pre>
 
