@@ -146,8 +146,10 @@
     $total_sds = 0;
     $total -= ($total_sds);
     foreach ($data['sds'] as $ds) {
-        if (isset($data['kas'][$ds['ref_transaksi']])) {
-            $total_sds += $data['kas'][$ds['jumlah']];
+        if (isset($data['kas_trx'][$ds['ref_transaksi']])) {
+            foreach ($data['kas_trx'][$ds['ref_transaksi']] as $dsx) {
+                $total_sds += $dsx['jumlah'];
+            }
         }
     }
     ?>
