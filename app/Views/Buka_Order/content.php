@@ -101,21 +101,19 @@ $mgpaket = $data['margin_paket'];
                             <button type="button" class="btn me-1 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
                             <button type="button" class="btn me-1 shadow-none btn-sm btn-dark bg-gradient py-1" data-bs-target="#exampleModalJasa" data-bs-toggle="modal">(&#43;) Jasa</button>
                             <button type="button" class="btn me-1 shadow-none btn-sm btn-success bg-gradient py-1" data-bs-target="#exampleModalB" data-bs-toggle="modal">(&#43;) Barang</button>
-                            <?php if (!isset($_SESSION['edit'])) { ?>
-                                <div class="btn-group me-1">
-                                    <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                        (&#43;) Afiliasi
-                                        <span class="visually-hidden">Toggle Dropdown</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-start p-0">
-                                        <?php foreach ($this->dToko as $dt) {
-                                            if ($dt['id_toko'] <> $this->userData['id_toko'] && $dt['produksi'] == 1) { ?>
-                                                <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
-                                        <?php }
-                                        } ?>
-                                    </ul>
-                                </div>
-                            <?php } ?>
+                            <div class="btn-group me-1">
+                                <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                    (&#43;) Afiliasi
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-start p-0">
+                                    <?php foreach ($this->dToko as $dt) {
+                                        if ($dt['id_toko'] <> $this->userData['id_toko'] && $dt['produksi'] == 1) { ?>
+                                            <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
+                                    <?php }
+                                    } ?>
+                                </ul>
+                            </div>
                         <?php } else { ?>
                             <button type="button" class="btn me-1 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
                             <div class="btn-group me-1">

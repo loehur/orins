@@ -976,12 +976,14 @@ class Buka_Order extends Controller
 
          if ($id_user_afiliasi <> 0) {
             $st_order = ", status_order = 0, id_user_afiliasi = " . $id_user_afiliasi;
+            $where = "id_order_data = " . $do['id_order_data'] . " AND id_user_afiliasi = 0";
          } else {
             $st_order = "";
+            $where = "id_order_data = " . $do['id_order_data'];
          }
 
          //SET ORDER, HARGA DAN AFILIASI
-         $where = "id_order_data = " . $do['id_order_data'];
+
          $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", stok = " . $stok_order . $st_order;
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {
