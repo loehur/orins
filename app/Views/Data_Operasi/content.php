@@ -250,7 +250,7 @@
                                             $id_pelanggan_jenis = $do['id_pelanggan_jenis'];
                                             $id = $do['id_order_data'];
                                             $jumlah = $do['harga'] * $do['jumlah'];
-
+                                            $id_ambil = $do['id_ambil'];
                                             $user_id = $do['id_user'];
 
                                             $cancel = $do['cancel'];
@@ -306,7 +306,7 @@
                                                                         <span class="visually-hidden">Toggle Dropdown</span>
                                                                     </button>
                                                                     <ul class="dropdown-menu p-0 border-0 shadow-sm text-sm">
-                                                                        <?php if ($do['tuntas'] == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
+                                                                        <?php if ($id_ambil == 0 && $do['tuntas'] == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item px-2 cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
                                                                         <?php } ?>
                                                                         <?php if ($do['tuntas'] == 1 && $do['refund'] == 0 && $cancel == 0 && $do['stok'] == 0 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
@@ -380,7 +380,6 @@
                                                         }
                                                         ?>
                                                         <?php
-                                                        $id_ambil = $do['id_ambil'];
                                                         if ($id_ambil == 0 && $cancel == 0) {
                                                             $ambil = true;
                                                             if ($countSPK > 0 && $cancel == 0) {
@@ -512,7 +511,7 @@
                                                                 <?php if ($do['tuntas'] == 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalMark" class="dropdown-item markRef px-2" data-ref="<?= $ref ?>" href="#"><small>Mark</small></a></li>
                                                                 <?php } ?>
-                                                                <?php if ($user_id == $this->userData['id_user'] && $do['tuntas'] == 0) { ?>
+                                                                <?php if ($ambil_all == false && $user_id == $this->userData['id_user'] && $do['tuntas'] == 0) { ?>
                                                                     <li><a class="dropdown-item px-2" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Tambah Order</small></a></li>
                                                                 <?php } else { ?>
                                                                     <li><a class="dropdown-item px-2" href="#"><small>CreatorID #<?= $user_id ?></small></a></li>
