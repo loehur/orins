@@ -256,13 +256,13 @@ class Data_Operasi extends Controller
             $kembalian = 0;
          }
 
-         $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $metode . " AND status_mutasi = " . $status_mutasi . " AND note = '" . $note . "' AND insertTime LIKE '" . date('Y-m-d H') . "'";
+         $whereCount = "ref_transaksi = '" . $ref . "' AND jumlah = " . $jumlah . " AND metode_mutasi = " . $metode . " AND status_mutasi = " . $status_mutasi . " AND note = '" . $note . "'";
          $dataCount = $this->db(0)->count_where('kas', $whereCount);
 
          $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali, id_finance_nontunai, pa, sds, charge";
          $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $bayarnya . "," . $kembalian . "," . $finance_id . ",'" . $payment_account . "'," . $sds . "," . $charge;
 
-         if ($dataCount < 1) {
+         if ($dataCount == 0) {
             $do = $this->db(0)->insertCols('kas', $cols, $vals);
             if ($do['errno'] == 0) {
                $dibayar -= $jumlah;
