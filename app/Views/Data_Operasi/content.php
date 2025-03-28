@@ -511,7 +511,7 @@
                                                                 <?php if ($do['tuntas'] == 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalMark" class="dropdown-item markRef px-2" data-ref="<?= $ref ?>" href="#"><small>Mark</small></a></li>
                                                                 <?php } ?>
-                                                                <?php if ($ambil_all == false && $user_id == $this->userData['id_user'] && $do['tuntas'] == 0) { ?>
+                                                                <?php if ($user_id == $this->userData['id_user'] && $do['tuntas'] == 0) { ?>
                                                                     <li><a class="dropdown-item px-2" href="<?= PV::BASE_URL ?>Buka_Order/Edit_order/<?= $ref ?>/<?= $id_pelanggan_jenis ?>/<?= $dibayar ?>/<?= $id_pelanggan ?>"><small>Tambah Order</small></a></li>
                                                                 <?php } else { ?>
                                                                     <li><a class="dropdown-item px-2" href="#"><small>CreatorID #<?= $user_id ?></small></a></li>
