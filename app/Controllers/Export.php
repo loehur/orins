@@ -66,6 +66,7 @@ class Export extends Controller
          } else {
             $cs = $a['id_penerima'];
          }
+
          $pelanggan = strtoupper($dPelanggan[$a['id_pelanggan']]['nama']);
 
          if ($a['id_afiliasi'] <> 0) {
@@ -163,6 +164,7 @@ class Export extends Controller
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
 
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
+      $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
 
       $tanggal = date("Y-m-d");
 
@@ -190,8 +192,15 @@ class Export extends Controller
             $order_status = "BATAL";
          }
 
+
+         if (isset($dKaryawan[$a['id_penerima']]['nama'])) {
+            $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
+         } else {
+            $cs = $a['cs_id'];
+         }
+
          $store = $a['sds'] == 1 ? "SDS" : $this->dToko[$this->userData['id_toko']]['inisial'];
-         $cs = strtoupper($this->dKaryawanAll[$a['cs_id']]['nama']);
+
          $pelanggan = strtoupper($dPelanggan[$a['id_target']]['nama']);
 
          if (!isset($tgl_order[$ref])) {
