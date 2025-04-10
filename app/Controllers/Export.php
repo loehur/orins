@@ -49,6 +49,7 @@ class Export extends Controller
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
 
       $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
+      $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
 
       $fields = array('TRX ID', 'NO. REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'SERIAL NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
@@ -60,7 +61,11 @@ class Export extends Controller
          $margin_paket = $a['margin_paket'];
          $jenis = strtoupper($pj[$a['id_pelanggan_jenis']]['pelanggan_jenis']);
 
-         $cs = strtoupper($this->dKaryawanAll[$a['id_penerima']]['nama']);
+         if (isset($dKaryawan[$a['id_penerima']]['nama'])) {
+            $cs = strtoupper($dKaryawan[$a['id_penerima']]['nama']);
+         } else {
+            $cs = $a['id_penerima'];
+         }
          $pelanggan = strtoupper($dPelanggan[$a['id_pelanggan']]['nama']);
 
          if ($a['id_afiliasi'] <> 0) {
