@@ -16,6 +16,13 @@
             <div class="col text-sm text-end fw-bold pe-0">
                 Saldo Rp<?= number_format($data['saldo']) ?>
             </div>
+            <div class="col-auto text-end">
+                <div class="btn-group me-1">
+                    <button type="button" class="btn shadow-none btn-sm btn-primary bg-gradient py-1 px-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Topup Petycash
+                    </button>
+                </div>
+            </div>
         </div>
 
         <table class="table table-sm text-sm">
@@ -82,6 +89,27 @@
         </table>
     </div>
 </main>
+
+<div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Topup PetyCash
+            </div>
+            <form class="ajax" action="<?= PV::BASE_URL ?>Petty_Cash_F/topupPety" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" required>Jumlah</label>
+                        <input type="number" min="1" name="jumlah" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Proses</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 

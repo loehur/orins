@@ -31,7 +31,7 @@ class Petty_Cash_F extends Controller
 
    public function content()
    {
-      $whereTopup = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 AND st = 1";
+      $whereTopup = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 AND st <> 2";
       $topup = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $whereTopup);
 
       $wherePakai = "id_sumber = " . $this->userData['id_toko'] . " AND (tipe = 2 OR tipe = 5) AND st <> 2";
@@ -55,5 +55,26 @@ class Petty_Cash_F extends Controller
       $where = "id = '" . $id . "'";
       $update = $this->db(0)->update("kas_kecil", $set, $where);
       echo $update['errno'] == 0 ? 0 : $update['error'];
+   }
+
+   function topupPety()
+   {
+      $jumlah = $_POST['jumlah'];
+      $target = $this->userData['id_toko'];
+      $ref = date('ymd');
+      $cols = 'id_sumber, id_target, tipe, ref, jumlah, st';
+      $vals =  "100," . $target . ",1,'" . $ref . "'," . $jumlah . ",0";
+      $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
+      if ($do['errno'] == 1062) {
+         echo "data sudah di input";
+         exit();
+      } else {
+         if ($do['errno'] <> 0) {
+            echo $do['error'];
+            exit();
+         }
+      }
+
+      echo 0;
    }
 }
