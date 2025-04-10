@@ -193,7 +193,7 @@ class Export extends Controller
          }
 
 
-         if (isset($dKaryawan[$a['id_penerima']]['nama'])) {
+         if (isset($dKaryawan[$a['cs_id']]['nama'])) {
             $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
          } else {
             $cs = $a['cs_id'];
