@@ -151,10 +151,10 @@
                 }
 
                 if ($dk['status_mutasi'] == 0) {
-                    $showMutasi .= "<tr><td><small>* " . $payment_account . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . $show_charge . "</small></td><td><small><b>*Checking</b></small></td></tr>";
+                    $showMutasi .= "<tr><td><small>* " . $payment_account . "</small></td><td><small>" . $dk['note'] . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . $show_charge . "</small></td><td><small><b>*Checking</b></small></td></tr>";
                 } else {
                     if ($dk['metode_mutasi'] <> 1) {
-                        $showMutasi .= "<tr><td><small>* " . $payment_account . "</small></td><td><small>" . date('d/m/y H:i', strtotime($dk['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . $show_charge . "</small></td></tr>";
+                        $showMutasi .= "<tr><td><small>* " . $payment_account . "</small></td><td><small>" . $dk['note'] . "</small></td><td align='right'><small>Rp" . number_format($dk['jumlah']) . $show_charge . "</small></td></tr>";
                     } else {
                         if ($dk['jumlah'] <> $dk['bayar']) {
                             $pembayaran_cash = "(" . number_format($dk['bayar']) . "-" . number_format($dk['kembali']) . ")";
