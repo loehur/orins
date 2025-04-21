@@ -49,7 +49,7 @@ class Non_Tunai extends Controller
             $refs_trx[$dk['ref_transaksi']] = true;
          }
       }
-      $refs_trx = array_unique($refs_trx);
+      $refs_trx = array_keys($refs_trx);
 
       print_r($refs_trx);
 
