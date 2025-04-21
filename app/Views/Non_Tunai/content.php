@@ -27,6 +27,11 @@
                                         $payment_account = "";
                                     }
 
+                                    $charge = 0;
+                                    if (isset($data['charge'][$a['ref_transaksi']])) {
+                                        $charge = $data['charge'][$a['ref_transaksi']]['jumlah'];
+                                    }
+
                                     $pelanggan = "Non";
                                     $pelanggan = $data['pelanggan'][$client]['nama']; ?>
                                     <tr class="rb<?= $rb ?>">
@@ -40,7 +45,7 @@
                                             <?php } ?>
                                         </td>
                                         <td class=""><a href="<?= PV::BASE_URL ?>Cek/order/<?= $a['ref_transaksi'] ?>/<?= $a['id_client'] ?>" target="_blank">#<?= $a['id_kas'] ?></a><br><?= strtoupper($pelanggan) ?></td>
-                                        <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><span class="text-primary"><?= $payment_account ?></span><?= $a['note'] ?></td>
+                                        <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?> <?= $charge > 0 ? "(+" . number_format($charge) . ")" : "" ?><br><span class="text-primary"><?= $payment_account ?></span><?= $a['note'] ?></td>
                                     </tr>
                                 <?php
                                 } ?>
