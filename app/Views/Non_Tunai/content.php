@@ -14,6 +14,7 @@
                                 <?php
                                 $no = 0;
                                 $id_multi = "";
+                                $total_charge = 0;
                                 foreach ($ref_bayar as $a) {
                                     $no += 1;
                                     $id =  $a['id_kas'];
@@ -28,6 +29,7 @@
                                     }
 
                                     $charge = ($a['charge'] / 100) * $jumlah;
+                                    $total_charge += $charge;
 
                                     $pelanggan = "Non";
                                     $pelanggan = $data['pelanggan'][$client]['nama']; ?>
@@ -47,8 +49,8 @@
                                 <?php
                                 } ?>
                                 <tr class="rb<?= $rb ?>">
-                                    <td colspan="2" class="px-0"><button data-id="<?= $rb ?>" data-val="2" class="border-0 actionMulti btn btn-sm btn-outline-danger">Reject - <b>Rp<?= number_format($data['kas_group'][$rb]['jumlah']) ?></b></button></td>
-                                    <td class="px-0 text-end"><button data-id="<?= $rb ?>" data-val="1" class="border-0 actionMulti btn btn-sm btn-outline-success">Verify - <b>Rp<?= number_format($data['kas_group'][$rb]['jumlah']) ?></b></button></td>
+                                    <td colspan="2" class="px-0"><button data-id="<?= $rb ?>" data-val="2" class="border-0 actionMulti btn btn-sm btn-outline-danger">Reject - <b>Rp<?= number_format($data['kas_group'][$rb]['jumlah'] + $total_charge) ?></b></button></td>
+                                    <td class="px-0 text-end"><button data-id="<?= $rb ?>" data-val="1" class="border-0 actionMulti btn btn-sm btn-outline-success">Verify - <b>Rp<?= number_format($data['kas_group'][$rb]['jumlah'] + $total_charge) ?></b></button></td>
                                 </tr>
                                 <tr class="rb<?= $rb ?>">
                                     <td colspan="10" class="bg-light"></td>
