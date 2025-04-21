@@ -27,7 +27,7 @@
                                         $payment_account = "";
                                     }
 
-                                    $charge = $a['charge'];
+                                    $charge = ($a['charge'] / 100) * $jumlah;
 
                                     $pelanggan = "Non";
                                     $pelanggan = $data['pelanggan'][$client]['nama']; ?>
