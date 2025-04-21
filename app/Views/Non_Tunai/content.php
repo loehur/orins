@@ -14,7 +14,7 @@
                                 <?php
                                 $no = 0;
                                 $id_multi = "";
-                                foreach ($ref_bayar as  $a) {
+                                foreach ($ref_bayar as $a) {
                                     $no += 1;
                                     $id =  $a['id_kas'];
 
