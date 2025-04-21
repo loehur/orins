@@ -7,6 +7,13 @@
                         <span>Antrian Pengecekan Non Tunai</span>
                     </div>
                 </div>
+                <div class="row">
+                    <pre>
+                        <?php
+                        print_r($data['charge']);
+                        ?>
+                    </pre>
+                </div>
                 <small>
                     <table class="table table-sm table-hover mt-2 text-sm">
                         <?php if (count($data['kas']) > 0) {
@@ -26,8 +33,6 @@
                                     } else {
                                         $payment_account = "";
                                     }
-
-                                    print_r($data['charge']);
 
                                     $charge = 0;
                                     if (isset($data['charge'][$a['ref_transaksi']])) {
