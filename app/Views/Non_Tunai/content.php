@@ -27,6 +27,8 @@
                                         $payment_account = "";
                                     }
 
+                                    print_r($data['charge']);
+
                                     $charge = 0;
                                     if (isset($data['charge'][$a['ref_transaksi']])) {
                                         $charge = $data['charge'][$a['ref_transaksi']]['jumlah'];
