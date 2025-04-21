@@ -72,7 +72,7 @@ class Non_Tunai extends Controller
 
          $cols = "ref_transaksi, SUM(jumlah) as jumlah";
          $where = "ref_transaksi IN (" . $ref_list_trx . ") GROUP BY ref_transaksi";
-         $data['charge'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_transaksi');
+         $data['charge'] = $this->db(0)->get_cols_where('charge', $cols, $where, 1, 'ref_transaksi');
       }
 
       print_r($data['charge']);
