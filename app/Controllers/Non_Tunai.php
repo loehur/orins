@@ -45,7 +45,7 @@ class Non_Tunai extends Controller
       $refs = array_keys($data['kas']);
       $refs_trx = [];
       foreach ($data['kas'] as $dk) {
-         array_push($dk['ref_transaksi']);
+         $refs_trx[$dk['ref_transaksi']] = true;
       }
       $refs_trx = array_unique($refs_trx);
 
