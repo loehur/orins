@@ -27,10 +27,7 @@
                                         $payment_account = "";
                                     }
 
-                                    $charge = 0;
-                                    if (isset($data['charge'][$a['ref_transaksi']])) {
-                                        $charge = $data['charge'][$a['ref_transaksi']]['jumlah'];
-                                    }
+                                    $charge = $a['charge'];
 
                                     $pelanggan = "Non";
                                     $pelanggan = $data['pelanggan'][$client]['nama']; ?>

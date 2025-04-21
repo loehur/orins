@@ -43,14 +43,6 @@ class Non_Tunai extends Controller
       $data['ref'] = [];
 
       $refs = array_keys($data['kas']);
-      $refs_trx = [];
-      foreach ($data['kas'] as $dks) {
-         foreach ($dks as $dk) {
-            $refs_trx[$dk['ref_transaksi']] = true;
-         }
-      }
-      $refs_trx = array_keys($refs_trx);
-
       if (count($refs) > 0) {
          $ref_list = "";
          foreach ($refs as $r) {
@@ -62,20 +54,6 @@ class Non_Tunai extends Controller
          $where = "ref_bayar IN (" . $ref_list . ") GROUP BY ref_bayar";
          $data['kas_group'] = $this->db(0)->get_cols_where('kas', $cols, $where, 1, 'ref_bayar');
       }
-
-      if (count($refs_trx) > 0) {
-         $ref_list_trx = "";
-         foreach ($refs_trx as $r) {
-            $ref_list_trx .= $r . ",";
-         }
-         $ref_list_trx = rtrim($ref_list_trx, ',');
-
-         $cols = "ref_transaksi, SUM(jumlah) as jumlah";
-         $where = "ref_transaksi IN (" . $ref_list_trx . ") GROUP BY ref_transaksi";
-         $data['charge'] = $this->db(0)->get_cols_where('charge', $cols, $where, 1, 'ref_transaksi');
-      }
-
-      print_r($data['charge']);
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 2 AND id_client <> 0 AND status_mutasi <> 0 ORDER BY updateTime DESC LIMIT 20";
       $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
