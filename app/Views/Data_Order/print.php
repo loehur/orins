@@ -367,46 +367,47 @@
             <td colspan="3" style="height: 20px;"></td>
         </tr>
         <tr>
-            <td valign=top><small>Riwayat Pembayaran:</small>
+            <td style="display:none" valign=top><small>Riwayat Pembayaran:</small>
                 <table><?= $showMutasi ?></table>
             </td>
+            <td>Note: <i>Barang yang sudah dibeli tidak dapat dikembalikan</i></td>
             <td align="right" style="padding-right: 0;">
                 <table style="padding-right: 0;border-collapse:collapse">
                     <tr>
                         <td style="text-align:right">Total :</td>
                         <td style="text-align:right">
-                            Rp<?= number_format($total) ?>
+                            Rp<?= number_format($total - $total_disc) ?>
                         </td>
                     </tr>
                     <?php if ($total_disc > 0) { ?>
-                        <tr>
+                        <tr style="display:none">
                             <td style="text-align:right">Diskon : </td>
                             <td style="text-align:right">-Rp<?= number_format($total_disc) ?></td>
                         </tr>
                     <?php } ?>
                     <?php if ($total_charge > 0) { ?>
-                        <tr>
+                        <tr style="display:none">
                             <td style="text-align:right">Trx. Charge : </td>
                             <td style="text-align:right">Rp<?= number_format($total_charge) ?></td>
                         </tr>
                     <?php } ?>
                     <?php if (isset($data['charge']['jumlah'])) { ?>
-                        <tr>
+                        <tr style="display:none">
                             <td style="text-align:right">Admin Fee : </td>
                             <td style="text-align:right">Rp<?= number_format($data['charge']['jumlah']) ?></td>
                         </tr>
                     <?php } ?>
                     <?php if ($xtraDiskon > 0) { ?>
-                        <tr>
+                        <tr style="display:none">
                             <td style="text-align:right">Extra Diskon : </td>
                             <td style="text-align:right">-Rp<?= number_format($xtraDiskon) ?></td>
                         </tr>
                     <?php } ?>
-                    <tr>
+                    <tr style="display:none">
                         <td style="text-align:right">Dibayar : </td>
                         <td style="text-align:right">-Rp<?= number_format($dibayar + $total_charge) ?></td>
                     </tr>
-                    <tr>
+                    <tr style="display:none">
                         <td style="text-align:right"><b>Sisa : </b></td>
                         <td style="text-align:right"><b>Rp<?= number_format($sisa - $total_disc) ?></b></td>
                     </tr>
