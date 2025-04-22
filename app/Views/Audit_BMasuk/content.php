@@ -25,21 +25,22 @@
                         <a href="<?= PV::BASE_URL ?>Audit_BMasuk/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
                     </td>
                     <td>
-                        <?= $a['id'] ?>
+                        <?= $a['id'] ?><br>
+                        <span class="fw-bold"><?= $data['supplier'][$a['id_sumber']]['nama'] ?></span>
                     </td>
                     <td class="">
-                        <?= $data['supplier'][$a['id_sumber']]['nama'] ?>
+
                     </td>
                     <td>
-                        <?= $a['no_po'] ?>
+                        <?= $a['no_po'] ?> <?= $a['no_faktur'] ?><br>
+                        <?= $a['note'] ?>
                     </td>
                     <td>
-                        <?= $a['no_faktur'] ?>
+
                     </td>
                     <td>
-                        <?= $a['sds'] == 1 ? "SDS-<b>YES</b>" : "SDS-NO" ?>
-                    </td>
-                    <td>
+                        <?= $a['sds'] == 1 ? "<b>SDS</b>" : "<b>ABF</b>" ?>
+                        <br>
                         <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
                     </td>
                 </tr>

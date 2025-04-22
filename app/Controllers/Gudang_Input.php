@@ -68,12 +68,13 @@ class Gudang_Input extends Controller
       $tanggal = $_POST['tanggal'];
       $no_fak = strtoupper($_POST['no_fak']);
       $no_po = strtoupper($_POST['no_po']);
+      $note = $_POST['note'];
       $sds = isset($_POST['sds']) ? $_POST['sds'] : 0;
       $error = 0;
 
       $id = date('ymdHis') . rand(0, 9);
-      $cols = 'id, id_sumber,no_faktur,no_po,tanggal,sds,user_id';
-      $vals = $id . ",'" . $supplier . "','" . $no_fak . "','" . $no_po . "','" . $tanggal . "'," . $sds . "," . $this->userData['id_user'];
+      $cols = 'id, id_sumber,no_faktur,no_po,tanggal,sds,user_id,note';
+      $vals = $id . ",'" . $supplier . "','" . $no_fak . "','" . $no_po . "','" . $tanggal . "'," . $sds . "," . $this->userData['id_user'] . ",'" . $note . "'";
       $do = $this->db(0)->insertCols('master_input', $cols, $vals);
       if ($do['errno'] <> 0) {
          $error .= $do['error'];

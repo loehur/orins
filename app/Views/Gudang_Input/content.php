@@ -31,6 +31,10 @@
                     <label>No. Faktur</label><br>
                     <input class="text-end border-bottom border-0" required name="no_fak" style="text-transform: uppercase;">
                 </div>
+                <div class="col-auto px-1 mb-2 text-end">
+                    <label>Note</label><br>
+                    <input class="text-end border-bottom border-0" name="note" maxlength="100">
+                </div>
                 <div class="col-auto px-1 mb-2">
                     <div class="pt-4">
                         <input name="sds" class="form-check-input" type="checkbox" value="1">
@@ -50,7 +54,7 @@
                 <tr>
                     <th class="text-center"></th>
                     <th>Ref/Supplier</th>
-                    <th>No. DO/Faktur</th>
+                    <th>No. DO/Faktur/Note</th>
                     <th>ST</th>
                 </tr>
             </thead>
@@ -74,12 +78,13 @@
                         <?php } else { ?>
                             <?= $a['no_faktur'] ?>
                         <?php } ?>
-                        <br>
                         <?php if ($a['cek'] == 0) { ?>
                             <span data-id="<?= $a['id'] ?>" data-col="no_po" data-tipe="text" data-primary="id" data-tb="master_input" class="cell_edit"><?= $a['no_po'] ?></span>
                         <?php } else { ?>
                             <?= $a['no_po'] ?>
                         <?php } ?>
+                        <br>
+                        <?= $a['note'] ?>
                     </td>
                     <td>
                         <?php if ($a['cek'] == 0) { ?>
