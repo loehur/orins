@@ -6,7 +6,7 @@ class Audit_KasKecil extends Controller
    {
       $this->session_cek();
       $this->data_order();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[6])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[100])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -31,40 +31,19 @@ class Audit_KasKecil extends Controller
 
    public function content()
    {
-      $whereSplit = "id_target = 1 AND tipe = 0 AND st = 0 AND id_sumber = " . $this->userData['id_toko'] . " AND ref_setoran = ''";
-      $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
-
-      $whereSplit = "id_target = 1 AND tipe = 0 AND st <> 0 AND id_sumber = " . $this->userData['id_toko'];
-      $data['split_done'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
-
-      $whereReim = "tipe = 5 AND ref_setoran = '' AND id_sumber = " . $this->userData['id_toko'];
-      $data['reim_done'] = $this->db(0)->get_where('kas_kecil', $whereReim);
-
-      $whereSetor = "id_target = 1 AND tipe = 0 AND st = 1 AND ref_setoran = '' AND id_sumber = " . $this->userData['id_toko'];
-      $data['setor'] = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $whereSetor);
-
-      $whereSetor = "tipe = 5 AND st <> 2 AND ref_setoran = '' AND id_sumber = " . $this->userData['id_toko'];
-      $data['reimburse'] = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $whereSetor);
-
-      if (!$data['setor']) {
-         $data['setor'] = 0;
-      }
-
-      if (!$data['reimburse']) {
-         $data['reimburse'] = 0;
-      }
-
-      $data['setor'] += $data['reimburse'];
-
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_transaksi = 3 AND status_setoran = 0 AND status_mutasi = 1 ORDER BY id_kas DESC";
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_transaksi = 3 AND status_setoran = 0 AND status_mutasi = 1 ORDER BY id_kas DESC LIMIT 10";
       $data['pengeluaran'] = $this->db(0)->get_where('kas', $where, 'ref_setoran', 1);
 
       $data['pengeluaran_done'] = [];
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_transaksi = 3 AND status_setoran <> 0 ORDER BY id_kas DESC LIMIT 20";
-      $data['pengeluaran_done'] = $this->db(0)->get_where('kas', $where, 'ref_setoran', 1);
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_transaksi = 3 AND status_setoran <> 0 ORDER BY id_kas DESC LIMIT 10";
+      $data['pengeluaran_done'] = $this->db(0)->get_where('kas', $where, 'id_kas', 1);
+
+      $whereReim = "tipe = 5 AND id_sumber = " . $this->userData['id_toko'];
+      $data['reim_done'] = $this->db(0)->get_where('kas_kecil', $whereReim, 'ref');
+
       $this->view(__CLASS__ . '/content', $data);
    }
 
