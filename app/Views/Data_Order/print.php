@@ -365,7 +365,7 @@
         }
 
         if ($countBarang == 0) {
-            $showR = "inline";
+            $showR = "block";
         } else {
             $showR = "none";
         }
