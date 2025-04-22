@@ -377,9 +377,8 @@
             <td colspan="3" style="height: 20px;"></td>
         </tr>
         <tr>
-            <td valign=top><small>Riwayat Pembayaran:</small>
-                <table style="display:<?= $showR ?>"><?= $showMutasi ?></table>
-                <br>
+            <td valign=top><small><?= strlen($showMutasi) > 0 ? "Riwayat Pembayaran:" : "" ?></small>
+                <table style="display:<?= $showR ?>; margin-bottom:10px"><?= $showMutasi ?></table>
                 <small>Note: <i>Barang yang sudah dibeli tidak dapat ditukar atau dikembalikan</i></small>
             </td>
             <td align="right" style="padding-right: 0;">
