@@ -377,14 +377,20 @@
             <td colspan="3" style="height: 20px;"></td>
         </tr>
         <tr>
-            <td valign=top><small><?= strlen($showMutasi) > 0 ? "Riwayat Pembayaran:" : "" ?></small>
+            <td valign=top><small><?= $dibayar > 0 ? "Riwayat Pembayaran:" : "" ?></small>
                 <table style="display:<?= $showR ?>; margin-bottom:10px"><?= $showMutasi ?></table>
-                <small>Note: <i>Barang yang sudah dibeli tidak dapat ditukar atau dikembalikan</i></small>
+                <table>
+                    <tr>
+                        <td>
+                            <small>Note: <i>Barang yang sudah dibeli tidak dapat ditukar atau dikembalikan</i></small>
+                        </td>
+                    </tr>
+                </table>
             </td>
             <td align="right" style="padding-right: 0;">
                 <table style="padding-right: 0;border-collapse:collapse">
                     <tr>
-                        <td style="text-align:right">Total :</td>
+                        <td style="text-align:right">Total : </td>
                         <td style="text-align:right">
                             Rp<?= number_format($total - $total_disc) ?>
                         </td>
