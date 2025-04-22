@@ -65,7 +65,7 @@
                                     <?php } else { ?>
                                         <small>NonTunai</small>
                                     <?php } ?>
-                                    <small><?= date('H:i', strtotime($a['insertTime'])) ?></small>
+                                    <small><?= date('H:i', strtotime($a['insertTime'])) ?></small> <small>#<?= $a['ref_transaksi'] ?></small>
                                     <br><a href="<?= PV::BASE_URL ?>Cek/order/<?= $a['ref_transaksi'] ?>/<?= $a['id_client'] ?>" target="_blank">#<?= $a['id_kas'] ?></a> <?= strtoupper($pelanggan) ?>
                                 </td>
                                 <td align="right">Rp<?= number_format($jumlah) ?><br><span class="text-success"><?= strtoupper($payment_account) ?></span><?= $a['note'] ?></td>
@@ -126,13 +126,14 @@
                         } ?>
 
                         <tr>
-                            <td><a href="<?= PV::BASE_URL ?>Cek/order/<?= $a['ref_transaksi'] ?>/<?= $a['id_client'] ?>" target="_blank">#<?= $a['id_kas'] ?></a>
+                            <td>
                                 <?php if ($a['jenis_transaksi'] == 2) { ?>
                                     <small>Topup Deposit</small>
                                 <?php } else { ?>
                                     <small>Non Tunai</small>
                                 <?php } ?>
-                                <br><?= strtoupper($pelanggan) ?>
+                                <small><?= date('H:i', strtotime($a['insertTime'])) ?></small> <small>#<?= $a['ref_transaksi'] ?></small>
+                                <br><a href="<?= PV::BASE_URL ?>Cek/order/<?= $a['ref_transaksi'] ?>/<?= $a['id_client'] ?>" target="_blank">#<?= $a['id_kas'] ?></a> <?= strtoupper($pelanggan) ?>
                             </td>
                             <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><span class="text-success"><?= strtoupper($payment_account) ?></span><?= $a['note'] ?></td>
                             <td class="text-end">
