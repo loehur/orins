@@ -364,12 +364,12 @@
             $sisa += $data['charge']['jumlah'];
         }
 
-        if ($countBarang == 0) {
-            $showR = "";
-        } else {
-            $showR = "display:none";
+        $showR = "";
+        if ($this->userData['nama_toko'] == 1) {
+            if ($countBarang <> 0) {
+                $showR = "display:none";
+            }
         }
-
         ?>
     </table>
     <table style="width: 100%;border-collapse:collapse">
