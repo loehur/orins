@@ -377,7 +377,7 @@
             <td colspan="3" style="height: 20px;"></td>
         </tr>
         <tr>
-            <td valign=top><small><?= strlen($showMutasi) > 0 ? "Riwayat Pembayaran:" : "" ?></small>
+            <td valign=top><small><?= ($dibayar + $xtraDiskon) > 0 ? "Riwayat Pembayaran:" : "" ?></small>
                 <table style="<?= $showR ?>"><?= $showMutasi ?></table><br>
                 <small><i>Barang yang sudah dibeli tidak dapat ditukar atau dikembalikan</i></small>
             </td>
@@ -386,7 +386,11 @@
                     <tr>
                         <td style="text-align:right">Total : </td>
                         <td style="text-align:right">
-                            Rp<?= number_format($total - $total_disc) ?>
+                            <?php if ($countBarang > 0) { ?>
+                                Rp<?= number_format($total) ?>
+                            <?php } else { ?>
+                                Rp<?= number_format($total - $total_disc) ?>
+                            <?php } ?>
                         </td>
                     </tr>
                     <?php if ($total_disc > 0) { ?>
