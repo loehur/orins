@@ -377,7 +377,7 @@
             <td colspan="3" style="height: 20px;"></td>
         </tr>
         <tr>
-            <td valign=top>
+            <td valign=top style="vertical-align:top">
                 <small style="<?= $showR ?>"><?= (($dibayar + $xtraDiskon) > 0) ? "Riwayat Pembayaran:" : "" ?></small>
                 <table style="<?= $showR ?>"><?= $showMutasi ?></table><br style="<?= $showR ?>">
                 <small><i>Barang yang sudah dibeli tidak dapat ditukar atau dikembalikan</i></small>
