@@ -366,7 +366,7 @@
 
         $showR = "";
         if ($this->userData['nama_toko'] == 1) {
-            if ($countBarang <> 0) {
+            if ($countBarang > 0) {
                 $showR = "display:none";
             }
         }
