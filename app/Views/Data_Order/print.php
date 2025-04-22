@@ -15,8 +15,8 @@
 
     <?php
     $jP = "U";
-    $countBarang = count($data['order']) + count($data['paket']);
-    $countProduksi = count($data['mutasi']);
+    $countProduksi = count($data['order']) + count($data['paket']);
+    $countBarang = count($data['mutasi']);
 
     if (count($data['order']) > 0) {
         foreach ($data['order'] as $do) {
@@ -377,7 +377,7 @@
             <td colspan="3" style="height: 20px;"></td>
         </tr>
         <tr>
-            <td valign=top><small><?= $dibayar > 0 ? "Riwayat Pembayaran:" : "" ?></small>
+            <td valign=top><small><?= strlen($showMutasi) > 0 ? "Riwayat Pembayaran:" : "" ?></small>
                 <table style="display:<?= $showR ?>; margin-bottom:10px"><?= $showMutasi ?></table>
                 <br><br>
                 <small>Note: <i>Barang yang sudah dibeli tidak dapat ditukar atau dikembalikan</i></small>
