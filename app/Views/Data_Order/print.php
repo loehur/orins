@@ -379,13 +379,8 @@
         <tr>
             <td valign=top><small><?= $dibayar > 0 ? "Riwayat Pembayaran:" : "" ?></small>
                 <table style="display:<?= $showR ?>; margin-bottom:10px"><?= $showMutasi ?></table>
-                <table>
-                    <tr>
-                        <td>
-                            <small>Note: <i>Barang yang sudah dibeli tidak dapat ditukar atau dikembalikan</i></small>
-                        </td>
-                    </tr>
-                </table>
+                <br><br>
+                <small>Note: <i>Barang yang sudah dibeli tidak dapat ditukar atau dikembalikan</i></small>
             </td>
             <td align="right" style="padding-right: 0;">
                 <table style="padding-right: 0;border-collapse:collapse">
