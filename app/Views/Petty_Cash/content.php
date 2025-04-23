@@ -161,7 +161,7 @@
             data: {},
             success: function(res) {
                 if (res == 0) {
-                    content();
+                    content('<?= $date ?>');
                 } else {
                     alert(res);
                 }
