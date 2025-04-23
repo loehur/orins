@@ -917,6 +917,20 @@ class Buka_Order extends Controller
          }
       }
 
+      if (!isset($id_karyawan)) {
+         $get_ik = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' LIMIT 1");
+         if (isset($get_ik['id_penerima'])) {
+            $id_karyawan = $get_ik['id_penerima'];
+         } else {
+            $get_ik = $this->db(0)->get_where_row('master_mutasi', "ref = '" . $ref . "' LIMIT 1");
+            if (isset($get_ik['cs_id'])) {
+               $id_karyawan = $get_ik['cs_id'];
+            } else {
+               echo "Error Data";
+               exit();
+            }
+         }
+      }
       $this->db(0)->update("pelanggan", "freq = freq+1", "id_pelanggan = " . $id_pelanggan);
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
 
