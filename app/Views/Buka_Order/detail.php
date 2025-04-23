@@ -37,13 +37,15 @@
         <div class="col px-0 mb-2" style="min-width: 200px;">
             <input type="text" name="d-<?= $key ?>" placeholder="Catatan - <?= $data['divisi'][$key]['divisi'] ?>" class="form-control border-0 shadow-none form-control-sm">
         </div>
-        <div class="col mb-2" style="min-width: 200px;">
-            <div class="form-check">
-                <input class="form-check-input" name="p-<?= $key ?>" type="checkbox" value="0" id="flexCheckDefault">
-                <label class="form-check-label" for="flexCheckDefault">
-                    <span class="text-danger">Pending</span> <?= $data['divisi'][$key]['divisi'] ?>
-                </label>
-            </div>
+        <div class="col pe-0 ps-1 mb-2" style="min-width: 200px;">
+            <?php if (isset($data['spk_pending'][$key])) { ?>
+                <select name="p-<?= $key ?>" class="form-select form-select-sm">
+                    <option selected>-</option>
+                    <?php foreach ($data['spk_pending'][$key] as $sp) { ?>
+                        <option value="<?= $sp['id'] ?>"><?= $sp['pending'] ?></option>
+                    <?php } ?>
+                </select>
+            <?php } ?>
         </div>
     </div>
 <?php  } ?>

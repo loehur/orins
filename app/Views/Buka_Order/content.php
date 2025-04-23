@@ -295,14 +295,22 @@ $mgpaket = $data['margin_paket'];
                                                                 <span class="text-danger cell_edit" data-mode="main" data-id="<?= $id_order_data ?>" data-col=""><?= $do['note'] ? $do['note'] : "_" ?></span>
                                                             </div>
                                                             <?php
+                                                            $spkR = [];
+                                                            if (strlen($do['ready_spk']) > 0) {
+                                                                $spkR = unserialize($do['ready_spk']);
+                                                            }
+
                                                             foreach (unserialize($do['note_spk']) as $ks => $ns) {
                                                                 if (strlen($ns) > 0) { ?>
-                                                                    <div class="col">
+                                                                    <div class="col text-sm">
                                                                         <small>Catatan <span class="fw-bold"><?= $this->dDvs_all[$ks]["divisi"] ?></span></small><br>
+                                                                        <?php if (isset($spkR[$ks])) { ?>
+                                                                            <span class="badge bg-danger">Pending</span>
+                                                                        <?php } ?>
                                                                         <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary"><?= $ns ?></span>
                                                                     </div>
                                                                 <?php } else { ?>
-                                                                    <div class="col">
+                                                                    <div class="col text-sm">
                                                                         <small>Catatan <span class="fw-bold"><?= $this->dDvs_all[$ks]["divisi"] ?></span></small><br>
                                                                         <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary">_</span>
                                                                     </div>
