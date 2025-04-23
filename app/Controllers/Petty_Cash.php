@@ -49,7 +49,7 @@ class Petty_Cash extends Controller
 
       $data['saldo'] = $topup - $pakai;
 
-      $whereTopupMutasi = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 AND insertTime LIKE '" . $date . "%'";
+      $whereTopupMutasi = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 AND (insertTime LIKE '" . $date . "%' OR st = 0)";
       $data['topup'] = $this->db(0)->get_where('kas_kecil', $whereTopupMutasi);
 
       $wherePakaiMutasi = "id_sumber = " . $this->userData['id_toko'] . " AND (tipe = 2 OR tipe = 5) AND st = 0 AND insertTime LIKE '" . $date . "%'";
