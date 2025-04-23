@@ -8,15 +8,15 @@
 
 <main>
     <?php
-    $total_setor = 0;
+    $date = $data['date'];
     ?>
     <!-- Main page content-->
     <div class="container">
         <div class="row mx-0 mb-2">
             <div class="col ps-0">
-                <span class="btn btn-sm btn-outline-primary">Back</span>
-                <span class="px-1 rounded border border-secondary"><?= date("F Y") ?></span>
-                <span class="btn btn-sm btn-outline-primary">Next</span>
+                <span class="btn btn-sm btn-outline-dark" onclick="content('<?= $date ?>',1)">Back</span>
+                <span class="px-2 text-primary"><?= date("F Y", strtotime($date)) ?></span>
+                <span class="btn btn-sm btn-outline-dark" onclick="content('<?= $date ?>',2)">Next</span>
             </div>
             <div class="col text-end">
                 <div class="btn-group me-1">

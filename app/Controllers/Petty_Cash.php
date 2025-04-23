@@ -29,10 +29,16 @@ class Petty_Cash extends Controller
       $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse1, "page" => $parse2]);
    }
 
-   public function content($date = "")
+   public function content($date = "", $mode = 0)
    {
       if ($date == "") {
          $date = date("Y-m");
+      }
+
+      if ($mode == 1) {
+         $date = date('Y-m', strtotime('-1 month', strtotime($date)));
+      } elseif ($mode == 2) {
+         $date = date('Y-m', strtotime('+1 month', strtotime($date)));
       }
 
       $whereTopup = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 AND st = 1";
@@ -43,13 +49,14 @@ class Petty_Cash extends Controller
 
       $data['saldo'] = $topup - $pakai;
 
-      $whereTopupMutasi = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 AND insertTime LIKE '%" . $date . "'";
+      $whereTopupMutasi = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 AND insertTime LIKE '" . $date . "%'";
       $data['topup'] = $this->db(0)->get_where('kas_kecil', $whereTopupMutasi);
 
-      $wherePakaiMutasi = "id_sumber = " . $this->userData['id_toko'] . " AND (tipe = 2 OR tipe = 5) AND st = 0 AND insertTime LIKE '%" . $date . "'";
+      $wherePakaiMutasi = "id_sumber = " . $this->userData['id_toko'] . " AND (tipe = 2 OR tipe = 5) AND st = 0 AND insertTime LIKE '" . $date . "%'";
       $data['pakai'] = $this->db(0)->get_where('kas_kecil', $wherePakaiMutasi);
 
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
+      $data['date'] = $date;
 
       $this->view(__CLASS__ . '/content', $data);
    }
