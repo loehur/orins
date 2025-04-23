@@ -24,28 +24,33 @@ class Petty_Cash extends Controller
       $this->viewer();
    }
 
-   public function viewer($page = "", $parse = "")
+   public function viewer($parse1 = "", $parse2 = "")
    {
-      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse, "page" => $page]);
+      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse1, "page" => $parse2]);
    }
 
-   public function content()
+   public function content($date = "")
    {
+      if ($date == "") {
+         $date = date("Y-m");
+      }
+
       $whereTopup = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 AND st = 1";
       $topup = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $whereTopup);
 
       $wherePakai = "id_sumber = " . $this->userData['id_toko'] . " AND (tipe = 2 OR tipe = 5) AND st <> 2";
       $pakai = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $wherePakai);
 
-      $whereTopupMutasi = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 ORDER BY insertTime DESC";
+      $data['saldo'] = $topup - $pakai;
+
+      $whereTopupMutasi = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 AND insertTime LIKE '%" . $date . "'";
       $data['topup'] = $this->db(0)->get_where('kas_kecil', $whereTopupMutasi);
 
-      $wherePakaiMutasi = "id_sumber = " . $this->userData['id_toko'] . " AND (tipe = 2 OR tipe = 5) AND st = 0 ORDER BY insertTime DESC";
+      $wherePakaiMutasi = "id_sumber = " . $this->userData['id_toko'] . " AND (tipe = 2 OR tipe = 5) AND st = 0 AND insertTime LIKE '%" . $date . "'";
       $data['pakai'] = $this->db(0)->get_where('kas_kecil', $wherePakaiMutasi);
 
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
 
-      $data['saldo'] = $topup - $pakai;
       $this->view(__CLASS__ . '/content', $data);
    }
 

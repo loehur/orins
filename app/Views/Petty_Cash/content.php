@@ -12,7 +12,12 @@
     ?>
     <!-- Main page content-->
     <div class="container">
-        <div class="row mx-0">
+        <div class="row mx-0 mb-2">
+            <div class="col ps-0">
+                <span class="btn btn-sm btn-outline-primary">Back</span>
+                <span class="px-1 rounded border border-secondary"><?= date("F Y") ?></span>
+                <span class="btn btn-sm btn-outline-primary">Next</span>
+            </div>
             <div class="col text-end">
                 <div class="btn-group me-1">
                     <button type="button" class="btn shadow-none btn-sm btn-primary bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
