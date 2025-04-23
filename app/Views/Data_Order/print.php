@@ -390,9 +390,9 @@
                         <td style="text-align:right">Total : </td>
                         <td style="text-align:right">
                             <?php if ($countBarang > 0) { ?>
-                                Rp<?= number_format($total) ?>
-                            <?php } else { ?>
                                 Rp<?= number_format($total - $total_disc) ?>
+                            <?php } else { ?>
+                                Rp<?= number_format($total) ?>
                             <?php } ?>
                         </td>
                     </tr>
