@@ -26,8 +26,9 @@ $yearNow = date('Y');
 							<div class="collapse <?= (str_contains($t, "Afiliasi Order")) ? 'show' : '' ?>" id="collapseAff" data-bs-parent="#accordionSidenav">
 								<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
 									<?php foreach ($aff_ as $af) {
-										$toko = $this->dToko[$af['id_toko']]['inisial'] ?>
-										<a class="nav-link py-1 <?= ($t == "Afiliasi Order - " . $af['ref']) ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Buka_Order_Aff/index/<?= $af['ref'] ?>"><?= $toko ?> #<?= $af['id_pelanggan'] ?></a>
+										$toko = $this->dToko[$af['id_toko']]['inisial'];
+										$pelanggan = $this->dPelangganAll[$af['id_pelanggan']]['nama'] ?>
+										<a class="nav-link py-1 <?= ($t == "Afiliasi Order - " . $af['ref']) ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Buka_Order_Aff/index/<?= $af['ref'] ?>"><?= $toko ?> #<?= strtoupper($pelanggan) ?></a>
 									<?php } ?>
 								</nav>
 							</div>
