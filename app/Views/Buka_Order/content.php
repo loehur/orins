@@ -298,12 +298,12 @@ $mgpaket = $data['margin_paket'];
                                                             foreach (unserialize($do['note_spk']) as $ks => $ns) {
                                                                 if (strlen($ns) > 0) { ?>
                                                                     <div class="col">
-                                                                        <small>Catatan <span class="fw-bold"><?= $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) ?></span></small><br>
+                                                                        <small>Catatan <span class="fw-bold"><?= $this->dDvs_all[$ks]["divisi"] ?></span></small><br>
                                                                         <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary"><?= $ns ?></span>
                                                                     </div>
                                                                 <?php } else { ?>
                                                                     <div class="col">
-                                                                        <small>Catatan <span class="fw-bold"><?= $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) ?></span></small><br>
+                                                                        <small>Catatan <span class="fw-bold"><?= $this->dDvs_all[$ks]["divisi"] ?></span></small><br>
                                                                         <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary">_</span>
                                                                     </div>
                                                             <?php }
