@@ -27,7 +27,7 @@ $yearNow = date('Y');
 								<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
 									<?php foreach ($aff_ as $af) {
 										$toko = $this->dToko[$af['id_toko']]['inisial'] ?>
-										<a class="nav-link py-1 <?= ($t == "Afiliasi Order - " . $af['ref']) ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Buka_Order_Aff/index/<?= $af['ref'] ?>"><?= $toko ?> - C#<?= $af['id_pelanggan'] ?></a>
+										<a class="nav-link py-1 <?= ($t == "Afiliasi Order - " . $af['ref']) ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Buka_Order_Aff/index/<?= $af['ref'] ?>"><?= $toko ?> #<?= $af['id_pelanggan'] ?></a>
 									<?php } ?>
 								</nav>
 							</div>
