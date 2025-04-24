@@ -267,7 +267,6 @@ $mgpaket = $data['margin_paket'];
                                                                             <div class="border-bottom mx-0">
                                                                                 <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
                                                                                 <div class="float-end">
-
                                                                                     <?php
                                                                                     if ($do['price_locker'] == 0) {
                                                                                         if ($disk > 0) { ?>

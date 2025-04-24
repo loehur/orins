@@ -1008,14 +1008,18 @@ class Buka_Order extends Controller
             }
          }
 
-         $data_pending = unserialize($do['pending_spk']);
-         foreach ($data_pending as $key => $val) {
-            $data_pending[$key] = str_replace("-p", "-r", $val);
-         }
-
-         $new_data_pending = serialize($data_pending);
-
          if ($id_user_afiliasi <> 0) {
+
+            $new_data_pending = "";
+            if (strlen($do['pending_spk']) > 1) {
+               $data_pending = unserialize($do['pending_spk']);
+               foreach ($data_pending as $key => $val) {
+                  $data_pending[$key] = str_replace("-p", "-r", $val);
+               }
+
+               $new_data_pending = serialize($data_pending);
+            }
+
             $spkL = "";
             if ($do['spk_dvs'] > 1) {
                $spk_list = unserialize($do['spk_dvs']);
