@@ -2,17 +2,17 @@
     <!-- Main page content-->
     <div class="container px-2">
         <div class="card shadow-none mb-1">
-            <div class="card-body bg-warning-soft pb-0 pt-2">
-                <form action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $data['pelanggan_jenis'] ?>/0/<?= $data['parse'] ?>" method="POST">
+            <div class="card-body bg-warning-soft pb-0 pt-2 bg-gradient">
+                <form class="mb-2" action="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $data['pelanggan_jenis'] ?>/0/<?= $data['parse'] ?>" method="POST">
                     <div class="row">
                         <div class="col px-1">
-                            <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pelanggan_nama']) ?>" required readonly>
+                            <input class="form-control border-0 bg-light text-success fw-bold" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pelanggan_nama']) ?>" required readonly>
                             <input class="form-control" type="hidden" name="id_pelanggan" value="<?= $data['pelanggan'] ?>" required readonly>
                         </div>
-                        <div class="col ps-0 pe-1">
-                            <input class="form-control" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pengirim']) ?>" required readonly>
+                        <div class="col px-1">
+                            <input class="form-control border-0 bg-light text-primary fw-bold" type="text" name="pelanggan_nama" value="<?= strtoupper($data['pengirim']) ?>" required readonly>
                         </div>
-                        <div class="col ps-0 pe-1">
+                        <div class="col px-1">
                             <select class="tize" name="id_karyawan_aff" required>
                                 <option value="">CS</option>
                                 <?php foreach ($data['karyawan'] as $k) {
@@ -22,14 +22,14 @@
                                 } ?>
                             </select>
                         </div>
-                        <div class="col-auto mt-auto p-0 pb-2 pe-1">
-                            <button type="submit" class="btn btn-warning w-100">Proses</button>
+                        <div class="col-auto mt-auto p-0 px-1">
+                            <button type="submit" class="btn btn-warning bg-gradient w-100">Proses</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-        <div class="card shadow-sm mt-1">
+        <div class="card shadow-sm mt-2">
             <table class="table table-sm mb-0">
                 <tbody>
                     <?php
@@ -64,7 +64,7 @@
                         <tr>
                             <td>
                                 <table class="table table-sm w-100 mb-0">
-                                    <tr class="bg-warning-soft">
+                                    <tr class="bg-warning-soft bg-gradient">
                                         <td class="ps-2">
                                             <span class="text-nowrap text-dark"><b><small><?= ucwords($produk) ?></small></b></span>
                                             <small><?= $this->model('Arr')->get($this->dUser, "id_user", "nama", $do['id_user']) ?></small>
@@ -107,7 +107,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="10" class="border-bottom-0">
-                                            <table class="table">
+                                            <table class="table mb-1">
                                                 <tr>
                                                     <td class="pe-1 border-bottom-0" nowrap>
                                                         <div class="row">
@@ -145,25 +145,32 @@
                                                 </tr>
                                             </table>
                                             <div class="row">
-                                                <div class="col-auto">
-                                                    <span>
-                                                        <small>Catatan Utama</small><br><span class="text-danger"><?= $do['note'] ?></span>
-                                                    </span>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <span>
-                                                        <small>Catatan Produksi</small><br>
-                                                        <span class="text-primary">
-                                                            <?php
-                                                            foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                                if (strlen($ns) > 0) {
-                                                                    echo "<b>" . $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) . "</b>: " . $ns . ", ";
-                                                                }
-                                                            }
-                                                            ?>
+                                                <?php if (strlen($do['note']) > 0) { ?>
+                                                    <div class="col">
+                                                        <span>
+                                                            <small>Catatan Utama</small><br><span class="text-danger"><?= $do['note'] ?></span>
                                                         </span>
-                                                    </span>
-                                                </div>
+                                                    </div>
+                                                <?php } ?>
+                                                <?php
+                                                $spkR = [];
+                                                if (strlen($do['pending_spk']) > 1) {
+                                                    $spkR = unserialize($do['pending_spk']);
+                                                }
+
+                                                foreach (unserialize($do['note_spk']) as $ks => $ns) {
+                                                    if (strlen($ns) > 0 || isset($spkR[$ks])) { ?>
+                                                        <div class="col text-sm">
+                                                            <small>Catatan <span class="fw-bold"><?= $this->dDvs_all[$ks]["divisi"] ?></span></small><br>
+                                                            <?php if (isset($spkR[$ks])) {
+                                                                $pendReady = explode("-", $spkR[$ks]); ?>
+                                                                <span class="badge bg-<?= $pendReady[1] == 'r' ? 'success' : 'danger' ?>"><?= $data['spk_pending'][$pendReady[0]][$pendReady[1]] ?></span>
+                                                            <?php } ?>
+                                                            <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary"><?= $ns ?></span>
+                                                        </div>
+                                                <?php }
+                                                }
+                                                ?>
                                             </div>
                                         </td>
                                     </tr>

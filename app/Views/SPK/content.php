@@ -1,11 +1,11 @@
 <main>
     <!-- Main page content-->
-    <div class="row me-1 ms-2 mt-2">
-        <div class="col-md-6 ps-0 pe-1 mb-2">
+    <div class="row mx-0">
+        <div class="col-md-6 px-1 mb-2">
             <small>
-                <table class="table table-sm mb-0 bg-white shadow-sm border">
+                <table class="table table-sm mb-0 bg-white shadow-sm border text-sm">
                     <tr>
-                        <td colspan="5" class="table-danger">Rekap SPK - <b>Tahap I</b></td>
+                        <td colspan="5" class="table-danger"><b>Tahap I</b></td>
                     </tr>
                     <?php foreach ($data['recap'] as $r) { ?>
                         <tr>
@@ -29,9 +29,9 @@
         </div>
         <div class="col-md-6 ps-0 pe-1">
             <small>
-                <table class="table table-sm mb-0 bg-white shadow-sm border">
+                <table class="table table-sm mb-0 bg-white shadow-sm border text-sm">
                     <tr>
-                        <td colspan="5" class="table-warning">Rekap SPK - <b>Tahap II</b></td>
+                        <td colspan="5" class="table-warning"><b>Tahap II</b></td>
                     </tr>
                     <?php foreach ($data['recap_2'] as $r) { ?>
                         <tr>
@@ -137,7 +137,7 @@
 </div>
 
 <div class="modal" id="modalOrder" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content" id="cekOrder">
 
         </div>

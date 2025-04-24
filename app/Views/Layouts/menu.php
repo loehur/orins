@@ -169,7 +169,7 @@ $yearNow = date('Y');
 		</nav>
 	</div>
 	<div id="layoutSidenav_content">
-		<div style="margin-top: 40px;max-width:1100px" id="content"></div>
+		<div style="margin-top: 20px;max-width:1100px" id="content"></div>
 	</div>
 </div>
 </div>

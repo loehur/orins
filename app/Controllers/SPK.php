@@ -151,6 +151,7 @@ class SPK extends Controller
    function cekSPK($order, $parse)
    {
       $data['produk'] = $this->db(0)->get('produk', 'id_produk');
+      $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
       $data_get = explode(",", $order);
 
       $data['order'] = [];

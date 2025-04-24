@@ -39,10 +39,10 @@ class SPK_L extends Controller
    public function content($parse = "")
    {
       $data['parse'] = $parse;
+      $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
 
-      $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_pro DESC";
-      $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan);
+      $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
 
       $dvs = '"D-' . $parse . '"';
 

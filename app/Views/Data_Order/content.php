@@ -8,7 +8,7 @@
     }
 </style>
 <main>
-    <div class="position-fixed bg-white w-100" style="top:0; padding-top:70px;">
+    <div class="bg-white w-100">
         <div class="p-2 rounded bg-light ms-2 mb-2 me-1 border pb-0" style="max-width: 500px;">
             <div class="row mb-1">
                 <div class="col-auto pe-0">
@@ -74,7 +74,7 @@
     ?>
 
     <small>
-        <div class="mx-2 rounded px-2 mt-3 pt-5">
+        <div class="mx-2 rounded px-2">
             <div class="row">
                 <div class="col px-0 overflow-auto mt-2" style="max-width: 500px;height: 700px;">
                     <?php foreach ($data['refs'] as $key => $ref) { ?>

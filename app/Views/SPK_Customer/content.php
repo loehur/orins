@@ -6,7 +6,7 @@
             <select class="border rounded tize cek" name="customer" required>
                 <option></option>
                 <?php foreach ($data['dPelanggan'] as $p) { ?>
-                    <option <?= $data['customer'] == $p['id_pelanggan'] ? 'selected' : '' ?> value="<?= $p['id_pelanggan'] ?>"><?= $p['id_toko'] ?> - <?= strtoupper($p['nama']) ?></option>
+                    <option <?= $data['customer'] == $p['id_pelanggan'] ? 'selected' : '' ?> value="<?= $p['id_pelanggan'] ?>"><?= $this->dToko[$p['id_toko']]['inisial'] ?> <?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], -2) ?></option>
                 <?php } ?>
             </select>
         </div>
@@ -96,7 +96,7 @@
                                         <td colspan="5" class="table-secondary">
                                             <table class="w-100 p-0 m-0">
                                                 <tr>
-                                                    <td><span><?= substr($ref, -4) ?></span> <span class="text-primary fw-bold"><?= $in_toko ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
+                                                    <td class="text-sm"><span><?= substr($ref, -4) ?></span> <span class="text-primary fw-bold"><?= $in_toko ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
                                                     <td valign="top" class="text-end"><small><?= $cs . $cs_af ?> <?= substr($do['insertTime'], 2, -3) ?></span></small></td>
                                                 </tr>
                                             </table>
@@ -108,7 +108,7 @@
                                     <td>
                                         <table class="float-start">
                                             <tr>
-                                                <td class="pe-1">
+                                                <td class="pe-1 text-sm">
                                                     <span class="text-success"><?= $produk ?></span><br>
                                                     <?php
                                                     foreach ($detail_arr as $da) { ?>
@@ -118,18 +118,31 @@
                                                 <td valign="bottom" class="text-end text-purple pe-2" style="width:40px"><b><?= number_format($do['jumlah']) ?></b>pcs</td>
                                             </tr>
                                             <?php
+                                            $spkR = [];
+                                            if (strlen($do['pending_spk']) > 1) {
+                                                $spkR = unserialize($do['pending_spk']);
+                                            }
+
                                             if (strlen($do['note']) > 0 || strlen($do['note_spk']) > 0) { ?>
                                                 <tr>
                                                     <td colspan="10">
-                                                        <?php if (strlen($do['note']) > 0) { ?>
-                                                            <span class='text-danger'><i class='fa-solid fa-circle-exclamation'></i> <?= $do['note'] ?></span>
+                                                        <?php
+                                                        if (strlen($do['note']) > 0) { ?>
+                                                            <span class='text-danger text-sm'><i class='fa-solid fa-circle-exclamation'></i> <?= $do['note'] ?></span>
                                                         <?php } ?>
-                                                        <?php foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                            if ($ks == $parse && strlen($ns) > 0) {
-                                                                echo "<br><span class='text-primary'><i class='fa-solid fa-circle-exclamation'></i> " . $ns . "</span>";
-                                                            }
-                                                        }
-                                                        ?>
+                                                        <span class="text-sm">
+                                                            <?php foreach (unserialize($do['note_spk']) as $ks => $ns) {
+                                                                if ($ks == $parse && strlen($ns) > 0) {
+                                                                    echo "<br><span class='text-primary'><i class='fa-solid fa-circle-exclamation'></i> " . $ns . "</span>";
+                                                                }
+                                                                if ($ks == $parse) {
+                                                                    if (isset($spkR[$ks])) {
+                                                                        $pendReady = explode("-", $spkR[$ks]); ?>
+                                                                        <small><span class="badge bg-<?= $pendReady[1] == 'r' ? 'success' : 'danger' ?>"><?= $data['spk_pending'][$pendReady[0]][$pendReady[1]] ?></span></small>
+                                                                    <?php } ?>
+                                                                <?php } ?>
+                                                            <?php } ?>
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             <?php } ?>
@@ -140,15 +153,15 @@
                                                 foreach ($divisi as $key => $dvs) {
                                                     if ($key == $parse) {
                                                         if ($divisi_arr[$key]['status'] == 0) {
-                                                            if ($do['id_afiliasi'] == 0) { ?>
+                                                            if ($do['id_afiliasi'] == 0 || $do['id_afiliasi'] == $this->userData['id_toko']) { ?>
                                                                 <?php if (!str_contains($do['spk_lanjutan'], "D-" . $parse . "#")) { ?>
                                                                     <td style="cursor: pointer;" class="pe-2 push" data-id="<?= $id_order_data ?>" data-val="<?= $parse ?>"><i class="fa-regular fa-circle-right"></i> Push</td>
                                                                 <?php } else { ?>
-                                                                    <td class="pe-2 text-danger">Pushed</td>
+                                                                    <td class="pe-2 text-danger"><small class="fw-bold">Pushed</small></td>
                                                                 <?php } ?>
                                                             <?php } ?>
                                                         <?php } ?>
-                                                <?php echo "<td class='pe-2'>";
+                                                <?php echo "<td class='pe-2 text-sm'>";
                                                         if ($divisi_arr[$key]['status'] == 1) {
                                                             $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
                                                             echo '<i class="fa-solid fa-check text-success"></i> ' . $karyawan;
@@ -159,7 +172,7 @@
                                                         }
                                                         echo "</td>";
                                                         if ($divisi_arr[$key]['cm'] == 1) {
-                                                            echo "<td class='pe-2'>";
+                                                            echo "<td class='pe-2 text-sm'>";
                                                             if ($divisi_arr[$key]['cm_status'] == 1) {
                                                                 $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_cm']);
                                                                 echo '<i class="fa-solid text-success fa-check-double"></i> ' . $karyawan;

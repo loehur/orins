@@ -39,6 +39,7 @@ class SPK_C extends Controller
    public function content($parse = "", $date = "")
    {
       $data['parse'] = $parse;
+      $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
 
       $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_pro DESC";

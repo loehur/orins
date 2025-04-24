@@ -41,6 +41,7 @@ class SPK_Customer extends Controller
       $data['parse'] = $parse;
       $data['customer'] = $customer;
       $data['dPelanggan'] = $this->db(0)->get('pelanggan');
+      $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
 
       if ($customer <> 0) {
          $data['pelanggan'] = $this->db(0)->get_where('pelanggan', "id_pelanggan = " . $customer, 'id_pelanggan');

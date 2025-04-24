@@ -4,7 +4,7 @@
             <select class="border rounded tize" name="id_pelanggan" required>
                 <option></option>
                 <?php foreach ($data['pelanggan'] as $p) { ?>
-                    <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], -2) ?></option>
+                    <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= $this->dToko[$p['id_toko']]['inisial'] ?> <?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], -2) ?></option>
                 <?php } ?>
             </select>
         </div>
@@ -336,34 +336,44 @@
                                                             </td>
                                                         </tr>
                                                     </table>
-                                                    <div class="row bor">
-                                                        <div class="col-auto">
-                                                            <span>
-                                                                <small>Catatan Utama<br><span class="text-danger"><?= $do['note'] ?></span></small>
-                                                            </span>
-                                                        </div>
-                                                        <div class="col-auto">
-                                                            <span>
-                                                                <small>Catatan Produksi<br>
-                                                                    <span class="text-primary">
-                                                                        <?php
-                                                                        foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                                            if (strlen($ns) > 0) {
-                                                                                echo "<b>" . $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) . ":</b> " . $ns . ", ";
-                                                                            }
-                                                                        }
-                                                                        ?>
-                                                                    </span>
-                                                                </small>
-                                                            </span>
-                                                        </div>
+                                                    <div class="row bor mx-0">
+                                                        <?php if (strlen($do['note'] > 0)) { ?>
+                                                            <div class="col-auto">
+                                                                <span>
+                                                                    <small><b>Utama</b><br><span class="text-danger"><?= $do['note'] ?></span></small>
+                                                                </span>
+                                                            </div>
+                                                        <?php } ?>
+
+                                                        <?php
+                                                        $spkR = [];
+                                                        if (strlen($do['pending_spk']) > 1) {
+                                                            $spkR = unserialize($do['pending_spk']);
+                                                        }
+
+                                                        foreach (unserialize($do['note_spk']) as $ks => $ns) {
+                                                            if (strlen($ns) > 0 || isset($spkR[$ks])) { ?>
+                                                                <div class="col px-0 text-sm">
+                                                                    <small><span class="fw-bold"><?= $this->dDvs_all[$ks]["divisi"] ?></span></small>
+                                                                    <small>
+                                                                        <?php if (isset($spkR[$ks])) {
+                                                                            $pendReady = explode("-", $spkR[$ks]); ?>
+                                                                            <span class="badge bg-<?= $pendReady[1] == 'r' ? 'success' : 'danger' ?>"><?= $data['spk_pending'][$pendReady[0]][$pendReady[1]] ?></span>
+                                                                        <?php } ?>
+                                                                    </small>
+                                                                    <br>
+                                                                    <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary"><?= $ns ?></span>
+                                                                </div>
+                                                        <?php }
+                                                        }
+                                                        ?>
                                                     </div>
                                                 </td>
                                                 <td class="text-nowrap" style="line-height: 120%;"><small>
                                                         <?php
                                                         foreach ($divisi as $key => $dvs) {
                                                             if ($divisi_arr[$key]['status'] == 1) {
-                                                                $karyawan = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
+                                                                $karyawan = $this->dKaryawanAll[$divisi_arr[$key]['user_produksi']]["nama"];
                                                                 echo '<i class="fa-solid fa-check text-success"></i> ' . $dvs . " (" . $karyawan . ")<br>";
                                                             } else {
                                                                 echo '<i class="fa-regular fa-circle"></i> ' . $dvs . "<br>";
@@ -371,7 +381,7 @@
 
                                                             if ($divisi_arr[$key]['cm'] == 1) {
                                                                 if ($divisi_arr[$key]['cm_status'] == 1) {
-                                                                    $karyawan = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $divisi_arr[$key]['user_cm']);
+                                                                    $karyawan = $this->dKaryawanAll[$divisi_arr[$key]['user_cm']]["nama"];
                                                                     echo '<i class="fa-solid text-success fa-check-double"></i> ' . $dvs . " (" . $karyawan . ")<br>";
                                                                 } else {
                                                                     echo '<i class="fa-regular fa-circle"></i> ' . $dvs . '<br>';
@@ -390,7 +400,7 @@
                                                         <?php }
                                                         } else {
                                                             if ($cancel == 0) {
-                                                                $karyawan = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $id_ambil);
+                                                                $karyawan = $this->dKaryawanAll[$id_ambil]["nama"];
                                                                 echo '<span class="text-purple"><i class="fa-solid fa-check"></i> Ambil (' . $karyawan . ")</span>";
                                                             }
                                                         } ?>

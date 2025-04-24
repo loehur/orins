@@ -70,6 +70,7 @@ class Buka_Order extends Controller
 
    public function content($parse = "")
    {
+      $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
       $data['produk'] = $this->db(0)->get_where('produk', 'pj = 0 ORDER BY freq DESC, id_produk');
       $data['produk_jasa'] = $this->db(0)->get_where('produk', "pj = " . $this->userData['id_toko'] . " ORDER BY freq DESC, id_produk");
       $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
@@ -281,6 +282,7 @@ class Buka_Order extends Controller
          $_POST['id_produk'] = $do['id_produk'];
          $_POST['note'] = $do['note'];
          $_POST['note_spk'] = $do['note_spk'];
+         $_POST['pending_spk'] = $do['pending_spk'];
          $_POST['detail_harga'] = $do['detail_harga'];
          $_POST['produk_code'] = $do['produk_code'];
          $_POST['produk_detail'] = $do['produk_detail'];
@@ -321,6 +323,21 @@ class Buka_Order extends Controller
          foreach ($this->dSPK as $sd) {
             if ($sd['id_produk'] == $id_produk) {
                $spkNote[$sd['id_divisi']] = $_POST['d-' . $sd['id_divisi']];
+            }
+         }
+      }
+
+      if (isset($_POST['pending_spk'])) {
+         $spkR = unserialize($_POST['pending_spk']);
+      } else {
+         $spkR = [];
+         foreach ($this->dSPK as $sd) {
+            if ($sd['id_produk'] == $id_produk) {
+               if (isset($_POST['p-' . $sd['id_divisi']])) {
+                  if ($_POST['p-' . $sd['id_divisi']] <> "") {
+                     $spkR[$sd['id_divisi']] = $_POST['p-' . $sd['id_divisi']] . "-p";
+                  }
+               }
             }
          }
       }
@@ -466,6 +483,7 @@ class Buka_Order extends Controller
 
       $spkDVS_ = serialize($spkDVS);
       $spkNote_ = serialize($spkNote);
+      $spkR_ = serialize($spkR);
       $detailHarga_ = serialize($detailHarga);
 
       if (isset($_POST['id_paket']) && $_POST['id_paket'] <> "") {
@@ -478,11 +496,11 @@ class Buka_Order extends Controller
       }
 
       if ($afiliasi == 0) {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, margin_paket, pj';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $margin_paket . "," . $pj;
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, margin_paket, pj, pending_spk';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $margin_paket . "," . $pj . ",'" . $spkR_ . "'";
       } else {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, margin_paket, pj';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $margin_paket . "," . $pj;
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, margin_paket, pj, pending_spk';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $margin_paket . "," . $pj . ",'" . $spkR_ . "'";
       }
 
       $do = $this->db(0)->insertCols('order_data', $cols, $vals);
@@ -565,6 +583,7 @@ class Buka_Order extends Controller
       $data_['detail'] = $data_;
       $data_['varian'] = $varian;
       $data_['spkNote'] = $spkNote;
+      $data_['spk_pending'] = $this->db(0)->get('spk_pending', 'id_divisi', 1);
       $data_['divisi'] = $this->db(0)->get('divisi', 'id_divisi');
       $this->view(__CLASS__ . "/detail", $data_);
    }
@@ -735,7 +754,7 @@ class Buka_Order extends Controller
                   exit();
                }
 
-               $cek_pelanggan = $this->db(0)->get_where_row('pelanggan', "UPPER(nama) = '" . $nama . "' AND no_hp = '" . $hp . "'");
+               $cek_pelanggan = $this->db(0)->get_where_row('pelanggan', "UPPER(nama) = '" . $nama . "' AND no_hp = '" . $hp . "' AND id_toko = " . $this->userData['id_toko']);
 
                if (isset($cek_pelanggan['id_pelanggan'])) {
                   $id_pelanggan = $cek_pelanggan['id_pelanggan'];
@@ -931,6 +950,7 @@ class Buka_Order extends Controller
             }
          }
       }
+
       $this->db(0)->update("pelanggan", "freq = freq+1", "id_pelanggan = " . $id_pelanggan);
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
 
@@ -988,8 +1008,26 @@ class Buka_Order extends Controller
             }
          }
 
+         $data_pending = unserialize($do['pending_spk']);
+         foreach ($data_pending as $key => $val) {
+            $data_pending[$key] = str_replace("-p", "-r", $val);
+         }
+
+         $new_data_pending = serialize($data_pending);
+
          if ($id_user_afiliasi <> 0) {
-            $st_order = ", status_order = 0, id_user_afiliasi = " . $id_user_afiliasi;
+            $spkL = "";
+            if ($do['spk_dvs'] > 1) {
+               $spk_list = unserialize($do['spk_dvs']);
+
+               foreach ($spk_list as $key => $val) {
+                  if ($val['status'] == 0) {
+                     $spkL .=  "D-" . $key . "#";
+                  }
+               }
+            }
+
+            $st_order = ", status_order = 0, id_user_afiliasi = " . $id_user_afiliasi . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
             $where = "id_order_data = " . $do['id_order_data'] . " AND id_user_afiliasi = 0";
          } else {
             $st_order = "";
@@ -997,7 +1035,6 @@ class Buka_Order extends Controller
          }
 
          //SET ORDER, HARGA DAN AFILIASI
-
          $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", stok = " . $stok_order . $st_order;
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {

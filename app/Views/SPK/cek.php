@@ -1,8 +1,9 @@
+<?php $parse = $data['parse'] ?>
 <div class="row p-1">
     <?php foreach ($data['order'] as $ref => $data['order_']) { ?>
         <div class="col-md-12">
             <small>
-                <table class="table table-sm mb-0 mt-1 border">
+                <table class="table table-sm mb-0 mt-1 border text-sm">
                     <tbody>
                         <?php
                         $no = 0;
@@ -45,8 +46,8 @@
                                     <td colspan="5" class="table-light">
                                         <table class="w-100 p-0 m-0">
                                             <tr>
-                                                <td><span class="text-danger"><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
-                                                <td style="width: 180px;" class="text-end"><small><?= $cs  ?> [<?= substr($do['insertTime'], 2, -3) ?>]</span></small></td>
+                                                <td class="text-sm"><span class="text-danger"><?= substr($ref, -4) ?></span> <b><?= strtoupper($pelanggan) ?></b></td>
+                                                <td style="width: 180px;" class="text-end"><small><?= $cs  ?> <?= substr($do['insertTime'], 2, -3) ?></span></small></td>
                                             </tr>
                                         </table>
                                     </td>
@@ -69,30 +70,37 @@
                                             </div>
                                         <?php } ?>
                                     </div>
-                                    <div class="row mt-2">
-                                        <div class="col-auto" style="line-height: 100%;">
-                                            <span>
-                                                <small>Catatan Utama<br><span class="text-danger"><?= $do['note'] ?></span></small>
-                                            </span>
-                                        </div>
-                                        <div class="col-auto" style="line-height: 100%;">
-                                            <span>
-                                                <small>Catatan Produksi<br>
-                                                    <span class="text-primary">
-                                                        <?php
-                                                        foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                            if (strlen($ns) > 0) {
-                                                                echo "<b>" . $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) . ":</b> " . $ns . ", ";
-                                                            }
-                                                        }
-                                                        ?>
-                                                    </span>
-                                                </small>
-                                            </span>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
+                            <?php
+                            $spkR = [];
+                            if (strlen($do['pending_spk']) > 1) {
+                                $spkR = unserialize($do['pending_spk']);
+                            }
+
+                            if (strlen($do['note']) > 0 || strlen($do['note_spk']) > 0) { ?>
+                                <tr>
+                                    <td colspan="10">
+                                        <?php
+                                        if (strlen($do['note']) > 0) { ?>
+                                            <span class='text-danger text-sm'><i class='fa-solid fa-circle-exclamation'></i> <?= $do['note'] ?></span>
+                                        <?php } ?>
+                                        <span class="text-sm">
+                                            <?php foreach (unserialize($do['note_spk']) as $ks => $ns) {
+                                                if ($ks == $parse && strlen($ns) > 0) {
+                                                    echo "<br><span class='text-primary text-sm'><i class='fa-solid fa-circle-exclamation'></i> " . $ns . "</span>";
+                                                }
+                                                if ($ks == $parse) {
+                                                    if (isset($spkR[$ks])) {
+                                                        $pendReady = explode("-", $spkR[$ks]); ?>
+                                                        <small><span class="badge bg-<?= $pendReady[1] == 'r' ? 'success' : 'danger' ?>"><?= $data['spk_pending'][$pendReady[0]][$pendReady[1]] ?></span></small>
+                                                    <?php } ?>
+                                                <?php } ?>
+                                            <?php } ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <?php } ?>
                             <tr>
                                 <td colspan="3" class="text-nowrap"><small>
                                         <div class="row">
@@ -120,7 +128,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="10" class="bg-light"></td>
+                                <td colspan="10" class="bg-secondary"></td>
                             </tr>
                         <?php }
                         ?>

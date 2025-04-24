@@ -290,20 +290,36 @@ $mgpaket = $data['margin_paket'];
                                                             </tr>
                                                         </table>
                                                         <div class="row">
-                                                            <div class="col">
-                                                                <small>Catatan <span class="fw-bold">Utama</span></small><br>
-                                                                <span class="text-danger cell_edit" data-mode="main" data-id="<?= $id_order_data ?>" data-col=""><?= $do['note'] ? $do['note'] : "_" ?></span>
-                                                            </div>
+                                                            <?php if (strlen($do['note']) > 0) { ?>
+                                                                <div class="col">
+                                                                    <small>Catatan <span class="fw-bold">Utama</span></small><br>
+                                                                    <span class="text-danger cell_edit" data-mode="main" data-id="<?= $id_order_data ?>" data-col=""><?= $do['note'] ? $do['note'] : "_" ?></span>
+                                                                </div>
+                                                            <?php } ?>
+
                                                             <?php
+                                                            $spkR = [];
+                                                            if (strlen($do['pending_spk']) > 0) {
+                                                                $spkR = unserialize($do['pending_spk']);
+                                                            }
+
                                                             foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                                if (strlen($ns) > 0) { ?>
-                                                                    <div class="col">
-                                                                        <small>Catatan <span class="fw-bold"><?= $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) ?></span></small><br>
+                                                                if (strlen($ns) > 0 || isset($spkR[$ks])) { ?>
+                                                                    <div class="col text-sm">
+                                                                        <small>Catatan <span class="fw-bold"><?= $this->dDvs_all[$ks]["divisi"] ?></span></small><br>
+                                                                        <?php if (isset($spkR[$ks])) {
+                                                                            $pendReady = explode("-", $spkR[$ks]); ?>
+                                                                            <span class="badge bg-danger"><?= $data['spk_pending'][$pendReady[0]][$pendReady[1]] ?></span>
+                                                                        <?php } ?>
                                                                         <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary"><?= $ns ?></span>
                                                                     </div>
                                                                 <?php } else { ?>
-                                                                    <div class="col">
-                                                                        <small>Catatan <span class="fw-bold"><?= $this->model('Arr')->get($this->dDvs, "id_divisi", "divisi", $ks) ?></span></small><br>
+                                                                    <div class="col text-sm">
+                                                                        <small>Catatan <span class="fw-bold"><?= $this->dDvs_all[$ks]["divisi"] ?></span></small><br>
+                                                                        <?php if (isset($spkR[$ks])) {
+                                                                            $pendReady = explode("-", $spkR[$ks]); ?>
+                                                                            <span class="badge bg-<?= $pendReady[1] == 'r' ? 'success' : 'danger' ?>"><?= $data['spk_pending'][$pendReady[0]][$pendReady[1]] ?></span>
+                                                                        <?php } ?>
                                                                         <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary">_</span>
                                                                     </div>
                                                             <?php }
