@@ -58,7 +58,7 @@ $yearNow = date('Y');
 									$list_l = array_unique($list_l) ?>
 
 									<?php foreach ($list_l as $sl) { ?>
-										<a class="nav-link py-1 <?= ($t == "SPK - Lanjutan " . $this->dDvs[$sl]['divisi']) ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>SPK_L/index/<?= $sl ?>"><?= $this->dDvs[$sl]['divisi'] ?></a>
+										<a class="nav-link py-1 <?= ($t == "SPK - Lanjutan " . $this->dDvs_all[$sl]['divisi']) ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>SPK_L/index/<?= $sl ?>"><?= $this->dDvs[$sl]['divisi'] ?></a>
 									<?php } ?>
 								</nav>
 							</div>
