@@ -173,11 +173,14 @@ $yearNow = date('Y');
 	</div>
 	<div id="layoutSidenav_content">
 		<div style="margin-top: 20px;max-width:1100px" id="content"></div>
-		<pre>
-	<?php
-	print_r($data_spk_lnjut);
-	?>
-</pre>
+		<?php
+		$cekaja = json_encode($data_spk_lnjut, JSON_PRETTY_PRINT);
+		?>
 	</div>
 </div>
 </div>
+
+<script>
+	var cek = <? $cekaja ?>;
+	console.log(JSON.stringify(cek));
+</script>
