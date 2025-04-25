@@ -75,10 +75,7 @@
                 <th colspan="10" class="text-danger">Pemakaian</th>
             </tr>
             <?php
-            foreach ($data['pakai'] as $a) {
-                if ($a['st'] == 1) {
-                    $total_setor += $a['jumlah'];
-                } ?>
+            foreach ($data['pakai'] as $a) { ?>
                 <tr id="tr<?= $a['id'] ?>">
                     <td class="align-middle">
                         <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
