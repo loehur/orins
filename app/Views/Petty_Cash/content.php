@@ -18,17 +18,19 @@
                 <span class="px-2 text-primary"><?= date("F Y", strtotime($date)) ?></span>
                 <span class="btn btn-sm btn-outline-dark" onclick="content('<?= $date ?>',2)">Next</span>
             </div>
-            <div class="col text-end">
-                <div class="btn-group me-1">
-                    <button type="button" class="btn shadow-none btn-sm btn-primary bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                        Operasi
-                        <span class="visually-hidden">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
-                        <li><a data-bs-toggle="modal" data-bs-target="#exampleModal" class="dropdown-item" href="#">Pakai</a></li>
-                    </ul>
+            <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
+                <div class="col text-end">
+                    <div class="btn-group me-1">
+                        <button type="button" class="btn shadow-none btn-sm btn-primary bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            Operasi
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
+                            <li><a data-bs-toggle="modal" data-bs-target="#exampleModal" class="dropdown-item" href="#">Pakai</a></li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
+            <?php } ?>
             <div class="col-auto text-end pt-2 pe-0">
                 Saldo Rp<?= number_format($data['saldo']) ?>
             </div>
@@ -49,15 +51,21 @@
                     <td class="text-end">
                         <?= number_format($a['jumlah']) ?>
                     </td>
-                    <td class="text-end" style="width:70px">
-                        <?php if ($a['st'] == 0) { ?>
-                            <a class="ajax" href="<?= PV::BASE_URL ?>Petty_Cash/verify/<?= $a['id'] ?>/1">Verify</a>
-                        <?php } else { ?>
-                            <?php if ($a['st'] == 1) { ?>
-                                <span class="text-sm text-success">Verified</span>
+                    <?php if (!in_array($this->userData['user_tipe'], PV::PRIV[106])) { ?>
+                        <td class="text-end" style="width:70px">
+                            <?php if ($a['st'] == 0) { ?>
+                                <a class="ajax" href="<?= PV::BASE_URL ?>Petty_Cash/verify/<?= $a['id'] ?>/1">Verify</a>
+                            <?php } else { ?>
+                                <?php if ($a['st'] == 1) { ?>
+                                    <span class="text-sm text-success">Verified</span>
+                                <?php } ?>
                             <?php } ?>
-                        <?php } ?>
-                    </td>
+                        </td>
+                    <?php } else { ?>
+                        <td class="text-end">
+                            <?= $a['st'] == 0 ? "Check" : "Verified" ?>
+                        </td>
+                    <?php } ?>
                 </tr>
             <?php } ?>
         </table>
