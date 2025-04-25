@@ -12,12 +12,6 @@ $lanjut_c = count($data_spk_lnjut);
 $yearNow = date('Y');
 ?>
 
-<pre>
-	<?php
-	print_r($data_spk_lnjut);
-	?>
-</pre>
-
 <div id="layoutSidenav">
 	<div id="layoutSidenav_nav">
 		<nav class="sidenav sidenav-light border-end" style="z-index: -100;">
@@ -182,3 +176,10 @@ $yearNow = date('Y');
 	</div>
 </div>
 </div>
+
+
+<pre>
+	<?php
+	print_r($data_spk_lnjut);
+	?>
+</pre>
