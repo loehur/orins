@@ -1021,7 +1021,7 @@ class Buka_Order extends Controller
             }
 
             $spkL = "";
-            if ($do['spk_dvs'] > 1) {
+            if (strlen($do['spk_dvs']) > 1 && strlen($do['pending_spk']) > 1) {
                $spk_list = unserialize($do['spk_dvs']);
 
                foreach ($spk_list as $key => $val) {
