@@ -51,7 +51,7 @@
                     <td class="text-end">
                         <?= number_format($a['jumlah']) ?>
                     </td>
-                    <?php if (!in_array($this->userData['user_tipe'], PV::PRIV[106])) { ?>
+                    <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                         <td class="text-end" style="width:70px">
                             <?php if ($a['st'] == 0) { ?>
                                 <a class="ajax" href="<?= PV::BASE_URL ?>Petty_Cash/verify/<?= $a['id'] ?>/1">Verify</a>
@@ -96,18 +96,24 @@
                     <td class="text-end">
                         <?= number_format($a['jumlah']) ?>
                     </td>
-                    <td class="text-end" style="width:70px">
-                        <?php if ($a['st'] == 0) { ?>
-                            <?php if ($a['tipe'] == 2) { ?>
-                                <span data-id="<?= $a['id'] ?>" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>
+                    <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
+                        <td class="text-end" style="width:70px">
+                            <?php if ($a['st'] == 0) { ?>
+                                <?php if ($a['tipe'] == 2) { ?>
+                                    <span data-id="<?= $a['id'] ?>" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>
+                                <?php } ?>
+                                <span class="text-sm text-warning">Check</span>
+                            <?php } else { ?>
+                                <?php if ($a['st'] == 1) { ?>
+                                    <span class="text-sm text-success">Verified</span>
+                                <?php } ?>
                             <?php } ?>
-                            <span class="text-sm text-warning">Check</span>
-                        <?php } else { ?>
-                            <?php if ($a['st'] == 1) { ?>
-                                <span class="text-sm text-success">Verified</span>
-                            <?php } ?>
-                        <?php } ?>
-                    </td>
+                        </td>
+                    <?php } else { ?>
+                        <td class="text-end">
+                            <?= $a['st'] == 0 ? "Check" : "Verified" ?>
+                        </td>
+                    <?php } ?>
                 </tr>
             <?php } ?>
         </table>
