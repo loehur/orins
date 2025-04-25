@@ -16,7 +16,36 @@
                 <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
                 <td><a href="<?= PV::BASE_URL . $target_link ?>/list/<?= $d['ref'] ?>"><?= $d['ref'] ?></a></td>
                 <td><span data-id="<?= $d['id'] ?>" class="<?= strlen($d['sn']) > 0 ? 'cell_edit' : "" ?>"><?= $d['sn'] ?></span></td>
-                <td class="align-middle"><?= $d['id_target'] == 0 ? '<i class="fa-solid fa-arrow-down text-success"></i>' : '<i class="fa-solid fa-arrow-up text-danger"></i>' ?></td>
+                <td class="align-middle">
+                    <?php
+                    switch ($d['jenis']) {
+                        case 0:
+                            echo '<i class="fa-solid fa-arrow-down text-success"></i>';
+                            break;
+                        case 1:
+                        case 2:
+                        case 3:
+                            echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
+                            break;
+                    } ?>
+                </td>
+                <td>
+                    <?php
+                    switch ($d['jenis']) {
+                        case 0:
+                            echo 'Masuk';
+                            break;
+                        case 1:
+                            echo 'Transfer';
+                            break;
+                        case 2:
+                            echo 'Jual';
+                            break;
+                        case 3:
+                            echo 'Retur';
+                            break;
+                    } ?>
+                </td>
                 <td class="">
                     <?php switch ($d['jenis']) {
                         case 0:
@@ -29,10 +58,13 @@
                             $target = $data['pelanggan'][$d['id_target']]['nama'];
                             break;
                         case 3:
-                            $target = $data['supplier'][$d['id_target']]['nama'];
+                            if ($d['id_target'] == 0) {
+                                $target = "Gudang";
+                            } else {
+                                $target = $data['supplier'][$d['id_target']]['nama'];
+                            }
                             break;
                     } ?>
-
                     <span><?= $target ?></span>
                 </td>
                 <td class="text-end"><?= $d['qty'] ?></td>
