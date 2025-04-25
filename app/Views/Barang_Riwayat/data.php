@@ -65,7 +65,7 @@
                             break;
                         case 3:
                             if ($d['id_target'] == 0) {
-                                $target = "Gudang";
+                                $target = "GUDANG";
                             } else {
                                 $target = $data['supplier'][$d['id_target']]['nama'];
                             }
