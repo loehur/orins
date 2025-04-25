@@ -8,8 +8,15 @@ $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $th
 $data_spk_lnjut = $this->db(0)->get_where('order_data', $where);
 $lanjut_c = count($data_spk_lnjut);
 
+
 $yearNow = date('Y');
 ?>
+
+<pre>
+	<?php
+	print_r($data_spk_lnjut);
+	?>
+</pre>
 
 <div id="layoutSidenav">
 	<div id="layoutSidenav_nav">
