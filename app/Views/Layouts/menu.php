@@ -173,13 +173,11 @@ $yearNow = date('Y');
 	</div>
 	<div id="layoutSidenav_content">
 		<div style="margin-top: 20px;max-width:1100px" id="content"></div>
-	</div>
-</div>
-</div>
-
-
-<pre>
+		<pre>
 	<?php
 	print_r($data_spk_lnjut);
 	?>
 </pre>
+	</div>
+</div>
+</div>
