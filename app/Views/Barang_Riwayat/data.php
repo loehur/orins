@@ -24,8 +24,14 @@
                             break;
                         case 1:
                         case 2:
-                        case 3:
                             echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
+                            break;
+                        case 3:
+                            if ($d['id_target'] == 0) {
+                                echo '<i class="fa-solid fa-arrow-down text-success"></i>';
+                            } else {
+                                echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
+                            }
                             break;
                     } ?>
                 </td>
