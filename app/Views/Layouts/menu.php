@@ -182,5 +182,6 @@ $yearNow = date('Y');
 
 <script>
 	var cek = <? $cekaja ?>
+	cek = JSON.parse(cek);
 	console.log(JSON.stringify(cek));
 </script>
