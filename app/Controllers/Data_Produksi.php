@@ -40,8 +40,8 @@ class Data_Produksi extends Controller
       $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'], 'id_karyawan');
 
       $where = "tuntas = 0 AND ready_date = ''";
-      $data['get_ref'] = $this->db(0)->get_where('ref', $where, 'ref');
-      $refs = array_keys($data['get_ref']);
+      $data['data_ref'] = $this->db(0)->get_where('ref', $where, 'ref');
+      $refs = array_keys($data['data_ref']);
 
       if (count($refs) > 0) {
          $ref_list = "";
@@ -50,24 +50,46 @@ class Data_Produksi extends Controller
          }
          $ref_list = rtrim($ref_list, ',');
 
-         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")";
+         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") ORDER BY insertTime ASC";
          $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
+
+         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . ")";
+         $data['cs_id'] = $this->db(0)->get_where('order_data', $where, 'id_penerima');
+
+         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_afiliasi = " . $this->userData['id_toko'] . ") AND id_user_afiliasi <> 0";
+         $data['cs_id_aff'] = $this->db(0)->get_where('order_data', $where, 'id_user_afiliasi');
       }
 
+
+      $data['cs'] = array_keys($data['cs_id']) + array_keys($data['cs_id_aff']);
       $this->view($this->v_content, $data);
    }
 
-   function ambil()
+   function ready()
    {
-      $id = $_POST['id'];
+      $ref = $_POST['ref'];
       $karyawan = $_POST['staf_id'];
       //updateFreqCS
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
 
-      $where = "id_order_data = " . $id;
+      $where = "ref = '" . $ref . "' LIMIT 1";
+      $order_data = $this->db(0)->get_where_row('order_data', $where);
+      $id_afiliasi = $order_data['id_afiliasi'];
+
       $dateNow = date("Y-m-d H:i:s");
-      $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
-      $update = $this->db(0)->update("order_data", $set, $where);
+
+      if ($id_afiliasi == 0) {
+         $set = "ready_cs = " . $karyawan . ", ready_date = '" . $dateNow . "'";
+      } else {
+         if ($id_afiliasi == $this->userData['id_toko']) {
+            $set = "ready_aff_cs = " . $karyawan . ", ready_aff_date = '" . $dateNow . "'";
+         } else {
+            $set = "ready_cs = " . $karyawan . ", ready_date = '" . $dateNow . "'";
+         }
+      }
+
+      $where = "ref = '" . $ref . "'";
+      $update = $this->db(0)->update("ref", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
    }
 }

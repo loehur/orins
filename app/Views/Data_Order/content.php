@@ -115,7 +115,8 @@
                                     $id_pelanggan = $do['id_pelanggan'];
                                     $dateTime = substr($do['insertTime'], 0, 10);
                                     $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
-                                    $cs = $data['karyawan'][$do['id_penerima']]['nama']; ?>
+                                    $cs = $data['karyawan'][$do['id_penerima']]['nama'];
+                                    $cs_id_aff = $do['id_user_afiliasi']; ?>
                                 <?php } ?>
                             <?php } ?>
 
@@ -139,41 +140,102 @@
 
                             <div class="row mx-0">
                                 <div class="col px-1" style="min-width: 200px;">
-                                    <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
+                                    <table class="w-100 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
                                         <tr data-id="<?= $id_pelanggan ?>" class="cekPLG" style="cursor: pointer;">
-                                            <td class="p-1">
+                                            <td class="px-1 pb-0 pt-1">
                                                 <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?></small>
                                                 <br>
                                                 <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
                                             </td>
-
+                                        </tr>
+                                        <tr>
                                             <?php if ($id_afiliasi == 0 || $this->userData['id_toko'] == $id_toko) { ?>
-                                                <td class="text-end pe-1">
-                                                    <small>
+                                                <?php if ($id_afiliasi <> 0) { ?>
+                                                    <td class="text-sm px-1 pt-0 pb-1 text-end">
+                                                        <span class="text-dark">
+                                                            <?php if ($cs_id_aff <> 0) {
+                                                                $cs_aff = $data['karyawan'][$cs_id_aff]['nama']; ?>
+                                                                <i class="fa-solid fa-check"></i> <?= ucwords($cs_aff) ?>
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
                                                         &nbsp;
-                                                        <?php if ($ambil_all[$ref] == true) { ?>
-                                                            <i class="fa-solid fa-circle-check text-primary"></i>
-                                                        <?php } else { ?>
-                                                            <i class="fa-regular fa-circle"></i>
-                                                        <?php } ?>
-                                                        <br>
+                                                        <span class="text-dark">
+                                                            <?php if ($data['data_ref'][$ref]['ready_aff_cs'] <> 0) {
+                                                                $cs_aff_ready = $data['karyawan'][$data['data_ref'][$ref]['ready_aff_cs']]['nama']; ?>
+                                                                <i class="fa-solid fa-check-double"></i> <?= ucwords($cs_aff_ready) ?>
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
                                                         &nbsp;
-                                                        <?php if ($lunas[$ref] == true) { ?>
-                                                            <i class="fa-solid fa-circle-check text-success"></i>
-                                                        <?php } else { ?>
-                                                            <i class="fa-regular fa-circle"></i>
-                                                        <?php } ?>
-                                                    </small>
-                                                </td>
+                                                        <span class="text-purple">
+                                                            <?php if ($data['data_ref'][$ref]['ready_cs'] <> 0) {
+                                                                $cs_ready = $data['karyawan'][$data['data_ref'][$ref]['ready_cs']]['nama']; ?>
+                                                                <i class="fa-solid fa-circle-check"></i> <?= ucwords($cs_ready) ?>
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
+                                                        &nbsp;
+                                                        <span class="text-primary">
+                                                            <?php if ($ambil_all[$ref] == true) {
+                                                                $cs_ambil = $data['karyawan'][$do['id_ambil']]['nama']; ?>
+                                                                <i class="fa-solid fa-circle-check"></i> <?= $cs_ambil ?>
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
+                                                        &nbsp;
+                                                        <span class="text-success">
+                                                            <?php if ($lunas[$ref] == true) { ?>
+                                                                <i class="fa-solid fa-circle-check"></i> Paid
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
+                                                    </td>
+                                                <?php } else { ?>
+                                                    <td class="text-sm px-1 pt-0 pb-1 text-end">
+                                                        <span class="text-primary">
+                                                            <?php if ($ambil_all[$ref] == true) {
+                                                                $cs_ambil = $data['karyawan'][$do['id_ambil']]['nama']; ?>
+                                                                <i class="fa-solid fa-circle-check"></i> <?= $cs_ambil ?>
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
+                                                        &nbsp;
+                                                        <span class="text-success">
+                                                            <?php if ($lunas[$ref] == true) { ?>
+                                                                <i class="fa-solid fa-circle-check"></i> Paid
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
+                                                    </td>
+                                                <?php } ?>
                                                 <?php } else {
-                                                if ($id_user_afiliasi <> 0) {
-                                                ?>
-                                                    <td class="text-end pe-1 text-success">
-                                                        <small>
-                                                            AF
-                                                        </small>
-                                                        <br>
+                                                if ($id_afiliasi <> 0) { ?>
+                                                    <td class="text-sm px-1 pt-0 pb-1 text-end">
+                                                        <span class="text-primary">
+                                                            <?php if ($cs_id_aff <> 0) {
+                                                                $cs_aff = $data['karyawan'][$cs_id_aff]['nama']; ?>
+                                                                <i class="fa-solid fa-check"></i> <?= ucwords($cs_aff) ?>
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
                                                         &nbsp;
+                                                        <span class="text-success">
+                                                            <?php if ($data['data_ref'][$ref]['ready_aff_cs'] <> 0) {
+                                                                $cs_aff_ready = $data['karyawan'][$data['data_ref'][$ref]['ready_aff_cs']]['nama']; ?>
+                                                                <i class="fa-solid fa-circle-check"></i> <?= ucwords($cs_aff_ready) ?>
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
                                                     </td>
                                             <?php }
                                             } ?>
@@ -218,8 +280,6 @@
                         } ?>
 
                         <?php
-
-
                         if ($ada == true) {
                             $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
                             $in_toko = "";

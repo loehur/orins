@@ -53,6 +53,8 @@ class Data_Order extends Controller
       $data['parse_2'] = $parse_2;
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
+      $where = "tuntas = 0";
+      $data['data_ref'] = $this->db(0)->get_where('ref', $where, 'ref');
 
       switch ($parse) {
          case 0:

@@ -506,7 +506,7 @@
                                                         <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border-0 px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i></a></small></td>
                                                         <?php
                                                         if ($ambil_all == false) { ?>
-                                                            <td class="text-end pe-1"><small><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded border-0 text-purple px-1" data-ref="<?= $do['ref'] ?>">Ambil</span></small></td>
+                                                            <td class="text-end pe-1"><small><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded border-0 text-primary px-1" data-ref="<?= $do['ref'] ?>">Ambil</span></small></td>
                                                         <?php } ?>
                                                         <td class="text-end pe-1">
                                                             <button type="button" class="border-0 bg-white ps-0 dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -541,8 +541,18 @@
                                                             <?php if ($data['cust_wa']) { ?>
                                                                 <span onclick="copy('<?= $data['cust_wa'] ?>', <?= $ref ?>)" class="text-success"><i class="fa-brands fa-whatsapp"></i></span>
                                                             <?php } ?>
+                                                            &nbsp;
                                                             <span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
                                                             <small><span id="span_copy_<?= $ref ?>" class="text-success fw-bold" style="display: none;">Copied!</span></small>
+                                                        </td>
+                                                        <td class="ps-2 text-sm">
+                                                            <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
+                                                                <i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?>
+                                                            <?php } ?>
+                                                            &nbsp;
+                                                            <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
+                                                                <i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?>
+                                                            <?php } ?>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -559,6 +569,11 @@
                                                             <?php } ?>
                                                             <span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
                                                             <small><span id="span_copy_<?= $ref ?>" class="text-success fw-bold" style="display: none;">Copied!</span></small>
+                                                        </td>
+                                                        <td>
+                                                            <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
+                                                                <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?>
+                                                            <?php } ?>
                                                         </td>
                                                     </tr>
                                                 </table>
