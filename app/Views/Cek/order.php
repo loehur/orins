@@ -45,11 +45,16 @@
     .col-t {
         line-height: 100%;
     }
+
+    .td-auto {
+        width: 1px;
+        white-space: nowrap;
+    }
 </style>
 </head>
 
-<main class="container" style="max-width: 700px;">
-    <div class="row mt-1 mx-2 pb-2">
+<main class="container overflow-auto" style="max-width: 900px;height: 700px;">
+    <div class="row mt-1 mx-0 pb-2">
         <?php
         $id_pelanggan = $data['id_pelanggan'];
         $no_pelanggan = $data['pelanggan'][$id_pelanggan]['no_hp'];
@@ -267,8 +272,7 @@
                                                         $divisi[$key] = $dv_['divisi'];
                                                     }
                                                 }
-                                            }
-                                    ?>
+                                            } ?>
                                             <tr style="<?= ($cancel == 1) ? 'color:silver' : '' ?>">
                                                 <td>
                                                     <table class="border-bottom text-sm">
@@ -328,7 +332,7 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="text-nowrap" style="line-height: 120%;"><small>
+                                                <td class="text-nowrap td-auto" style="line-height: 120%;"><small>
                                                         <?php
                                                         foreach ($divisi as $key => $dvs) {
                                                             if ($divisi_arr[$key]['status'] == 1) {
@@ -355,7 +359,7 @@
                                                             if ($countSPK > 0 && $cancel == 0) {
                                                                 $ambil_all = false;
                                                                 if ($do['id_afiliasi'] == 0) { ?>
-                                                                    <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
+                                                                    <span><i class="fa-regular fa-circle"></i> Ambil</span>
                                                                 <?php } ?>
                                                         <?php }
                                                         } else {
@@ -366,8 +370,8 @@
                                                         } ?>
                                                     </small>
                                                 </td>
-                                                <td class="text-end"><?= number_format($do['jumlah']) ?></td>
-                                                <td class="text-end">
+                                                <td class="text-end td-auto"><?= number_format($do['jumlah']) ?></td>
+                                                <td class="text-end td-auto">
                                                     <?php
                                                     if ($do['margin_paket'] == 0) {
                                                         if ($do['diskon'] > 0) { ?>
@@ -457,12 +461,15 @@
                                     </tr>
                                     <?php if (strlen($showMutasi) > 0) { ?>
                                         <tr>
-                                            <td><?php
+                                            <td colspan="10">
+                                                <?php
                                                 if ($do['tuntas'] == 1) { ?>
                                                     <span class="badge bg-success">TUNTAS</span>
                                                 <?php } ?>
                                             </td>
-                                            <td class="text-end text border-0" colspan="4">
+                                        </tr>
+                                        <tr>
+                                            <td class="text-end text border-0" colspan="5">
                                                 <?= $showMutasi ?>
                                             </td>
                                         </tr>

@@ -282,7 +282,6 @@ class Buka_Order extends Controller
          $_POST['id_produk'] = $do['id_produk'];
          $_POST['note'] = $do['note'];
          $_POST['note_spk'] = $do['note_spk'];
-         $_POST['pending_spk'] = $do['pending_spk'];
          $_POST['detail_harga'] = $do['detail_harga'];
          $_POST['produk_code'] = $do['produk_code'];
          $_POST['produk_detail'] = $do['produk_detail'];
