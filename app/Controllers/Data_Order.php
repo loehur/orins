@@ -276,8 +276,8 @@ class Data_Order extends Controller
       if ($update['errno'] == 0) {
          $set = "ready_cs = " . $karyawan . ", ready_date = '" . $dateNow . "'";
          $where = "ref = '" . $ref . "'";
-         $update = $this->db(0)->update("ref", $set, $where);
-         echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+         $update2 = $this->db(0)->update("ref", $set, $where);
+         echo ($update2['errno'] <> 0) ? $update2['error'] : $update2['errno'];
       } else {
          echo $update['error'];
       }
