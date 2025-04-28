@@ -38,6 +38,7 @@
         foreach ($data['refs'] as $ref) { ?>
             <div class="col px-1 text-sm" style="min-width:400px;">
                 <?php
+                $ada_produksi[$ref] = false;
                 $no = 0;
                 $bill = 0;
                 $charge[$ref] = 0;
@@ -246,6 +247,7 @@
                                 <tbody>
                                     <?php
                                     if (isset($data['order'][$ref])) {
+                                        $ada_produksi[$ref] = true;
                                         foreach ($data['order'][$ref] as $do) {
                                             $id_pelanggan_jenis = $do['id_pelanggan_jenis'];
                                             $id = $do['id_order_data'];
@@ -546,21 +548,23 @@
                                                             <?php } ?>
                                                             &nbsp;<span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
                                                         </td>
-                                                        <td>
-                                                            <?php if ($this->userData['id_toko'] == $do['id_toko']) { ?>
-                                                                <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
-                                                                    &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?></span>
+                                                        <?php if ($ada_produksi == true) { ?>
+                                                            <td>
+                                                                <?php if ($this->userData['id_toko'] == $do['id_toko']) { ?>
+                                                                    <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
+                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?></span>
+                                                                    <?php } else { ?>
+                                                                        &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
+                                                                    <?php } ?>
                                                                 <?php } else { ?>
-                                                                    &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
+                                                                    <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
+                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?></span>
+                                                                    <?php } else { ?>
+                                                                        &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
+                                                                    <?php } ?>
                                                                 <?php } ?>
-                                                            <?php } else { ?>
-                                                                <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
-                                                                    &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?></span>
-                                                                <?php } else { ?>
-                                                                    &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
-                                                                <?php } ?>
-                                                            <?php } ?>
-                                                        </td>
+                                                            </td>
+                                                        <?php } ?>
                                                     </tr>
                                                 </table>
                                             <?php } else { ?>
@@ -577,21 +581,23 @@
                                                             <?php } ?>
                                                             &nbsp;<span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
                                                         </td>
-                                                        <td>
-                                                            <?php if ($this->userData['id_toko'] == $do['id_toko']) { ?>
-                                                                <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
-                                                                    &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?></span>
+                                                        <?php if ($ada_produksi == true) { ?>
+                                                            <td>
+                                                                <?php if ($this->userData['id_toko'] == $do['id_toko']) { ?>
+                                                                    <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
+                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?></span>
+                                                                    <?php } else { ?>
+                                                                        &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
+                                                                    <?php } ?>
                                                                 <?php } else { ?>
-                                                                    &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
+                                                                    <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
+                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?></span>
+                                                                    <?php } else { ?>
+                                                                        &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
+                                                                    <?php } ?>
                                                                 <?php } ?>
-                                                            <?php } else { ?>
-                                                                <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
-                                                                    &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?></span>
-                                                                <?php } else { ?>
-                                                                    &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
-                                                                <?php } ?>
-                                                            <?php } ?>
-                                                        </td>
+                                                            </td>
+                                                        <?php } ?>
                                                     </tr>
                                                 </table>
                                             <?php } ?>
