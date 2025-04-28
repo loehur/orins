@@ -338,7 +338,7 @@
                                                     </table>
                                                     <div class="row bor mx-0">
                                                         <?php if (strlen($do['note'] > 0)) { ?>
-                                                            <div class="col-auto ps-0">
+                                                            <div class="col ps-0">
                                                                 <span>
                                                                     <small><b>Utama</b><br><span class="text-danger"><?= $do['note'] ?></span></small>
                                                                 </span>
