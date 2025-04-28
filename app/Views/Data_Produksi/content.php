@@ -67,8 +67,6 @@
                                 }
                             }
 
-                            $cs_id_aff = 0;
-
                             if ($id_toko == $this->userData['id_toko']) {
                                 if ($cs_arr_cek[$ref] == false) {
                                     if (isset($cs_arr[$do['id_penerima']])) {
@@ -97,7 +95,8 @@
                                 $id_pelanggan = $do['id_pelanggan'];
                                 $dateTime = substr($do['insertTime'], 0, 10);
                                 $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
-                                $cs = $data['karyawan'][$do['id_penerima']]['nama']; ?>
+                                $cs = $data['karyawan'][$do['id_penerima']]['nama'];
+                                $cs_id_aff = $do['id_user_afiliasi']; ?>
                             <?php } ?>
                         <?php } ?>
 
