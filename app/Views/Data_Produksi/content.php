@@ -65,6 +65,11 @@
                                 }
                             }
 
+                            $cs_id_aff = 0;
+                            if ($do['id_user_afiliasi'] <> 0) {
+                                $cs_id_aff = $do['id_user_afiliasi'];
+                            }
+
                             if ($no == 1) {
                                 if ($id_afiliasi == $this->userData['id_toko']) {
                                     if (isset($cs_arr[$do['id_user_afiliasi']])) {
@@ -84,8 +89,7 @@
                                 $id_pelanggan = $do['id_pelanggan'];
                                 $dateTime = substr($do['insertTime'], 0, 10);
                                 $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
-                                $cs = $data['karyawan'][$do['id_penerima']]['nama'];
-                                $cs_id_aff = $do['id_user_afiliasi']; ?>
+                                $cs = $data['karyawan'][$do['id_penerima']]['nama']; ?>
                             <?php } ?>
                         <?php } ?>
 
@@ -115,15 +119,18 @@
                                         <?php if ($id_afiliasi == 0 || $this->userData['id_toko'] == $id_toko) { ?>
                                             <?php if ($id_afiliasi <> 0) { ?>
                                                 <td class="text-sm text-end">
-                                                    <span class="text-dark">
-                                                        <?php if ($cs_id_aff <> 0) {
-                                                            $cs_aff = $data['karyawan'][$cs_id_aff]['nama']; ?>
-                                                            <i class="fa-solid fa-check"></i> <?= ucwords($cs_aff) ?>
-                                                        <?php } else { ?>
-                                                            <i class="fa-regular fa-circle"></i>
-                                                        <?php } ?>
-                                                    </span>
-                                                    &nbsp;
+                                                    <?php if ($this->userData['id_toko'] <> $id_toko) { ?>
+                                                        <span class="text-dark">
+                                                            <?php if ($cs_id_aff <> 0) {
+                                                                $cs_aff = $data['karyawan'][$cs_id_aff]['nama']; ?>
+                                                                <i class="fa-solid fa-check"></i> <?= ucwords($cs_aff) ?>
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
+                                                        &nbsp;
+                                                    <?php } ?>
+
                                                     <span class="text-dark">
                                                         <?php if ($data['data_ref'][$ref]['ready_aff_cs'] <> 0) {
                                                             $cs_aff_ready = $data['karyawan'][$data['data_ref'][$ref]['ready_aff_cs']]['nama']; ?>
@@ -131,12 +138,6 @@
                                                         <?php } else { ?>
                                                             <i class="fa-regular fa-circle"></i>
                                                         <?php } ?>
-                                                    </span>
-                                                </td>
-                                            <?php } else { ?>
-                                                <td class="text-sm text-end">
-                                                    <span class="text-dark">
-                                                        <i class="fa-solid fa-check"></i> <?= ucwords($cs) ?>
                                                     </span>
                                                 </td>
                                             <?php } ?>

@@ -110,13 +110,17 @@
                                     }
                                 }
 
+                                $cs_id_aff = 0;
+                                if ($do['id_user_afiliasi'] <> 0) {
+                                    $cs_id_aff = $do['id_user_afiliasi'];
+                                }
+
                                 if ($no == 1) {
                                     $ada = true;
                                     $id_pelanggan = $do['id_pelanggan'];
                                     $dateTime = substr($do['insertTime'], 0, 10);
                                     $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
-                                    $cs = $data['karyawan'][$do['id_penerima']]['nama'];
-                                    $cs_id_aff = $do['id_user_afiliasi']; ?>
+                                    $cs = $data['karyawan'][$do['id_penerima']]['nama']; ?>
                                 <?php } ?>
                             <?php } ?>
 
