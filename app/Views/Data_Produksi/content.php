@@ -70,8 +70,8 @@
                             if ($do['id_user_afiliasi'] <> 0) {
                                 $cs_id_aff = $do['id_user_afiliasi'];
 
-                                if ($id_afiliasi == $this->userData['id_toko']) {
-                                    if ($cs_arr_cek[$ref] == false) {
+                                if ($cs_arr_cek[$ref] == false) {
+                                    if ($id_afiliasi == $this->userData['id_toko']) {
                                         if (isset($cs_arr[$do['id_user_afiliasi']])) {
                                             $cs_arr_cek[$ref] = true;
                                             $cs_arr[$do['id_user_afiliasi']] += 1;
@@ -79,12 +79,12 @@
                                             $cs_arr_cek[$ref] = true;
                                             $cs_arr[$do['id_user_afiliasi']] = 1;
                                         }
-                                    }
-                                } else {
-                                    if (isset($cs_arr[$do['id_penerima']])) {
-                                        $cs_arr[$do['id_penerima']] += 1;
                                     } else {
-                                        $cs_arr[$do['id_penerima']] = 1;
+                                        if (isset($cs_arr[$do['id_penerima']])) {
+                                            $cs_arr[$do['id_penerima']] += 1;
+                                        } else {
+                                            $cs_arr[$do['id_penerima']] = 1;
+                                        }
                                     }
                                 }
                             }
