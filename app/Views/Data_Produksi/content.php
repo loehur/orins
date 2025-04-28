@@ -150,8 +150,6 @@
                                                         <?php if ($cs_id_aff <> 0) {
                                                             $cs_aff = $data['karyawan'][$cs_id_aff]['nama']; ?>
                                                             <i class="fa-solid fa-check"></i> <?= ucwords($cs_aff) ?>,
-                                                        <?php } else { ?>
-                                                            <i class="fa-regular fa-circle"></i>
                                                         <?php } ?>
                                                     </span>
                                                 </td>
