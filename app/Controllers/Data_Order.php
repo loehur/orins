@@ -274,10 +274,16 @@ class Data_Order extends Controller
       $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
       $update = $this->db(0)->update("order_data", $set, $where);
       if ($update['errno'] == 0) {
-         $set = "ready_cs = " . $karyawan . ", ready_date = '" . $dateNow . "'";
-         $where = "ref = '" . $ref . "'";
-         $update2 = $this->db(0)->update("ref", $set, $where);
-         echo ($update2['errno'] <> 0) ? $update2['error'] : $update2['errno'];
+         $cek = $this->db(0)->get_where_row('ref', "ref = '" . $ref . "'");
+         if ($cek['ready_cs'] == 0) {
+            $set = "ready_cs = " . $karyawan . ", ready_date = '" . $dateNow . "'";
+            $where = "ref = '" . $ref . "'";
+            $update2 = $this->db(0)->update("ref", $set, $where);
+            $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
+            echo ($update2['errno'] <> 0) ? $update2['error'] : $update2['errno'];
+         } else {
+            echo 0;
+         }
       } else {
          echo $update['error'];
       }
