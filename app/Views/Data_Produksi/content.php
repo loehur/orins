@@ -38,6 +38,7 @@
                         <?php
                         $no = 0;
                         $id_afiliasi = 0;
+                        $cs_arr_cek[$ref] = false;
 
                         foreach ($dos as $do) {
                             $cancel = $do['cancel'];
@@ -68,14 +69,16 @@
                             $cs_id_aff = 0;
                             if ($do['id_user_afiliasi'] <> 0) {
                                 $cs_id_aff = $do['id_user_afiliasi'];
-                            }
 
-                            if ($no == 1) {
                                 if ($id_afiliasi == $this->userData['id_toko']) {
-                                    if (isset($cs_arr[$do['id_user_afiliasi']])) {
-                                        $cs_arr[$do['id_user_afiliasi']] += 1;
-                                    } else {
-                                        $cs_arr[$do['id_user_afiliasi']] = 1;
+                                    if ($cs_arr_cek[$ref] == false) {
+                                        if (isset($cs_arr[$do['id_user_afiliasi']])) {
+                                            $cs_arr_cek[$ref] = true;
+                                            $cs_arr[$do['id_user_afiliasi']] += 1;
+                                        } else {
+                                            $cs_arr_cek[$ref] = true;
+                                            $cs_arr[$do['id_user_afiliasi']] = 1;
+                                        }
                                     }
                                 } else {
                                     if (isset($cs_arr[$do['id_penerima']])) {
@@ -84,7 +87,9 @@
                                         $cs_arr[$do['id_penerima']] = 1;
                                     }
                                 }
+                            }
 
+                            if ($no == 1) {
                                 $ada = true;
                                 $id_pelanggan = $do['id_pelanggan'];
                                 $dateTime = substr($do['insertTime'], 0, 10);
