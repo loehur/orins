@@ -39,6 +39,7 @@
                         $no = 0;
                         $id_afiliasi = 0;
                         $cs_arr_cek[$ref] = false;
+                        $cs_arr2_cek[$ref] = false;
 
                         foreach ($dos as $do) {
                             $cancel = $do['cancel'];
@@ -67,24 +68,27 @@
                             }
 
                             $cs_id_aff = 0;
-                            if ($do['id_user_afiliasi'] <> 0) {
-                                $cs_id_aff = $do['id_user_afiliasi'];
 
+                            if ($id_toko == $this->userData['id_toko']) {
                                 if ($cs_arr_cek[$ref] == false) {
-                                    if ($id_afiliasi == $this->userData['id_toko']) {
+                                    if (isset($cs_arr[$do['id_penerima']])) {
+                                        $cs_arr[$do['id_penerima']] += 1;
+                                    } else {
+                                        $cs_arr[$do['id_penerima']] = 1;
+                                    }
+                                    $cs_arr_cek[$ref] = true;
+                                }
+                            } else {
+                                if ($do['id_user_afiliasi'] <> 0) {
+                                    $cs_id_aff = $do['id_user_afiliasi'];
+                                    if ($cs_arr2_cek[$ref] == false) {
                                         if (isset($cs_arr[$do['id_user_afiliasi']])) {
                                             $cs_arr[$do['id_user_afiliasi']] += 1;
                                         } else {
                                             $cs_arr[$do['id_user_afiliasi']] = 1;
                                         }
-                                    } else {
-                                        if (isset($cs_arr[$do['id_penerima']])) {
-                                            $cs_arr[$do['id_penerima']] += 1;
-                                        } else {
-                                            $cs_arr[$do['id_penerima']] = 1;
-                                        }
+                                        $cs_arr2_cek[$ref] = true;
                                     }
-                                    $cs_arr_cek[$ref] = true;
                                 }
                             }
 
