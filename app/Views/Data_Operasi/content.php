@@ -548,7 +548,7 @@
                                                             <?php } ?>
                                                             &nbsp;<span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
                                                         </td>
-                                                        <?php if ($ada_produksi == true) { ?>
+                                                        <?php if ($ada_produksi[$ref] == true) { ?>
                                                             <td>
                                                                 <?php if ($this->userData['id_toko'] == $do['id_toko']) { ?>
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
@@ -581,7 +581,7 @@
                                                             <?php } ?>
                                                             &nbsp;<span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
                                                         </td>
-                                                        <?php if ($ada_produksi == true) { ?>
+                                                        <?php if ($ada_produksi[$ref] == true) { ?>
                                                             <td>
                                                                 <?php if ($this->userData['id_toko'] == $do['id_toko']) { ?>
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
