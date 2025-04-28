@@ -566,15 +566,25 @@
                                                             <small><?= $dh['user_id'] ?>#</small>
                                                         </td>
                                                         <td class="text-sm align-middle" style="cursor: pointer;">
+                                                            <small><span id="span_copy_<?= $ref ?>" class="text-success fw-bold" style="display: none;">Copied!</span></small>
                                                             <?php if ($data['cust_wa']) { ?>
                                                                 <span onclick="copy('<?= $data['cust_wa'] ?>', <?= $ref ?>)" class="text-success"><i class="fa-brands fa-whatsapp"></i></span>
                                                             <?php } ?>
-                                                            <span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
-                                                            <small><span id="span_copy_<?= $ref ?>" class="text-success fw-bold" style="display: none;">Copied!</span></small>
+                                                            &nbsp;<span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
                                                         </td>
                                                         <td>
-                                                            <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
-                                                                <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?>
+                                                            <?php if ($this->userData['id_toko'] == $do['id_toko']) { ?>
+                                                                <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
+                                                                    &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?></span>
+                                                                <?php } else { ?>
+                                                                    &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
+                                                                <?php } ?>
+                                                            <?php } else { ?>
+                                                                <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
+                                                                    &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?></span>
+                                                                <?php } else { ?>
+                                                                    &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
+                                                                <?php } ?>
                                                             <?php } ?>
                                                         </td>
                                                     </tr>
@@ -808,6 +818,12 @@
                 }
             }
         });
+    })
+
+    $("span.btnReady").click(function() {
+        ref = $(this).attr("data-ref");
+        cs = $(this).attr("data-cs");
+        $("input#ref").val(ref);
     })
 
     $('button.cek').click(function() {

@@ -361,3 +361,33 @@
         </div>
     </div>
 </form>
+
+<form action="<?= PV::BASE_URL; ?>Data_Produksi/ready" class="ajax" method="POST">
+    <div class="modal" id="exampleModal11">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content" style="height: 350px;">
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class=" form-label">Karyawan</label>
+                                <input type="hidden" id="ref" name="ref">
+                                <select class="form-select tize" name="staf_id" required>
+                                    <option></option>
+                                    <?php foreach ($data['karyawan_toko'] as $k) { ?>
+                                        <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-sm btn-dark">Orderan Ready</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
