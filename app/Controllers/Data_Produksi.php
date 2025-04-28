@@ -39,7 +39,7 @@ class Data_Produksi extends Controller
       $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
       $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'], 'id_karyawan');
 
-      $where = "tuntas = 0 AND ready_date = ''";
+      $where = "tuntas = 0 AND cs_ready = 0 AND cs_aff_ready = 0";
       $data['data_ref'] = $this->db(0)->get_where('ref', $where, 'ref');
       $refs = array_keys($data['data_ref']);
 
