@@ -73,10 +73,8 @@
                                 if ($cs_arr_cek[$ref] == false) {
                                     if ($id_afiliasi == $this->userData['id_toko']) {
                                         if (isset($cs_arr[$do['id_user_afiliasi']])) {
-                                            $cs_arr_cek[$ref] = true;
                                             $cs_arr[$do['id_user_afiliasi']] += 1;
                                         } else {
-                                            $cs_arr_cek[$ref] = true;
                                             $cs_arr[$do['id_user_afiliasi']] = 1;
                                         }
                                     } else {
@@ -86,6 +84,7 @@
                                             $cs_arr[$do['id_penerima']] = 1;
                                         }
                                     }
+                                    $cs_arr_cek[$ref] = true;
                                 }
                             }
 
