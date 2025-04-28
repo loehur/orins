@@ -362,7 +362,9 @@
                                                                         <?php } ?>
                                                                     </small>
                                                                     <br>
-                                                                    <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary"><?= $ns ?></span>
+                                                                    <small>
+                                                                        <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary"><?= $ns ?></span>
+                                                                    </small>
                                                                 </div>
                                                         <?php }
                                                         }
