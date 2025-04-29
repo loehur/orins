@@ -153,7 +153,7 @@
                                                 foreach ($divisi as $key => $dvs) {
                                                     if ($key == $parse) {
                                                         if ($divisi_arr[$key]['status'] == 0) {
-                                                            if ($do['id_afiliasi'] == 0 || $do['id_afiliasi'] == $this->userData['id_toko']) { ?>
+                                                            if ($do['id_toko'] == $this->userData['id_toko'] || $do['id_afiliasi'] == $this->userData['id_toko']) { ?>
                                                                 <?php if (!str_contains($do['spk_lanjutan'], "D-" . $parse . "#")) { ?>
                                                                     <td style="cursor: pointer;" class="pe-2 push" data-id="<?= $id_order_data ?>" data-val="<?= $parse ?>"><i class="fa-regular fa-circle-right"></i> Push</td>
                                                                 <?php } else { ?>
@@ -163,10 +163,10 @@
                                                         <?php } ?>
                                                 <?php echo "<td class='pe-2 text-sm'>";
                                                         if ($divisi_arr[$key]['status'] == 1) {
-                                                            $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
+                                                            $karyawan = $this->dKaryawanAll[$divisi_arr[$key]['user_produksi']]["nama"];
                                                             echo '<i class="fa-solid fa-check text-success"></i> ' . $karyawan;
                                                         } else {
-                                                            if ($do['id_afiliasi'] == 0 || $do['id_afiliasi'] == $this->userData['id_toko']) {
+                                                            if ($do['id_toko'] == $this->userData['id_toko'] || $do['id_afiliasi'] == $this->userData['id_toko']) {
                                                                 echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="1"> <i class="fa-regular fa-circle"></i> Tahap 1';
                                                             }
                                                         }
@@ -174,10 +174,10 @@
                                                         if ($divisi_arr[$key]['cm'] == 1) {
                                                             echo "<td class='pe-2 text-sm'>";
                                                             if ($divisi_arr[$key]['cm_status'] == 1) {
-                                                                $karyawan = $this->model('Arr')->get($data['karyawan'], "id_karyawan", "nama", $divisi_arr[$key]['user_cm']);
+                                                                $karyawan = $this->dKaryawanAll[$divisi_arr[$key]['user_cm']]["nama"];
                                                                 echo '<i class="fa-solid text-success fa-check-double"></i> ' . $karyawan;
                                                             } else {
-                                                                if ($do['id_afiliasi'] == 0 || $do['id_afiliasi'] == $this->userData['id_toko']) {
+                                                                if ($do['id_toko'] == $this->userData['id_toko'] || $do['id_afiliasi'] == $this->userData['id_toko']) {
                                                                     echo '<span class="done" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#done" data-id="' . $id_order_data . '" data-mode="2"> <i class="fa-regular fa-circle"></i> Tahap 2';
                                                                 }
                                                             }
