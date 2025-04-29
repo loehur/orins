@@ -52,7 +52,7 @@ class Export extends Controller
       $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'SERIAL NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX_ID', 'NO. REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'SERIAL NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
@@ -168,7 +168,7 @@ class Export extends Controller
 
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'SERIAL NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX_ID', 'NO. REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'SERIAL NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
 
       foreach ($data as $a) {
@@ -248,7 +248,7 @@ class Export extends Controller
 
       $pacc = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
-      $fields = array('TRX ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
+      $fields = array('TRX_ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          if (isset($pacc[$a['pa']]['payment_account'])) {
@@ -301,6 +301,55 @@ class Export extends Controller
          }
 
          $lineData = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, $mark, $jumlah, $method, $payment_account, $note, $st, $tanggal);
+         fputcsv($f, $lineData, $delimiter);
+      }
+
+      fseek($f, 0);
+      header('Content-Type: text/csv');
+      header('Content-Disposition: attachment; filename="' . $filename . '";');
+      fpassthru($f);
+   }
+
+   public function export_pc() //PETYCASH
+   {
+      $month = $_POST['month'];
+      $delimiter = ",";
+      $filename = strtoupper($this->dToko[$this->userData['id_toko']]["nama_toko"]) . "-PETTYCASH-" . $month . ".csv";
+      $f = fopen('php://memory', 'w');
+
+      $pj = $this->db(0)->get('pengeluaran_jenis', 'id');
+
+      $where = "id_sumber = " . $this->userData['id_toko'] . " AND tipe = 2 AND insertTime LIKE '" . $month . "%'";
+      $data = $this->db(0)->get_where("kas_kecil", $where);
+
+      $tanggal = date("Y-m-d");
+      $fields = array('TRX_ID', 'TANGGAL', 'JENIS', 'KETERANGAN', 'JUMLAH', 'STATUS', 'EXPORTED');
+      fputcsv($f, $fields, $delimiter);
+      foreach ($data as $a) {
+         if (isset($pj[$a['id_target']]['nama'])) {
+            $jenis = $pj[$a['id_target']]['nama'];
+         } else {
+            $jenis = $a['id_target'];
+         }
+
+         $jumlah = $a['jumlah'];
+         $ket = strtoupper($a['note']);
+         $tgl = substr($a['insertTime'], 0, 10);
+         $st = "UNDEFINED";
+
+         switch ($a['st']) {
+            case 0:
+               $st = "CHECKING";
+               break;
+            case 1:
+               $st = "VERIFIED";
+               break;
+            case 2:
+               $st = "REJECTED";
+               break;
+         }
+
+         $lineData = array($a['id'], $tgl, strtoupper($jenis), $ket, $jumlah, $st, $tanggal);
          fputcsv($f, $lineData, $delimiter);
       }
 
