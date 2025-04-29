@@ -24,8 +24,8 @@
                             <td>
                                 <?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?>
                             </td>
-                            <td class="text-end">
-                                <?= $data['stok'][$a['id']]['qty'] ?>
+                            <td style="width: 50PX;">
+                                <span class="btn btn-sm btn-primary bg-gradient w-100"><?= $data['stok'][$a['id']]['qty'] ?></span>
                             </td>
                         </tr>
                     <?php } ?>
@@ -45,7 +45,7 @@
             "bInfo": false,
             "bAutoWidth": false,
             "pageLength": 50,
-            "scrollY": 600,
+            "scrollY": 615,
             "dom": "lfrti"
         });
     })

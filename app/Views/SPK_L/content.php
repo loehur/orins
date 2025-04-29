@@ -32,7 +32,7 @@
                             $divisi_arr = unserialize($do['spk_dvs']);
                             $divisi = [];
                             foreach ($divisi_arr as $key => $dv) {
-                                foreach ($this->dDvs as $dv_) {
+                                foreach ($this->dDvs_all as $dv_) {
                                     if ($dv_['id_divisi'] == $key) {
                                         $divisi[$key] = $dv_['divisi'];
                                     }
