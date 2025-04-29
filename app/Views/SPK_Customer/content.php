@@ -155,9 +155,9 @@
                                                         if ($divisi_arr[$key]['status'] == 0) {
                                                             if ($do['id_toko'] == $this->userData['id_toko'] || $do['id_afiliasi'] == $this->userData['id_toko']) { ?>
                                                                 <?php if (!str_contains($do['spk_lanjutan'], "D-" . $parse . "#")) { ?>
-                                                                    <td style="cursor: pointer;" class="pe-2 push" data-id="<?= $id_order_data ?>" data-val="<?= $parse ?>"><i class="fa-regular fa-circle-right"></i> Push</td>
+                                                                    <td style="cursor: pointer;" class="pe-2 text-sm push" data-id="<?= $id_order_data ?>" data-val="<?= $parse ?>"><i class="fa-regular fa-circle-right"></i> Push</td>
                                                                 <?php } else { ?>
-                                                                    <td class="pe-2 text-danger"><small class="fw-bold">Pushed</small></td>
+                                                                    <td class="pe-2 text-sm text-danger"><small class="fw-bold">Pushed</small></td>
                                                                 <?php } ?>
                                                             <?php } ?>
                                                         <?php } ?>
