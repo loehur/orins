@@ -52,7 +52,13 @@ class Data_Operasi extends Controller
       $data['kas'] = [];
       $data['r_kas'] = [];
       $data['divisi'] = $this->db(0)->get('divisi', 'id_divisi');
-      $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
+
+      if ($this->dToko[$this->userData['id_toko']]['produksi'] == 1) {
+         $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
+      } else {
+         $data['pelanggan'] = $this->db(0)->get_where('pelanggan', 'id_toko = ' . $this->userData['id_toko'], 'id_pelanggan');
+      }
+
       $data['saldo'] = $this->data("Saldo")->deposit($parse);
       $data['paket'] = $this->db(0)->get('paket_main', "id");
       $data['barang'] = $this->db(0)->get('master_barang', 'id');

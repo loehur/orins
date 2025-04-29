@@ -40,7 +40,13 @@ class SPK_Customer extends Controller
    {
       $data['parse'] = $parse;
       $data['customer'] = $customer;
-      $data['dPelanggan'] = $this->db(0)->get('pelanggan');
+
+      if ($this->dToko[$this->userData['id_toko']]['produksi'] == 1) {
+         $data['dPelanggan'] = $this->db(0)->get('pelanggan');
+      } else {
+         $data['dPelanggan'] = $this->db(0)->get_where('pelanggan', 'id_toko = ' . $this->userData['id_toko']);
+      }
+
       $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
 
       if ($customer <> 0) {
