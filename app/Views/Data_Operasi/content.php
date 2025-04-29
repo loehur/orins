@@ -308,7 +308,7 @@
                                                                         <span class="visually-hidden">Toggle Dropdown</span>
                                                                     </button>
                                                                     <ul class="dropdown-menu p-0 border-0 shadow-sm text-sm">
-                                                                        <?php if ($id_ambil == 0 && $do['tuntas'] == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
+                                                                        <?php if ($do['tuntas'] == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item px-2 cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
                                                                         <?php } ?>
                                                                         <?php if ($do['tuntas'] == 1 && $do['refund'] == 0 && $cancel == 0 && $do['stok'] == 0 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
