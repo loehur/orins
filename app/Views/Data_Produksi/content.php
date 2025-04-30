@@ -230,11 +230,9 @@
     setInterval(cs_show, 1000);
 
     function cs_show() {
-        $("span.myInput2").addClass('d-none');
         Object.keys(cs_data).forEach(function(key) {
             if (cs_data[key] > 0) {
                 $("span#" + key).html(cs_data[key]);
-                $("span#" + key).removeClass('d-none');
             } else {
                 $("span." + key).remove();
             }
