@@ -4,7 +4,7 @@ require 'app/Config/PV.php';
 
 class Controller extends PV
 {
-    public $userData, $dToko, $dDvs, $dDvs_all, $dProduk, $dProdukAll, $dDetailGroup, $dDetailGroupAll, $dDetailItem, $dDetailItemAll, $dSPK, $dUser, $dPelanggan, $dPelangganAll, $dKaryawan, $dKaryawanAll;
+    public $userData, $dToko, $dDvs, $dDvs_all, $dProduk, $dProdukAll, $dDetailGroup, $dDetailGroupAll, $dDetailItem, $dDetailItem_1, $dDetailItemVarian_1, $dDetailItemAll, $dSPK, $dUser, $dPelanggan, $dPelangganAll, $dKaryawan, $dKaryawanAll;
     public $v_viewer, $v_content, $v_load;
 
     public function view($file, $data = [])
@@ -50,6 +50,8 @@ class Controller extends PV
                 $this->dDvs_all = $_SESSION['data_divisi_all'];
                 $this->dDetailGroup = $_SESSION['detail_group'];
                 $this->dDetailItem = $_SESSION['detail_item'];
+                $this->dDetailItem_1 = $_SESSION['detail_item_1'];
+                $this->dDetailItemVarian_1 = $_SESSION['detail_item_varian_1'];
                 $this->dSPK = $_SESSION['spk_divisi'];
                 $this->dUser = $_SESSION['data_user'];
                 $this->dPelanggan = $_SESSION['data_pelanggan'];
@@ -73,7 +75,9 @@ class Controller extends PV
         $_SESSION['data_divisi_all'] = $this->db(0)->get('divisi', 'id_divisi');
         $_SESSION['spk_divisi'] = $this->db(0)->get('spk_dvs', 'id_spk_dvs');
         $_SESSION['detail_group'] = $this->db(0)->get('detail_group', 'id_index');
-        $_SESSION['detail_item'] = $this->db(0)->get_order('detail_item', "detail_item ASC");
+        $_SESSION['detail_item'] = $this->db(0)->get('detail_item', "id_detail_item");
+        $_SESSION['detail_item_1'] = $this->db(0)->get('detail_item', "id_detail_group", 1);
+        $_SESSION['detail_item_varian_1'] = $this->db(0)->get('detail_item_varian', "id_detail_item", "1");
         $_SESSION['data_user'] = $this->db(0)->get_where('user', $whereToko);
 
         $wherePel = $whereToko . " AND en = 1 ORDER BY freq DESC";

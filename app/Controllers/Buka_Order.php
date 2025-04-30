@@ -560,19 +560,23 @@ class Buka_Order extends Controller
       $varian = [];
       foreach ($data as $d) {
          $groupName = "";
-         foreach ($this->dDetailGroup as $dg) {
-            if ($dg['id_index'] == $d) {
-               $where = "id_detail_group = " . $dg['id_detail_group'] . " ORDER BY freq DESC";
-               $data_item = $this->db(0)->get_where('detail_item', $where);
+         if (isset($this->dDetailGroup[$d])) {
+            $dg = $this->dDetailGroup[$d];
+            $where = "id_detail_group = " . $dg['id_detail_group'] . " ORDER BY freq DESC";
+            $data_item = $this->db(0)->get_where('detail_item', $where);
 
-               foreach ($data_item as $di) {
-                  $where = "id_detail_item = " . $di['id_detail_item'];
-                  $varian_ = $this->db(0)->get_where('detail_item_varian', $where);
-                  if (count($varian_) > 0) {
-                     $varian[$di['id_detail_item']] = $varian_;
+            if (isset($this->dDetailItem_1[$dg['id_detail_group']])) {
+               $do = $this->dDetailItem_1[$dg['id_detail_group']];
+               foreach ($do as $di) {
+                  if (isset($this->dDetailItemVarian_1[$di['id_detail_item']])) {
+                     $varian[$di['id_detail_item']] = $this->dDetailItemVarian_1[$di['id_detail_item']];
                   }
                }
-               $groupName = $dg['detail_group'];
+            }
+            $groupName = $dg['detail_group'];
+         }
+         foreach ($this->dDetailGroup as $dg) {
+            if ($dg['id_index'] == $d) {
             }
          }
          $data_[$d]['name'] = $groupName;
