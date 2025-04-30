@@ -50,7 +50,7 @@ class Data_Produksi extends Controller
          }
          $ref_list = rtrim($ref_list, ',');
 
-         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") ORDER BY insertTime ASC";
+         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND insertTime NOT LIKE '" . date("Y-m-d") . "%' ORDER BY insertTime ASC";
          $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
 
          $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . ")";
