@@ -77,7 +77,7 @@
                                     $cs_arr_cek[$ref] = true;
                                 }
                             } else {
-                                if ($do['id_user_afiliasi'] <> 0) {
+                                if ($do['id_afiliasi'] == $this->userData['id_toko']) {
                                     $cs_id_aff = $do['id_user_afiliasi'];
                                     if ($cs_arr2_cek[$ref] == false) {
                                         if (isset($cs_arr[$do['id_user_afiliasi']])) {
