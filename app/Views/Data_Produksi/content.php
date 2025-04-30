@@ -173,11 +173,7 @@
         </div>
     </small>
 </main>
-<pre>
-    <?php
-    print_r($cs_arr_data);
-    ?>
-</pre>
+
 <?php $cs_json = json_encode($cs_arr) ?>
 
 <form action="<?= PV::BASE_URL; ?>Data_Produksi/ready" method="POST">
@@ -231,10 +227,10 @@
 
     function cs_show() {
         Object.keys(cs_data).forEach(function(key) {
-            if (cs_data[key] < 1 || cs_data[key] == '') {
-                $("span." + key).remove();
-            } else {
+            if (cs_data[key] > 0) {
                 $("span#" + key).html(cs_data[key]);
+            } else {
+                $("span." + key).remove();
             }
         })
     }
