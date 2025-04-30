@@ -30,6 +30,7 @@
         </div>
     </div>
     <?php $cs_arr = [] ?>
+    <?php $cs_arr_data = [] ?>
     <small>
         <div class="mx-2 rounded px-2">
             <div class="row">
@@ -71,8 +72,10 @@
                                 if ($cs_arr_cek[$ref] == false) {
                                     if (isset($cs_arr[$do['id_penerima']])) {
                                         $cs_arr[$do['id_penerima']] += 1;
+                                        $cs_arr_data[$do['id_penerima']] = $ref;
                                     } else {
                                         $cs_arr[$do['id_penerima']] = 1;
+                                        $cs_arr_data[$do['id_penerima']] = $ref;
                                     }
                                     $cs_arr_cek[$ref] = true;
                                 }
@@ -82,8 +85,10 @@
                                     if ($cs_arr2_cek[$ref] == false) {
                                         if (isset($cs_arr[$do['id_user_afiliasi']])) {
                                             $cs_arr[$do['id_user_afiliasi']] += 1;
+                                            $cs_arr_data[$do['id_user_afiliasi']] = $ref;
                                         } else {
                                             $cs_arr[$do['id_user_afiliasi']] = 1;
+                                            $cs_arr_data[$do['id_user_afiliasi']] = $ref;
                                         }
                                         $cs_arr2_cek[$ref] = true;
                                     }
@@ -170,7 +175,7 @@
 </main>
 <pre>
     <?php
-    print_r($cs_arr);
+    print_r($cs_arr_data);
     ?>
 </pre>
 <?php $cs_json = json_encode($cs_arr) ?>
