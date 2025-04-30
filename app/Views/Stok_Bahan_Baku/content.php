@@ -17,7 +17,7 @@
             </thead>
             <?php foreach ($data['barang'] as $a) {
                 if (isset($data['stok'][$a['id']])) { ?>
-                    <?php if (substr($a['code'], 0, 2) == "B1") { ?>
+                    <?php if (substr($a['code'], 0, 2) == "B0") { ?>
                         <tr>
                             <td class="">
                                 <?= $a['tipe'] ?>

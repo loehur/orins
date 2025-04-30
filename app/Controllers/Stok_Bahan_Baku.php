@@ -34,7 +34,7 @@ class Stok_Bahan_Baku extends Controller
    {
       $data['stok'] = $this->data('Barang')->stok_data_list_all($this->userData['id_toko']);
       $data['stok_gudang'] = $this->data('Barang')->stok_data_list_all(0);
-      $data['barang'] = $this->db(0)->get_where('master_barang', 'en = 1 ORDER BY id DESC');
+      $data['barang'] = $this->db(0)->get_where('master_barang', "code LIKE 'B0%' AND en = 1 ORDER BY id DESC");
       $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'], 'id_karyawan');
       $this->view($this->v_content, $data);
    }
