@@ -233,8 +233,11 @@
         Object.keys(cs_data).forEach(function(key) {
             if (cs_data[key] < 1) {
                 $("span." + key).remove();
+            } else {
+                if (cs_data[key] != '') {
+                    $("span#" + key).html(cs_data[key]);
+                }
             }
-            $("span#" + key).html(cs_data[key]);
         })
     }
 
