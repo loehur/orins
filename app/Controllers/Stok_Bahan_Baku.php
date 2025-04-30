@@ -33,7 +33,9 @@ class Stok_Bahan_Baku extends Controller
    public function content()
    {
       $data['stok'] = $this->data('Barang')->stok_data_list_all($this->userData['id_toko']);
+      $data['stok_gudang'] = $this->data('Barang')->stok_data_list_all(0);
       $data['barang'] = $this->db(0)->get_where('master_barang', 'en = 1 ORDER BY id DESC');
+      $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'], 'id_karyawan');
       $this->view($this->v_content, $data);
    }
 
@@ -41,5 +43,24 @@ class Stok_Bahan_Baku extends Controller
    {
       $data = $this->db(0)->get_where($table, $col . " = '" . $kode . "'");
       echo json_encode($data);
+   }
+
+   function pakai()
+   {
+      $id_sumber = $_POST['id_sumber'];
+      $id_barang = $_POST['id_barang'];
+      $karyawan = $_POST['staf_id'];
+      //updateFreqCS
+      $this->db(0)->update("karyawan", "freq_pro = freq_pro+1", "id_karyawan = " . $karyawan);
+
+      $id_target = 0;
+      $qty = $_POST['qty'];
+
+      $ref = date("YmdHi");
+      $cols = 'ref, jenis, id_barang, id_sumber, id_target, qty';
+
+      $vals = "'" . $ref . "',4," . $id_barang . ",'" . $id_sumber . "','" . $id_target . "'," . $qty;
+      $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
+      echo $do['errno'] == 0 ? 0 : $do['error'];
    }
 }
