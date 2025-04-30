@@ -50,13 +50,13 @@ class Data_Produksi extends Controller
          }
          $ref_list = rtrim($ref_list, ',');
 
-         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND insertTime NOT LIKE '" . date("Y-m-d") . "%' ORDER BY insertTime ASC";
+         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND insertTime NOT LIKE '" . date("Y-m-d") . "%' AND cancel = 0 ORDER BY insertTime ASC";
          $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
 
          $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . ")";
          $data['cs_id'] = $this->db(0)->get_where('order_data', $where, 'id_penerima');
 
-         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_afiliasi = " . $this->userData['id_toko'] . ") AND id_user_afiliasi <> 0 AND insertTime NOT LIKE '" . date("Y-m-d") . "%'";
+         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_afiliasi = " . $this->userData['id_toko'] . ") AND id_user_afiliasi <> 0 AND insertTime NOT LIKE '" . date("Y-m-d") . "%' AND cancel = 0";
          $data['cs_id_aff'] = $this->db(0)->get_where('order_data', $where, 'id_user_afiliasi');
       }
 
