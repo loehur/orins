@@ -76,7 +76,7 @@ class Controller extends PV
         $_SESSION['spk_divisi'] = $this->db(0)->get('spk_dvs', 'id_spk_dvs');
         $_SESSION['detail_group'] = $this->db(0)->get('detail_group', 'id_index');
         $_SESSION['detail_item'] = $this->db(0)->get('detail_item', "id_detail_item");
-        $_SESSION['detail_item_1'] = $this->db(0)->get('detail_item', "id_detail_group", 1);
+        $_SESSION['detail_item_1'] = $this->db(0)->get_where('detail_item', "freq > -1 ORDER BY freq DESC", "id_detail_group", 1);
         $_SESSION['detail_item_varian_1'] = $this->db(0)->get('detail_item_varian', "id_detail_item", "1");
         $_SESSION['data_user'] = $this->db(0)->get_where('user', $whereToko);
 

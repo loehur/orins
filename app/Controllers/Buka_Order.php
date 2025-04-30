@@ -562,8 +562,7 @@ class Buka_Order extends Controller
          $groupName = "";
          if (isset($this->dDetailGroup[$d])) {
             $dg = $this->dDetailGroup[$d];
-            $where = "id_detail_group = " . $dg['id_detail_group'] . " ORDER BY freq DESC";
-            $data_item = $this->db(0)->get_where('detail_item', $where);
+            $data_item = $this->dDetailItem_1[$dg['id_detail_group']];
 
             if (isset($this->dDetailItem_1[$dg['id_detail_group']])) {
                $do = $this->dDetailItem_1[$dg['id_detail_group']];
