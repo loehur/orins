@@ -231,12 +231,10 @@
 
     function cs_show() {
         Object.keys(cs_data).forEach(function(key) {
-            if (cs_data[key] < 1) {
+            if (cs_data[key] < 1 || cs_data[key] == '') {
                 $("span." + key).remove();
             } else {
-                if (cs_data[key] != '') {
-                    $("span#" + key).html(cs_data[key]);
-                }
+                $("span#" + key).html(cs_data[key]);
             }
         })
     }
