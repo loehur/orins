@@ -29,7 +29,7 @@
                                 <?php if (isset($data['stok'][$a['id']])) { ?>
                                     <span class="btn btn-sm btn-success bg-gradient pakai" data-bs-toggle="modal" data-qty data-bs-target="#exampleModal4" id="a<?= $a['id'] ?>" data-id_barang="<?= $a['id'] ?>" data-id_sumber="<?= $this->userData['id_toko'] ?>" style=" min-width: 50px;"><?= $data['stok'][$a['id']]['qty'] ?></span>
                                 <?php } else { ?>
-                                    <span class="btn btn-sm btn-success bg-gradient pakai">0</span>
+                                    <span class="btn btn-sm btn-success bg-gradient pakai" style=" min-width: 50px;">0</span>
                                 <?php } ?>
                             </td>
                             <td style="width: 70px;" class="text-end">
