@@ -52,6 +52,7 @@
                 $dibayar = 0;
                 $showMutasi = "";
                 $xtraDiskon = 0;
+                $id_toko[$ref] = 0;
 
                 $showSurcharge = "";
 
@@ -254,6 +255,7 @@
                                             $jumlah = $do['harga'] * $do['jumlah'];
                                             $id_ambil = $do['id_ambil'];
                                             $user_id = $do['id_user'];
+                                            $id_toko[$ref] = $do['id_toko'];
 
                                             $cancel = $do['cancel'];
                                             $id_cancel = $do['id_cancel'];
@@ -282,8 +284,7 @@
                                                         $divisi[$key] = $dv_['divisi'];
                                                     }
                                                 }
-                                            }
-                                    ?>
+                                            } ?>
                                             <tr style="<?= ($cancel == 1) ? 'color:silver' : '' ?>">
                                                 <td>
                                                     <table class="text-sm">
@@ -445,6 +446,7 @@
                                             $jumlah = $do['qty'];
                                             $id_pelanggan_jenis = $do['jenis_target'];
                                             $dp = $data['barang'][$do['id_barang']];
+                                            $id_toko[$ref] = $do['id_sumber'];
 
                                             if ($cancel_barang <> 2) {
                                                 $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
@@ -550,7 +552,7 @@
                                                         </td>
                                                         <?php if ($ada_produksi[$ref] == true) { ?>
                                                             <td>
-                                                                <?php if ($this->userData['id_toko'] == $do['id_toko']) { ?>
+                                                                <?php if ($this->userData['id_toko'] == $id_toko) { ?>
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
                                                                         &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?></span>
                                                                     <?php } else { ?>
