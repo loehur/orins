@@ -53,6 +53,7 @@
                 $showMutasi = "";
                 $xtraDiskon = 0;
                 $id_toko[$ref] = 0;
+                $id_penerima[$ref] = 0;
 
                 $showSurcharge = "";
 
@@ -256,6 +257,7 @@
                                             $id_ambil = $do['id_ambil'];
                                             $user_id = $do['id_user'];
                                             $id_toko[$ref] = $do['id_toko'];
+                                            $id_penerima[$ref] = $do['id_penerima'];
 
                                             $cancel = $do['cancel'];
                                             $id_cancel = $do['id_cancel'];
@@ -447,6 +449,7 @@
                                             $id_pelanggan_jenis = $do['jenis_target'];
                                             $dp = $data['barang'][$do['id_barang']];
                                             $id_toko[$ref] = $do['id_sumber'];
+                                            $id_penerima[$ref] = $do['cs_id'];
 
                                             if ($cancel_barang <> 2) {
                                                 $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
@@ -562,7 +565,7 @@
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
                                                                         &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?></span>
                                                                     <?php } else { ?>
-                                                                        &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
+                                                                        &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
                                                                     <?php } ?>
                                                                 <?php } ?>
                                                             </td>
