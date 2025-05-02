@@ -54,6 +54,8 @@
                 $xtraDiskon = 0;
                 $id_toko[$ref] = 0;
                 $id_penerima[$ref] = 0;
+                $id_afiliasi[$ref] = 0;
+                $id_user_afiliasi[$ref] = 0;
 
                 $showSurcharge = "";
 
@@ -258,6 +260,8 @@
                                             $user_id = $do['id_user'];
                                             $id_toko[$ref] = $do['id_toko'];
                                             $id_penerima[$ref] = $do['id_penerima'];
+                                            $id_afiliasi[$ref] = $do['id_afiliasi'];
+                                            $id_user_afiliasi[$ref] = $do['id_user_afiliasi'];
 
                                             $cancel = $do['cancel'];
                                             $id_cancel = $do['id_cancel'];
@@ -565,7 +569,7 @@
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
                                                                         &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?></span>
                                                                     <?php } else { ?>
-                                                                        &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $do['id_afiliasi'] == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
+                                                                        &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
                                                                     <?php } ?>
                                                                 <?php } ?>
                                                             </td>
