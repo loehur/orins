@@ -17,7 +17,7 @@
                     if (isset($ds['cart'])) { ?>
                         <tr>
                             <td class="fw-bold"><?= $ds['cart'] ?></td>
-                            <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : "<span class='text-danger'>ABF</span>" ?></td>
+                            <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : $this->dToko[$this->userData['id_toko']]['inisial'] ?></td>
                             <td><?= $ds['sn'] ?></td>
                             <td class="text-end">
                                 <?php foreach ($ds['cart_list'] as $cs) { ?>
@@ -31,7 +31,7 @@
                     } ?>
                     <tr>
                         <td class="fw-bold"><?= $ds['qty'] ?></td>
-                        <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : "<span class='text-danger'>ABF</span>" ?></td>
+                        <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : $this->dToko[$this->userData['id_toko']]['inisial'] ?></td>
                         <td><?= $ds['sn'] ?></td>
                         <td class="text-end">
                             <form action="<?= PV::BASE_URL ?>Buka_Order/add_barang/<?= $data['id_pelanggan_jenis'] ?>" class="mb-0" method="POST">
@@ -61,7 +61,7 @@
                     } ?>
                     <tr>
                         <td class="fw-bold"><?= $ds['qty'] ?></td>
-                        <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : "<span class='text-danger'>ABF</span>" ?></td>
+                        <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : $this->dToko[$this->userData['id_toko']]['inisial'] ?></td>
                         <td colspan="10"><?= $ds['sn'] ?></td>
                     </tr>
                 <?php } ?>
