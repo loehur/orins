@@ -141,8 +141,10 @@ class Data_Operasi extends Controller
       foreach ($data['order'] as $ref => $do) {
          foreach ($do as $dd) {
             $data['head'][$ref]['cs'] = $dd['id_penerima'];
-            $data['head'][$ref]['cs_to'] = $dd['id_user_afiliasi'];
-            $data['head'][$ref]['id_afiliasi'] = $dd['id_afiliasi'];
+            if ($dd['id_afiliasi'] <> 0) {
+               $data['head'][$ref]['cs_to'] = $dd['id_user_afiliasi'];
+               $data['head'][$ref]['id_afiliasi'] = $dd['id_afiliasi'];
+            }
             $data['head'][$ref]['insertTime'] = $dd['insertTime'];
             $data['head'][$ref]['tuntas'] = $dd['tuntas'];
             $data['head'][$ref]['user_id'] = $dd['id_user'];

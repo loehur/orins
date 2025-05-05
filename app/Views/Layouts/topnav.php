@@ -11,7 +11,10 @@
 				</a>
 				<div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownUserImage">
 					<?php
-					foreach ($this->dToko as $dt) { ?>
+					foreach ($this->dToko as $dt) {
+						if ($dt['en'] == 0) {
+							continue;
+						} ?>
 						<a class="dropdown-item sync" href="<?= PV::BASE_URL ?>Log/change_toko/<?= $dt['id_toko'] ?>"><?= $dt['nama_toko'] ?></a>
 					<?php } ?>
 				</div>
