@@ -241,24 +241,22 @@ class Buka_Order extends Controller
       $this->db(0)->delete_where('order_data', $where);
    }
 
-   function update_catatan()
+   function update_note()
    {
-      $id = $_POST['id'];
-      $value = $_POST['value'];
-      $mode = $_POST['mode'];
-      $col = $_POST['col'];
-
+      $mode = $_POST['note_mode'];
+      $id = $_POST['note_id'];
+      $value = $_POST['note_val'];
       if ($mode == "main") {
          $do = $this->db(0)->update("order_data", "note = '" . $value . "'", "id_order_data = " . $id);
       } else {
          $data = $this->db(0)->get_where_row("order_data", "id_order_data = " . $id)['note_spk'];
          $data = unserialize($data);
-         $data[$col] = $value;
+         $data[$mode] = $value;
          $new_data = serialize($data);
          $do = $this->db(0)->update("order_data", "note_spk = '" . $new_data . "'", "id_order_data = " . $id);
       }
 
-      echo $do['errno'] == 0 ? 1 : $do['error'];
+      echo $do['errno'] == 0 ? 0 : $do['error'];
    }
 
    function add_paket($id_pelanggan_jenis)

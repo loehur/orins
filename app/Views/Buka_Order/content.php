@@ -177,18 +177,11 @@ $mgpaket = $data['margin_paket'];
                                                         <?php if ($do['paket_ref'] <> "") { ?>
                                                             <span class="badge bg-light text-dark"><?= $data['paket'][$do['paket_ref']]['nama'] ?> <?= $do['price_locker'] == 1 ? '<i class="fa-solid fa-key"></i>' : '' ?></span>
                                                         <?php } ?>
-                                                        <?php if ($do['paket_ref'] <> "") { ?>
-                                                            <div class="btn-group me-1 d-none">
-                                                                <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                    (&#43;) Afiliasi
-                                                                    <span class="visually-hidden">Toggle Dropdown</span>
-                                                                </button>
-                                                                <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
-                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
-                                                                </ul>
-                                                            </div>
+                                                        <?php if ($do['id_afiliasi'] <> 0) { ?>
+                                                            <small class="fw-bold badge bg-warning text-dark">
+                                                                <i class="fa-solid fa-arrow-right"></i> <?= $this->dToko[$do['id_afiliasi']]['inisial'] ?>
+                                                            </small>
                                                         <?php } ?>
-
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                         <small>
@@ -289,12 +282,12 @@ $mgpaket = $data['margin_paket'];
                                                             </tr>
                                                         </table>
                                                         <div class="row">
-                                                            <?php if (strlen($do['note']) > 0) { ?>
-                                                                <div class="col">
-                                                                    <small>Catatan <span class="fw-bold">Utama</span></small><br>
-                                                                    <span class="text-danger cell_edit" data-mode="main" data-id="<?= $id_order_data ?>" data-col=""><?= $do['note'] ? $do['note'] : "_" ?></span>
-                                                                </div>
-                                                            <?php } ?>
+                                                            <div class="col text-sm">
+                                                                <small style="cursor: pointer;" class="updateNote" data-id="<?= $do['id_order_data'] ?>" data-note_mode="main" data-note_val="<?= $do['note'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModalUtama"><span class="fw-bold">Utama</span></small><br>
+                                                                <?php if (strlen($do['note']) > 0) { ?>
+                                                                    <span class="text-danger"><?= $do['note'] ?></span>
+                                                                <?php } ?>
+                                                            </div>
 
                                                             <?php
                                                             $spkR = [];
@@ -302,28 +295,18 @@ $mgpaket = $data['margin_paket'];
                                                                 $spkR = unserialize($do['pending_spk']);
                                                             }
 
-                                                            foreach (unserialize($do['note_spk']) as $ks => $ns) {
-                                                                if (strlen($ns) > 0 || isset($spkR[$ks])) { ?>
-                                                                    <div class="col text-sm">
-                                                                        <small>Catatan <span class="fw-bold"><?= $this->dDvs_all[$ks]["divisi"] ?></span></small><br>
+                                                            foreach (unserialize($do['note_spk']) as $ks => $ns) { ?>
+                                                                <div class="col text-sm">
+                                                                    <small style="cursor: pointer;" class="updateNote" data-id="<?= $do['id_order_data'] ?>" data-note_mode="<?= $ks ?>" data-note_val="<?= $ns ?>" data-bs-toggle="modal" data-bs-target="#exampleModalUtama"><span class="fw-bold"><?= $this->dDvs_all[$ks]["divisi"] ?></span></small><br>
+                                                                    <?php if (strlen($ns) > 0 || isset($spkR[$ks])) { ?>
                                                                         <?php if (isset($spkR[$ks])) {
                                                                             $pendReady = explode("-", $spkR[$ks]); ?>
                                                                             <span class="badge bg-danger"><?= $data['spk_pending'][$pendReady[0]][$pendReady[1]] ?></span>
                                                                         <?php } ?>
-                                                                        <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary"><?= $ns ?></span>
-                                                                    </div>
-                                                                <?php } else { ?>
-                                                                    <div class="col text-sm">
-                                                                        <small>Catatan <span class="fw-bold"><?= $this->dDvs_all[$ks]["divisi"] ?></span></small><br>
-                                                                        <?php if (isset($spkR[$ks])) {
-                                                                            $pendReady = explode("-", $spkR[$ks]); ?>
-                                                                            <span class="badge bg-<?= $pendReady[1] == 'r' ? 'success' : 'danger' ?>"><?= $data['spk_pending'][$pendReady[0]][$pendReady[1]] ?></span>
-                                                                        <?php } ?>
-                                                                        <span data-id="<?= $id_order_data ?>" data-col="<?= $ks ?>" data-mode="<?= $ks ?>" class="cell_edit text-primary">_</span>
-                                                                    </div>
-                                                            <?php }
-                                                            }
-                                                            ?>
+                                                                        <span class="text-primary"><?= $ns ?></span>
+                                                                    <?php } ?>
+                                                                </div>
+                                                            <?php } ?>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -416,6 +399,12 @@ $mgpaket = $data['margin_paket'];
     $(document).ready(function() {
         $('.tize').selectize();
     });
+
+    $(".updateNote").click(function() {
+        $("input[name=note_val]").val($(this).attr('data-note_val'));
+        $("input[name=note_mode]").val($(this).attr('data-note_mode'));
+        $("input[name=note_id]").val($(this).attr('data-id'));
+    })
 
     $('select[name=id_pelanggan]').change(function() {
         $('input[name=new_customer]').val("");
@@ -654,67 +643,6 @@ $mgpaket = $data['margin_paket'];
                             content();
                         } else {
                             alert(res);
-                        }
-                    },
-                });
-            }
-        });
-    });
-
-    $(".cell_edit").on('dblclick', function() {
-        click = click + 1;
-        if (click != 1) {
-            return;
-        }
-
-        var id = $(this).attr('data-id');
-        var tipe = $(this).attr('data-tipe');
-        var value = $(this).html();
-        var mode = $(this).attr('data-mode');
-        var col = $(this).attr('data-col');
-        var default_val = value;
-        if (value == "_") {
-            value = "";
-        }
-        var value_before = value;
-        var el = $(this);
-        var width = el.parent().width();
-        if (tipe == "number") {
-            align = "right";
-        } else {
-            align = "left";
-        }
-
-        el.parent().css("width", width);
-        el.html("<input required type=" + tipe + " style='outline:none;border:none;width:" + width + "px;text-align:" + align + "' id='value_' value='" + value + "'>");
-
-        $("#value_").focus();
-        $("#value_").focusout(function() {
-            var value_after = $(this).val();
-            if (value_after === value_before) {
-                el.html(default_val);
-                click = 0;
-            } else {
-                $.ajax({
-                    url: '<?= PV::BASE_URL ?>Buka_Order/update_catatan',
-                    data: {
-                        'id': id,
-                        'mode': mode,
-                        'col': col,
-                        'value': value_after,
-                    },
-                    type: 'POST',
-                    dataType: 'html',
-                    success: function(res) {
-                        if (res == 1) {
-                            if (value_after === "") {
-                                value_after = "_";
-                            }
-                            el.html(value_after);
-                            click = 0;
-                        } else {
-                            alert(res);
-                            el.html(default_val);
                         }
                     },
                 });

@@ -207,6 +207,30 @@
     </div>
 </div>
 
+<div class="modal" id="exampleModalUtama" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update</small></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/update_note" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" required>Catatan</label>
+                        <input type="hidden" name="note_mode" class="form-control" required>
+                        <input type="text" name="note_val" class="form-control" required>
+                        <input type="hidden" name="note_id" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-dark" data-bs-dismiss="modal">Update Catatan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal" id="exampleModalPbarang" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
