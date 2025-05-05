@@ -1035,7 +1035,7 @@ class Buka_Order extends Controller
             }
 
             $st_order = ", status_order = 0, id_user_afiliasi = " . $id_user_afiliasi . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
-            $where = "id_order_data = " . $do['id_order_data'] . " AND id_user_afiliasi = 0";
+            $where = "id_order_data = " . $do['id_order_data'] . " AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_user_afiliasi = 0";
          } else {
             $st_order = "";
             $where = "id_order_data = " . $do['id_order_data'];
