@@ -560,7 +560,6 @@
                                                         <?php if ($ada_produksi[$ref] == true) { ?>
                                                             <td>
                                                                 <?php if ($this->userData['id_toko'] == $id_toko[$ref]) { ?>
-                                                                    <?= $data['ref'][$ref]['ready_cs'] ?>
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
                                                                         &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?></span>
                                                                     <?php } else { ?>
