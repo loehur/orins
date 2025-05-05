@@ -89,8 +89,8 @@
                             }
 
                             $ref = $a['ref_transaksi'];
-                            $jenis = $data['jkeluar'][$ref]['nama'];
-                        ?>
+                            $jenis = $data['jkeluar'][$ref]['nama']; ?>
+
                             <tr class="<?= ($a['status_mutasi'] == 2) ? 'text-secondary' : '' ?>">
                                 <td align="right">#<?= $a['id_kas'] ?></td>
                                 <td><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></td>
@@ -155,7 +155,7 @@
                             <td class="text-end">Penjualan Tunai <span class="text-success fw-bold"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span></td>
                             <td class="text-end" style="width:100px"><b>Rp<?= number_format($total - $total_sds - $total_pengeluaran - $total_refund) ?></b></td>
                             <td rowspan="10" class="text-success text-sm align-middle" style="width: 100px;">
-                                <?php if ($data['date'] <> "") { ?>
+                                <?php if ($data['date'] <> date("Y-m-d")) { ?>
                                     <button id="setor" class="btn btn-outline-success py-3 rounded-1">Buat<br>Setoran</button>
                                 <?php } ?>
                             </td>
