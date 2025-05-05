@@ -285,7 +285,7 @@
                                                         <?php } ?>
                                                         <tr>
                                                             <td colspan="10">
-                                                                <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
+                                                                <small><span class="badge bg-light text-dark"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
                                                                 <?php
                                                                 if ($cancel == 1) { ?>
                                                                     <span class="text-nowrap text-success"><small><del><?= $id . "# " . ucwords($produk) ?></del></small></span>
@@ -418,7 +418,7 @@
                                         ?>
                                             <tr style="<?= ($cancel_barang == 2) ? 'color:silver' : '' ?>">
                                                 <td class="align-top">
-                                                    <small><span class="badge bg-danger"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
+                                                    <small><span class="badge bg-light text-dark"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
                                                     <?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?>
                                                 </td>
                                                 <td class=""><small>

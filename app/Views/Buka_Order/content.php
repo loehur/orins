@@ -175,7 +175,7 @@ $mgpaket = $data['margin_paket'];
                                                     <td class="ps-2 align-middle">
                                                         <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span>
                                                         <?php if ($do['paket_ref'] <> "") { ?>
-                                                            <span class="badge bg-danger"><?= $data['paket'][$do['paket_ref']]['nama'] ?> <?= $do['price_locker'] == 1 ? '<i class="fa-solid fa-key"></i>' : '' ?></span>
+                                                            <span class="badge bg-light text-dark"><?= $data['paket'][$do['paket_ref']]['nama'] ?> <?= $do['price_locker'] == 1 ? '<i class="fa-solid fa-key"></i>' : '' ?></span>
                                                         <?php } ?>
                                                         <?php if ($do['paket_ref'] <> "") { ?>
                                                             <div class="btn-group me-1 d-none">
@@ -371,7 +371,7 @@ $mgpaket = $data['margin_paket'];
                             <td>
                                 <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?>
                                 <?= $db['sn'] <> "" ? "<br>" . $db['sn'] : "" ?>
-                                <?= $db['paket_ref'] <> "" ? "<br><span class='badge bg-danger'>" . $data['paket'][$db['paket_ref']]['nama'] . "</span>" : "" ?>
+                                <?= $db['paket_ref'] <> "" ? "<br><span class='badge text-bg-lightt'>" . $data['paket'][$db['paket_ref']]['nama'] . "</span>" : "" ?>
                             </td>
                             <td class="text-end">
                                 <?= number_format($db['qty']) ?>x<br>
