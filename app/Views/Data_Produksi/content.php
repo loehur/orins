@@ -231,7 +231,9 @@
 
     function cs_show() {
         Object.keys(cs_data).forEach(function(key) {
+            $("span." + key).addClass('d-none');
             if (cs_data[key] > 0) {
+                $("span." + key).removeClass('d-none');
                 $("span#" + key).html(cs_data[key]);
             } else {
                 $("span." + key).remove();
