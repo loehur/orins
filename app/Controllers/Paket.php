@@ -68,6 +68,7 @@ class Paket extends Controller
 
    public function content($parse = "", $ref = "")
    {
+      $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
       $data['main'] = $this->db(0)->get_where('paket_main', 'id_toko = ' . $this->userData['id_toko'], 'id');
       $data['ref'] = $ref;
       $data['produk'] = $this->db(0)->get_where('produk', 'pj = 0 ORDER BY freq DESC, id_produk');
@@ -170,6 +171,17 @@ class Paket extends Controller
       foreach ($this->dSPK as $sd) {
          if ($sd['id_produk'] == $id_produk) {
             $spkNote[$sd['id_divisi']] = $_POST['d-' . $sd['id_divisi']];
+         }
+      }
+
+      $spkR = [];
+      foreach ($this->dSPK as $sd) {
+         if ($sd['id_produk'] == $id_produk) {
+            if (isset($_POST['p-' . $sd['id_divisi']])) {
+               if ($_POST['p-' . $sd['id_divisi']] <> "") {
+                  $spkR[$sd['id_divisi']] = $_POST['p-' . $sd['id_divisi']] . "-p";
+               }
+            }
          }
       }
 
@@ -302,14 +314,15 @@ class Paket extends Controller
 
       $spkDVS_ = serialize($spkDVS);
       $spkNote_ = serialize($spkNote);
+      $spkR_ = serialize($spkR);
       $detailHarga_ = serialize($detailHarga);
 
       if ($afiliasi == 0) {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, note, note_spk, pj, paket_ref';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . ",'" . $note . "','" . $spkNote_ . "'," . $pj . ",'" . $ref . "'";
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, note, note_spk, pj, paket_ref, pending_spk';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . ",'" . $note . "','" . $spkNote_ . "'," . $pj . ",'" . $ref . "','" . $spkR_ . "'";
       } else {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, note, note_spk, id_afiliasi, pj, paket_ref';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . "," . $pj . ",'" . $ref . "'";;
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, note, note_spk, id_afiliasi, pj, paket_ref, pending_spk';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . "," . $pj . ",'" . $ref . "','" . $spkR_ . "'";
       }
 
       $do = $this->db(0)->insertCols('paket_order', $cols, $vals);

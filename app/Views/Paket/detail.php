@@ -37,6 +37,16 @@
         <div class="col px-0 mb-2" style="min-width: 200px;">
             <input type="text" name="d-<?= $key ?>" placeholder="Catatan - <?= $this->model('Arr')->get($data['divisi'], "id_divisi", "divisi", $key) ?>" class="form-control border-0 shadow-none form-control-sm">
         </div>
+        <div class="col pe-0 ps-1 mb-2" style="min-width: 200px;">
+            <?php if (isset($data['spk_pending'][$key])) { ?>
+                <select name="p-<?= $key ?>" class="form-select form-select-sm">
+                    <option value="" selected>-</option>
+                    <?php foreach ($data['spk_pending'][$key] as $sp) { ?>
+                        <option value="<?= $sp['id'] ?>"><?= $sp['p'] ?></option>
+                    <?php } ?>
+                </select>
+            <?php } ?>
+        </div>
     </div>
 <?php  } ?>
 
