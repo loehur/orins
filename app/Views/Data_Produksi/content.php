@@ -173,11 +173,6 @@
         </div>
     </small>
 </main>
-<pre>
-    <?php
-    print_r($cs_arr)
-    ?>
-</pre>
 <?php $cs_json = json_encode($cs_arr) ?>
 
 <form action="<?= PV::BASE_URL; ?>Data_Produksi/ready" method="POST">
