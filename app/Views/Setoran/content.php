@@ -7,10 +7,6 @@
                 <input id="inDate" name="month" type="date" min="2023-07-01" max="<?= date('Y-m-d') ?>" value="<?= $date_choose ?>" placeholder="YYYY-MM-DD" class="form-control" required>
                 <button id="cek" class="btn btn-primary">Cek</button>
             </div>
-
-        </div>
-        <div class="col-auto">
-            <button id="cekTotal" class="btn btn-success">Total</button>
         </div>
     </div>
 
@@ -455,10 +451,6 @@
     $("button#cek").click(function() {
         var date = $('#inDate').val();
         location.href = "<?= PV::BASE_URL ?>Setoran/index/" + date;
-    });
-
-    $("button#cekTotal").click(function() {
-        location.href = "<?= PV::BASE_URL ?>Setoran";
     });
 
     $("button#setor").dblclick(function() {
