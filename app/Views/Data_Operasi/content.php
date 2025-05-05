@@ -558,7 +558,7 @@
                                                             &nbsp;<span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
                                                         </td>
                                                         <?php if ($ada_produksi[$ref] == true) { ?>
-                                                            <td>
+                                                            <td class="text-sm">
                                                                 <?php if ($this->userData['id_toko'] == $id_toko[$ref]) { ?>
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
                                                                         &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?></span>
@@ -594,7 +594,7 @@
                                                             &nbsp;<span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
                                                         </td>
                                                         <?php if ($ada_produksi[$ref] == true) { ?>
-                                                            <td>
+                                                            <td class="text-sm">
                                                                 <?php if ($this->userData['id_toko'] == $do['id_toko']) { ?>
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
                                                                         &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?></span>
