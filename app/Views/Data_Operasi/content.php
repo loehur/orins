@@ -565,6 +565,9 @@
                                                                     <?php } else { ?>
                                                                         &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-check-double"></i> Ready</small></span>
                                                                     <?php } ?>
+                                                                    <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
+                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?></span>
+                                                                    <?php } ?>
                                                                 <?php } else { ?>
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_aff_cs']])) { ?>
                                                                         &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_aff_cs']]['nama'] ?></span>
