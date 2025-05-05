@@ -1,10 +1,10 @@
 <main>
-    <?php $date_choose = $data['date'] == "" ? date('Y-m-d', strtotime("-1 days")) : $data['date'] ?>
+    <?php $date_choose = $data['date'] == "" ? date('Y-m-d') : $data['date'] ?>
     <div class="row mx-0 mb-2 px-2">
         <div class="col pe-0">
             <div class="input-group">
                 <span class="input-group-text text-primary">Tanggal</span>
-                <input id="inDate" name="month" type="date" min="2023-07-01" max="<?= date('Y-m-d', strtotime("-1 days")) ?>" value="<?= $date_choose ?>" placeholder="YYYY-MM-DD" class="form-control" required>
+                <input id="inDate" name="month" type="date" min="2023-07-01" max="<?= date('Y-m-d') ?>" value="<?= $date_choose ?>" placeholder="YYYY-MM-DD" class="form-control" required>
                 <button id="cek" class="btn btn-primary">Cek</button>
             </div>
 
