@@ -202,6 +202,15 @@
                                                     </td>
                                                 <?php } else { ?>
                                                     <td class="text-sm px-1 pt-0 pb-1 text-end">
+                                                        <span class="text-purple">
+                                                            <?php if ($data['data_ref'][$ref]['ready_cs'] <> 0) {
+                                                                $cs_ready = $data['karyawan'][$data['data_ref'][$ref]['ready_cs']]['nama']; ?>
+                                                                <i class="fa-solid fa-circle-check"></i> <?= ucwords($cs_ready) ?>
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
+                                                        &nbsp;
                                                         <span class="text-primary">
                                                             <?php if ($ambil_all[$ref] == true) {
                                                                 $cs_ambil = $data['karyawan'][$do['id_ambil']]['nama']; ?>
@@ -327,8 +336,7 @@
                                                     </small>
                                                 </td>
                                                 <?php } else {
-                                                if ($id_user_afiliasi <> 0) {
-                                                ?>
+                                                if ($id_user_afiliasi <> 0) { ?>
                                                     <td class="text-end pe-1 text-success">
                                                         <small>
                                                             AF
