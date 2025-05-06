@@ -324,12 +324,12 @@
                                                                     </ul>
                                                                 </div>
                                                                 <?php if ($do['id_afiliasi'] <> 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) {
-                                                                    $toko_aff = $this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $do['id_afiliasi']);
+                                                                    $toko_aff = $this->dToko[$do['id_afiliasi']]['inisial'];
                                                                     if ($do['status_order'] == 1) { ?>
-                                                                        <span class="badge text-danger"><?= $toko_aff ?> - Checking</span></span>
+                                                                        <span class="badge text-danger"><?= $toko_aff ?> <i class="fa-solid fa-question"></i></span></span>
                                                                     <?php } else {
-                                                                        $cs_aff = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $do['id_user_afiliasi']); ?>
-                                                                        <span class="badge text-success"><i class="fa-solid fa-circle-check"></i> <?= $cs_aff ?> - <?= $toko_aff ?></span>
+                                                                        $cs_aff = $this->dKaryawanAll[$do['id_user_afiliasi']]['nama']; ?>
+                                                                        <span class="badge text-success"><i class="fa-solid fa-circle-check"></i><?= $toko_aff ?> <?= $cs_aff ?> </span>
                                                                     <?php } ?>
                                                                 <?php } ?>
                                                             </td>
