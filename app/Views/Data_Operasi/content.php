@@ -416,12 +416,16 @@
                                                                 }
                                                             } ?>
                                                             <?php } else {
-                                                            if ($do['id_afiliasi'] <> 0) {
+                                                            if ($do['id_afiliasi'] <> 0 && $id_ambil_aff <> 0) {
                                                                 if ($cancel == 0) {
                                                                     $karyawan = $this->dKaryawanAll[$id_ambil_aff]["nama"];
                                                                     echo '<span class="text-dark"><i class="fa-solid fa-check"></i> Ambil (' . ucwords($karyawan) . ")</span><br>";
                                                                 } ?>
+                                                                <?php } else {
+                                                                if ($cancel == 0) { ?>
+                                                                    <span><i class="fa-regular fa-circle"></i> Ambil</span><br>
                                                         <?php }
+                                                            }
                                                         } ?>
 
                                                         <?php
