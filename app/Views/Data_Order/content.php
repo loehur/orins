@@ -85,6 +85,7 @@
                         $id_afiliasi = 0;
                         $cs_id_aff = 0;
                         $ada = false;
+                        $id_aff_arr[$ref] = [];
 
                         if (isset($data['order'][$ref])) {
                             foreach ($data['order'][$ref] as $do) {
@@ -94,6 +95,7 @@
 
                                 if ($do['id_afiliasi'] <> 0) {
                                     $id_afiliasi = $do['id_afiliasi'];
+                                    array_push($id_aff_arr[$ref], $id_afiliasi);
                                 }
                                 $id_toko = $do['id_toko'];
 
