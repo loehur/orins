@@ -153,7 +153,7 @@
                                             <td class="px-1 pb-0 pt-1">
                                                 <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?></small>
                                                 <?php if ($id_afiliasi <> 0 && $do['id_toko'] <> $this->userData['id_toko']) { ?>
-                                                    <small><span class="text-sm badge bg-warning text-dark"><i class="fa-solid fa-arrow-right"></i> <?= $this->dToko[$id_afiliasi]['inisial'] ?></span></small>
+                                                    <small><span class="badge bg-warning text-dark"><i class="fa-solid fa-arrow-right"></i> <?= $this->dToko[$id_afiliasi]['inisial'] ?></span></small>
                                                 <?php } ?>
                                                 <br>
                                                 <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
