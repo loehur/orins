@@ -264,7 +264,7 @@ class Data_Order extends Controller
          $where = "id_order_data = " . $id . " AND id_ambil = 0";
          $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
       } else {
-         $where = "id_order_data = " . $id . " AND id_ambil_aff = 0";
+         $where = "id_order_data = " . $id . " AND id_ambil_aff = 0 AND id_afiliasi = " . $this->userData['id_toko'];
          $set = "id_ambil_aff = " . $karyawan . ", tgl_ambil_aff = '" . $dateNow . "'";
       }
 
@@ -287,7 +287,7 @@ class Data_Order extends Controller
          $where = "ref = '" . $ref . "' AND id_ambil = 0";
          $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
       } else {
-         $where = "ref = '" . $ref . "' AND id_ambil_aff = 0";
+         $where = "ref = '" . $ref . "' AND id_ambil_aff = 0 AND id_afiliasi = " . $this->userData['id_toko'];
          $set = "id_ambil_aff = " . $karyawan . ", tgl_ambil_aff = '" . $dateNow . "'";
       }
 
