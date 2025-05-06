@@ -281,20 +281,14 @@ class Data_Order extends Controller
       //updateFreqCS
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
 
-      $cek_toko = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "'");
+      $cek_toko = $this->db(0)->get_where('order_data', "ref = '" . $ref . "'", 'id_afiliasi');
 
-      if ($cek_toko['id_toko'] == $this->userData['id_toko']) {
+      if ($cek_toko[0]['id_toko'] == $this->userData['id_toko']) {
          $where = "ref = '" . $ref . "' AND id_ambil = 0";
          $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
-      } else {
-         $where = "ref = '" . $ref . "' AND id_ambil_aff = 0 AND id_afiliasi = " . $this->userData['id_toko'];
-         $set = "id_ambil_aff = " . $karyawan . ", tgl_ambil_aff = '" . $dateNow . "'";
-      }
-
-      $update = $this->db(0)->update("order_data", $set, $where);
-      if ($update['errno'] == 0) {
-         $cek = $this->db(0)->get_where_row('ref', "ref = '" . $ref . "'");
-         if ($cek_toko['id_toko'] == $this->userData['id_toko']) {
+         $update = $this->db(0)->update("order_data", $set, $where);
+         if ($update['errno'] == 0) {
+            $cek = $this->db(0)->get_where_row('ref', "ref = '" . $ref . "'");
             if ($cek['ready_cs'] == 0) {
                $set = "ready_cs = " . $karyawan . ", ready_date = '" . $dateNow . "'";
                $where = "ref = '" . $ref . "'";
@@ -305,18 +299,26 @@ class Data_Order extends Controller
                echo 0;
             }
          } else {
+            echo $update['error'];
+         }
+      } else {
+         $where = "ref = '" . $ref . "' AND id_ambil_aff = 0 AND id_afiliasi = " . $this->userData['id_toko'];
+         $set = "id_ambil_aff = " . $karyawan . ", tgl_ambil_aff = '" . $dateNow . "'";
+         $update = $this->db(0)->update("order_data", $set, $where);
+         if ($update['errno'] == 0) {
+            $cek = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND id_afiliasi = " . $this->userData['id_toko']);
             if ($cek['ready_aff_cs'] == 0) {
                $set = "ready_aff_cs = " . $karyawan . ", ready_aff_date = '" . $dateNow . "'";
-               $where = "ref = '" . $ref . "'";
-               $update2 = $this->db(0)->update("ref", $set, $where);
+               $where = "ref = '" . $ref . "' AND id_afiliasi = " . $this->userData['id_toko'];
+               $update2 = $this->db(0)->update("order_data", $set, $where);
                $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
                echo ($update2['errno'] <> 0) ? $update2['error'] : $update2['errno'];
             } else {
                echo 0;
             }
+         } else {
+            echo $update['error'];
          }
-      } else {
-         echo $update['error'];
       }
    }
 

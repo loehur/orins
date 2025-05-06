@@ -332,11 +332,11 @@
                                                                 <?php if ($do['id_afiliasi'] <> 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) {
                                                                     $toko_aff = $this->dToko[$do['id_afiliasi']]['inisial'];
                                                                     if ($do['status_order'] == 1) { ?>
-                                                                        <span class="badge text-danger"><?= $toko_aff ?> <i class="fa-solid fa-question"></i></span></span>
+                                                                        <span class="badge fw-normal text-danger"><?= $toko_aff ?> <i class="fa-solid fa-question"></i></span></span>
                                                                     <?php } else {
                                                                         $cs_aff = $this->dKaryawanAll[$do['id_user_afiliasi']]['nama']; ?>
-                                                                        <span class="badge text-purple">
-                                                                            <?= $toko_aff ?>&nbsp;<i class="fa-solid fa-check"></i>&nbsp;<?= $cs_aff ?>
+                                                                        <span class="badge fw-normal text-purple">
+                                                                            <span class="fw-bold"><?= $toko_aff ?></span>&nbsp;<i class="fa-solid fa-check"></i>&nbsp;<?= $cs_aff ?>
                                                                             <?php if (isset($data['karyawan'][$do['ready_aff_cs']])) { ?>
                                                                                 &nbsp;<i class="fa-solid fa-check-double"></i>&nbsp;<?= $data['karyawan'][$do['ready_aff_cs']]['nama'] ?>
                                                                             <?php } ?>
@@ -606,10 +606,12 @@
                                                                         &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
                                                                     <?php } ?>
                                                                 <?php } else { ?>
-                                                                    <?php if (isset($data['karyawan'][$readyAFF[$ref]])) { ?>
-                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$readyAFF[$ref]]['nama'] ?></span>
-                                                                    <?php } else { ?>
-                                                                        &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
+                                                                    <?php if ($id_afiliasi[$ref] == $this->userData['id_toko']) { ?>
+                                                                        <?php if (isset($data['karyawan'][$readyAFF[$ref]])) { ?>
+                                                                            &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$readyAFF[$ref]]['nama'] ?></span>
+                                                                        <?php } else { ?>
+                                                                            &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
+                                                                        <?php } ?>
                                                                     <?php } ?>
                                                                 <?php } ?>
                                                             </td>
@@ -643,9 +645,6 @@
                                                         <?php if ($ada_produksi[$ref] == true) { ?>
                                                             <td class="text-sm">
                                                                 <?php if ($this->userData['id_toko'] == $do['id_toko']) { ?>
-                                                                    <?php if (isset($data['karyawan'][$readyAFF[$ref]])) { ?>
-                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$readyAFF[$ref]]['nama'] ?></span>
-                                                                    <?php } ?>
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
                                                                         &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?></span>
                                                                     <?php } else { ?>
