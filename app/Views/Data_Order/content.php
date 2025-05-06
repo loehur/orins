@@ -177,7 +177,7 @@
                                                         <span class="text-purple">
                                                             <?php if ($data['data_ref'][$ref]['ready_cs'] <> 0) {
                                                                 $cs_ready = $data['karyawan'][$data['data_ref'][$ref]['ready_cs']]['nama']; ?>
-                                                                <i class="fa-solid fa-circle-check"></i> <?= ucwords($cs_ready) ?>
+                                                                <i class="fa-solid fa-check-double"></i> <?= ucwords($cs_ready) ?>
                                                             <?php } else { ?>
                                                                 <i class="fa-regular fa-circle"></i>
                                                             <?php } ?>
@@ -205,7 +205,7 @@
                                                         <span class="text-purple">
                                                             <?php if ($data['data_ref'][$ref]['ready_cs'] <> 0) {
                                                                 $cs_ready = $data['karyawan'][$data['data_ref'][$ref]['ready_cs']]['nama']; ?>
-                                                                <i class="fa-solid fa-circle-check"></i> <?= ucwords($cs_ready) ?>
+                                                                <i class="fa-solid fa-check-double"></i> <?= ucwords($cs_ready) ?>
                                                             <?php } else { ?>
                                                                 <i class="fa-regular fa-circle"></i>
                                                             <?php } ?>
