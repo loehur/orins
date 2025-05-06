@@ -72,7 +72,7 @@ class Data_Produksi extends Controller
       //updateFreqCS
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
 
-      $where = "ref = '" . $ref . "' LIMIT 1";
+      $where = "ref = '" . $ref . "' AND ready_aff_cs = 0 LIMIT 1";
       $order_data = $this->db(0)->get_where_row('order_data', $where);
       $id_afiliasi = $order_data['id_afiliasi'];
 
@@ -80,16 +80,20 @@ class Data_Produksi extends Controller
 
       if ($id_afiliasi == 0) {
          $set = "ready_cs = " . $karyawan . ", ready_date = '" . $dateNow . "'";
+         $where = "ref = '" . $ref . "'";
+         $update = $this->db(0)->update("ref", $set, $where);
       } else {
          if ($id_afiliasi == $this->userData['id_toko']) {
             $set = "ready_aff_cs = " . $karyawan . ", ready_aff_date = '" . $dateNow . "'";
+            $where = "ref = '" . $ref . "' AND id_afiliasi = " . $this->userData['id_toko'];
+            $update = $this->db(0)->update("order_data", $set, $where);
          } else {
             $set = "ready_cs = " . $karyawan . ", ready_date = '" . $dateNow . "'";
+            $where = "ref = '" . $ref . "'";
+            $update = $this->db(0)->update("ref", $set, $where);
          }
       }
 
-      $where = "ref = '" . $ref . "'";
-      $update = $this->db(0)->update("ref", $set, $where);
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
    }
 }
