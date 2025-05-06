@@ -434,8 +434,6 @@
                                                                 $ambil_all = false;
                                                                 if ($do['id_toko'] == $this->userData['id_toko']) { ?>
                                                                     <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
-                                                                <?php } else { ?>
-                                                                    <span><i class="fa-regular fa-circle"></i> Ambil</span>
                                                                 <?php } ?>
                                                         <?php }
                                                         } else {
