@@ -165,7 +165,7 @@
                                                 <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?></small>
                                                 <?php if ($id_afiliasi <> 0 && $do['id_toko'] == $this->userData['id_toko']) { ?>
                                                     <?php foreach ($id_aff_arr[$ref] as $key => $val) { ?>
-                                                        <small><span class="badge border rounded border-success-soft mx-0 px-1 py-1 text-success"><?= $this->dToko[$key]['inisial'] ?></span></small>
+                                                        <small><span class="badge border rounded border-success-soft mx-0 px-1 py-1 text-purple"><?= $this->dToko[$key]['inisial'] ?></span></small>
                                                     <?php } ?>
                                                 <?php } ?>
                                                 <br>
@@ -258,8 +258,9 @@
                                                         </span>
                                                     </td>
                                                 <?php } ?>
+
                                                 <?php } else {
-                                                if ($id_afiliasi <> 0) { ?>
+                                                if ($id_afiliasi == $this->userData['id_toko']) { ?>
                                                     <td class="text-sm px-1 pt-0 pb-1 text-end">
                                                         <span class="text-primary">
                                                             <?php if ($cs_id_aff <> 0) {
@@ -274,6 +275,15 @@
                                                             <?php if ($data['data_ref'][$ref]['ready_aff_cs'] <> 0) {
                                                                 $cs_aff_ready = $data['karyawan'][$data['data_ref'][$ref]['ready_aff_cs']]['nama']; ?>
                                                                 <i class="fa-solid fa-circle-check"></i> <?= ucwords($cs_aff_ready) ?>
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
+                                                        &nbsp;
+                                                        <span class="text-dark">
+                                                            <?php if ($ambil_all_aff[$ref] == true) {
+                                                                $cs_ambil = $data['karyawan'][$do['id_ambil_aff']]['nama']; ?>
+                                                                <i class="fa-regular fa-circle-check"></i> <?= ucwords($cs_ambil) ?>
                                                             <?php } else { ?>
                                                                 <i class="fa-regular fa-circle"></i>
                                                             <?php } ?>
