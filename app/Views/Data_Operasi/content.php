@@ -402,29 +402,24 @@
                                                         }
                                                         ?>
 
-                                                        <?php
-                                                        if ($do['id_afiliasi'] == $this->userData['id_toko']) {
+                                                        <?php if ($do['id_afiliasi'] == $this->userData['id_toko']) {
                                                             if ($id_ambil_aff == 0 && $cancel == 0) {
                                                                 if ($countSPK > 0 && $cancel == 0) {
                                                                     $ambil_all_aff[$ref] = false; ?>
                                                                     <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span><br>
-                                                            <?php }
+                                                        <?php }
                                                             } else {
                                                                 if ($cancel == 0) {
                                                                     $karyawan = $this->dKaryawanAll[$id_ambil_aff]["nama"];
                                                                     echo '<span class="text-dark"><i class="fa-solid fa-check"></i> Ambil (' . ucwords($karyawan) . ")</span><br>";
                                                                 }
-                                                            } ?>
-                                                            <?php } else {
+                                                            }
+                                                        } else {
                                                             if ($do['id_afiliasi'] <> 0 && $id_ambil_aff <> 0) {
                                                                 if ($cancel == 0) {
                                                                     $karyawan = $this->dKaryawanAll[$id_ambil_aff]["nama"];
                                                                     echo '<span class="text-dark"><i class="fa-solid fa-check"></i> Ambil (' . ucwords($karyawan) . ")</span><br>";
-                                                                } ?>
-                                                                <?php } else {
-                                                                if ($cancel == 0) { ?>
-                                                                    <span><i class="fa-regular fa-circle"></i> Ambil</span><br>
-                                                        <?php }
+                                                                }
                                                             }
                                                         } ?>
 
@@ -434,6 +429,8 @@
                                                                 $ambil_all = false;
                                                                 if ($do['id_toko'] == $this->userData['id_toko']) { ?>
                                                                     <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
+                                                                <?php } else { ?>
+                                                                    <span><i class="fa-regular fa-circle"></i> Ambil</span>
                                                                 <?php } ?>
                                                         <?php }
                                                         } else {
