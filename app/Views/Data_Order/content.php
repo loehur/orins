@@ -157,7 +157,7 @@
                                                 <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?></small>
                                                 <?php if ($id_afiliasi <> 0 && $do['id_toko'] == $this->userData['id_toko']) { ?>
                                                     <?php foreach ($id_aff_arr[$ref] as $key => $val) { ?>
-                                                        <small><span class="badge mx-0 px-0 text-success"><i class="fa-solid fa-arrow-right"></i> <?= $this->dToko[$key]['inisial'] ?></span></small>
+                                                        <small><span class="badge border rounded border-success-soft mx-0 px-0 text-success"><?= $this->dToko[$key]['inisial'] ?></span></small>
                                                     <?php } ?>
                                                 <?php } ?>
                                                 <br>
