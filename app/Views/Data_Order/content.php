@@ -83,6 +83,7 @@
                         $lunas[$ref] = false;
                         $ambil_all[$ref] = true;
                         $id_afiliasi = 0;
+                        $cs_id_aff = 0;
                         $ada = false;
 
                         if (isset($data['order'][$ref])) {
@@ -90,7 +91,10 @@
                                 $cancel = $do['cancel'];
                                 $id_ambil = $do['id_ambil'];
                                 $id_user_afiliasi = $do['id_user_afiliasi'];
-                                $id_afiliasi = $do['id_afiliasi'];
+
+                                if ($do['id_afiliasi'] <> 0) {
+                                    $id_afiliasi = $do['id_afiliasi'];
+                                }
                                 $id_toko = $do['id_toko'];
 
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
@@ -148,6 +152,9 @@
                                         <tr data-id="<?= $id_pelanggan ?>" class="cekPLG" style="cursor: pointer;">
                                             <td class="px-1 pb-0 pt-1">
                                                 <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?></small>
+                                                <?php if ($id_afiliasi <> 0) { ?>
+                                                    <span class="badge text-dark"><i class="fa-solid fa-arrow-right"></i> <?= $this->dToko[$id_afiliasi]['inisial'] ?></span>
+                                                <?php } ?>
                                                 <br>
                                                 <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
                                             </td>
