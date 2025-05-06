@@ -366,6 +366,9 @@
         </div>
     </small>
 </main>
+<pre>
+    <?php print_r($id_aff_arr) ?>
+</pre>
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
