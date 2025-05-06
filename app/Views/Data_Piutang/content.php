@@ -15,7 +15,7 @@
     </div>
     <!-- Main page content-->
     <small>
-        <div class="ms-2 rounded pb-2 me-1 border" style="max-width: 500px; margin-top:40px">
+        <div class="ms-2 rounded pb-2 me-1 border" style="max-width: 500px; margin-top:55px">
             <div class="row row-cols-1 mx-2 overflow-auto" style="height: 700px;">
                 <?php
 

@@ -82,6 +82,7 @@
                         $no = 0;
                         $lunas[$ref] = false;
                         $ambil_all[$ref] = true;
+                        $ambil_all_aff[$ref] = true;
                         $id_afiliasi = 0;
                         $cs_id_aff = 0;
                         $ada = false;
@@ -91,11 +92,18 @@
                             foreach ($data['order'][$ref] as $do) {
                                 $cancel = $do['cancel'];
                                 $id_ambil = $do['id_ambil'];
+                                $id_ambil_aff = $do['id_ambil_aff'];
                                 $id_user_afiliasi = $do['id_user_afiliasi'];
 
                                 if ($do['id_afiliasi'] <> 0) {
                                     $id_afiliasi = $do['id_afiliasi'];
                                     $id_aff_arr[$ref][$id_afiliasi] = true;
+
+                                    if ($id_ambil_aff == 0) {
+                                        if ($countSPK > 0 && $cancel == 0) {
+                                            $ambil_all_aff[$ref] = false;
+                                        }
+                                    }
                                 }
 
                                 $id_toko = $do['id_toko'];
@@ -181,6 +189,15 @@
                                                             <?php if ($data['data_ref'][$ref]['ready_aff_cs'] <> 0) {
                                                                 $cs_aff_ready = $data['karyawan'][$data['data_ref'][$ref]['ready_aff_cs']]['nama']; ?>
                                                                 <i class="fa-solid fa-check-double"></i> <?= ucwords($cs_aff_ready) ?>
+                                                            <?php } else { ?>
+                                                                <i class="fa-regular fa-circle"></i>
+                                                            <?php } ?>
+                                                        </span>
+                                                        &nbsp;
+                                                        <span class="text-dark">
+                                                            <?php if ($ambil_all_aff[$ref] == true) {
+                                                                $cs_ambil = $data['karyawan'][$do['id_ambil_aff']]['nama']; ?>
+                                                                <i class="fa-regular fa-circle-check"></i> <?= ucwords($cs_ambil) ?>
                                                             <?php } else { ?>
                                                                 <i class="fa-regular fa-circle"></i>
                                                             <?php } ?>
@@ -347,17 +364,7 @@
                                                         <?php } ?>
                                                     </small>
                                                 </td>
-                                                <?php } else {
-                                                if ($id_user_afiliasi <> 0) { ?>
-                                                    <td class="text-end pe-1 text-success">
-                                                        <small>
-                                                            AF
-                                                        </small>
-                                                        <br>
-                                                        &nbsp;
-                                                    </td>
-                                            <?php }
-                                            } ?>
+                                            <?php } ?>
                                         </tr>
                                     </table>
                                 </div>
@@ -369,9 +376,7 @@
         </div>
     </small>
 </main>
-<pre>
-    <?php print_r($id_aff_arr) ?>
-</pre>
+
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>

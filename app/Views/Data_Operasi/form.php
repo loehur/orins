@@ -14,7 +14,7 @@
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
                                     <?php foreach ($data['karyawan_toko'] as $k) { ?>
-                                        <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
+                                        <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
                                     <?php } ?>
                                 </select>
                             </div>
@@ -47,7 +47,7 @@
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
                                     <?php foreach ($data['karyawan_toko'] as $k) { ?>
-                                        <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
+                                        <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
                                     <?php } ?>
                                 </select>
                             </div>

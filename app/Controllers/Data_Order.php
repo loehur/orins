@@ -113,20 +113,6 @@ class Data_Order extends Controller
       $this->view($this->v_content, $data);
    }
 
-   function ambil()
-   {
-      $id = $_POST['ambil_id'];
-      $karyawan = $_POST['id_karyawan'];
-      //updateFreqCS
-      $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
-
-      $where = "id_order_data = " . $id;
-      $dateNow = date("Y-m-d H:i:s");
-      $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
-      $update = $this->db(0)->update("order_data", $set, $where);
-      echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
-   }
-
    function cancel()
    {
       $id = $_POST['cancel_id'];
@@ -262,27 +248,72 @@ class Data_Order extends Controller
       }
    }
 
-   function ambil_semua()
+   function ambil()
    {
-      $ref = $_POST['ambil_ref'];
+      $id = $_POST['ambil_id'];
       $karyawan = $_POST['id_karyawan'];
       //updateFreqCS
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
 
-      $where = "ref = '" . $ref . "' AND id_ambil = 0";
       $dateNow = date("Y-m-d H:i:s");
       $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
+
+      $cek_toko = $this->db(0)->get_where_row('order_data', "id_order_data = '" . $id . "'");
+
+      if ($cek_toko['id_toko'] == $this->userData['id_toko']) {
+         $where = "id_order_data = " . $id . " AND id_ambil = 0";
+         $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
+      } else {
+         $where = "id_order_data = " . $id . " AND id_ambil_aff = 0";
+         $set = "id_ambil_aff = " . $karyawan . ", tgl_ambil_aff = '" . $dateNow . "'";
+      }
+
+      $update = $this->db(0)->update("order_data", $set, $where);
+      echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+   }
+
+   function ambil_semua()
+   {
+      $ref = $_POST['ambil_ref'];
+      $karyawan = $_POST['id_karyawan'];
+      $dateNow = date("Y-m-d H:i:s");
+
+      //updateFreqCS
+      $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
+
+      $cek_toko = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "'");
+
+      if ($cek_toko['id_toko'] == $this->userData['id_toko']) {
+         $where = "ref = '" . $ref . "' AND id_ambil = 0";
+         $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
+      } else {
+         $where = "ref = '" . $ref . "' AND id_ambil_aff = 0";
+         $set = "id_ambil_aff = " . $karyawan . ", tgl_ambil_aff = '" . $dateNow . "'";
+      }
+
       $update = $this->db(0)->update("order_data", $set, $where);
       if ($update['errno'] == 0) {
          $cek = $this->db(0)->get_where_row('ref', "ref = '" . $ref . "'");
-         if ($cek['ready_cs'] == 0) {
-            $set = "ready_cs = " . $karyawan . ", ready_date = '" . $dateNow . "'";
-            $where = "ref = '" . $ref . "'";
-            $update2 = $this->db(0)->update("ref", $set, $where);
-            $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
-            echo ($update2['errno'] <> 0) ? $update2['error'] : $update2['errno'];
+         if ($cek_toko['id_toko'] == $this->userData['id_toko']) {
+            if ($cek['ready_cs'] == 0) {
+               $set = "ready_cs = " . $karyawan . ", ready_date = '" . $dateNow . "'";
+               $where = "ref = '" . $ref . "'";
+               $update2 = $this->db(0)->update("ref", $set, $where);
+               $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
+               echo ($update2['errno'] <> 0) ? $update2['error'] : $update2['errno'];
+            } else {
+               echo 0;
+            }
          } else {
-            echo 0;
+            if ($cek['ready_aff_cs'] == 0) {
+               $set = "ready_aff_cs = " . $karyawan . ", ready_aff_date = '" . $dateNow . "'";
+               $where = "ref = '" . $ref . "'";
+               $update2 = $this->db(0)->update("ref", $set, $where);
+               $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
+               echo ($update2['errno'] <> 0) ? $update2['error'] : $update2['errno'];
+            } else {
+               echo 0;
+            }
          }
       } else {
          echo $update['error'];

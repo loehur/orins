@@ -42,8 +42,8 @@
                 $no = 0;
                 $bill = 0;
                 $charge[$ref] = 0;
-                $ambil = false;
                 $ambil_all = true;
+                $ambil_all_aff[$ref] = true;
 
                 $lunas = false;
                 $verify_payment = 0;
@@ -257,6 +257,7 @@
                                             $id = $do['id_order_data'];
                                             $jumlah = $do['harga'] * $do['jumlah'];
                                             $id_ambil = $do['id_ambil'];
+                                            $id_ambil_aff = $do['id_ambil_aff'];
                                             $user_id = $do['id_user'];
                                             $id_toko[$ref] = $do['id_toko'];
                                             $id_penerima[$ref] = $do['id_penerima'];
@@ -400,19 +401,43 @@
                                                             }
                                                         }
                                                         ?>
+
+                                                        <?php
+                                                        if ($do['id_afiliasi'] == $this->userData['id_toko']) {
+                                                            if ($id_ambil_aff == 0 && $cancel == 0) {
+                                                                if ($countSPK > 0 && $cancel == 0) {
+                                                                    $ambil_all_aff[$ref] = false; ?>
+                                                                    <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span><br>
+                                                            <?php }
+                                                            } else {
+                                                                if ($cancel == 0) {
+                                                                    $karyawan = $this->dKaryawanAll[$id_ambil_aff]["nama"];
+                                                                    echo '<span class="text-dark"><i class="fa-solid fa-check"></i> Ambil (' . ucwords($karyawan) . ")</span><br>";
+                                                                }
+                                                            } ?>
+                                                            <?php } else {
+                                                            if ($do['id_afiliasi'] <> 0) {
+                                                                if ($cancel == 0) {
+                                                                    $karyawan = $this->dKaryawanAll[$id_ambil_aff]["nama"];
+                                                                    echo '<span class="text-dark"><i class="fa-solid fa-check"></i> Ambil (' . ucwords($karyawan) . ")</span><br>";
+                                                                } ?>
+                                                        <?php }
+                                                        } ?>
+
                                                         <?php
                                                         if ($id_ambil == 0 && $cancel == 0) {
-                                                            $ambil = true;
                                                             if ($countSPK > 0 && $cancel == 0) {
                                                                 $ambil_all = false;
-                                                                if ($do['id_afiliasi'] == 0) { ?>
+                                                                if ($do['id_toko'] == $this->userData['id_toko']) { ?>
                                                                     <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
+                                                                <?php } else { ?>
+                                                                    <span><i class="fa-regular fa-circle"></i> Ambil</span>
                                                                 <?php } ?>
                                                         <?php }
                                                         } else {
                                                             if ($cancel == 0) {
                                                                 $karyawan = $this->dKaryawanAll[$id_ambil]["nama"];
-                                                                echo '<span class="text-purple"><i class="fa-solid fa-check"></i> Ambil (' . $karyawan . ")</span>";
+                                                                echo '<span class="text-primary"><i class="fa-solid fa-check-double"></i> Ambil (' . ucwords($karyawan) . ")</span>";
                                                             }
                                                         } ?>
                                                     </small>
@@ -518,8 +543,14 @@
                                                     <tr>
                                                         <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border-0 px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i></a></small></td>
                                                         <?php
-                                                        if ($ambil_all == false) { ?>
-                                                            <td class="text-end pe-1"><small><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded border-0 text-primary px-1" data-ref="<?= $do['ref'] ?>">Ambil</span></small></td>
+                                                        if ($ambil_all == false) {
+                                                            if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
+                                                                <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>
+                                                                <?php } else {
+                                                                if ($ambil_all_aff[$ref] == false) { ?>
+                                                                    <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>
+                                                            <?php }
+                                                            } ?>
                                                         <?php } ?>
                                                         <td class="text-end pe-1">
                                                             <button type="button" class="border-0 bg-white ps-0 dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -583,6 +614,16 @@
                                                 <table>
                                                     <tr>
                                                         <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm px-1"><i class="fa-solid fa-print"></i></a></small></td>
+                                                        <?php
+                                                        if ($ambil_all == false) {
+                                                            if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
+                                                                <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>
+                                                                <?php } else {
+                                                                if ($ambil_all_aff[$ref] == false) { ?>
+                                                                    <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>
+                                                            <?php }
+                                                            } ?>
+                                                        <?php } ?>
                                                         <td class="text-sm pe-1">
                                                             <small><?= $dh['user_id'] ?>#</small>
                                                         </td>
