@@ -95,6 +95,9 @@
                                 $id_ambil_aff = $do['id_ambil_aff'];
                                 $id_user_afiliasi = $do['id_user_afiliasi'];
 
+                                $divisi_arr = unserialize($do['spk_dvs']);
+                                $countSPK = count($divisi_arr);
+
                                 if ($do['id_afiliasi'] <> 0) {
                                     $id_afiliasi = $do['id_afiliasi'];
                                     $id_aff_arr[$ref][$id_afiliasi] = true;
@@ -115,9 +118,6 @@
                                     $bill[$ref] += $jumlah;
                                     $bill[$ref] -= $do['diskon'];
                                 }
-
-                                $divisi_arr = unserialize($do['spk_dvs']);
-                                $countSPK = count($divisi_arr);
 
                                 if ($id_ambil == 0) {
                                     if ($countSPK > 0 && $cancel == 0) {
