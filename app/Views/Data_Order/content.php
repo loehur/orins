@@ -98,9 +98,7 @@
                                     $id_aff[$ref][$do['id_afiliasi']]['cs_ready'] = $do['ready_aff_cs'];
 
                                     if ($id_ambil_aff == 0) {
-                                        if ($countSPK > 0 && $cancel == 0) {
-                                            $ambil_all_aff[$ref] = false;
-                                        }
+                                        $ambil_all_aff[$ref] = false;
                                     }
                                 }
 
