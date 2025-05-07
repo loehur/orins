@@ -180,7 +180,7 @@
                                                         &nbsp;
                                                         <span class="text-success">
                                                             <?php if ($lunas[$ref] == true) { ?>
-                                                                <i class="fa-solid fa-circle-check"></i> Paid
+                                                                <i class="fa-solid fa-circle-check"></i>
                                                             <?php } else { ?>
                                                                 <i class="fa-regular fa-circle"></i>
                                                             <?php } ?>
