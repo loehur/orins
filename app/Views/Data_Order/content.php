@@ -2,11 +2,6 @@
 <?php $target_jenis = $data['parse_2'] ?>
 <?php $arr_tuntas = [] ?>
 
-<style>
-    tr:hover {
-        background-color: ghostwhite;
-    }
-</style>
 <main>
     <div class="bg-white w-100">
         <div class="p-2 rounded bg-light ms-2 mb-2 me-1 border pb-0" style="max-width: 500px;">
@@ -154,10 +149,12 @@
                             <div class="row mx-0">
                                 <div class="col px-1" style="min-width: 200px;">
                                     <table class="w-100 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
-                                        <tr data-id="<?= $id_pelanggan ?>" class="cekPLG" style="cursor: pointer;">
+                                        <tr>
                                             <td class="px-1 pb-0 pt-1">
-                                                <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?></small><br>
-                                                <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
+                                                <a href="<?= PV::BASE_URL ?>Data_Operasi/index/<?= $id_pelanggan ?>" class="cekPLG text-decoration-none" style="cursor: pointer;">
+                                                    <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?></small><br>
+                                                    <small class="text-dark"><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
+                                                </a>
                                                 <?php if ($this->userData['id_toko'] == $id_toko[$ref]) { ?>
                                                     <div class="float-end text-sm">
                                                         <span class="text-purple">
@@ -282,11 +279,12 @@
                             <div class="row mx-0">
                                 <div class="col px-1" style="min-width: 200px;">
                                     <table class="w-100 mb-1 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
-                                        <tr data-id="<?= $id_pelanggan ?>" class="cekPLG" style="cursor: pointer;">
+                                        <tr>
                                             <td class="p-1">
-                                                <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?></small>
-                                                <br>
-                                                <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
+                                                <a href="<?= PV::BASE_URL ?>Data_Operasi/index/<?= $id_pelanggan ?>" class="cekPLG text-decoration-none" style="cursor: pointer;">
+                                                    <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?></small><br>
+                                                    <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
+                                                </a>
                                             </td>
                                             <td class="text-end pe-1">
                                                 <small>
@@ -338,10 +336,5 @@
                 nodes[i].style.display = "table";
             }
         }
-    });
-
-    $("tr.cekPLG").click(function() {
-        var id = $(this).attr("data-id");
-        window.location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + id;
     });
 </script>

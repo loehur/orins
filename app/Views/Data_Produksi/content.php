@@ -125,14 +125,11 @@
                             <div class="col px-1" style="min-width: 200px;">
                                 <table class="w-100 mb-0 target bg-white border-bottom table <?= $ref ?>">
                                     <tr data-id="<?= $id_pelanggan ?>">
-                                        <td class="p-1">
+                                        <td class="p-1 cekOrder" data-bs-toggle="modal" data-bs-target="#modalOrder" style="cursor: pointer;" data-ref="<?= $ref ?>">
                                             <small>
-                                                <span data-bs-toggle="modal" data-bs-target="#modalOrder" style="cursor: pointer;" class="cekOrder" data-ref="<?= $ref ?>">
-                                                    <span class="text-danger fw-bold"><?= substr($ref, -4) ?></span>
-                                                </span>
+                                                <span class="text-danger fw-bold"><?= substr($ref, -4) ?></span>
                                                 <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?>
-                                            </small>
-                                            <br>
+                                            </small><br>
                                             <small><?= ucwords($cs) ?>, <?= $since_start->days ?> Hari, <?= $since_start->h ?> Jam</small>
                                         </td>
                                         <?php
@@ -297,7 +294,7 @@
         }
     });
 
-    $('span.cekOrder').click(function() {
+    $('.cekOrder').click(function() {
         var ref = $(this).attr("data-ref");
         $("div#cekOrder").html('');
         $("div#cekOrder").load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
