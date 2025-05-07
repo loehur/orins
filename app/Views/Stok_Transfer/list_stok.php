@@ -18,13 +18,19 @@
                     <span><?= $d['sn'] == "" ? "-" : $d['sn'] ?></span>
                 </div>
                 <div class="col-auto text-end px-1 mb-2 text-end" id="col_qty">
-                    <input id="qty" required type="number" min="1" value="<?= strlen($d['sn']) > 0 ? 1 : "" ?>" max="<?= $d['qty'] ?>" class="px-2 text-center border-bottom border-0" name="qty" style="text-transform: uppercase;">
+                    <input id="qty" required type="float" min="1" value="<?= strlen($d['sn']) > 0 ? 1 : "" ?>" max="<?= $d['qty'] ?>" class="px-2 text-center border-bottom border-0" name="qty" style="text-transform: uppercase;">
                 </div>
                 <div class="col-auto pe-0 text-end mb-2">
                     <button type="submit" class="btn btn-sm btn-outline-success">Add</button>
                 </div>
             </div>
         </form>
+    <?php } else { ?>
+        <div class="row mb-2 mx-1 text-sm border-bottom">
+            <div class="col text-center px-1 mb-2">
+                Stok Kosong
+            </div>
+        </div>
     <?php } ?>
 <?php } ?>
 

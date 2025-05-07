@@ -51,7 +51,7 @@
                     </div>
                     <div class="col-auto px-1 mb-2 text-end" id="col_qty">
                         <label>Qty</label><br>
-                        <input id="qty" required type="number" min="1" class="text-end border-bottom border-0" name="qty" style="text-transform: uppercase;width:60px">
+                        <input id="qty" required type="decimal" min="1" class="text-end border-bottom border-0" name="qty" style="text-transform: uppercase;width:60px">
                     </div>
                     <div class="col-auto mt-auto mb-2">
                         <button type="submit" class="btn btn-outline-success">Add</button>
