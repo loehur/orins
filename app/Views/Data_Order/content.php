@@ -151,7 +151,7 @@
                                 <div class="col px-1" style="min-width: 200px;">
                                     <table class="w-100 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
                                         <tr>
-                                            <td class="px-1 pb-0 pt-1">
+                                            <td class="px-1 pb-1 pt-1">
                                                 <a href="<?= PV::BASE_URL ?>Data_Operasi/index/<?= $id_pelanggan ?>" class="cekPLG text-decoration-none" style="cursor: pointer;">
                                                     <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?></small><br>
                                                     <small class="text-dark"><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
@@ -288,7 +288,7 @@
                                             <td class="p-1">
                                                 <a href="<?= PV::BASE_URL ?>Data_Operasi/index/<?= $id_pelanggan ?>" class="cekPLG text-decoration-none" style="cursor: pointer;">
                                                     <small><span class="text-danger"><?= substr($ref, -4) ?></span> <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?></small><br>
-                                                    <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
+                                                    <small class="text-dark"><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
                                                 </a>
                                             </td>
                                             <td class="text-end pe-1">
