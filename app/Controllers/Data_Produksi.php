@@ -39,7 +39,7 @@ class Data_Produksi extends Controller
       $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
       $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'], 'id_karyawan');
 
-      $where = "tuntas = 0 AND ready_cs = 0 AND ready_aff_cs = 0";
+      $where = "tuntas = 0 AND ready_cs = 0";
       $data['data_ref'] = $this->db(0)->get_where('ref', $where, 'ref');
       $refs = array_keys($data['data_ref']);
 
@@ -52,6 +52,14 @@ class Data_Produksi extends Controller
 
          $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND insertTime NOT LIKE '" . date("Y-m-d") . "%' AND cancel = 0 ORDER BY insertTime ASC";
          $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
+
+         foreach ($data['order'] as $ref => $list) {
+            foreach ($list as $val) {
+               if ($val['id_afiliasi'] == $this->userData['id_toko'] && $val['ready_aff_cs'] <> 0) {
+                  unset($data['order'][$ref]);
+               }
+            }
+         }
 
          $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . ")";
          $data['cs_id'] = $this->db(0)->get_where('order_data', $where, 'id_penerima');

@@ -600,6 +600,11 @@ class Buka_Order extends Controller
 
    function add_price($id_pelanggan_jenis)
    {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+         echo "Selain kasir, tidak di izinkan merubah harga";
+         exit();
+      }
+
       if ($id_pelanggan_jenis == 100) {
          $id_pelanggan_jenis = 2;
       }
@@ -646,6 +651,11 @@ class Buka_Order extends Controller
 
    function add_price_barang($id_pelanggan_jenis)
    {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+         echo "Selain kasir, tidak di izinkan merubah harga";
+         exit();
+      }
+
       if ($id_pelanggan_jenis == 100) {
          $id_pelanggan_jenis = 2;
       }

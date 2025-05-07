@@ -38,16 +38,24 @@
                     <?php foreach ($data['order'] as $ref => $dos) { ?>
                         <?php
                         $no = 0;
-                        $id_afiliasi = 0;
+                        $id_afiliasi[$ref] = 0;
                         $cs_arr_cek[$ref] = false;
                         $cs_arr2_cek[$ref] = false;
+                        $id_toko[$ref] = 0;
+                        $id_aff[$ref] = [];
+                        $cs_id_aff[$ref] = 0;
 
                         foreach ($dos as $do) {
                             $cancel = $do['cancel'];
                             $id_ambil = $do['id_ambil'];
-                            $id_user_afiliasi = $do['id_user_afiliasi'];
-                            $id_afiliasi = $do['id_afiliasi'];
-                            $id_toko = $do['id_toko'];
+
+                            if ($do['id_afiliasi'] <> 0) {
+                                $id_afiliasi[$ref] = $do['id_afiliasi'];
+                                $id_aff[$ref][$do['id_afiliasi']]['cs'] = $do['id_user_afiliasi'];
+                                $id_aff[$ref][$do['id_afiliasi']]['cs_ready'] = $do['ready_aff_cs'];
+                            }
+
+                            $id_toko[$ref] = $do['id_toko'];
 
                             $insertTime = $do['insertTime'];
                             $start_date = new DateTime($insertTime);
@@ -68,7 +76,7 @@
                                 }
                             }
 
-                            if ($id_toko == $this->userData['id_toko']) {
+                            if ($id_toko[$ref] == $this->userData['id_toko']) {
                                 if ($cs_arr_cek[$ref] == false) {
                                     if (isset($cs_arr[$do['id_penerima']])) {
                                         $cs_arr[$do['id_penerima']] += 1;
@@ -81,7 +89,7 @@
                                 }
                             } else {
                                 if ($do['id_afiliasi'] == $this->userData['id_toko']) {
-                                    $cs_id_aff = $do['id_user_afiliasi'];
+                                    $cs_id_aff[$ref] = $do['id_user_afiliasi'];
                                     if ($cs_arr2_cek[$ref] == false) {
                                         if (isset($cs_arr[$do['id_user_afiliasi']])) {
                                             $cs_arr[$do['id_user_afiliasi']] += 1;
@@ -100,8 +108,7 @@
                                 $id_pelanggan = $do['id_pelanggan'];
                                 $dateTime = substr($do['insertTime'], 0, 10);
                                 $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
-                                $cs = $data['karyawan'][$do['id_penerima']]['nama'];
-                                $cs_id_aff = $do['id_user_afiliasi']; ?>
+                                $cs = $data['karyawan'][$do['id_penerima']]['nama']; ?>
                             <?php } ?>
                         <?php } ?>
 
@@ -128,38 +135,19 @@
                                             <br>
                                             <small><?= ucwords($cs) ?>, <?= $since_start->days ?> Hari, <?= $since_start->h ?> Jam</small>
                                         </td>
-                                        <?php if ($id_afiliasi == 0 || $this->userData['id_toko'] == $id_toko) { ?>
-                                            <?php if ($id_afiliasi <> 0) { ?>
-                                                <td class="text-sm text-end">
-                                                    <?php if ($this->userData['id_toko'] <> $id_toko) { ?>
-                                                        <span class="text-dark">
-                                                            <?php if ($cs_id_aff <> 0) {
-                                                                $cs_aff = $data['karyawan'][$cs_id_aff]['nama']; ?>
-                                                                <i class="fa-solid fa-check"></i> <?= ucwords($cs_aff) ?>
-                                                            <?php } ?>
-                                                        </span>
-                                                        &nbsp;
+                                        <?php
+                                        if ($id_afiliasi[$ref] <> 0 && $id_afiliasi[$ref] == $this->userData['id_toko']) { ?>
+                                            <td class="text-sm text-end">
+                                                <span class="text-dark">
+                                                    <?php if ($cs_id_aff[$ref] <> 0) {
+                                                        $cs_aff = $data['karyawan'][$cs_id_aff[$ref]]['nama']; ?>
+                                                        <i class="fa-solid fa-check"></i> <?= ucwords($cs_aff) ?>,
+                                                    <?php } else { ?>
+                                                        <i class="fa-solid fa-question"></i> ,
                                                     <?php } ?>
-                                                    <span class="text-dark">
-                                                        <?php if ($data['data_ref'][$ref]['ready_aff_cs'] <> 0) {
-                                                            $cs_aff_ready = $data['karyawan'][$data['data_ref'][$ref]['ready_aff_cs']]['nama']; ?>
-                                                            <i class="fa-solid fa-check-double"></i> <?= ucwords($cs_aff_ready) ?>
-                                                        <?php } ?>
-                                                    </span>
-                                                </td>
-                                            <?php } ?>
-                                            <?php } else {
-                                            if ($id_afiliasi <> 0) { ?>
-                                                <td class="text-sm text-end">
-                                                    <span class="text-dark">
-                                                        <?php if ($cs_id_aff <> 0) {
-                                                            $cs_aff = $data['karyawan'][$cs_id_aff]['nama']; ?>
-                                                            <i class="fa-solid fa-check"></i> <?= ucwords($cs_aff) ?>,
-                                                        <?php } ?>
-                                                    </span>
-                                                </td>
-                                        <?php }
-                                        } ?>
+                                                </span>
+                                            </td>
+                                        <?php } ?>
                                         <td style="width: 70px;" class="text-sm text-end pe-2 align-top">
                                             <span class="btnReady fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-cs="<?= $id_afiliasi == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <i class="fa-solid fa-question"></i> Ready
                                         </td>

@@ -297,6 +297,7 @@
                                                     }
                                                 }
                                             } ?>
+
                                             <tr style="<?= ($cancel == 1) ? 'color:silver' : '' ?>">
                                                 <td>
                                                     <table class="text-sm">
