@@ -77,6 +77,7 @@
                         $no = 0;
                         $lunas[$ref] = false;
                         $ambil_all[$ref] = true;
+                        $id_ambil_aff[$ref] = 0;
                         $ambil_all_aff[$ref] = true;
                         $id_aff[$ref] = [];
                         $countSPK = [];
@@ -87,7 +88,6 @@
                             foreach ($data['order'][$ref] as $do) {
                                 $cancel = $do['cancel'];
                                 $id_ambil = $do['id_ambil'];
-                                $id_ambil_aff = $do['id_ambil_aff'];
                                 $id_user_afiliasi = $do['id_user_afiliasi'];
 
                                 $divisi_arr = unserialize($do['spk_dvs']);
@@ -96,8 +96,8 @@
                                 if ($do['id_afiliasi'] <> 0) {
                                     $id_aff[$ref][$do['id_afiliasi']]['cs'] = $do['id_user_afiliasi'];
                                     $id_aff[$ref][$do['id_afiliasi']]['cs_ready'] = $do['ready_aff_cs'];
-
-                                    if ($id_ambil_aff == 0) {
+                                    $id_ambil_aff[$ref] = $do['id_ambil_aff'];
+                                    if ($id_ambil_aff[$ref] == 0) {
                                         $ambil_all_aff[$ref] = false;
                                     }
                                 }
@@ -215,7 +215,7 @@
                                                         &nbsp;
                                                         <span class="text-dark">
                                                             <?php if ($ambil_all_aff[$ref] == true) {
-                                                                $cs_ambil = $data['karyawan'][$do['id_ambil_aff']]['nama']; ?>
+                                                                $cs_ambil = $data['karyawan'][$id_ambil_aff[$ref]]['nama']; ?>
                                                                 <i class="fa-regular fa-circle-check"></i> <?= ucwords($cs_ambil) ?>
                                                             <?php } else { ?>
                                                                 <i class="fa-regular fa-circle"></i>
