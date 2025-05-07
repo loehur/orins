@@ -45,7 +45,7 @@
                             <option></option>
                             <?php foreach ($data['barang'] as $br) {
                                 $code_split = str_split($br['code'], 2); ?>
-                                <option value="<?= $br['id'] ?>"><?= $code_split[0] ?> <?= $br['nama'] == "" ? $br['product_name'] : $br['nama'] ?></option>
+                                <option value="<?= $br['id'] ?>"><?= $code_split[0] ?> <?= $br['product_name'] ?><?= $br['nama'] ?></option>
                             <?php } ?>
                         </select>
                     </div>
