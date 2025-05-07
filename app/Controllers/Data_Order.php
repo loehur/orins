@@ -281,9 +281,9 @@ class Data_Order extends Controller
       //updateFreqCS
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
 
-      $cek_toko = $this->db(0)->get_where('order_data', "ref = '" . $ref . "'", 'id_afiliasi');
+      $cek_toko = $this->db(0)->get_where('order_data', "ref = '" . $ref . "' AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")", 'id_afiliasi');
 
-      if ($cek_toko[0]['id_toko'] == $this->userData['id_toko']) {
+      if (isset($cek_toko[0]) && $cek_toko[0]['id_toko'] == $this->userData['id_toko']) {
          $where = "ref = '" . $ref . "' AND id_ambil = 0";
          $set = "id_ambil = " . $karyawan . ", tgl_ambil = '" . $dateNow . "'";
          $update = $this->db(0)->update("order_data", $set, $where);
