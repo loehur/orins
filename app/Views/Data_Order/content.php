@@ -79,6 +79,7 @@
                         $ambil_all[$ref] = true;
                         $ambil_all_aff[$ref] = true;
                         $id_aff[$ref] = [];
+                        $countSPK = [];
                         $ada = false;
                         $id_toko[$ref] = 0;
 
@@ -168,7 +169,11 @@
                                                         &nbsp;
                                                         <span class="text-primary">
                                                             <?php if ($ambil_all[$ref] == true) {
-                                                                $cs_ambil = $data['karyawan'][$do['id_ambil']]['nama']; ?>
+                                                                if (isset($data['karyawan'][$do['id_ambil']])) {
+                                                                    $cs_ambil = $data['karyawan'][$do['id_ambil']]['nama'];
+                                                                } else {
+                                                                    $cs_ambil = "";
+                                                                } ?>
                                                                 <i class="fa-solid fa-circle-check"></i> <?= $cs_ambil ?>
                                                             <?php } else { ?>
                                                                 <i class="fa-regular fa-circle"></i>
