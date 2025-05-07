@@ -26,11 +26,13 @@
             </div>
         </form>
     <?php } else { ?>
-        <div class="row mb-2 mx-1 text-sm border-bottom">
-            <div class="col text-center px-1 mb-2">
-                Stok Kosong
+        <?php if ($d['sn'] == "") { ?>
+            <div class="row mb-2 mx-1 text-sm border-bottom">
+                <div class="col text-center px-1 mb-2">
+                    Stok Kosong
+                </div>
             </div>
-        </div>
+        <?php } ?>
     <?php } ?>
 <?php } ?>
 
