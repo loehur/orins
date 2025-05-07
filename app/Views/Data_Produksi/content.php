@@ -127,7 +127,7 @@
                                     <tr data-id="<?= $id_pelanggan ?>">
                                         <td class="p-1 cekOrder" data-bs-toggle="modal" data-bs-target="#modalOrder" style="cursor: pointer;" data-ref="<?= $ref ?>">
                                             <small>
-                                                <span class="text-danger fw-bold"><?= substr($ref, -4) ?></span>
+                                                <span class="text-danger"><?= substr($ref, -4) ?></span>
                                                 <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?>
                                             </small><br>
                                             <small><?= ucwords($cs) ?>, <?= $since_start->days ?> Hari, <?= $since_start->h ?> Jam</small>
@@ -146,7 +146,7 @@
                                             </td>
                                         <?php } ?>
                                         <td style="width: 70px;" class="text-sm text-end pe-2 align-top">
-                                            <span class="btnReady fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-cs="<?= $id_afiliasi == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <i class="fa-solid fa-question"></i> Ready
+                                            <span class="btnReady" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-cs="<?= $id_afiliasi == $this->userData['id_toko'] ? $do['id_user_afiliasi'] : $do['id_penerima'] ?>" data-ref="<?= $ref ?>"> <i class="fa-solid fa-question"></i> Ready
                                         </td>
                                     </tr>
                                 </table>
