@@ -1,38 +1,41 @@
-<table class="table table-sm mx-1 bg-light text-sm">
-    <?php
-    $no = 0;
-    foreach ($data['mutasi'] as $a) {
-        $no++; ?>
-        <tr id="tr<?= $a['id'] ?>">
-            <td class="text-end">
-                <?= $no ?>#
-            </td>
-            <td class="">
-                <?= $data['barang'][$a['id_barang']]['nama'] ?>
-            </td>
-            <td class="">
-                <?= $a['sds'] == 0 ? "ABF" : "SDS" ?>
-            </td>
-            <td class="">
-                <?= $a['sn'] == "" ? "NO-SN" : $a['sn'] ?>
-            </td>
-            <td class="text-end">
-                <?= $a['qty'] ?>
-            </td>
-            <td class="align-middle text-end">
-                <?php if ($a['stat'] == 0) { ?>
-                    <span data-id="<?= $a['id'] ?>" data-primary="id" data-tb="master_mutasi" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>
-                <?php } else { ?>
-                    <?php if ($a['stat'] == 1) { ?>
-                        <span class="text-success"><i class="fa-solid fa-check"></i></span>
+<label class="badge bg-primary ms-1 mb-0 rounded-0 mt-2">Data Transfer</label>
+<div class="border p-0 mx-1">
+    <table class="table table-sm mb-1 bg-light text-sm">
+        <?php
+        $no = 0;
+        foreach ($data['mutasi'] as $a) {
+            $no++; ?>
+            <tr id="tr<?= $a['id'] ?>">
+                <td class="text-end">
+                    <?= $no ?>#
+                </td>
+                <td class="">
+                    <?= $data['barang'][$a['id_barang']]['nama'] ?>
+                </td>
+                <td class="">
+                    <?= $a['sds'] == 0 ? "ABF" : "SDS" ?>
+                </td>
+                <td class="">
+                    <?= $a['sn'] == "" ? "NO-SN" : $a['sn'] ?>
+                </td>
+                <td class="text-end">
+                    <?= $a['qty'] ?>
+                </td>
+                <td class="align-middle text-end pe-2">
+                    <?php if ($a['stat'] == 0) { ?>
+                        <span data-id="<?= $a['id'] ?>" data-primary="id" data-tb="master_mutasi" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>
                     <?php } else { ?>
-                        <span class="badge bg-danger">Rejected</span>
+                        <?php if ($a['stat'] == 1) { ?>
+                            <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                        <?php } else { ?>
+                            <span class="badge bg-danger">Rejected</span>
+                        <?php } ?>
                     <?php } ?>
-                <?php } ?>
-            </td>
-        </tr>
-    <?php } ?>
-</table>
+                </td>
+            </tr>
+        <?php } ?>
+    </table>
+</div>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script>

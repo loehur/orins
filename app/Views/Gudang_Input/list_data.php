@@ -77,7 +77,7 @@
                             <?= $no ?>.
                         </td>
                         <td class="">
-                            <?= $data['barang'][$a['id_barang']]['nama'] ?>
+                            <?= $data['barang'][$a['id_barang']]['nama'] ?> <?= $data['barang'][$a['id_barang']]['product_name'] ?>
                         </td>
                         <td class="text-end">
                             <?= $a['qty'] ?>

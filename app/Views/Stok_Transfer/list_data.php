@@ -23,32 +23,32 @@
         </div>
 
         <?php if ($d['cek'] == 0) { ?>
-            <label class="text-sm fw-bold text-danger ps-1">Stok Minus</label>
-            <table class="text-sm table table-sm">
-                <?php
-                foreach ($data['stok'] as $ds) {
-                    if ($ds['qty'] < 0) {
-                        $db = $data['barang'][$ds['id_barang']] ?>
-                        <tr>
-                            <td><?= $db['code'] ?></td>
-                            <td><?= $db['nama'] ?></td>
-                            <td class="text-end"><?= $ds['qty'] ?></td>
-                        </tr>
-                <?php }
-                }
-                ?>
-            </table>
+            <label class="badge bg-danger ms-1 mb-0 rounded-0 mt-1">Stok Minus</label>
+            <div class="border pt-2 px-1 mx-1 mb-2">
+                <table class="text-sm table table-sm mx-0 mt-0 mb-2">
+                    <?php
+                    foreach ($data['stok'] as $ds) {
+                        if ($ds['qty'] < 0) {
+                            $db = $data['barang'][$ds['id_barang']] ?>
+                            <tr>
+                                <td><?= $db['code'] ?></td>
+                                <td><?= $db['nama'] ?><?= $db['product_name'] ?></td>
+                                <td class="text-end"><?= $ds['qty'] ?></td>
+                            </tr>
+                    <?php }
+                    }
+                    ?>
+                </table>
+            </div>
 
-            <div class="row mb-2 mx-0">
-                <div class="col px-1 mb-2">
+            <div class="row mb-1 mx-0">
+                <div class="col px-1 mb-1">
                     <label>Barang</label><br>
                     <select name="barang" class="tize border-0 w-100" required id="barang">
                         <option></option>
-                        <?php foreach ($data['barang'] as $br) { ?>
-                            <?php if (strlen($br['nama']) > 1) {
-                                $code_split = str_split($br['code'], 2); ?>
-                                <option value="<?= $br['id'] ?>"><?= $code_split[0] ?> <?= $br['nama'] ?></option>
-                            <?php } ?>
+                        <?php foreach ($data['barang'] as $br) {
+                            $code_split = str_split($br['code'], 2); ?>
+                            <option value="<?= $br['id'] ?>"><?= $code_split[0] ?> <?= $br['nama'] ?><?= $br['product_name'] ?></option>
                         <?php } ?>
                     </select>
                 </div>
