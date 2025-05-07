@@ -288,26 +288,23 @@
                                                 <br>
                                                 <small><?= ucwords($cs) ?> <?= substr($do['insertTime'], 2, -3) ?></small>
                                             </td>
-
-                                            <?php if ($id_afiliasi == 0 || $this->userData['id_toko'] == $id_toko) { ?>
-                                                <td class="text-end pe-1">
-                                                    <small>
-                                                        &nbsp;
-                                                        <?php if ($ambil_all[$ref] == true) { ?>
-                                                            <i class="fa-solid fa-circle-check text-primary"></i>
-                                                        <?php } else { ?>
-                                                            <i class="fa-regular fa-circle"></i>
-                                                        <?php } ?>
-                                                        <br>
-                                                        &nbsp;
-                                                        <?php if ($lunas[$ref] == true) { ?>
-                                                            <i class="fa-solid fa-circle-check text-success"></i>
-                                                        <?php } else { ?>
-                                                            <i class="fa-regular fa-circle"></i>
-                                                        <?php } ?>
-                                                    </small>
-                                                </td>
-                                            <?php } ?>
+                                            <td class="text-end pe-1">
+                                                <small>
+                                                    &nbsp;
+                                                    <?php if ($ambil_all[$ref] == true) { ?>
+                                                        <i class="fa-solid fa-circle-check text-primary"></i>
+                                                    <?php } else { ?>
+                                                        <i class="fa-regular fa-circle"></i>
+                                                    <?php } ?>
+                                                    <br>
+                                                    &nbsp;
+                                                    <?php if ($lunas[$ref] == true) { ?>
+                                                        <i class="fa-solid fa-circle-check text-success"></i>
+                                                    <?php } else { ?>
+                                                        <i class="fa-regular fa-circle"></i>
+                                                    <?php } ?>
+                                                </small>
+                                            </td>
                                         </tr>
                                     </table>
                                 </div>
