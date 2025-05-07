@@ -80,7 +80,7 @@ class Data_Produksi extends Controller
       //updateFreqCS
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
 
-      $where = "ref = '" . $ref . "'";
+      $where = "ref = '" . $ref . "' AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")";
       $order_data = $this->db(0)->get_where('order_data', $where, 'id_afiliasi');
 
       if (isset($order_data[0]) && $order_data[0]['id_toko'] == $this->userData['id_toko']) {
