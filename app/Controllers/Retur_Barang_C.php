@@ -70,11 +70,12 @@ class Retur_Barang_C extends Controller
    function add()
    {
       $tanggal = $_POST['tanggal'];
+      $note = $_POST['note'];
       $error = 0;
 
       $id = date('ymdHi');
-      $cols = 'id, tipe, id_sumber, id_target, tanggal, user_id';
-      $vals = "'" . $id . "',4," . $this->userData['id_toko'] . ",0,'" . $tanggal . "'," . $this->userData['id_user'];
+      $cols = 'id, tipe, id_sumber, id_target, tanggal, user_id, note';
+      $vals = "'" . $id . "',4," . $this->userData['id_toko'] . ",0,'" . $tanggal . "'," . $this->userData['id_user'] . ", '" . $note . "'";
       $do = $this->db(0)->insertCols('master_input', $cols, $vals);
       if ($do['errno'] <> 0) {
          $error .= $do['error'];

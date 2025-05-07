@@ -9,6 +9,10 @@
                         <input value="Gudang" readonly class="form-control form-control-sm">
                     </div>
                 </div>
+                <div class="col-auto px-1 mb-2">
+                    <label>Note</label><br>
+                    <input class="border-bottom border-0" name="note" maxlength="100" required>
+                </div>
                 <div class="col-auto px-1 mb-2 text-center">
                     <label>Tanggal</label><br>
                     <input type="date" name="tanggal" class="text-center border-bottom border-0" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>">
@@ -29,7 +33,7 @@
                         <?= $a['id'] ?>
                     </td>
                     <td class="">
-                        <?= $a['tanggal'] ?>
+                        <?= $a['note'] ?>
                     </td>
                     <td class="align-middle">
                         <?php if ($a['cek'] == 0) { ?>

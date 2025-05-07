@@ -22,16 +22,13 @@
                         <?= $a['id'] ?>
                     </td>
                     <td class="">
-                        <?= $data['toko'][$a['id_sumber']]['nama_toko'] ?>
+                        <?= $data['toko'][$a['id_sumber']]['inisial'] ?>
                     </td>
                     <td>
-                        <?= $a['no_po'] ?>
+                        <?= $a['note'] ?>
                     </td>
                     <td>
-                        <?= $a['no_faktur'] ?>
-                    </td>
-                    <td>
-                        <?= $a['sds'] == 1 ? "SDS" : "ABF" ?>
+                        <?= $a['sds'] == 1 ? "SDS" :  $data['toko'][$this->userData['id_toko']]['inisial'] ?>
                     </td>
                     <td>
                         <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
@@ -50,16 +47,13 @@
                             <?= $a['id'] ?>
                         </td>
                         <td class="">
-                            <?= $data['toko'][$a['id_sumber']]['nama_toko'] ?>
+                            <?= $data['toko'][$a['id_sumber']]['inisial'] ?>
                         </td>
                         <td>
-                            <?= $a['no_po'] ?>
+                            <?= $a['note'] ?>
                         </td>
                         <td>
-                            <?= $a['no_faktur'] ?>
-                        </td>
-                        <td>
-                            <?= $a['sds'] == 1 ? "SDS" : "ABF" ?>
+                            <?= $a['sds'] == 1 ? "SDS" : $data['toko'][$this->userData['id_toko']]['inisial'] ?>
                         </td>
                         <td>
                             <?= $a['cek'] == 1 ? '<i class="fa-solid fa-check text-success"></i>' : "<span class='text-warning'>Checking</span>" ?>
