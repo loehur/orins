@@ -89,10 +89,11 @@ class Gudang_Input extends Controller
       $tanggal = $_POST['tanggal'];
       $no_fak = strtoupper($_POST['no_fak']);
       $no_po = strtoupper($_POST['no_po']);
+      $note = strtoupper($_POST['note']);
       $error = 0;
 
       $id = $_POST['id'];
-      $set = "id_sumber = '" . $supplier . "', no_faktur = '" . $no_fak . "', no_po = '" . $no_po . "', tanggal = '" . $tanggal . "'";
+      $set = "id_sumber = '" . $supplier . "', no_faktur = '" . $no_fak . "', no_po = '" . $no_po . "', tanggal = '" . $tanggal . "', note = '" . $note . "'";
       $where = "id = '" . $id . "'";
       $do = $this->db(0)->update('master_input', $set, $where);
       if ($do['errno'] <> 0) {

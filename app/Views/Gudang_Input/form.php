@@ -16,15 +16,21 @@
             <label>Tanggal</label><br>
             <input type="date" name="tanggal" value="<?= $d['tanggal'] ?>" class="text-center border-bottom border-0" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>">
         </div>
-        <div class="col-auto px-1 mb-2 text-end">
+        <div class="col-auto px-1 mb-2">
             <label>No. DO</label><br>
-            <input class="text-end border-bottom border-0" value="<?= $d['no_po'] ?>" required name="no_po" style="text-transform: uppercase;">
+            <input class="border-bottom border-0" value="<?= $d['no_po'] ?>" required name="no_po" style="text-transform: uppercase;">
         </div>
-        <div class="col-auto px-1 mb-2 text-end">
+        <div class="col-auto px-1 mb-2">
             <label>No. Faktur</label><br>
-            <input class="text-end border-bottom border-0" required value="<?= $d['no_faktur'] ?>" name="no_fak" style="text-transform: uppercase;">
+            <input class=" border-bottom border-0" required value="<?= $d['no_faktur'] ?>" name="no_fak" style="text-transform: uppercase;">
         </div>
-        <div class="col mt-auto mb-2 px-1">
+    </div>
+    <div class="row mb-2 mx-0">
+        <div class="col px-1 mb-2">
+            <label>Note</label><br>
+            <input class="border-bottom border-0 w-100" required value="<?= $d['note'] ?>" name="note">
+        </div>
+        <div class="col-auto mt-auto mb-2 px-1">
             <button type="submit" class="btn btn-outline-primary">Update</button>
         </div>
     </div>
