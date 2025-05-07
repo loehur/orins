@@ -83,7 +83,7 @@ class Data_Produksi extends Controller
       $where = "ref = '" . $ref . "'";
       $order_data = $this->db(0)->get_where('order_data', $where, 'id_afiliasi');
 
-      if ($order_data[0]['id_toko'] == $this->userData['id_toko']) {
+      if (isset($order_data[0]) && $order_data[0]['id_toko'] == $this->userData['id_toko']) {
          $id_afiliasi = 0;
       } else {
          $id_afiliasi = $order_data[$this->userData['id_toko']]['id_afiliasi'];
