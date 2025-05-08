@@ -87,7 +87,6 @@ class Operasi extends Controller
         $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
         $where = "ref = '" . $ref . "' AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")";
         $cek_toko_asal = $this->db(0)->get_where('order_data', $where, 'id_toko');
-
         if (isset($cek_toko_asal[$this->userData['id_toko']])) {
             $set = "ready_cs = " . $id_karyawan . ", ready_date = '" . $dateNow . "'";
             $where = "ref = '" . $ref . "' AND ready_cs = 0";
@@ -119,25 +118,26 @@ class Operasi extends Controller
 
     function terima_stok_satuan($id, $ref)
     {
-        $update = $this->db(0)->update("master_mutasi", "stat = 1", "id_target = " . $this->userData['id_toko'] . " AND pid = " . $id);
-        $count_mutasi = $this->db(0)->count_where("master_mutasi", "ref = '" . $ref . "' AND stat = 0");
-        if ($count_mutasi == 0) {
-            $update = $this->db(0)->update("master_input", "stat = 1", "ref = '" . $ref . "'");
-            if ($update['errno'] <> 0) {
-                return $update;
+        $update = $this->db(0)->update("master_mutasi", "stat = 1", "id_target = '" . $this->userData['id_toko'] . "' AND pid = " . $id);
+        if ($update['errno'] == 0) {
+            $count_mutasi = $this->db(0)->count_where("master_mutasi", "ref = '" . $ref . "' AND stat = 0");
+            if ($count_mutasi == 0) {
+                $update = $this->db(0)->update("master_input", "cek = 1", "id = '" . $ref . "'");
+                if ($update['errno'] <> 0) {
+                    return $update;
+                }
             }
         }
-
         return $update;
     }
 
     function terima_stok_semua($ref)
     {
-        $update = $this->db(0)->update("master_mutasi", "stat = 1", "id_target = " . $this->userData['id_toko'] . " AND ref = '" . $ref . "'");
+        $update = $this->db(0)->update("master_mutasi", "stat = 1", "id_target = '" . $this->userData['id_toko'] . "' AND ref = '" . $ref . "'");
         if ($update['errno'] <> 0) {
             return $update;
         }
-        $update = $this->db(0)->update("master_input", "stat = 1", "id_target = " . $this->userData['id_toko'] . " AND ref = '" . $ref . "'");
+        $update = $this->db(0)->update("master_input", "stat = 1", "id_target = '" . $this->userData['id_toko'] . "' AND ref = '" . $ref . "'");
         return $update;
     }
 }
