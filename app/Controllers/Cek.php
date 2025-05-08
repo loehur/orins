@@ -30,7 +30,7 @@ class Cek extends Controller
       $data['order'] = [];
       $data['mutasi'] = [];
       $data['order'] = $this->db(0)->get_where('order_data', $where);
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where);
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where . " AND stok = 0");
       $ref1 = array_unique(array_column($data['order'], 'ref'));
       $ref2 = array_unique(array_column($data['mutasi'], 'ref'));
       $refs = array_unique(array_merge($ref1, $ref2));
