@@ -1,4 +1,5 @@
 <?php $modeView = $data['parse'] ?>
+<?php $parse_2 = $data['parse_2'] ?>
 
 <main>
     <div class="bg-white w-100">
