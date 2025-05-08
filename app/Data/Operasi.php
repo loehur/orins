@@ -27,12 +27,12 @@ class Operasi extends Controller
         if ($cek_toko['stok'] == 1) {
             $up_stok = $this->terima_stok_satuan($id, $cek_toko['ref']);
             if ($up_stok['errno'] <> 0) {
-                return ($up_stok['errno'] <> 0) ? $up_stok['error'] : $up_stok['errno'];
+                return $up_stok;
             }
         }
 
         $update = $this->db(0)->update("order_data", $set, $where);
-        return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+        return $update;
     }
 
     function ambil_semua($ref, $id_karyawan)
@@ -47,20 +47,19 @@ class Operasi extends Controller
             $set = "id_ambil = " . $id_karyawan . ", tgl_ambil = '" . $dateNow . "'";
             $update = $this->db(0)->update("order_data", $set, $where);
             if ($update['errno'] == 0) {
-
                 $up_stok = $this->terima_stok_semua($ref);
                 if ($up_stok['errno'] <> 0) {
-                    return ($up_stok['errno'] <> 0) ? $up_stok['error'] : $up_stok['errno'];
+                    return $up_stok;
                 }
 
                 $cek = $this->db(0)->get_where_row('ref', "ref = '" . $ref . "'");
                 if ($cek['ready_cs'] == 0) {
                     return $this->ready($ref, $id_karyawan);
                 } else {
-                    return 0;
+                    return $update;
                 }
             } else {
-                return $update['error'];
+                return $update;
             }
         } else {
             $cek_toko = $this->db(0)->get_where('order_data', "ref = '" . $ref . "' AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")", 'id_afiliasi');
@@ -73,10 +72,10 @@ class Operasi extends Controller
                     if ($cek['ready_aff_cs'] == 0) {
                         return $this->ready($ref, $id_karyawan);
                     } else {
-                        return 0;
+                        return $update;
                     }
                 } else {
-                    return $update['error'];
+                    return $update;
                 }
             }
         }
@@ -93,12 +92,18 @@ class Operasi extends Controller
             $set = "ready_cs = " . $id_karyawan . ", ready_date = '" . $dateNow . "'";
             $where = "ref = '" . $ref . "' AND ready_cs = 0";
             $update = $this->db(0)->update("ref", $set, $where);
+            if ($update['errno'] <> 0) {
+                return $update;
+            }
         } else {
             $cek_toko = $this->db(0)->get_where('order_data', $where, 'id_afiliasi');
             if (isset($cek_toko[$this->userData['id_toko']])) {
                 $set = "ready_aff_cs = " . $id_karyawan . ", ready_aff_date = '" . $dateNow . "'";
                 $where = "ref = '" . $ref . "' AND ready_aff_cs = 0 AND id_afiliasi = " . $this->userData['id_toko'];
                 $update = $this->db(0)->update("order_data", $set, $where);
+                if ($update['errno'] <> 0) {
+                    return $update;
+                }
             }
         }
 
@@ -106,10 +111,10 @@ class Operasi extends Controller
         $id = $cek_stok_produksi['id_order_data'];
         $up_stok = $this->terima_stok_satuan($id, $ref);
         if ($up_stok['errno'] <> 0) {
-            return $up_stok['error'];
+            return $up_stok;
         }
 
-        return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+        return $update;
     }
 
     function terima_stok_satuan($id, $ref)
@@ -118,19 +123,21 @@ class Operasi extends Controller
         $count_mutasi = $this->db(0)->count_where("master_mutasi", "ref = '" . $ref . "' AND stat = 0");
         if ($count_mutasi == 0) {
             $update = $this->db(0)->update("master_input", "stat = 1", "ref = '" . $ref . "'");
-            return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+            if ($update['errno'] <> 0) {
+                return $update;
+            }
         }
 
-        return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+        return $update;
     }
 
     function terima_stok_semua($ref)
     {
         $update = $this->db(0)->update("master_mutasi", "stat = 1", "id_target = " . $this->userData['id_toko'] . " AND ref = '" . $ref . "'");
         if ($update['errno'] <> 0) {
-            return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+            return $update;
         }
         $update = $this->db(0)->update("master_input", "stat = 1", "id_target = " . $this->userData['id_toko'] . " AND ref = '" . $ref . "'");
-        return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+        return $update;
     }
 }

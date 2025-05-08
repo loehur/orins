@@ -55,6 +55,7 @@ class Barang_Masuk extends Controller
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
 
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");
+      $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'], 'id_karyawan');
       $this->view(__CLASS__ . '/list_data', $data);
    }
 
@@ -67,15 +68,23 @@ class Barang_Masuk extends Controller
    function update()
    {
       $ref = $_POST['ref'];
+      $id_karyawan = $_POST['id_karyawan'];
+
       $up1 = $this->db(0)->update("master_input", "cek = 1", "id = '" . $ref . "'");
       if ($up1['errno'] <> 0) {
-         echo $up1['errno'];
+         echo $up1['error'];
          exit();
       } else {
          $up2 = $this->db(0)->update("master_mutasi", "stat = 1", "ref = '" . $ref . "'");
          if ($up2['errno'] <> 0) {
-            echo $up2['errno'];
+            echo $up2['error'];
             exit();
+         } else {
+            $up_ambil = $this->data('Operasi')->ambil_semua($ref, $id_karyawan);
+            if ($up_ambil['errno'] <> 0) {
+               echo $up_ambil['error'];
+               exit();
+            }
          }
       }
       echo 0;

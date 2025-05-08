@@ -11,7 +11,7 @@
 <main>
     <!-- Main page content-->
     <div class="container">
-        <div class="row mb-2">
+        <div class="row mb-2 text-sm">
             <div class="col-auto mt-auto px-1 mb-2">
                 <a href="<?= PV::BASE_URL ?>Barang_Masuk"><button class="btn btn-outline pb-0 border-0"><i class="fa-solid fa-chevron-left"></i> <small>Back</small></button></a>
             </div>
@@ -29,7 +29,7 @@
             </div>
             <div class="col text-end mt-auto">
                 <?php if ($d['cek'] == 0) { ?>
-                    <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn btn-outline-success update_bol"><i class="fa-solid fa-check"></i> Verify</span>
+                    <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn btn-sm btn-outline-success btnTerima" data-bs-toggle="modal" data-bs-target="#exampleModalTerima"><i class="fa-solid fa-check"></i> Verify</span>
                 <?php } else { ?>
                     <?php if ($d['cek'] == 1) { ?>
                         <span class="badge bg-success">VERIFIED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <table class="table table-sm mx-1 table-hover">
+        <table class="table table-sm text-sm mx-1 table-hover">
             <?php
             $no = 0;
             foreach ($data['mutasi'] as $a) {
@@ -67,7 +67,7 @@
                     </td>
                     <td class="align-middle text-end">
                         <?php if ($a['stat'] == 0) { ?>
-                            <span class="badge bg-waning">Check</span>
+                            <span class="badge bg-warning">Check</span>
                         <?php } else { ?>
                             <?php if ($a['stat'] == 1) { ?>
                                 <span class="text-success"><i class="fa-solid fa-check"></i></span>
@@ -82,28 +82,71 @@
     </div>
 </main>
 
+<form class="ajax" action="<?= PV::BASE_URL ?>Barang_Masuk/update" method="POST">
+    <div class="modal" id="exampleModalTerima">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Penerima Barang Masuk</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class=" form-label">Karyawan</label>
+                                <input type="hidden" id="ref" name="ref">
+                                <select class="form-select tize" name="id_karyawan" required>
+                                    <option></option>
+                                    <?php foreach ($data['karyawan_toko'] as $k) { ?>
+                                        <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-sm btn-success">Terima</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 
 <script>
-    $(".update_bol").on('click', function() {
-        var ref = $(this).attr('data-ref');
+    $(document).ready(function() {
+        $('select.tize').selectize();
+    });
+
+
+    $("span.btnTerima").click(function() {
+        ref = $(this).attr("data-ref");
+        $("input#ref").val(ref);
+    })
+
+
+    $("a.ajax").click(function(e) {
+        e.preventDefault();
+        var href = $(this).attr('href');
         $.ajax({
-            url: '<?= PV::BASE_URL ?>Barang_Masuk/update',
-            data: {
-                ref: ref
-            },
+            url: href,
             type: 'POST',
-            dataType: 'html',
+            data: {},
             success: function(res) {
                 if (res == 0) {
                     content();
                 } else {
                     alert(res);
                 }
-            },
+            }
         });
-    });
+    })
 
     $(".reject_ref").on('dblclick', function() {
         var ref = $(this).attr('data-ref');
