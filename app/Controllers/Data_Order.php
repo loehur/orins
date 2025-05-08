@@ -115,7 +115,7 @@ class Data_Order extends Controller
 
       if ($parse_2 == 100) {
          echo "<pre>";
-         print_r($data['order']);
+         print_r($data['refs']);
          echo "</pre>";
          exit();
       }

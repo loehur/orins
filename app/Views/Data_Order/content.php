@@ -1,6 +1,4 @@
 <?php $modeView = $data['parse'] ?>
-<?php $target_jenis = $data['parse_2'] ?>
-<?php $arr_tuntas = [] ?>
 
 <main>
     <div class="bg-white w-100">
