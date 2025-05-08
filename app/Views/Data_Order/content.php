@@ -72,6 +72,15 @@
                 <div class="col px-0 overflow-auto mt-2" style="max-width: 500px;height: 700px;">
                     <?php foreach ($data['refs'] as $key => $ref) { ?>
                         <?php
+
+
+                        if ($parse_2 == 100) {
+                            echo "<pre>";
+                            print_r($data['refs']);
+                            echo "</pre>";
+                            exit();
+                        }
+
                         $no = 0;
                         $lunas[$ref] = false;
                         $ambil_all[$ref] = true;

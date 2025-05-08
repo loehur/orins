@@ -112,14 +112,6 @@ class Data_Order extends Controller
       }
 
       $data['refs'] = $refs;
-
-      if ($parse_2 == 100) {
-         echo "<pre>";
-         print_r($data['refs']);
-         echo "</pre>";
-         exit();
-      }
-
       $this->view($this->v_content, $data);
    }
 
