@@ -96,7 +96,12 @@ class Buka_Order extends Controller
       if ($parse == 100) {
          $data['barang_code'] = $this->db(0)->get('master_barang', 'code');
       }
-      $data['stok'] = $this->data('Barang')->stok_data_list($this->userData['id_toko']);
+
+      if ($this->userData['id_toko'] == 1) {
+         $data['stok'] = $this->data('Barang')->stok_data_list(0);
+      } else {
+         $data['stok'] = $this->data('Barang')->stok_data_list($this->userData['id_toko']);
+      }
 
       $data_harga = $this->db(0)->get('produk_harga');
       $data['count'] = count($data['order']) + count($data['order_barang']);

@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
+
 <div class="mb-1">
     <div class="row px-2">
         <div class="col">
@@ -63,6 +64,16 @@
                         <td class="fw-bold"><?= $ds['qty'] ?></td>
                         <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : $this->dToko[$this->userData['id_toko']]['inisial'] ?></td>
                         <td colspan="10"><?= $ds['sn'] ?></td>
+                        <?php if ($this->userData['id_toko'] == 1) { ?>
+                            <td class="text-end">
+                                <form action="<?= PV::BASE_URL ?>Buka_Order/add_barang/<?= $data['id_pelanggan_jenis'] ?>" class="mb-0" method="POST">
+                                    <input type="hidden" name="sds" value="<?= $ds['sds'] ?>">
+                                    <input type="hidden" name="sn" value="<?= $ds['sn'] ?>">
+                                    <input type="hidden" name="kode" value="<?= $ds['id_barang'] ?>">
+                                    <input type="number" style="width: 50px;" min="1" value="1" name="qty" class="border-0 h-100 rounded text-center"> <button data-bs-dismiss="modal" type="submit" class="btn btn-sm btn-primary">Tambah</button>
+                                </form>
+                            </td>
+                        <?php } ?>
                     </tr>
                 <?php } ?>
             </table>
