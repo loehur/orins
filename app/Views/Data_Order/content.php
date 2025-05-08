@@ -77,7 +77,7 @@
 
                         if ($parse_2 == 100) {
                             echo "<pre>";
-                            print_r($data[$ref]);
+                            print_r($data['order'][$ref]);
                             echo "</pre>";
                             exit();
                         }
