@@ -25,10 +25,8 @@
                         <?= $data['supplier'][$a['id_target']]['nama'] ?>
                     </td>
                     <td>
-                        <?= $a['no_po'] ?>
-                    </td>
-                    <td>
-                        <?= $a['no_faktur'] ?>
+                        <?= $a['no_po'] ?> <?= $a['no_faktur'] ?><br>
+                        <?= $a['note'] ?>
                     </td>
                     <td>
                         <?= $a['sds'] == 1 ? "SDS" : "ABF" ?>
@@ -53,10 +51,8 @@
                             <?= $data['supplier'][$a['id_target']]['nama'] ?>
                         </td>
                         <td>
-                            <?= $a['no_po'] ?>
-                        </td>
-                        <td>
-                            <?= $a['no_faktur'] ?>
+                            <?= $a['no_po'] ?> <?= $a['no_faktur'] ?><br>
+                            <?= $a['note'] ?>
                         </td>
                         <td>
                             <?= $a['sds'] == 1 ? "SDS" : "ABF" ?>

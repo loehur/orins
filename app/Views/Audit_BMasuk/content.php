@@ -68,8 +68,8 @@
                         <span class="fw-bold"><?= $data['supplier'][$a['id_sumber']]['nama'] ?></span>
                     </td>
                     <td>
-                        <?= $a['no_po'] ?><br>
-                        <?= $a['no_faktur'] ?>
+                        <?= $a['no_po'] ?> <?= $a['no_faktur'] ?><br>
+                        <?= $a['note'] ?>
                     </td>
                     <td>
                         <?php if ($a['cek'] == 0) { ?>
