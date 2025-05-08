@@ -79,6 +79,11 @@ class Data_Order extends Controller
             break;
       }
 
+      if ($parse_2 == 100) {
+         echo $where2;
+         exit();
+      }
+
       $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where2, 'ref', 1);
 
