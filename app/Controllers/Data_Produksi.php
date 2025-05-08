@@ -76,26 +76,7 @@ class Data_Produksi extends Controller
    function ready()
    {
       $ref = $_POST['ref'];
-      $karyawan = $_POST['staf_id'];
-      $dateNow = date("Y-m-d H:i:s");
-      //updateFreqCS
-      $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $karyawan);
-
-      $where = "ref = '" . $ref . "' AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")";
-      $cek_toko_asal = $this->db(0)->get_where('order_data', $where, 'id_toko');
-      if (isset($cek_toko_asal[$this->userData['id_toko']])) {
-         $set = "ready_cs = " . $karyawan . ", ready_date = '" . $dateNow . "'";
-         $where = "ref = '" . $ref . "'";
-         $update = $this->db(0)->update("ref", $set, $where);
-      } else {
-         $cek_toko = $this->db(0)->get_where('order_data', $where, 'id_afiliasi');
-         if (isset($cek_toko[$this->userData['id_toko']])) {
-            $set = "ready_aff_cs = " . $karyawan . ", ready_aff_date = '" . $dateNow . "'";
-            $where = "ref = '" . $ref . "' AND id_afiliasi = " . $this->userData['id_toko'];
-            $update = $this->db(0)->update("order_data", $set, $where);
-         }
-      }
-
-      echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+      $id_karyawan = $_POST['staf_id'];
+      echo $this->data('Operasi')->ready($ref, $id_karyawan);
    }
 }

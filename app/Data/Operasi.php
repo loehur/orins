@@ -1,0 +1,136 @@
+<?php
+
+class Operasi extends Controller
+{
+    public function __construct()
+    {
+        $this->session_cek();
+        $this->data_order();
+    }
+
+    function ambil($id, $id_karyawan)
+    {
+        $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
+        $dateNow = date("Y-m-d H:i:s");
+
+        $set = "id_ambil = " . $id_karyawan . ", tgl_ambil = '" . $dateNow . "'";
+        $cek_toko = $this->db(0)->get_where_row('order_data', "id_order_data = '" . $id . "'");
+
+        if ($cek_toko['id_toko'] == $this->userData['id_toko']) {
+            $where = "id_order_data = " . $id . " AND id_ambil = 0";
+            $set = "id_ambil = " . $id_karyawan . ", tgl_ambil = '" . $dateNow . "'";
+        } else {
+            $where = "id_order_data = " . $id . " AND id_ambil_aff = 0 AND id_afiliasi = " . $this->userData['id_toko'];
+            $set = "id_ambil_aff = " . $id_karyawan . ", tgl_ambil_aff = '" . $dateNow . "'";
+        }
+
+        if ($cek_toko['stok'] == 1) {
+            $up_stok = $this->terima_stok_satuan($id, $cek_toko['ref']);
+            if ($up_stok['errno'] <> 0) {
+                return ($up_stok['errno'] <> 0) ? $up_stok['error'] : $up_stok['errno'];
+            }
+        }
+
+        $update = $this->db(0)->update("order_data", $set, $where);
+        return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+    }
+
+    function ambil_semua($ref, $id_karyawan)
+    {
+        $dateNow = date("Y-m-d H:i:s");
+        $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
+
+        $cek_toko_asal = $this->db(0)->get_where('order_data', "ref = '" . $ref . "' AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")", 'id_toko');
+
+        if (isset($cek_toko_asal[$this->userData['id_toko']])) {
+            $where = "ref = '" . $ref . "' AND id_ambil = 0";
+            $set = "id_ambil = " . $id_karyawan . ", tgl_ambil = '" . $dateNow . "'";
+            $update = $this->db(0)->update("order_data", $set, $where);
+            if ($update['errno'] == 0) {
+
+                $up_stok = $this->terima_stok_semua($ref);
+                if ($up_stok['errno'] <> 0) {
+                    return ($up_stok['errno'] <> 0) ? $up_stok['error'] : $up_stok['errno'];
+                }
+
+                $cek = $this->db(0)->get_where_row('ref', "ref = '" . $ref . "'");
+                if ($cek['ready_cs'] == 0) {
+                    return $this->ready($ref, $id_karyawan);
+                } else {
+                    return 0;
+                }
+            } else {
+                return $update['error'];
+            }
+        } else {
+            $cek_toko = $this->db(0)->get_where('order_data', "ref = '" . $ref . "' AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")", 'id_afiliasi');
+            if (isset($cek_toko[$this->userData['id_toko']])) {
+                $where = "ref = '" . $ref . "' AND id_ambil_aff = 0 AND id_afiliasi = " . $this->userData['id_toko'];
+                $set = "id_ambil_aff = " . $id_karyawan . ", tgl_ambil_aff = '" . $dateNow . "'";
+                $update = $this->db(0)->update("order_data", $set, $where);
+                if ($update['errno'] == 0) {
+                    $cek = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND id_afiliasi = " . $this->userData['id_toko']);
+                    if ($cek['ready_aff_cs'] == 0) {
+                        return $this->ready($ref, $id_karyawan);
+                    } else {
+                        return 0;
+                    }
+                } else {
+                    return $update['error'];
+                }
+            }
+        }
+    }
+
+    function ready($ref,  $id_karyawan)
+    {
+        $dateNow = date("Y-m-d H:i:s");
+        $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
+        $where = "ref = '" . $ref . "' AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")";
+        $cek_toko_asal = $this->db(0)->get_where('order_data', $where, 'id_toko');
+
+        if (isset($cek_toko_asal[$this->userData['id_toko']])) {
+            $set = "ready_cs = " . $id_karyawan . ", ready_date = '" . $dateNow . "'";
+            $where = "ref = '" . $ref . "' AND ready_cs = 0";
+            $update = $this->db(0)->update("ref", $set, $where);
+        } else {
+            $cek_toko = $this->db(0)->get_where('order_data', $where, 'id_afiliasi');
+            if (isset($cek_toko[$this->userData['id_toko']])) {
+                $set = "ready_aff_cs = " . $id_karyawan . ", ready_aff_date = '" . $dateNow . "'";
+                $where = "ref = '" . $ref . "' AND ready_aff_cs = 0 AND id_afiliasi = " . $this->userData['id_toko'];
+                $update = $this->db(0)->update("order_data", $set, $where);
+            }
+        }
+
+        $cek_stok_produksi = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "'");
+        $id = $cek_stok_produksi['id_order_data'];
+        $up_stok = $this->terima_stok_satuan($id, $ref);
+        if ($up_stok['errno'] <> 0) {
+            return $up_stok['error'];
+        }
+
+        return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+    }
+
+    function terima_stok_satuan($id, $ref)
+    {
+        $update = $this->db(0)->update("master_mutasi", "stat = 1", "id_target = " . $this->userData['id_toko'] . " AND pid = " . $id);
+        $count_mutasi = $this->db(0)->count_where("master_mutasi", "ref = '" . $ref . "' AND stat = 0");
+        if ($count_mutasi == 0) {
+            $update = $this->db(0)->update("master_input", "stat = 1", "ref = '" . $ref . "'");
+            return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+        }
+
+        return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+    }
+
+    function terima_stok_semua($ref)
+    {
+        $update = $this->db(0)->update("master_mutasi", "stat = 1", "id_target = " . $this->userData['id_toko'] . " AND ref = '" . $ref . "'");
+        if ($update['errno'] <> 0) {
+            return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+        }
+        $update = $this->db(0)->update("master_input", "stat = 1", "id_target = " . $this->userData['id_toko'] . " AND ref = '" . $ref . "'");
+        return ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
+    }
+}
