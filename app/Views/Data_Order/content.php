@@ -77,7 +77,7 @@
 
                         if ($parse_2 == 100) {
                             echo "<pre>";
-                            print_r($data['refs']);
+                            print_r($data[$ref]);
                             echo "</pre>";
                             exit();
                         }
