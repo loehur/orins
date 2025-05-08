@@ -354,7 +354,7 @@ $mgpaket = $data['margin_paket'];
                             <td>
                                 <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?>
                                 <?= $db['sn'] <> "" ? "<br>" . $db['sn'] : "" ?>
-                                <?= $db['paket_ref'] <> "" ? "<br><span class='badge text-bg-lightt'>" . $data['paket'][$db['paket_ref']]['nama'] . "</span>" : "" ?>
+                                <?= $db['paket_ref'] <> "" ? "<br><span class='badge text-dark bg-light'>" . $data['paket'][$db['paket_ref']]['nama'] . "</span>" : "" ?>
                             </td>
                             <td class="text-end">
                                 <?= number_format($db['qty']) ?>x<br>
