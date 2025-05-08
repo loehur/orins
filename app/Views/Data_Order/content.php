@@ -73,15 +73,6 @@
                 <div class="col px-0 overflow-auto mt-2" style="max-width: 500px;height: 700px;">
                     <?php foreach ($data['refs'] as $key => $ref) { ?>
                         <?php
-
-
-                        if ($parse_2 == 100) {
-                            echo "<pre>";
-                            print_r($data['order'][$ref]);
-                            echo "</pre>";
-                            exit();
-                        }
-
                         $no = 0;
                         $lunas[$ref] = false;
                         $ambil_all[$ref] = true;
@@ -115,9 +106,12 @@
                                 $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
 
                                 if ($cancel == 0 && $do['stok'] == 0) {
-                                    $no++;
                                     $bill[$ref] += $jumlah;
                                     $bill[$ref] -= $do['diskon'];
+                                }
+
+                                if ($cancel == 0) {
+                                    $no++;
                                 }
 
                                 if ($id_ambil == 0) {
