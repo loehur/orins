@@ -80,7 +80,7 @@ class Data_Order extends Controller
       }
 
       if ($parse_2 == 100) {
-         echo $where2;
+         echo $where;
          exit();
       }
 
