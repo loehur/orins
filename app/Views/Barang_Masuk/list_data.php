@@ -130,14 +130,12 @@
         $("input#ref").val(ref);
     })
 
-
-    $("a.ajax").click(function(e) {
+    $("form.ajax").on("submit", function(e) {
         e.preventDefault();
-        var href = $(this).attr('href');
         $.ajax({
-            url: href,
-            type: 'POST',
-            data: {},
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            type: $(this).attr("method"),
             success: function(res) {
                 if (res == 0) {
                     content();
@@ -146,7 +144,7 @@
                 }
             }
         });
-    })
+    });
 
     $(".reject_ref").on('dblclick', function() {
         var ref = $(this).attr('data-ref');

@@ -602,14 +602,14 @@
                                                             <td class="text-sm">
                                                                 <?php if ($this->userData['id_toko'] == $id_toko[$ref]) { ?>
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
-                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?></span>
+                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama']) ?></span>
                                                                     <?php } else { ?>
                                                                         &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
                                                                     <?php } ?>
                                                                 <?php } else { ?>
                                                                     <?php if ($id_afiliasi[$ref] == $this->userData['id_toko']) { ?>
                                                                         <?php if (isset($data['karyawan'][$readyAFF[$ref]])) { ?>
-                                                                            &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$readyAFF[$ref]]['nama'] ?></span>
+                                                                            &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$readyAFF[$ref]]['nama']) ?></span>
                                                                         <?php } else { ?>
                                                                             &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
                                                                         <?php } ?>
@@ -645,17 +645,19 @@
                                                         </td>
                                                         <?php if ($ada_produksi[$ref] == true) { ?>
                                                             <td class="text-sm">
-                                                                <?php if ($this->userData['id_toko'] == $do['id_toko']) { ?>
+                                                                <?php if ($this->userData['id_toko'] == $id_toko[$ref]) { ?>
                                                                     <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
-                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama'] ?></span>
+                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama']) ?></span>
                                                                     <?php } else { ?>
                                                                         &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
                                                                     <?php } ?>
                                                                 <?php } else { ?>
-                                                                    <?php if (isset($data['karyawan'][$readyAFF[$ref]])) { ?>
-                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= $data['karyawan'][$readyAFF[$ref]]['nama'] ?></span>
-                                                                    <?php } else { ?>
-                                                                        &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
+                                                                    <?php if ($id_afiliasi[$ref] == $this->userData['id_toko']) { ?>
+                                                                        <?php if (isset($data['karyawan'][$readyAFF[$ref]])) { ?>
+                                                                            &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$readyAFF[$ref]]['nama']) ?></span>
+                                                                        <?php } else { ?>
+                                                                            &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
+                                                                        <?php } ?>
                                                                     <?php } ?>
                                                                 <?php } ?>
                                                             </td>
