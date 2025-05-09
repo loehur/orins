@@ -42,7 +42,7 @@ if ($this->userData['id_toko'] == 1) {
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
                         </td>
                         <td class="text-end align-top">
-                            <?= isset($data['stok'][$a['id']]) ? $data['stok'][$a['id']]['qty'] : 0 ?>/<?= isset($data['stok_gudang'][$a['id']]) ? $data['stok_gudang'][$a['id']]['qty'] : 0 ?>
+                            <?= isset($data['stok'][$a['id']]) ? number_format($data['stok'][$a['id']]['qty'], 2) : 0 ?>/<?= isset($data['stok_gudang'][$a['id']]) ? number_format($data['stok_gudang'][$a['id']]['qty'], 2) : 0 ?>
                         </td>
                     </tr>
             <?php }
