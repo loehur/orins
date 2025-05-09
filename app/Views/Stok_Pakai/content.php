@@ -12,31 +12,25 @@
             <thead>
                 <th>Head</th>
                 <th>Nama</th>
-                <th>Toko</th>
                 <th>Gudang</th>
             </thead>
             <?php foreach ($data['barang'] as $a) {
                 if (isset($data['stok_gudang'][$a['id']])) { ?>
-                    <?php if (substr($a['code'], 0, 2) == "B0") { ?>
-                        <tr>
-                            <td class="">
-                                <?= $a['tipe'] ?>
-                            </td>
-                            <td>
-                                <?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?>
-                            </td>
-                            <td style="width: 70px;" class="text-end">
-                                <?php if (isset($data['stok'][$a['id']])) { ?>
-                                    <span class="btn btn-sm btn-success bg-gradient pakai" data-bs-toggle="modal" data-qty data-bs-target="#exampleModal4" id="a<?= $a['id'] ?>" data-id_barang="<?= $a['id'] ?>" data-id_sumber="<?= $this->userData['id_toko'] ?>" style=" min-width: 50px;"><?= number_format($data['stok'][$a['id']]['qty'], 0) ?></span>
-                                <?php } else { ?>
-                                    <span class="btn btn-sm btn-success bg-gradient pakai" style=" min-width: 50px;">0</span>
-                                <?php } ?>
-                            </td>
-                            <td style="width: 70px;" class="text-end">
+                    <tr>
+                        <td class="">
+                            <?= $a['tipe'] ?>
+                        </td>
+                        <td>
+                            <?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?>
+                        </td>
+                        <td style="width: 70px;" class="text-end">
+                            <?php if ($data['stok_gudang'][$a['id']]['qty'] > 0) { ?>
                                 <span class="btn btn-sm btn-danger bg-gradient pakai" data-bs-toggle="modal" data-bs-target="#exampleModal4" id="b<?= $a['id'] ?>" data-id_barang="<?= $a['id'] ?>" data-id_sumber="0" style="min-width: 50px;"><?= number_format($data['stok_gudang'][$a['id']]['qty'], 0) ?></span>
-                            </td>
-                        </tr>
-                    <?php } ?>
+                            <?php } else { ?>
+                                <span class="btn btn-sm btn-dark bg-gradient pakai" style="min-width: 50px;"><?= number_format($data['stok_gudang'][$a['id']]['qty'], 0) ?></span>
+                            <?php } ?>
+                        </td>
+                    </tr>
             <?php }
             } ?>
         </table>
@@ -47,15 +41,37 @@
 <form action="<?= PV::BASE_URL; ?>Stok_Bahan_Baku/pakai" method="POST">
     <div class="modal" id="exampleModal4">
         <div class="modal-dialog modal-sm">
-            <div class="modal-content" style="height: 350px;">
+            <div class="modal-content" style="min-height: 350px;">
                 <div class="modal-body">
                     <div class="container">
                         <div class="row mb-3">
                             <div class="col">
-                                <label class="form-label">Karyawan</label>
+                                <label class="form-label text-sm">SN (Optional)</label>
+                                <input class="form form-control mb-2" name="sn">
+
+                                <label class="form-label text-sm">SDS</label>
+                                <select class="form-select mb-2" name="sds">
+                                    <option value="0" selected>TIDAK</option>
+                                    <option value="1">YA</option>
+                                </select>
+
+                                <label class="form-label text-sm">Tujuan Pakai</label>
+                                <select class="form-select mb-2" name="akun_pakai" required>
+                                    <option></option>
+                                    <?php foreach ($data['akun_pakai'] as $ap) { ?>
+                                        <option value="<?= $ap['id'] ?>"><?= ucwords($ap['nama']) ?></option>
+                                    <?php } ?>
+                                </select>
+                                <label class="form-label text-sm">Catatan</label>
+                                <input class="form form-control mb-2" name="note" required>
+
+                                <label class="form-label text-sm">Jumlah</label>
+                                <input class="form form-control mb-2" type="number" value="1" min="1" name="qty">
+
+                                <label class="form-label text-sm">Karyawan</label>
                                 <input type="hidden" id="id_sumber" name="id_sumber">
                                 <input type="hidden" id="id_barang" name="id_barang">
-                                <select class="form-select tize" name="staf_id" required>
+                                <select class="form-select tize mb-2" name="staf_id" required>
                                     <option></option>
                                     <?php foreach ($data['karyawan_toko'] as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
@@ -63,22 +79,15 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="row mb-3">
+                        <div class="row mb-2 mt-3">
                             <div class="col">
-                                <label class="form-label">Jumlah</label>
-                                <input class="form form-control" type="number" value="1" min="1" name="qty">
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-sm-6">
-                                <button type="submit" data-bs-dismiss="modal" class="btn btn-sm btn-dark">Pakai</button>
+                                <button type="submit" data-bs-dismiss="modal" class="btn w-100 btn-dark">Pakai</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 </form>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
@@ -112,6 +121,7 @@
                 if (res == 0) {
                     qty_in = $("input[name=qty]").val();
                     var new_qty = (qty - qty_in);
+                    alert("Pakai Success!");
                     $("span#" + id).html(new_qty);
                 } else {
                     alert(res);

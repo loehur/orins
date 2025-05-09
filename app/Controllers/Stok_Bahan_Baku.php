@@ -39,27 +39,45 @@ class Stok_Bahan_Baku extends Controller
       $this->view($this->v_content, $data);
    }
 
-   function load($kode, $table, $col)
-   {
-      $data = $this->db(0)->get_where($table, $col . " = '" . $kode . "'");
-      echo json_encode($data);
-   }
-
    function pakai()
    {
       $id_sumber = $_POST['id_sumber'];
       $id_barang = $_POST['id_barang'];
       $karyawan = $_POST['staf_id'];
+
+      if (isset($_POST['sn'])) {
+         $sn = $_POST['sn'];
+      } else {
+         $sn = "";
+      }
+
+      if (isset($_POST['sds'])) {
+         $sds = $_POST['sds'];
+      } else {
+         $sds = 0;
+      }
+
+      //cek stok
+      $stok = $this->data('Barang')->sisa_stok($id_barang, 0, $sn, $sds);
+      if ($stok <= 0) {
+         echo "Stok Kosong";
+         exit();
+      }
+
       //updateFreqCS
       $this->db(0)->update("karyawan", "freq_pro = freq_pro+1", "id_karyawan = " . $karyawan);
 
-      $id_target = 0;
+      if (isset($_POST['akun_pakai'])) {
+         $id_target = $_POST['akun_pakai'];
+      } else {
+         $id_target = 0;
+      }
       $qty = $_POST['qty'];
 
       $ref = date("YmdHi");
-      $cols = 'ref, jenis, id_barang, id_sumber, id_target, qty';
+      $cols = 'ref, jenis, id_barang, id_sumber, id_target, qty, cs_id';
 
-      $vals = "'" . $ref . "',4," . $id_barang . ",'" . $id_sumber . "','" . $id_target . "'," . $qty;
+      $vals = "'" . $ref . "',4," . $id_barang . ",'" . $id_sumber . "','" . $id_target . "'," . $qty . "," . $karyawan;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
