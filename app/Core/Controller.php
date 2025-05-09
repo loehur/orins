@@ -40,6 +40,7 @@ class Controller extends PV
                 foreach ($this->dToko as $dt) {
                     if ($dt['id_toko'] == $this->userData['id_toko']) {
                         $this->userData['nama_toko'] = $dt['nama_toko'];
+                        $this->userData['aff_id'] = $dt['aff_id'];
                         $this->userData['sub_nama'] = $dt['sub_nama'];
                         $this->userData['alamat'] = $dt['alamat'];
                         $this->userData['color'] = $dt['color'];
