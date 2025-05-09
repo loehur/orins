@@ -5,6 +5,14 @@
     }
 </style>
 
+<?php
+if ($this->userData['id_toko'] == 1) {
+    $data_stok = $data['stok_gudang'];
+} else {
+    $data_stok = $data['stok'];
+}
+?>
+
 <main>
     <!-- Main page content-->
     <div class="container text-sm">
@@ -18,7 +26,7 @@
                 <th>Stok</th>
             </thead>
             <?php foreach ($data['barang'] as $a) {
-                if (isset($data['stok'][$a['id']])) { ?>
+                if (isset($data_stok[$a['id']])) { ?>
                     <tr>
                         <td class="">
                             <small><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></small><br>
@@ -34,7 +42,7 @@
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
                         </td>
                         <td class="text-end align-top">
-                            <?= $data['stok'][$a['id']]['qty'] ?>/<?= isset($data['stok_gudang'][$a['id']]['qty']) ? $data['stok_gudang'][$a['id']]['qty'] : 0 ?>
+                            <?= isset($data['stok'][$a['id']]) ? $data['stok'][$a['id']]['qty'] : 0 ?>/<?= isset($data['stok_gudang'][$a['id']]) ? $data['stok_gudang'][$a['id']]['qty'] : 0 ?>
                         </td>
                     </tr>
             <?php }
