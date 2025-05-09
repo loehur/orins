@@ -32,7 +32,9 @@ class Deposit extends Controller
 
    public function deposit($parse = "")
    {
-      $this->view(__CLASS__ . "/content", ['id_pelanggan' => $parse]);
+      $data['list'] = $this->data("Saldo")->list_saldo();
+      $data['id_pelanggan'] = $parse;
+      $this->view(__CLASS__ . "/content", $data);
    }
 
    function dep_data($id_pelanggan = 0)
