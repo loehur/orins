@@ -80,6 +80,7 @@ class Barang_Masuk extends Controller
             echo $up2['error'];
             exit();
          } else {
+            $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
             $up_ambil = $this->data('Operasi')->ambil_semua($ref, $id_karyawan);
             if ($up_ambil['errno'] <> 0) {
                echo $up_ambil['error'];
