@@ -34,7 +34,7 @@ class Driver_JL extends Controller
    public function content()
    {
       $cols = "CONCAT(id_afiliasi,'#',id_toko) as unic, id_toko, id_afiliasi, ready_aff_cs, ready_aff_date, id_pelanggan, jumlah, ref, id_user_afiliasi";
-      $where = "cancel <> 0 AND id_afiliasi <> 0 AND id_ambil_aff = 0 AND id_ambil = 0 AND tuntas = 0 AND ready_aff_cs <> 0 ORDER BY ready_aff_date DESC";
+      $where = "cancel <> 0 AND id_user_afiliasi <> 0 AND id_afiliasi <> 0 AND id_ambil_aff = 0 AND id_ambil = 0 AND tuntas = 0 AND ready_aff_cs <> 0 ORDER BY ready_aff_date DESC";
       $data['jl_pro'] = $this->db(0)->get_cols_where('order_data', $cols, $where, 1, 'unic', 1);
 
       $get = [];
