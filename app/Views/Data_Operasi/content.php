@@ -19,7 +19,7 @@
                 </select>
             </div>
         <?php } ?>
-        <div class="col pt-auto mt-auto pe-0">
+        <div class="col-auto pt-auto mt-auto pe-0">
             <button type="submit" class="cek btn btn-light border">Cek</button>
         </div>
     </div>
