@@ -20,7 +20,7 @@
                             <?= strtoupper($this->dKaryawanAll[$a['cs']]['nama']) ?>
                         </div>
                         <div class="col pe-1">
-                            <?= strtoupper($this->dPelangganAll[$a['id_pelanggan']]['nama']) ?> <small># <?= substr($a['id_pelanggan'], -2) ?></small>
+                            <?= strtoupper($this->dPelangganAll[$a['id_pelanggan']]['nama']) ?> <small>#<?= substr($a['id_pelanggan'], -2) ?></small>
                         </div>
                         <div class="col-auto text-end">
                             <?= $a['qty'] ?>
