@@ -11,7 +11,7 @@
                     <option value="<?= $key ?>" <?= ($data['id_pelanggan'] == $key ? "selected" : "") ?>><?= strtoupper($dPelanggan[$key]['nama']) ?> [ <?= number_format($lp) ?> ]</option>
                     <?php unset($dPelanggan[$key]); ?>
                 <?php } ?>
-                <?php foreach ($this->dPelanggan as $p) { ?>
+                <?php foreach ($dPelanggan as $p) { ?>
                     <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['id_pelanggan'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?></option>
                 <?php } ?>
             </select>
