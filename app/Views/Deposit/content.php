@@ -14,8 +14,10 @@
             <select class="rounded tize" name="id_pelanggan" required>
                 <option></option>
                 <?php foreach ($data['list'] as $key => $lp) { ?>
-                    <option value="<?= $key ?>" <?= ($data['id_pelanggan'] == $key ? "selected" : "") ?>><?= strtoupper($dPelanggan[$key]['nama']) ?> [ <?= number_format($lp) ?> ]</option>
-                    <?php unset($dPelanggan[$key]); ?>
+                    <?php if ($lp > 0) { ?>
+                        <option value="<?= $key ?>" <?= ($data['id_pelanggan'] == $key ? "selected" : "") ?>><?= strtoupper($dPelanggan[$key]['nama']) ?> [ <?= number_format($lp) ?> ]</option>
+                        <?php unset($dPelanggan[$key]); ?>
+                    <?php } ?>
                 <?php } ?>
                 <?php foreach ($dPelanggan as $p) { ?>
                     <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['id_pelanggan'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= strtoupper($p['nama']) ?></option>
