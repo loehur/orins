@@ -2,12 +2,6 @@
 
 <?php $dPelanggan = $this->dPelanggan; ?>
 
-<pre>
-    <?php
-    print_r($data['list']);
-    ?>
-</pre>
-
 <main>
     <div class="row mx-0 mt-3" style="margin-left:0px;max-width:600px">
         <div class="col pe-0">
