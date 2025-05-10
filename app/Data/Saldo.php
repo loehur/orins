@@ -18,8 +18,8 @@ class Saldo extends Controller
     function list_saldo()
     {
         $cols = "id_client, SUM(jumlah) as jumlah";
-        $topup = $this->db(0)->get_cols_where("kas", $cols, "jenis_transaksi = 2 AND jenis_mutasi = 1 AND status_mutasi = 1 AND id_toko = " . $this->userData['id_toko'], 1, "id_client");
-        $pakai = $this->db(0)->get_cols_where("kas", $cols, "jenis_transaksi = 1 AND metode_mutasi = 4 AND status_mutasi <> 2 AND id_toko = " . $this->userData['id_toko'], 1, "id_client");
+        $topup = $this->db(0)->get_cols_where("kas", $cols, "jenis_transaksi = 2 AND jenis_mutasi = 1 AND status_mutasi = 1 AND id_toko = " . $this->userData['id_toko'] . " GROUP BY id_client", 1, "id_client");
+        $pakai = $this->db(0)->get_cols_where("kas", $cols, "jenis_transaksi = 1 AND metode_mutasi = 4 AND status_mutasi <> 2 AND id_toko = " . $this->userData['id_toko'] . " GROUP BY id_client", 1, "id_client");
 
         $return = [];
         foreach ($topup as $key => $t) {
