@@ -6,6 +6,12 @@ class Home extends Controller
    {
       $this->session_cek();
       $this->data_order();
+
+
+      if ($this->userData['user_tipe'] == 9) {
+         header('Location: ' . PV::BASE_URL . "Driver_JL");
+      }
+
       $this->v_load = __CLASS__ . "/load";
       $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";

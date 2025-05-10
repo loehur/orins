@@ -31,9 +31,9 @@ class M_DB
         return $this->db->get_cols($table, $cols, $row, $index);
     }
 
-    public function get_cols_where($table, $cols, $where, $row = 1, $index = "")
+    public function get_cols_where($table, $cols, $where, $row = 1, $index = "", $group = 0)
     {
-        return $this->db->get_cols_where($table, $cols, $where, $row, $index);
+        return $this->db->get_cols_where($table, $cols, $where, $row, $index, $group);
     }
 
     public function get_cols_groubBy($table, $cols, $groupBy)

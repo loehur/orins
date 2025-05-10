@@ -157,6 +157,7 @@ $yearNow = date('Y');
 								<a class="nav-link <?= ($t == "User Kasir") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>User/index/2">Kasir</a>
 								<a class="nav-link <?= ($t == "User CS") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>User/index/3">CS</a>
 								<a class="nav-link <?= ($t == "User Produksi") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>User/index/4">Produksi</a>
+								<a class="nav-link <?= ($t == "User Driver") ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>User/index/9">Driver</a>
 							</nav>
 						</div>
 					<?php } ?>

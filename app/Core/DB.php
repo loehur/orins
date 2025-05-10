@@ -101,12 +101,13 @@ class DB extends DBC
         }
     }
 
-    public function get_cols_where($table, $cols, $where, $row = 1, $index = "")
+    public function get_cols_where($table, $cols, $where, $row = 1, $index = "", $group = 0)
     {
         $reply = [];
         $query = "SELECT $cols FROM $table WHERE $where";
         $result = $this->mysqli->query($query);
         if ($result) {
+            $no = 0;
             switch ($row) {
                 case "0":
                     $reply = $result->fetch_assoc();
@@ -115,7 +116,12 @@ class DB extends DBC
                         if ($index == "")
                             $reply[] = $row;
                         else
+                        if ($group == 0) {
                             $reply[$row[$index]] = $row;
+                        } else {
+                            $no += 1;
+                            $reply[$row[$index]][$no] = $row;
+                        }
                     break;
             }
 

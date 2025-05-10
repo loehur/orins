@@ -1,7 +1,11 @@
 <nav class="topnav navbar navbar-expand shadow-sm border-bottom-1 bg-white px-2" id="sidenavAccordion">
 	<button class="border-0 bg-transparent text-secondary pt-2" id="sidebarToggle"><i class="fa-solid fa-bars"></i> Menu #<?= $this->userData['id_user'] ?></button>
 	<a class="ps-lg-2 ms-auto text-end me-2 text-purple fw-bold p-2 rounded text-decoration-none" href="<?= PV::BASE_URL ?>Home">ORINS</a>
-	<a class="ps-lg-2 text-end me-2 fw-bold text-success py-2 ps-2 pe-0 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></a>
+	<?php if ($this->userData['user_tipe'] <> 9) { ?>
+		<a class="ps-lg-2 text-end me-2 fw-bold text-success py-2 ps-2 pe-0 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></a>
+	<?php } else { ?>
+		<a class="ps-lg-2 text-end me-2 fw-bold text-success py-2 ps-2 pe-0 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync">SYNC</a>
+	<?php } ?>
 	<ul class="navbar-nav align-items-center">
 		<!-- User Dropdown-->
 		<?php if (in_array($this->userData['user_tipe'], PV::PRIV[100])) { ?>

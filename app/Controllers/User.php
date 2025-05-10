@@ -33,6 +33,11 @@ class User extends Controller
             "content" => $this->v_content,
             "title" => "User Produksi"
          ]);
+      } elseif ($user_tipe == 9) {
+         $this->view("Layouts/layout_main", [
+            "content" => $this->v_content,
+            "title" => "User Driver"
+         ]);
       }
       $this->viewer($user_tipe);
    }
