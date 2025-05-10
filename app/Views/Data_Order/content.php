@@ -87,6 +87,7 @@
                             foreach ($data['order'][$ref] as $do) {
                                 $cancel = $do['cancel'];
                                 $id_ambil = $do['id_ambil'];
+                                $id_ambil_driver = $do['id_ambil_driver'];
                                 $id_user_afiliasi = $do['id_user_afiliasi'];
 
                                 $divisi_arr = unserialize($do['spk_dvs']);
@@ -147,6 +148,8 @@
                                 $lunas[$ref] = false;
                             } ?>
 
+                            <?php $driver_name = $id_ambil_driver <> 0 ? "/" . ucwords($this->dKaryawanAll[$id_ambil_driver]['nama']) : ""; ?>
+
                             <div class="row mx-0">
                                 <div class="col px-1" style="min-width: 200px;">
                                     <table class="w-100 target bg-white <?= ($dateTime == $today) ? 'border-bottom border-success' : 'border-bottom border-warning' ?>">
@@ -174,7 +177,7 @@
                                                                 } else {
                                                                     $cs_ambil = "";
                                                                 } ?>
-                                                                <i class="fa-solid fa-circle-check"></i> <?= $cs_ambil ?>
+                                                                <i class="fa-solid fa-circle-check"></i> <?= ucwords($cs_ambil) . $driver_name ?>
                                                             <?php } else { ?>
                                                                 <i class="fa-regular fa-circle"></i>
                                                             <?php } ?>
@@ -218,7 +221,7 @@
                                                         <span class="text-dark">
                                                             <?php if ($ambil_all_aff[$ref] == true) {
                                                                 $cs_ambil = $data['karyawan'][$id_ambil_aff[$ref]]['nama']; ?>
-                                                                <i class="fa-regular fa-circle-check"></i> <?= ucwords($cs_ambil) ?>
+                                                                <i class="fa-regular fa-circle-check"></i> <?= ucwords($cs_ambil) . $driver_name ?>
                                                             <?php } else { ?>
                                                                 <i class="fa-regular fa-circle"></i>
                                                             <?php } ?>

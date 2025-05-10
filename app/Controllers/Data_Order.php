@@ -254,8 +254,9 @@ class Data_Order extends Controller
    {
       $id = $_POST['ambil_id'];
       $id_karyawan = $_POST['id_karyawan'];
+      $id_driver = $_POST['id_driver'];
 
-      $up = $this->data('Operasi')->ambil($id, $id_karyawan);
+      $up = $this->data('Operasi')->ambil($id, $id_karyawan, $id_driver);
       echo $up['errno'] <> 0 ? $up['error'] : 0;
    }
 
@@ -263,8 +264,9 @@ class Data_Order extends Controller
    {
       $ref = $_POST['ambil_ref'];
       $id_karyawan = $_POST['id_karyawan'];
+      $id_driver = $_POST['id_driver'];
 
-      $up = $this->data('Operasi')->ambil_semua($ref, $id_karyawan);
+      $up = $this->data('Operasi')->ambil_semua($ref, $id_karyawan, $id_driver);
       echo $up['errno'] <> 0 ? $up['error'] : 0;
    }
 

@@ -259,6 +259,7 @@
                                             $jumlah = $do['harga'] * $do['jumlah'];
                                             $id_ambil = $do['id_ambil'];
                                             $id_ambil_aff = $do['id_ambil_aff'];
+                                            $id_ambil_driver = $do['id_ambil_driver'];
                                             $user_id = $do['id_user'];
                                             $id_toko[$ref] = $do['id_toko'];
                                             $id_penerima[$ref] = $do['id_penerima'];
@@ -413,6 +414,8 @@
                                                         }
                                                         ?>
 
+                                                        <?php $driver_name = $id_ambil_driver <> 0 ? "/" . ucwords($this->dKaryawanAll[$id_ambil_driver]['nama']) : ""; ?>
+
                                                         <?php if ($do['id_afiliasi'] == $this->userData['id_toko']) {
                                                             if ($id_ambil_aff == 0 && $cancel == 0) {
                                                                 if ($countSPK > 0 && $cancel == 0) {
@@ -422,14 +425,14 @@
                                                             } else {
                                                                 if ($cancel == 0) {
                                                                     $karyawan = $this->dKaryawanAll[$id_ambil_aff]["nama"];
-                                                                    echo '<span class="text-dark"><i class="fa-solid fa-check"></i> Ambil (' . ucwords($karyawan) . ")</span><br>";
+                                                                    echo '<span class="text-dark"><i class="fa-solid fa-check"></i> Ambil (' . ucwords($karyawan) . $driver_name .  ")</span><br>";
                                                                 }
                                                             }
                                                         } else {
                                                             if ($do['id_afiliasi'] <> 0 && $id_ambil_aff <> 0) {
                                                                 if ($cancel == 0) {
                                                                     $karyawan = $this->dKaryawanAll[$id_ambil_aff]["nama"];
-                                                                    echo '<span class="text-dark"><i class="fa-solid fa-check"></i> Ambil (' . ucwords($karyawan) . ")</span><br>";
+                                                                    echo '<span class="text-dark"><i class="fa-solid fa-check"></i> Ambil (' . ucwords($karyawan) . $driver_name . ")</span><br>";
                                                                 }
                                                             }
                                                         } ?>
@@ -447,7 +450,7 @@
                                                         } else {
                                                             if ($cancel == 0) {
                                                                 $karyawan = $this->dKaryawanAll[$id_ambil]["nama"];
-                                                                echo '<span class="text-primary"><i class="fa-solid fa-check-double"></i> Ambil (' . ucwords($karyawan) . ")</span>";
+                                                                echo '<span class="text-primary"><i class="fa-solid fa-check-double"></i> Ambil (' . ucwords($karyawan) . $driver_name . ")</span>";
                                                             }
                                                         } ?>
                                                     </small>

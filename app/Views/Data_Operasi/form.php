@@ -7,21 +7,32 @@
                 </div>
                 <div class="modal-body">
                     <div class="container">
-                        <div class="row mb-3">
+                        <div class="row mb-2">
                             <div class="col">
                                 <label class="form-label">Karyawan</label>
                                 <input type="hidden" name="ambil_ref">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
-                                    <?php foreach ($data['karyawan_toko'] as $k) { ?>
+                                    <?php foreach ($this->dKaryawan as $k) { ?>
+                                        <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class=" form-label">Driver</label>
+                                <select class="form-select tize" name="id_driver" required>
+                                    <option value="0" selected>-</option>
+                                    <?php foreach ($this->dKaryawan as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
                                     <?php } ?>
                                 </select>
                             </div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-sm-6">
-                                <button type="submit" data-bs-dismiss="modal" class="btn btn-sm btn-primary">Ambil Semua</button>
+                            <div class="col">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-primary bg-gradient w-100">Ambil Semua</button>
                             </div>
                         </div>
                     </div>
@@ -40,21 +51,32 @@
                 </div>
                 <div class="modal-body">
                     <div class="container">
-                        <div class="row mb-3">
+                        <div class="row mb-2">
                             <div class="col">
                                 <label class=" form-label">Karyawan</label>
                                 <input type="hidden" name="ambil_id">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
-                                    <?php foreach ($data['karyawan_toko'] as $k) { ?>
+                                    <?php foreach ($this->dKaryawan as $k) { ?>
+                                        <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class=" form-label">Driver</label>
+                                <select class="form-select tize" name="id_driver" required>
+                                    <option value="0" selected>-</option>
+                                    <?php foreach ($this->dKaryawan as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
                                     <?php } ?>
                                 </select>
                             </div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-sm-6">
-                                <button type="submit" data-bs-dismiss="modal" class="btn btn-sm btn-primary">Ambil</button>
+                            <div class="col">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-primary bg-gradient w-100">Ambil</button>
                             </div>
                         </div>
                     </div>
@@ -80,7 +102,7 @@
                                 <input type="hidden" name="tb">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
-                                    <?php foreach ($data['karyawan_toko'] as $k) { ?>
+                                    <?php foreach ($this->dKaryawan as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
                                     <?php } ?>
                                 </select>
@@ -374,7 +396,7 @@
                                 <input type="hidden" id="ref" name="ref">
                                 <select class="form-select tize" name="staf_id" required>
                                     <option></option>
-                                    <?php foreach ($data['karyawan_toko'] as $k) { ?>
+                                    <?php foreach ($this->dKaryawan as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
                                     <?php } ?>
                                 </select>
