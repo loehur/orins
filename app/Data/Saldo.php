@@ -28,8 +28,6 @@ class Saldo extends Controller
             } else {
                 if (isset($return[$key])) {
                     $return[$key] = $topup[$key]['jumlah'];
-                } else {
-                    $return = [];
                 }
             }
         }
