@@ -305,15 +305,6 @@ class Buka_Order extends Controller
          $ref = $dEdit[0];
       }
 
-      //CEK DOUBLE PRICE LOCKER
-      if ($price_locker == 1) {
-         $cek_double_pl = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND paket_ref = '" . $paket_ref . "' AND price_locker = 1");
-         if ($cek_double_pl <> 0) {
-            echo 0;
-            exit();
-         }
-      }
-
       if ($afiliasi == 0 && isset($_POST['aff_target'])) {
          $afiliasi = $_POST['aff_target'];
       }
@@ -467,17 +458,7 @@ class Buka_Order extends Controller
          $produk_code .= $detail_code;
       }
 
-      // CEK DULU PAKET DOUBLE 
-      if ($paket_ref <> "") {
-         $cek_double_paket = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "'");
-         if ($cek_double_paket <> 0) {
-            echo 0;
-            exit();
-         }
-      }
-
       $produk_detail = serialize($produk_detail_);
-
       $spkDVS = [];
 
       foreach ($this->dSPK as $ds) {
@@ -522,6 +503,24 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
+      // CEK DULU PAKET DOUBLE 
+      if ($paket_ref <> "") {
+         $cek_double_paket = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "' AND tuntas = 0");
+         if ($cek_double_paket <> 0) {
+            echo 0;
+            exit();
+         }
+      }
+
+      //CEK DOUBLE PRICE LOCKER
+      if ($price_locker == 1) {
+         $cek_double_pl = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND paket_ref = '" . $paket_ref . "' AND price_locker = 1 AND tuntas = 0");
+         if ($cek_double_pl <> 0) {
+            echo 0;
+            exit();
+         }
+      }
+
       if ($afiliasi == 0) {
          $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, margin_paket, pj, pending_spk';
          $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $margin_paket . "," . $pj . ",'" . $spkR_ . "'";
@@ -542,6 +541,12 @@ class Buka_Order extends Controller
 
    function add_barang($id_jenis_pelanggan, $price_locker = 0, $paket_ref = "", $id_sumber = 0, $margin_paket = 0, $paket_group = "")
    {
+      $ref = "";
+      if (isset($_SESSION['edit'][$this->userData['id_user']])) {
+         $dEdit = $_SESSION['edit'][$this->userData['id_user']];
+         $ref = $dEdit[0];
+      }
+
       $id_barang = $_POST['kode'];
       $qty = $_POST['qty'];
       $sds = $_POST['sds'];
@@ -561,6 +566,24 @@ class Buka_Order extends Controller
          $link_paket = $this->db(0)->get_where_row($paketGet[2], $where);
          $paket_ref = $link_paket['paket_ref'];
          $paket_group = $link_paket['paket_group'];
+      }
+
+      // CEK DULU PAKET DOUBLE 
+      if ($paket_ref <> "") {
+         $cek_double_paket = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND id_barang = " . $id_barang . " AND paket_ref = '" . $paket_ref . "' AND tuntas = 0");
+         if ($cek_double_paket <> 0) {
+            echo 0;
+            exit();
+         }
+      }
+
+      //CEK DOUBLE PRICE LOCKER
+      if ($price_locker == 1) {
+         $cek_double_pl = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND paket_ref = '" . $paket_ref . "' AND price_locker = 1 AND tuntas = 0");
+         if ($cek_double_pl <> 0) {
+            echo 0;
+            exit();
+         }
       }
 
       $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $id_barang . "'");
