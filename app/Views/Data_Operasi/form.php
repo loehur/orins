@@ -261,6 +261,16 @@
 
                         <div class="row mb-2 <?= $this->userData['id_toko'] <> 1 ? "d-none" : "" ?>">
                             <div class="col">
+                                <label class="form-label">Metode Refund</label>
+                                <select name="sds" class="form-select" required>
+                                    <option selected value="1">TUNAI</option>
+                                    <option value="2">NON-TUNAI</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2 <?= $this->userData['id_toko'] <> 1 ? "d-none" : "" ?>">
+                            <div class="col">
                                 <label class="form-label">Sumbar Dana</label>
                                 <select name="sds" class="form-select" required>
                                     <option selected value="0">TOKO</option>

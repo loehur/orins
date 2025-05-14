@@ -294,8 +294,16 @@ class Data_Operasi extends Controller
       $ref = $_POST['ref_refund'];
       $client = $_POST['id_client'];
       $refund = $_POST['refund'];
+      $metode = $_POST['metode'];
+
+      if ($metode == 1) {
+         $st_mutasi = 1;
+      } else {
+         $st_mutasi = 0;
+      }
+
       $dibayar = $this->db(0)->sum_col_where("kas", "jumlah", "jenis_transaksi = 1 AND ref_transaksi ='" . $ref . "' AND status_mutasi = 1 AND ref_setoran <> ''");
-      $sudah_refund = $this->db(0)->sum_col_where("kas", "jumlah", "jenis_transaksi = 4 AND ref_transaksi = '" . $ref . "' AND status_mutasi = 1");
+      $sudah_refund = $this->db(0)->sum_col_where("kas", "jumlah", "jenis_transaksi = 4 AND ref_transaksi = '" . $ref . "' AND status_mutasi <> 2");
 
       $max_refund = $dibayar - $sudah_refund;
 
@@ -307,7 +315,7 @@ class Data_Operasi extends Controller
       $note =  $_POST['note'];
       $sds = $_POST['sds'];
       $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, sds";
-      $vals = $this->userData['id_toko'] . ",4,2,'" . $ref . "',1,1," . $refund . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "'," . $sds;
+      $vals = $this->userData['id_toko'] . ",4,2,'" . $ref . "',1," . $st_mutasi . "," . $refund . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "'," . $sds;
 
       $do = $this->db(0)->insertCols('kas', $cols, $vals);
       if ($do['errno'] <> 0) {
