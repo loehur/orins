@@ -294,7 +294,10 @@ class Data_Operasi extends Controller
       $ref = $_POST['ref_refund'];
       $client = $_POST['id_client'];
       $refund = $_POST['refund'];
-      $max_refund = $this->db(0)->sum_col_where("kas", "jumlah", "ref_transaksi ='" . $ref . "' AND status_mutasi = 1 AND ref_setoran <> ''");
+      $dibayar = $this->db(0)->sum_col_where("kas", "jumlah", "jenis_transaksi = 1 AND ref_transaksi ='" . $ref . "' AND status_mutasi = 1 AND ref_setoran <> ''");
+      $sudah_refund = $this->db(0)->sum_col_where("kas", "jumlah", "jenis_transaksi = 4 AND ref_transaksi = '" . $ref . "' AND status_mutasi = 1");
+
+      $max_refund = $dibayar - $sudah_refund;
 
       if ($refund > $max_refund) {
          echo "Jumlah refund melebihi batas maksimal!";
