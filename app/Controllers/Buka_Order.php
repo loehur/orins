@@ -299,6 +299,21 @@ class Buka_Order extends Controller
       $this->dataSynchrone();
       $this->data_order();
 
+      $ref = "";
+      if (isset($_SESSION['edit'][$this->userData['id_user']])) {
+         $dEdit = $_SESSION['edit'][$this->userData['id_user']];
+         $ref = $dEdit[0];
+      }
+
+      //CEK DOUBLE PRICE LOCKER
+      if ($price_locker == 1) {
+         $cek_double_pl = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND paket_ref = '" . $paket_ref . "' AND price_locker = 1");
+         if ($cek_double_pl <> 0) {
+            echo 0;
+            exit();
+         }
+      }
+
       if ($afiliasi == 0 && isset($_POST['aff_target'])) {
          $afiliasi = $_POST['aff_target'];
       }
@@ -450,6 +465,15 @@ class Buka_Order extends Controller
          $produk_code = $_POST['produk_code'];
       } else {
          $produk_code .= $detail_code;
+      }
+
+      // CEK DULU PAKET DOUBLE 
+      if ($paket_ref <> "") {
+         $cek_double_paket = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "'");
+         if ($cek_double_paket <> 0) {
+            echo 0;
+            exit();
+         }
       }
 
       $produk_detail = serialize($produk_detail_);
