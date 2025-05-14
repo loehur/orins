@@ -640,6 +640,11 @@ class Buka_Order extends Controller
       $cols = 'id_produk, code, harga_' . $id_pelanggan_jenis;
       $vals = $id_produk . ",'" . $harga_code . "'," . $harga;
 
+      $cols_ph = "id_barang, price, user_id";
+      $id_barang = $id_produk . $harga_code;
+      $cs_id = $this->userData['id_user'];
+      $vals_ph = "'" . $id_barang . "'," . $harga . "," . $cs_id;
+
       $whereCount = "code = '" . $harga_code . "' AND id_produk = 0";
       $cek = $this->db(0)->get_where_row('produk_harga', $whereCount);
       if (!isset($cek['code'])) {
@@ -650,6 +655,12 @@ class Buka_Order extends Controller
             if ($do['errno'] <> 0) {
                echo $do['error'];
                exit();
+            } else {
+               $price_history = $this->db(0)->insertCols('price_history', $cols_ph, $vals_ph);
+               if ($price_history['errno'] <> 0) {
+                  echo $price_history['error'];
+                  exit();
+               }
             }
          } else {
             $where = "code = '" . $harga_code . "' AND id_produk = " . $id_produk;
@@ -658,6 +669,12 @@ class Buka_Order extends Controller
             if ($up['errno'] <> 0) {
                echo $up['error'];
                exit();
+            } else {
+               $price_history = $this->db(0)->insertCols('price_history', $cols_ph, $vals_ph);
+               if ($price_history['errno'] <> 0) {
+                  echo $price_history['error'];
+                  exit();
+               }
             }
          }
       } else {
@@ -667,6 +684,12 @@ class Buka_Order extends Controller
          if ($up['errno'] <> 0) {
             echo $up['error'];
             exit();
+         } else {
+            $price_history = $this->db(0)->insertCols('price_history', $cols_ph, $vals_ph);
+            if ($price_history['errno'] <> 0) {
+               echo $price_history['error'];
+               exit();
+            }
          }
       }
 
