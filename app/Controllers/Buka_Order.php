@@ -711,6 +711,17 @@ class Buka_Order extends Controller
       $code = $_POST['code_barang'];
       $harga = $_POST['harga'];
 
+      $cols_ph = "id_barang, price, user_id";
+      $id_barang = $code;
+      $cs_id = $this->userData['id_user'];
+      $vals_ph = "'" . $id_barang . "'," . $harga . "," . $cs_id;
+
+      $price_history = $this->db(0)->insertCols('price_history', $cols_ph, $vals_ph);
+      if ($price_history['errno'] <> 0) {
+         echo $price_history['error'];
+         exit();
+      }
+
       $where = "id_barang = '" . $code . "' AND stat = 0 AND ref = ''";
       $set = "harga_jual = " . $harga;
       $update = $this->db(0)->update("master_mutasi", $set, $where);
