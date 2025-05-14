@@ -589,6 +589,9 @@
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $sisa > 0 && $do['tuntas'] == 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalDiskon" class="dropdown-item xtraDiskon px-2" data-sisa="<?= $sisa ?>" data-ref="<?= $ref ?>" href="#"><small>Extra Diskon</small></a></li>
                                                                 <?php } ?>
+                                                                <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $do['tuntas'] == 0) { ?>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalRefundCash" class="dropdown-item refundCash px-2" data-client="<?= $id_pelanggan ?>" data-ref="<?= $ref ?>" href="#"><small>Refund</small></a></li>
+                                                                <?php } ?>
                                                             </ul>
                                                         </td>
                                                         <td class="text-sm pe-1">
@@ -915,6 +918,13 @@
         var max_diskon = $(this).attr("data-sisa");
         $("input[name=ref_diskon]").val(ref);
         $("input[name=max_diskon]").val(max_diskon);
+    })
+
+    $("a.refundCash").click(function() {
+        var ref = $(this).attr("data-ref");
+        var client = $(this).attr("data-client");
+        $("input[name=ref_refund]").val(ref);
+        $("input[name=id_client]").val(client);
     })
 
     $("a.tambahCharge").click(function() {

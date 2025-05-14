@@ -289,6 +289,30 @@ class Data_Operasi extends Controller
       echo $error;
    }
 
+   public function refundCash()
+   {
+      $ref = $_POST['ref_refund'];
+      $client = $_POST['id_client'];
+      $refund = $_POST['refund'];
+      $max_refund = $this->db(0)->sum_col_where("kas", "jumlah", "ref_transaksi ='" . $ref . "' AND status_mutasi = 1 AND ref_setoran <> ''");
+
+      if ($refund > $max_refund) {
+         echo "Jumlah refund melebihi batas maksimal!";
+         exit();
+      }
+
+      $note =  $_POST['note'];
+      $sds = $_POST['sds'];
+      $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, sds";
+      $vals = $this->userData['id_toko'] . ",4,2,'" . $ref . "',1,1," . $refund . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "'," . $sds;
+
+      $do = $this->db(0)->insertCols('kas', $cols, $vals);
+      if ($do['errno'] <> 0) {
+         echo $do['error'];
+         exit();
+      }
+   }
+
    function xtraDiskon()
    {
       $ref = $_POST['ref_diskon'];

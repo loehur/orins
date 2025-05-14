@@ -217,7 +217,7 @@
                             <div class="col">
                                 <label class="form-label">Akun</label>
                                 <select name="sds" class="form-select" required>
-                                    <option selected value="0">Toko</option>
+                                    <option selected value="0">TOKO</option>
                                     <option value="1">SDS</option>
                                 </select>
                             </div>
@@ -232,6 +232,52 @@
                         <div class="row mb-2">
                             <div class="col-sm-6">
                                 <button type="submit" data-bs-dismiss="modal" class="btn btn-success">Tambah</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form action="<?= PV::BASE_URL; ?>Data_Operasi/refundCash" method="POST">
+    <div class="modal" id="exampleModalRefundCash">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title text-white">Refund</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-2">
+                            <div class="col">
+                                <label class="form-label">Refund Rp</label>
+                                <input type="number" name="refund" class="form-control form-control-sm text-end" required>
+                                <input name="ref_refund" type="hidden" required>
+                                <input name="id_client" type="hidden" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2 <?= $this->userData['id_toko'] <> 1 ? "d-none" : "" ?>">
+                            <div class="col">
+                                <label class="form-label">Sumbar Dana</label>
+                                <select name="sds" class="form-select" required>
+                                    <option selected value="0">TOKO</option>
+                                    <option value="1">SDS</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Note</label>
+                                <input type="text" name="note" class="form-control form-control-sm">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-danger">Refund</button>
                             </div>
                         </div>
                     </div>
