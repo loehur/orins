@@ -20,7 +20,7 @@ class Driver_JL extends Controller
    {
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Driver - Job List"
+         "title" => "Driver - Pickup List"
       ]);
 
       $this->viewer();
