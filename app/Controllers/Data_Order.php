@@ -83,7 +83,7 @@ class Data_Order extends Controller
       }
 
       if ($parse_2 == 4) {
-         $where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_pelanggan <> 0 AND tuntas = 0 AND id_ambil_aff = 0 ORDER BY id_order_data DESC";
+         $where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_pelanggan <> 0 AND tuntas = 0 AND id_ambil_aff = 0 AND id_ambil = 0 ORDER BY id_order_data DESC";
       }
 
       $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
