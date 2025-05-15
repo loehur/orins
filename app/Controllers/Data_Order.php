@@ -28,6 +28,9 @@ class Data_Order extends Controller
             break;
          case 3:
             $title = "Data Order - Proses (Online)";
+         case 4:
+            $title = "Data Order - AFF (IN)";
+            break;
             break;
          case 100:
             $title = "Data Order - Proses (Stok)";
@@ -79,7 +82,9 @@ class Data_Order extends Controller
             break;
       }
 
-
+      if ($parse_2 == 4) {
+         $where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_pelanggan <> 0 AND tuntas = 0 ORDER BY updateTime ASC";
+      }
 
       $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where2, 'ref', 1);
