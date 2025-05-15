@@ -77,7 +77,7 @@
                                 <label class="form-label">Customer Service</label>
                                 <select class="tize form-control form-control-sm" name="id_karyawan" required>
                                     <option></option>
-                                    <?php foreach ($this->dKaryawan as $k) { ?>
+                                    <?php foreach ($this->dKaryawan_cs as $k) { ?>
                                         <option value="<?= $k['id_karyawan'] ?>"><?= $k['nama'] ?></option>
                                     <?php } ?>
                                 </select>

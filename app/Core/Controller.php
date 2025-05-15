@@ -4,8 +4,9 @@ require 'app/Config/PV.php';
 
 class Controller extends PV
 {
-    public $userData, $dToko, $dDvs, $dDvs_all, $dProduk, $dProdukAll, $dDetailGroup, $dDetailGroupAll, $dDetailItem, $dDetailItem_1, $dDetailItemVarian_1, $dDetailItemAll, $dSPK, $dUser, $dPelanggan, $dPelangganAll, $dKaryawan, $dKaryawanAll;
+    public $userData, $dToko, $dDvs, $dDvs_all, $dProduk, $dProdukAll, $dDetailGroup, $dDetailGroupAll, $dDetailItem, $dDetailItem_1, $dDetailItemVarian_1, $dDetailItemAll, $dSPK, $dUser, $dPelanggan, $dPelangganAll;
     public $v_viewer, $v_content, $v_load;
+    public $dKaryawan_cs, $dKaryawan_pro, $dKaryawan_driver, $dKaryawanAll;
 
     public function view($file, $data = [])
     {
@@ -57,7 +58,10 @@ class Controller extends PV
                 $this->dUser = $_SESSION['data_user'];
                 $this->dPelanggan = $_SESSION['data_pelanggan'];
                 $this->dPelangganAll = $_SESSION['data_pelanggan_all'];
-                $this->dKaryawan = $_SESSION['karyawan'];
+                $this->dKaryawan_cs = $_SESSION['karyawan_cs'];
+                $this->dKaryawan_pro = $_SESSION['karyawan_pro'];
+                $this->dKaryawan_driver = $_SESSION['karyawan_driver'];
+
                 $this->dKaryawanAll = $_SESSION['karyawan_all'];
             }
         }
@@ -87,7 +91,10 @@ class Controller extends PV
         $wherePelAll = "en = 1 ORDER BY freq DESC";
         $_SESSION['data_pelanggan_all'] = $this->db(0)->get_where('pelanggan', $wherePelAll, 'id_pelanggan');
 
-        $_SESSION['karyawan'] = $this->db(0)->get_where('karyawan', $whereToko . " AND en = 1", "id_karyawan");
+        $_SESSION['karyawan_cs'] = $this->db(0)->get_where('karyawan', $whereToko . " AND en = 1 ORDER BY freq_cs DESC", "id_karyawan");
+        $_SESSION['karyawan_pro'] = $this->db(0)->get_where('karyawan', $whereToko . " AND en = 1 ORDER BY freq_pro DESC", "id_karyawan");
+        $_SESSION['karyawan_driver'] = $this->db(0)->get_where('karyawan', $whereToko . " AND en = 1 ORDER BY freq_driver DESC", "id_karyawan");
+
         $_SESSION['karyawan_all'] = $this->db(0)->get_where('karyawan', "en = 1", "id_karyawan");
     }
 
