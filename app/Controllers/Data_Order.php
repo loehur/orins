@@ -7,7 +7,7 @@ class Data_Order extends Controller
       $this->session_cek();
       $this->data_order();
 
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[3])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[3]) && !in_array($this->userData['user_tipe'], PV::PRIV[9])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }

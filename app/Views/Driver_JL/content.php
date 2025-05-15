@@ -12,7 +12,7 @@
             </div>
             <div class="mb-4">
                 <?php foreach ($data['ref_pro'][$key] as $ref => $a) { ?>
-                    <div class="row py-1 mx-1 border-bottom" id="<?= $ref ?>">
+                    <div class="row py-1 mx-1 border-bottom" id="R<?= $ref ?>">
                         <div class="col-auto pe-1">
                             <?= strtoupper($this->dKaryawanAll[$a['cs']]['nama']) ?>
                             <br>
@@ -33,7 +33,7 @@
 
 <form class="ajax" action="<?= PV::BASE_URL; ?>Data_Order/ambil_semua" method="POST">
     <div class="modal" id="exampleModal3">
-        <div class="modal-dialog modal-sm">
+        <div class="modal-dialog">
             <div class="modal-content" style="min-height:400px">
                 <div class="modal-header">
                     <h5 class="modal-title">Data Pengantaran</h5>
@@ -54,7 +54,7 @@
                             <input type="hidden" name="ambil_ref">
                             <select class="form-select tize" name="id_karyawan" required>
                                 <option></option>
-                                <?php foreach ($this->dKaryawan_cs as $k) { ?>
+                                <?php foreach ($this->dKaryawanAll as $k) { ?>
                                     <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
                                 <?php } ?>
                             </select>
@@ -93,7 +93,7 @@
             type: $(this).attr("method"),
             success: function(res) {
                 if (res == 0) {
-                    $("div#" + ref).fadeOut('fast');
+                    $("div#R" + ref).fadeOut('fast');
                 } else {
                     alert(res);
                 }

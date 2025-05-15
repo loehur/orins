@@ -95,7 +95,7 @@ class Controller extends PV
         $_SESSION['karyawan_pro'] = $this->db(0)->get_where('karyawan', $whereToko . " AND en = 1 ORDER BY freq_pro DESC", "id_karyawan");
         $_SESSION['karyawan_driver'] = $this->db(0)->get_where('karyawan', $whereToko . " AND en = 1 ORDER BY freq_driver DESC", "id_karyawan");
 
-        $_SESSION['karyawan_all'] = $this->db(0)->get_where('karyawan', "en = 1", "id_karyawan");
+        $_SESSION['karyawan_all'] = $this->db(0)->get_where('karyawan', "en = 1 ORDER BY freq_cs DESC", "id_karyawan");
     }
 
     public function logout()
