@@ -23,7 +23,7 @@
                             <br>
                             <?= $a['qty'] ?>pcs
                         </div>
-                        <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>">Done</span></div>
+                        <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-id_toko="<?= $id_afiliasi ?>">Done</span></div>
                     </div>
                 <?php } ?>
             </div>
@@ -31,7 +31,7 @@
     </div>
 </main>
 
-<form class="ajax" action="<?= PV::BASE_URL; ?>Data_Order/ambil_semua" method="POST">
+<form class="ajax" action="<?= PV::BASE_URL; ?>Data_Order/ambil_semua/1" method="POST">
     <div class="modal" id="exampleModal3">
         <div class="modal-dialog">
             <div class="modal-content" style="min-height:400px">
@@ -52,6 +52,7 @@
                         <div class="col">
                             <label class="form-label">CS Penyedia</label>
                             <input type="hidden" name="ambil_ref">
+                            <input type="hidden" name="id_toko">
                             <select class="form-select tize" name="id_karyawan" required>
                                 <option></option>
                                 <?php foreach ($this->dKaryawanAll as $k) { ?>
@@ -82,7 +83,9 @@
 
     $("span.btnAmbilSemua").click(function() {
         ref = $(this).attr("data-ref");
+        var id_toko = $(this).attr("data-id_toko");
         $("input[name=ambil_ref]").val(ref);
+        $("input[name=id_toko]").val(id_toko);
     })
 
     $("form.ajax").on("submit", function(e) {

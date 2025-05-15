@@ -260,13 +260,17 @@ class Data_Order extends Controller
       echo $up['errno'] <> 0 ? $up['error'] : 0;
    }
 
-   function ambil_semua()
+   function ambil_semua($id_toko = 0)
    {
       $ref = $_POST['ambil_ref'];
       $id_karyawan = $_POST['id_karyawan'];
       $id_driver = $_POST['id_driver'];
 
-      $up = $this->data('Operasi')->ambil_semua($ref, $id_karyawan, $id_driver);
+      if (isset($_POST['id_toko'])) {
+         $id_toko = $_POST['id_toko'];
+      }
+
+      $up = $this->data('Operasi')->ambil_semua($ref, $id_karyawan, $id_driver, $id_toko);
       echo $up['errno'] <> 0 ? $up['error'] : 0;
    }
 

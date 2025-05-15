@@ -38,17 +38,22 @@ class Operasi extends Controller
         return $update;
     }
 
-    function ambil_semua($ref, $id_karyawan, $id_driver = 0)
+    function ambil_semua($ref, $id_karyawan, $id_driver = 0, $id_toko = 0)
     {
         $dateNow = date("Y-m-d H:i:s");
+
+        if ($id_toko == 0) {
+            $id_toko = $this->userData['id_toko'];
+        }
+
         $update = $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
         if ($id_driver <> 0) {
             $update = $this->db(0)->update("karyawan", "freq_driver = freq_driver+1", "id_karyawan = " . $id_karyawan);
         }
 
-        $cek_toko_asal = $this->db(0)->get_where('order_data', "ref = '" . $ref . "' AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")", 'id_toko');
+        $cek_toko_asal = $this->db(0)->get_where('order_data', "ref = '" . $ref . "' AND (id_toko = " . $id_toko . " OR id_afiliasi = " . $id_toko . ")", 'id_toko');
         if (count($cek_toko_asal) > 0) {
-            if (isset($cek_toko_asal[$this->userData['id_toko']])) {
+            if (isset($cek_toko_asal[$id_toko])) {
                 $where = "ref = '" . $ref . "' AND id_ambil = 0";
                 $set = "id_ambil = " . $id_karyawan . ", id_ambil_driver = " . $id_driver . ", tgl_ambil = '" . $dateNow . "'";
                 $update = $this->db(0)->update("order_data", $set, $where);
@@ -68,13 +73,13 @@ class Operasi extends Controller
                     return $update;
                 }
             } else {
-                $cek_toko = $this->db(0)->get_where('order_data', "ref = '" . $ref . "' AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")", 'id_afiliasi');
-                if (isset($cek_toko[$this->userData['id_toko']])) {
-                    $where = "ref = '" . $ref . "' AND id_ambil_aff = 0 AND id_afiliasi = " . $this->userData['id_toko'];
+                $cek_toko = $this->db(0)->get_where('order_data', "ref = '" . $ref . "' AND (id_toko = " . $id_toko . " OR id_afiliasi = " . $id_toko . ")", 'id_afiliasi');
+                if (isset($cek_toko[$id_toko])) {
+                    $where = "ref = '" . $ref . "' AND id_ambil_aff = 0 AND id_afiliasi = " . $id_toko;
                     $set = "id_ambil_aff = " . $id_karyawan . ", id_ambil_driver = " . $id_driver . ", tgl_ambil_aff = '" . $dateNow . "'";
                     $update = $this->db(0)->update("order_data", $set, $where);
                     if ($update['errno'] == 0) {
-                        $cek = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND id_afiliasi = " . $this->userData['id_toko']);
+                        $cek = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND id_afiliasi = " . $id_toko);
                         if ($cek['ready_aff_cs'] == 0) {
                             return $this->ready($ref, $id_karyawan);
                         } else {

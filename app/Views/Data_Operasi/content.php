@@ -438,21 +438,19 @@
                                                         } ?>
 
                                                         <?php
-                                                        if ($id_ambil == 0 && $cancel == 0) {
-                                                            if ($countSPK > 0 && $cancel == 0) {
-                                                                $ambil_all = false;
-                                                                if ($do['id_toko'] == $this->userData['id_toko']) { ?>
+                                                        if ($do['id_toko'] == $this->userData['id_toko']) { ?>
+                                                            <?php if ($id_ambil == 0 && $cancel == 0) { ?>
+                                                                <?php if ($countSPK > 0 && $cancel == 0) { ?>
+                                                                    <?php $ambil_all = false; ?>
                                                                     <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
-                                                                <?php } else { ?>
-                                                                    <span><i class="fa-regular fa-circle"></i> Ambil</span>
                                                                 <?php } ?>
-                                                        <?php }
-                                                        } else {
-                                                            if ($cancel == 0) {
-                                                                $karyawan = $this->dKaryawanAll[$id_ambil]["nama"];
-                                                                echo '<span class="text-primary"><i class="fa-solid fa-check-double"></i> Ambil (' . ucwords($karyawan) . $driver_name . ")</span>";
-                                                            }
-                                                        } ?>
+                                                            <?php } else { ?>
+                                                                <?php if ($cancel == 0) { ?>
+                                                                    <?php $karyawan = $this->dKaryawanAll[$id_ambil]["nama"]; ?>
+                                                                    <span class="text-primary"><i class="fa-solid fa-check-double"></i> Ambil (<?= ucwords($karyawan) . $driver_name ?>)</span>
+                                                                <?php } ?>
+                                                            <?php } ?>
+                                                        <?php } ?>
                                                     </small>
                                                 </td>
                                                 <td class="text-end">
