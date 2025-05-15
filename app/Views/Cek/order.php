@@ -243,6 +243,10 @@
                                             $id = $do['id_order_data'];
                                             $jumlah = $do['harga'] * $do['jumlah'];
 
+                                            $id_ambil = $do['id_ambil'];
+                                            $id_ambil_aff = $do['id_ambil_aff'];
+                                            $id_ambil_driver = $do['id_ambil_driver'];
+
                                             $user_id = $do['id_user'];
 
                                             $cancel = $do['cancel'];
@@ -352,22 +356,44 @@
                                                             }
                                                         }
                                                         ?>
-                                                        <?php
-                                                        $id_ambil = $do['id_ambil'];
-                                                        if ($id_ambil == 0 && $cancel == 0) {
-                                                            $ambil = true;
-                                                            if ($countSPK > 0 && $cancel == 0) {
-                                                                $ambil_all = false;
-                                                                if ($do['id_afiliasi'] == 0) { ?>
-                                                                    <span><i class="fa-regular fa-circle"></i> Ambil</span>
-                                                                <?php } ?>
+
+                                                        <?php $driver_name = $id_ambil_driver <> 0 ? "/" . ucwords($this->dKaryawanAll[$id_ambil_driver]['nama']) : ""; ?>
+
+                                                        <?php if ($do['id_afiliasi'] == $this->userData['id_toko']) {
+                                                            if ($id_ambil_aff == 0 && $cancel == 0) {
+                                                                if ($countSPK > 0 && $cancel == 0) {
+                                                                    $ambil_all_aff[$ref] = false; ?>
+                                                                    <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span><br>
                                                         <?php }
+                                                            } else {
+                                                                if ($cancel == 0) {
+                                                                    $karyawan = $this->dKaryawanAll[$id_ambil_aff]["nama"];
+                                                                    echo '<span class="text-dark"><i class="fa-solid fa-check"></i> Ambil (' . ucwords($karyawan) . $driver_name .  ")</span><br>";
+                                                                }
+                                                            }
                                                         } else {
-                                                            if ($cancel == 0) {
-                                                                $karyawan = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $id_ambil);
-                                                                echo '<span class="text-purple"><i class="fa-solid fa-check"></i> Ambil (' . $karyawan . ")</span>";
+                                                            if ($do['id_afiliasi'] <> 0 && $id_ambil_aff <> 0) {
+                                                                if ($cancel == 0) {
+                                                                    $karyawan = $this->dKaryawanAll[$id_ambil_aff]["nama"];
+                                                                    echo '<span class="text-dark"><i class="fa-solid fa-check"></i> Ambil (' . ucwords($karyawan) . $driver_name . ")</span><br>";
+                                                                }
                                                             }
                                                         } ?>
+
+                                                        <?php
+                                                        if ($do['id_toko'] == $this->userData['id_toko']) { ?>
+                                                            <?php if ($id_ambil == 0 && $cancel == 0) { ?>
+                                                                <?php if ($countSPK > 0 && $cancel == 0) { ?>
+                                                                    <?php $ambil_all = false; ?>
+                                                                    <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
+                                                                <?php } ?>
+                                                            <?php } else { ?>
+                                                                <?php if ($cancel == 0) { ?>
+                                                                    <?php $karyawan = $this->dKaryawanAll[$id_ambil]["nama"]; ?>
+                                                                    <span class="text-primary"><i class="fa-solid fa-check-double"></i> Ambil (<?= ucwords($karyawan) . $driver_name ?>)</span>
+                                                                <?php } ?>
+                                                            <?php } ?>
+                                                        <?php } ?>
                                                     </small>
                                                 </td>
                                                 <td class="text-end td-auto"><?= number_format($do['jumlah']) ?></td>

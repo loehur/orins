@@ -192,8 +192,12 @@
 
 <div class="modal" id="modalOrder" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content" id="cekOrder" style="min-height: 20px;">
-
+        <div class="modal-content" style="min-height: 20px;">
+            <div class="modal-header">
+                <h5 class="modal-title">Data Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" id="cekOrder"></div>
         </div>
     </div>
 </div>
