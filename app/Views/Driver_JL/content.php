@@ -62,7 +62,7 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col">
-                            <button type="submit" data-bs-dismiss="modal" class="btn btn-primary bg-gradient w-100">Selesai</button>
+                            <button type="submit" data-bs-dismiss="modal" class="btn btn-primary bg-gradient w-100 py-2">Selesai</button>
                         </div>
                     </div>
                 </div>
