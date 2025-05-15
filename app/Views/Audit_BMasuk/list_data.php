@@ -2,101 +2,94 @@
 
 <?php $d = $data['input']; ?>
 
-<style>
-    td {
-        align-content: center;
-    }
-</style>
-
 <main>
     <!-- Main page content-->
     <div class="container">
-        <div class="row mb-2">
-            <div class="col-auto mt-auto px-1 mb-2">
-                <a href="<?= PV::BASE_URL ?>Audit_BMasuk"><button class="btn btn-outline pb-0 border-0"><i class="fa-solid fa-chevron-left"></i> <small>Back</small></button></a>
-            </div>
-            <div class="col-auto text-center px-1 mb-2">
-                <label>Code Suppiler</label><br>
-                <input name="supplier_c" id="supplier_c" value="<?= $d['id_sumber'] ?>" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
-            </div>
-            <div class="col-auto px-1 mb-2 text-center">
-                <label>Tanggal</label><br>
-                <input type="date" name="tanggal" readonly class="text-center border-bottom border-0" value="<?= $d['tanggal'] ?>">
-            </div>
-            <div class="col-auto px-1 mb-2 text-end">
-                <label>No. Faktur</label><br>
-                <input class="text-end border-bottom border-0" value="<?= $d['no_faktur'] ?>" name="no_fak" readonly style="text-transform: uppercase;">
-            </div>
-            <div class="col-auto px-1 mb-2 text-end">
-                <label>No. PO</label><br>
-                <input class="text-end border-bottom border-0" value="<?= $d['no_po'] ?>" name="no_po" readonly style="text-transform: uppercase;">
-            </div>
+        <div class="row">
             <div class="col-auto px-1 mb-2">
-                <div class="pt-4">
-                    <input name="sds" class="form-check-input" type="checkbox" <?= $d['sds'] == 1 ? "checked" : "" ?> disabled>
-                    <label class="form-check-label" for="flexCheckDefault">
-                        SDS
-                    </label>
-                </div>
-            </div>
-            <div class="col text-end mt-auto">
-                <?php if ($d['cek'] == 0) { ?>
-                    <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn btn-outline-success update_bol"><i class="fa-solid fa-check"></i> Verify</span>
-                <?php } else { ?>
-                    <?php if ($d['cek'] == 1) { ?>
-                        <span class="badge bg-success">VERIFIED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
-                    <?php } else { ?>
-                        <span class="badge bg-danger">REJECTED</span>
-                    <?php } ?>
-                <?php } ?>
+                <a href="<?= PV::BASE_URL ?>Audit_BMasuk"><button class="btn btn-outline pb-0 border-0"><i class="fa-solid fa-chevron-left"></i> <small>Back</small></button></a>
             </div>
         </div>
 
-        <table class="table table-sm mx-1 table-hover">
-            <?php
-            $no = 0;
-            foreach ($data['mutasi'] as $a) {
-                $no++; ?>
-                <tr id="tr<?= $a['id'] ?>">
-                    <td class="text-end">
-                        <?= $no ?>
-                    </td>
-                    <td class="">
-                        <?= $data['barang'][$a['id_barang']]['code'] ?>
-                    </td>
-                    <td class="">
-                        <?= $data['barang'][$a['id_barang']]['code_myob'] ?>
-                    </td>
-                    <td class="">
-                        <?= $data['barang'][$a['id_barang']]['nama'] ?>
-                    </td>
+        <div class="border px-2 py-2 pb-0 shadow-sm">
+            <table class="mb-2 text-sm mb-0">
+                <tr>
+                    <td>Tanggal</td>
+                    <td>: <?= $d['tanggal'] ?></td>
+                </tr>
+                <tr>
+                    <td class="pe-2">No. Faktur</td>
+                    <td>: <?= $d['no_faktur'] ?></td>
+                </tr>
+                <tr>
+                    <td>No. PO</td>
+                    <td>: <?= $d['no_po'] ?></td>
+                </tr>
+                <tr>
+                    <td>SDS</td>
+                    <td>: <?= $d['sds'] == 1 ? "YES" : "NO" ?></td>
+                </tr>
+                <tr>
+                    <td>Note</td>
+                    <td>: <?= $d['note'] ?></td>
+                </tr>
+                <tr>
                     <td>
-                        <?php
-                        if ($a['sn_c'] == 1) {
-                            if ($a['sn'] == "") { ?>
-                                <span class="text-danger">Menunggu SN</span>
-                        <?php }
-                        } ?>
-                        <?= $a['sn'] ?>
+                        Status
                     </td>
-                    <td class="text-end">
-                        <?= $a['qty'] ?>
-                    </td>
-                    <td class="align-middle text-end">
-                        <?php if ($a['stat'] == 0) { ?>
-                            <span class="badge bg-warning">Checking</span>
+                    <td>:
+                        <?php if ($d['cek'] == 0) { ?>
+                            <span class="badge bg-warning">Checking</span> <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn p-0 text-success update_bol">Verify ?</span>
                         <?php } else { ?>
-                            <?php if ($a['stat'] == 1) { ?>
-                                <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                            <?php if ($d['cek'] == 1) { ?>
+                                <span class="badge bg-success">VERIFIED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
                             <?php } else { ?>
-                                <span class="badge bg-danger">Rejected</span>
+                                <span class="badge bg-danger">REJECTED</span>
                             <?php } ?>
                         <?php } ?>
                     </td>
                 </tr>
-            <?php } ?>
-        </table>
-    </div>
+            </table>
+        </div>
+
+        <div class="border 0 pb-0 shadow-sm mt-2">
+            <table class="table table-sm text-sm my-0">
+                <?php
+                $no = 0;
+                foreach ($data['mutasi'] as $a) {
+                    $no++; ?>
+                    <tr id="tr<?= $a['id'] ?>">
+                        <td class="text-end">
+                            <small><?= $no ?>.</small><br>
+                            <span class="text-purple fw-500"><?= $a['qty'] ?>pcs</span>
+                        </td>
+                        <td class="">
+                            <small><?= $data['barang'][$a['id_barang']]['code'] ?> <?= $data['barang'][$a['id_barang']]['code_myob'] ?><br></small>
+                            <span class="text-purple fw-500"><?= $data['barang'][$a['id_barang']]['nama'] ?></span>
+                        </td>
+                        <td>
+                            <?php
+                            if ($a['sn_c'] == 1) {
+                                if ($a['sn'] == "") { ?>
+                                    <span class="text-danger">SN?</span>
+                            <?php }
+                            } ?>
+                            <?= $a['sn'] ?>
+                            <br>
+                            <?php if ($a['stat'] == 0) { ?>
+                                <span class="badge bg-warning">Checking</span>
+                            <?php } else { ?>
+                                <?php if ($a['stat'] == 1) { ?>
+                                    <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                                <?php } else { ?>
+                                    <span class="badge bg-danger">Rejected</span>
+                                <?php } ?>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </table>
+        </div>
 </main>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
