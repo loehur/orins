@@ -6,7 +6,7 @@ class Controller extends PV
 {
     public $userData, $dToko, $dDvs, $dDvs_all, $dProduk, $dProdukAll, $dDetailGroup, $dDetailGroupAll, $dDetailItem, $dDetailItem_1, $dDetailItemVarian_1, $dDetailItemAll, $dSPK, $dUser, $dPelanggan, $dPelangganAll;
     public $v_viewer, $v_content, $v_load;
-    public $dKaryawan_cs, $dKaryawan_pro, $dKaryawan_driver, $dKaryawanAll;
+    public $dKaryawan_cs, $dKaryawan_pro, $dKaryawan_driver, $dKaryawanAll, $dKaryawanAll_cs, $dKaryawanAll_driver;
 
     public function view($file, $data = [])
     {
@@ -63,6 +63,8 @@ class Controller extends PV
                 $this->dKaryawan_driver = $_SESSION['karyawan_driver'];
 
                 $this->dKaryawanAll = $_SESSION['karyawan_all'];
+                $this->dKaryawanAll_cs = $_SESSION['karyawan_all_cs'];
+                $this->dKaryawanAll_driver = $_SESSION['karyawan_all_driver'];
             }
         }
     }
@@ -95,7 +97,9 @@ class Controller extends PV
         $_SESSION['karyawan_pro'] = $this->db(0)->get_where('karyawan', $whereToko . " AND en = 1 ORDER BY freq_pro DESC", "id_karyawan");
         $_SESSION['karyawan_driver'] = $this->db(0)->get_where('karyawan', $whereToko . " AND en = 1 ORDER BY freq_driver DESC", "id_karyawan");
 
-        $_SESSION['karyawan_all'] = $this->db(0)->get_where('karyawan', "en = 1 ORDER BY freq_cs DESC", "id_karyawan");
+        $_SESSION['karyawan_all'] = $this->db(0)->get_where('karyawan', "en >= 0 ORDER BY freq_cs DESC", "id_karyawan");
+        $_SESSION['karyawan_all_cs'] = $this->db(0)->get_where('karyawan', "en = 1 ORDER BY freq_cs DESC", "id_karyawan");
+        $_SESSION['karyawan_all_driver'] = $this->db(0)->get_where('karyawan', "en = 1 ORDER BY freq_driver DESC", "id_karyawan");
     }
 
     public function logout()

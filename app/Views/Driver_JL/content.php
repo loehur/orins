@@ -44,7 +44,7 @@
                             <label class=" form-label">Pengantar</label>
                             <select class="form-select tize" name="id_driver" required>
                                 <option value="0" selected></option>
-                                <?php foreach ($this->dKaryawan_driver as $k) { ?>
+                                <?php foreach ($this->dKaryawanAll_driver as $k) { ?>
                                     <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
                                 <?php } ?>
                             </select>
@@ -55,7 +55,7 @@
                             <input type="hidden" name="id_toko">
                             <select class="form-select tize" name="id_karyawan" required>
                                 <option></option>
-                                <?php foreach ($this->dKaryawanAll as $k) { ?>
+                                <?php foreach ($this->dKaryawanAll_cs as $k) { ?>
                                     <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
                                 <?php } ?>
                             </select>
