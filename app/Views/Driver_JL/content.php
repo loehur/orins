@@ -1,8 +1,5 @@
 <main class="container px-2">
     <div>
-        <pre>
-            <?php print_r($data['ref_pro']) ?>
-        </pre>
         <?php foreach ($data['jl_pro'] as $key => $jl_pro) { ?>
             <?php
             $ex = explode("#", $key);

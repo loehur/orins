@@ -116,6 +116,10 @@ class Operasi extends Controller
                 $update = $this->db(0)->update("order_data", $set, $where);
                 if ($update['errno'] <> 0) {
                     return $update;
+                } else {
+                    $set = "status_order = 0, id_user_afiliasi = " . $id_karyawan;
+                    $where = "ref = '" . $ref . "' AND id_user_afiliasi = 0 AND id_afiliasi = " . $this->userData['id_toko'];
+                    $update = $this->db(0)->update("order_data", $set, $where);
                 }
             }
         }
