@@ -33,7 +33,7 @@
 
 <form class="ajax" action="<?= PV::BASE_URL; ?>Data_Order/ambil_semua" method="POST">
     <div class="modal" id="exampleModal3">
-        <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-dialog modal-sm">
             <div class="modal-content" style="min-height:400px">
                 <div class="modal-header">
                     <h5 class="modal-title">Data Pengantaran</h5>
