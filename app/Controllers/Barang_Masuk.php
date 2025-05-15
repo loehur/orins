@@ -68,7 +68,12 @@ class Barang_Masuk extends Controller
    function update()
    {
       $ref = $_POST['ref'];
-      $id_karyawan = $_POST['id_karyawan'];
+
+      if (isset($_POST['id_karyawan'])) {
+         $id_karyawan = $_POST['id_karyawan'];
+      } else {
+         $id_karyawan = 0;
+      }
 
       $up1 = $this->db(0)->update("master_input", "cek = 1", "id = '" . $ref . "'");
       if ($up1['errno'] <> 0) {
