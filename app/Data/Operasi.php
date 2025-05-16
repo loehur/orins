@@ -95,14 +95,14 @@ class Operasi extends Controller
         }
     }
 
-    function ready($ref,  $id_karyawan)
+    function ready($ref, $id_karyawan, $expedisi = 0)
     {
         $dateNow = date("Y-m-d H:i:s");
         $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
         $where = "ref = '" . $ref . "' AND (id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ")";
         $cek_toko_asal = $this->db(0)->get_where('order_data', $where, 'id_toko');
         if (isset($cek_toko_asal[$this->userData['id_toko']])) {
-            $set = "ready_cs = " . $id_karyawan . ", ready_date = '" . $dateNow . "'";
+            $set = "ready_cs = " . $id_karyawan . ", ready_date = '" . $dateNow . "', expedisi = " . $expedisi;
             $where = "ref = '" . $ref . "' AND ready_cs = 0";
             $update = $this->db(0)->update("ref", $set, $where);
             if ($update['errno'] <> 0) {

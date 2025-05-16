@@ -46,6 +46,7 @@ class Data_Operasi extends Controller
    public function content($parse = 0, $parse_2 = 0)
    {
       $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
+      $data['ea'] = $this->db(0)->get('expedisi_account', 'id');
 
       $data['parse'] = $parse;
       $data['parse_2'] = $parse_2;

@@ -443,10 +443,10 @@
 <form action="<?= PV::BASE_URL; ?>Data_Produksi/ready" class="ajax" method="POST">
     <div class="modal" id="exampleModal11">
         <div class="modal-dialog modal-sm">
-            <div class="modal-content" style="height: 350px;">
+            <div class="modal-content" style="height: 450px;">
                 <div class="modal-body">
                     <div class="container">
-                        <div class="row mb-3">
+                        <div class="row mb-2">
                             <div class="col">
                                 <label class=" form-label">Karyawan</label>
                                 <input type="hidden" id="ref" name="ref">
@@ -458,9 +458,21 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class=" form-label">Pengiriman</label>
+                                <input type="hidden" id="ref" name="ref">
+                                <select class="form-select tize" name="expedisi" required>
+                                    <option value="0">-</option>
+                                    <?php foreach ($data['ea'] as $ea) { ?>
+                                        <option value="<?= $ea['id'] ?>"><?= ucwords($ea['name']) ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
                         <div class="row mb-2">
-                            <div class="col-sm-6">
-                                <button type="submit" data-bs-dismiss="modal" class="btn btn-sm btn-dark">Orderan Ready</button>
+                            <div class="col">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-dark w-100 bg-gradient"><i class="fa-solid fa-check-double"></i> Ready</button>
                             </div>
                         </div>
                     </div>

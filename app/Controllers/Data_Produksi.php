@@ -35,6 +35,7 @@ class Data_Produksi extends Controller
 
    public function content($parse = 0, $parse_2 = 0)
    {
+      $data['ea'] = $this->db(0)->get('expedisi_account', 'id');
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
       $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'], 'id_karyawan');
@@ -77,7 +78,8 @@ class Data_Produksi extends Controller
    {
       $ref = $_POST['ref'];
       $id_karyawan = $_POST['staf_id'];
-      $up =  $this->data('Operasi')->ready($ref, $id_karyawan);
+      $expedisi = $_POST['expedisi'];
+      $up =  $this->data('Operasi')->ready($ref, $id_karyawan, $expedisi);
       echo $up['errno'] <> 0 ? $up['error'] : 0;
    }
 }

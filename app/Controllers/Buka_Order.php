@@ -114,7 +114,7 @@ class Buka_Order extends Controller
       $harga_paket = [];
 
       foreach ($data['order'] as $key => $do) {
-         if (strlen($do['paket_ref']) > 0) {
+         if ($do['paket_ref'] <> "") {
             if ($do['price_locker'] == 1) {
 
                if (!isset($total_per_paket[$do['paket_ref']])) {
@@ -157,7 +157,7 @@ class Buka_Order extends Controller
                         exit();
                      }
 
-                     if (strlen($do['paket_ref']) > 0) {
+                     if ($do['paket_ref'] <> "") {
                         if (isset($total_per_paket[$do['paket_ref']])) {
                            $total_per_paket[$do['paket_ref']] += ($getHarga[$key][$dh_o['c_h']] * $do['jumlah']);
                         } else {
@@ -170,7 +170,7 @@ class Buka_Order extends Controller
 
                   if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse_harga] <> 0 && $dh['id_produk'] == $do['id_produk']) {
                      $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse_harga];
-                     if (strlen($do['paket_ref']) > 0) {
+                     if ($do['paket_ref'] <> "") {
                         if (isset($total_per_paket[$do['paket_ref']])) {
                            $total_per_paket[$do['paket_ref']] += ($getHarga[$key][$dh_o['c_h']] * $do['jumlah']);
                         } else {

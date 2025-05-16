@@ -363,7 +363,7 @@
                                                             if ($id_ambil_aff == 0 && $cancel == 0) {
                                                                 if ($countSPK > 0 && $cancel == 0) {
                                                                     $ambil_all_aff[$ref] = false; ?>
-                                                                    <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span><br>
+                                                                    <span><i class="fa-regular fa-circle"></i> Ambil</span><br>
                                                         <?php }
                                                             } else {
                                                                 if ($cancel == 0) {
@@ -385,7 +385,7 @@
                                                             <?php if ($id_ambil == 0 && $cancel == 0) { ?>
                                                                 <?php if ($countSPK > 0 && $cancel == 0) { ?>
                                                                     <?php $ambil_all = false; ?>
-                                                                    <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
+                                                                    <span><i class="fa-regular fa-circle"></i> Ambil</span>
                                                                 <?php } ?>
                                                             <?php } else { ?>
                                                                 <?php if ($cancel == 0) { ?>

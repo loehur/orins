@@ -608,6 +608,9 @@
                                                     <?php if ($ada_produksi[$ref] == true) { ?>
                                                         <td class="text-sm">
                                                             <?php if ($this->userData['id_toko'] == $id_toko[$ref]) { ?>
+                                                                <?php if (isset($data['karyawan'][$readyAFF[$ref]])) { ?>
+                                                                    &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$readyAFF[$ref]]['nama']) ?></span>
+                                                                <?php } ?>
                                                                 <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
                                                                     &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama']) ?></span>
                                                                 <?php } else { ?>
