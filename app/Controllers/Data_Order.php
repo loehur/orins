@@ -123,14 +123,15 @@ class Data_Order extends Controller
    function cancel()
    {
       $id = $_POST['cancel_id'];
-
       $cek = $this->db(0)->get_where_row("order_data", "id_order_data = " . $id);
       if (isset($cek['paket_ref'])) {
+         $plock = $cek['price_locker'];
          $pref = $cek['paket_ref'];
          $pgrup = $cek['pgrup'];
          $ref = $cek['ref'];
       } else {
          $cek = $this->db(0)->get_where_row("master_mutasi", "id = " . $id);
+         $plock = $cek['price_locker'];
          $pref = $cek['paket_ref'];
          $pgrup = $cek['pgrup'];
          $ref = $cek['ref'];
@@ -140,12 +141,12 @@ class Data_Order extends Controller
       $karyawan = $_POST['id_karyawan'];
 
       $dateNow = date("Y-m-d H:i:s");
-      if ($pref == "") {
-         $where = "id_order_data = " . $id;
-         $where_b = "id = " . $id;
-      } else {
+      if ($plock == 1) {
          $where = "ref = '" . $ref . "' AND paket_ref = '" . $pref . "' AND paket_group = '" . $pgrup . "'";
          $where_b = $where;
+      } else {
+         $where = "id_order_data = " . $id;
+         $where_b = "id = " . $id;
       }
 
       $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
