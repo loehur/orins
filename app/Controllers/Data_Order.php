@@ -122,54 +122,82 @@ class Data_Order extends Controller
 
    function cancel()
    {
+      $mode = $_POST['tb'];
       $id = $_POST['cancel_id'];
-      $cek = $this->db(0)->get_where_row("order_data", "id_order_data = " . $id);
-      if (isset($cek['paket_ref'])) {
-         $plock = $cek['price_locker'];
-         $pref = $cek['paket_ref'];
-         $pgrup = $cek['paket_group'];
-         $ref = $cek['ref'];
-      } else {
-         $cek = $this->db(0)->get_where_row("master_mutasi", "id = " . $id);
-         $plock = $cek['price_locker'];
-         $pref = $cek['paket_ref'];
-         $pgrup = $cek['paket_group'];
-         $ref = $cek['ref'];
-      }
-
       $reason = $_POST['reason'];
       $karyawan = $_POST['id_karyawan'];
 
-      $dateNow = date("Y-m-d H:i:s");
-      if ($plock == 1) {
-         $where = "ref = '" . $ref . "' AND paket_ref = '" . $pref . "' AND paket_group = '" . $pgrup . "'";
-         $where_b = $where;
+      if ($mode == 0) {
+         $cek = $this->db(0)->get_where_row("order_data", "id_order_data = " . $id);
       } else {
-         $where = "id_order_data = " . $id;
-         $where_b = "id = " . $id;
+         $cek = $this->db(0)->get_where_row("master_mutasi", "id = " . $id);
       }
 
-      $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
-      $update = $this->db(0)->update("order_data", $set, $where);
-      if ($update['errno'] == 0) {
-         //BATALKAN MUTASI PRODUKSI
-         $where2 = "pid = " . $id;
-         $set2 = "stat = 2";
-         $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
-         if ($update2 <> 0) {
+      $plock = $cek['price_locker'];
+      $pref = $cek['paket_ref'];
+      $pgrup = $cek['paket_group'];
+      $ref = $cek['ref'];
+
+      $dateNow = date("Y-m-d H:i:s");
+
+      if ($plock == 1) {
+         $where = "ref = '" . $ref . "' AND paket_ref = '" . $pref . "' AND paket_group = '" . $pgrup . "'";
+      }
+
+      if ($mode == 0) {
+         if ($plock == 1) {
+            $set = "stat = 2";
+            $update = $this->db(0)->update("master_mutasi", $set, $where);
+            if ($update['errno'] <> 0) {
+               echo $update['error'];
+               exit();
+            }
+         } else {
+            $where = "id_order_data = " . $id;
+         }
+
+         $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
+         $update = $this->db(0)->update("order_data", $set, $where);
+         if ($update['errno'] == 0) {
+            //BATALKAN MUTASI PRODUKSI
+            $where2 = "pid = " . $id;
+            $set2 = "stat = 2";
+            $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
+            if ($update2 <> 0) {
+               echo $update['error'];
+               exit();
+            }
+         } else {
             echo $update['error'];
             exit();
          }
       } else {
-         echo $update['error'];
-         exit();
-      }
+         if ($plock == 1) {
+            $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
+            $update = $this->db(0)->update("order_data", $set, $where);
+            if ($update['errno'] == 0) {
+               //BATALKAN MUTASI PRODUKSI
+               $where2 = "pid = " . $id;
+               $set2 = "stat = 2";
+               $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
+               if ($update2 <> 0) {
+                  echo $update['error'];
+                  exit();
+               }
+            } else {
+               echo $update['error'];
+               exit();
+            }
+         } else {
+            $where = "id = " . $id;
+         }
 
-      $set = "stat = 2";
-      $update = $this->db(0)->update("master_mutasi", $set, $where_b);
-      if ($update['errno'] <> 0) {
-         echo $update['error'];
-         exit();
+         $set = "stat = 2";
+         $update = $this->db(0)->update("master_mutasi", $set, $where);
+         if ($update['errno'] <> 0) {
+            echo $update['error'];
+            exit();
+         }
       }
 
       echo 0;

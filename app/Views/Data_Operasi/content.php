@@ -512,7 +512,7 @@
                                                         </button>
                                                         <ul class="dropdown-menu p-0 border-0 shadow-sm text-sm">
                                                             <li><a class="dropdown-item px-2 ajax" href="<?= PV::BASE_URL ?>Data_Operasi/faktur_pajak/<?= $do['id'] ?>/<?= $do['fp'] == 1 ? 0 : 1 ?>">Faktur Pajak (<?= $do['fp'] == 1 ? "-" : "+" ?>)</a></li>
-                                                            <?php if ($do['stat'] == 1) { ?>
+                                                            <?php if ($dibayar == 0 && $do['stat'] == 1) { ?>
                                                                 <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancelBarang px-2" data-id="<?= $do['id'] ?>" href="#">Cancel</a></li>
                                                             <?php } ?>
                                                         </ul>
@@ -920,11 +920,13 @@
     $("a.cancel").click(function() {
         id = $(this).attr("data-id");
         $("input[name=cancel_id]").val(id);
+        $("input[name=tb]").val(0);
     })
 
     $("a.cancelBarang").click(function() {
         id = $(this).attr("data-id");
         $("input[name=cancel_id]").val(id);
+        $("input[name=tb]").val(1);
     })
 
     $("a.refund").click(function() {
