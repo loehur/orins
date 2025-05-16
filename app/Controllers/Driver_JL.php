@@ -51,6 +51,51 @@ class Driver_JL extends Controller
       }
 
       $data['ref_pro'] = $get;
+
+
+      $data['ea'] = $this->db(0)->get('expedisi_account', 'id');
+      $data['ref_exp'] = $this->db(0)->get_where('ref', 'tuntas = 0 AND expedisi <> 0', 'ref');
+      $refs_exp = array_keys($data['ref_exp']);
+      $data_exp_p = [];
+      $data_exp_b = [];
+
+      if (count($refs_exp) > 0) {
+         $ref_list = "";
+         foreach ($refs_exp as $r) {
+            $ref_list .= $r . ",";
+         }
+         $ref_list = rtrim($ref_list, ',');
+         $where = "ref IN (" . $ref_list . ") AND id_ambil = 0 AND tuntas = 0 AND cancel = 0";
+         $data_exp_p = $this->db(0)->get_where('order_data', $where);
+         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND stat = 1";
+         $data_exp_b = $this->db(0)->get_where('master_mutasi', $where);
+      }
+
+      $get_exp = [];
+      foreach ($data_exp_p as $a) {
+         $key = $a['id_toko'] . "#" . $data['ref_exp'][$a['ref']]['expedisi'];
+         if (!isset($get_exp[$key][$a['ref']])) {
+            $get_exp[$key][$a['ref']]['id_pelanggan'] = $a['id_pelanggan'];
+            $get_exp[$key][$a['ref']]['qty'] = $a['jumlah'];
+            $get_exp[$key][$a['ref']]['cs'] = $a['id_penerima'];
+         } else {
+            $get_exp[$key][$a['ref']]['qty'] += $a['jumlah'];
+         }
+      }
+
+      foreach ($data_exp_b as $a) {
+         $key = $a['id_sumber'] . "#" . $data['ref_exp'][$a['ref']]['expedisi'];
+         if (!isset($get_exp[$key][$a['ref']])) {
+            $get_exp[$key][$a['ref']]['id_pelanggan'] = $a['id_target'];
+            $get_exp[$key][$a['ref']]['qty'] = $a['qty'];
+            $get_exp[$key][$a['ref']]['cs'] = $a['cs_id'];
+         } else {
+            $get_exp[$key][$a['ref']]['qty'] += $a['qty'];
+         }
+      }
+
+      $data['jl_exp'] = $get_exp;
+
       $this->view($this->v_content, $data);
    }
 }

@@ -7,7 +7,7 @@
             $id_toko = $ex[1];
 
             ?>
-            <div class="w-100 text-center mt-2 py-1 border rounded bg-light bg-gradient">
+            <div class="w-100 text-center mt-2 border rounded bg-light bg-gradient fw-bold text-sm">
                 <label class="border-0 rounded-0" style="margin:0;color:<?= $this->dToko[$id_afiliasi]['color'] ?>"><?= $this->dToko[$id_afiliasi]['inisial'] ?></label> &nbsp;&nbsp;<i class="text-sm fa-solid fa-arrow-right text-secondary"></i>&nbsp;&nbsp; <label class="border-0 rounded-0" style="margin:0;color:<?= $this->dToko[$id_toko]['color'] ?>"><?= $this->dToko[$id_toko]['inisial'] ?></label>
             </div>
             <div class="mb-4">
@@ -24,6 +24,35 @@
                             <?= $a['qty'] ?>pcs
                         </div>
                         <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-id_toko="<?= $id_afiliasi ?>">Done</span></div>
+                    </div>
+                <?php } ?>
+            </div>
+        <?php } ?>
+
+        <?php foreach ($data['jl_exp'] as $key => $b) { ?>
+            <?php
+            $ex = explode("#", $key);
+            $id_toko = $ex[0];
+            $id_exp = $ex[1];
+
+            ?>
+            <div class="w-100 text-center mt-2 border rounded bg-light bg-gradient fw-bold text-sm">
+                <label class="border-0 rounded-0" style="margin:0;color:<?= $this->dToko[$id_toko]['color'] ?>"><?= $this->dToko[$id_toko]['inisial'] ?></label> &nbsp;&nbsp;<i class="text-sm fa-solid fa-arrow-right text-secondary"></i>&nbsp;&nbsp; <label class="border-0 rounded-0 text-dark"><?= $data['ea'][$id_exp]['name'] ?></label>
+            </div>
+            <div class="mb-4">
+                <?php foreach ($b as $ref => $a) { ?>
+                    <div class="row py-1 mx-1 border-bottom" id="R<?= $ref ?>">
+                        <div class="col-auto pe-1">
+                            <?= strtoupper($this->dKaryawanAll[$a['cs']]['nama']) ?>
+                            <br>
+                            <small><?= substr($ref, -4) ?></small>
+                        </div>
+                        <div class="col pe-1">
+                            <?= strtoupper($this->dPelangganAll[$a['id_pelanggan']]['nama']) ?> <small>#<?= substr($a['id_pelanggan'], -2) ?></small>
+                            <br>
+                            <?= $a['qty'] ?>pcs
+                        </div>
+                        <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-id_toko="<?= $id_toko ?>">Done</span></div>
                     </div>
                 <?php } ?>
             </div>

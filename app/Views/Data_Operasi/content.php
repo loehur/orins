@@ -625,6 +625,9 @@
                                                                     <?php } ?>
                                                                 <?php } ?>
                                                             <?php } ?>
+                                                            <?php if (isset($data['ea'][$data['ref'][$ref]['expedisi']])) { ?>
+                                                                &nbsp;<span class="text-sm"><i class="fa-solid fa-truck-fast"></i> <?= ucwords($data['ea'][$data['ref'][$ref]['expedisi']]['name']) ?></span>
+                                                            <?php } ?>
                                                         </td>
                                                     <?php } ?>
                                                 </tr>
