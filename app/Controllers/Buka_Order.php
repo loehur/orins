@@ -505,7 +505,7 @@ class Buka_Order extends Controller
 
       // CEK DULU PAKET DOUBLE 
       if ($paket_ref <> "") {
-         $cek_double_paket = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "' AND tuntas = 0");
+         $cek_double_paket = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND cancel = 0");
          if ($cek_double_paket <> 0) {
             echo 0;
             exit();
@@ -514,7 +514,7 @@ class Buka_Order extends Controller
 
       //CEK DOUBLE PRICE LOCKER
       if ($price_locker == 1) {
-         $cek_double_pl = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND paket_ref = '" . $paket_ref . "' AND price_locker = 1 AND tuntas = 0");
+         $cek_double_pl = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND paket_ref = '" . $paket_ref . "' AND price_locker = 1 AND tuntas = 0 AND cancel = 0");
          if ($cek_double_pl <> 0) {
             echo 0;
             exit();
@@ -570,7 +570,7 @@ class Buka_Order extends Controller
 
       // CEK DULU PAKET DOUBLE 
       if ($paket_ref <> "") {
-         $cek_double_paket = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND id_barang = " . $id_barang . " AND paket_ref = '" . $paket_ref . "' AND tuntas = 0");
+         $cek_double_paket = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND id_barang = " . $id_barang . " AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND stat <> 2");
          if ($cek_double_paket <> 0) {
             echo 0;
             exit();
@@ -579,7 +579,7 @@ class Buka_Order extends Controller
 
       //CEK DOUBLE PRICE LOCKER
       if ($price_locker == 1) {
-         $cek_double_pl = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND paket_ref = '" . $paket_ref . "' AND price_locker = 1 AND tuntas = 0");
+         $cek_double_pl = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND paket_ref = '" . $paket_ref . "' AND price_locker = 1 AND tuntas = 0 AND stat <> 2");
          if ($cek_double_pl <> 0) {
             echo 0;
             exit();
