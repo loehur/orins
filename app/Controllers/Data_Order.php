@@ -127,13 +127,13 @@ class Data_Order extends Controller
       if (isset($cek['paket_ref'])) {
          $plock = $cek['price_locker'];
          $pref = $cek['paket_ref'];
-         $pgrup = $cek['pgrup'];
+         $pgrup = $cek['paket_group'];
          $ref = $cek['ref'];
       } else {
          $cek = $this->db(0)->get_where_row("master_mutasi", "id = " . $id);
          $plock = $cek['price_locker'];
          $pref = $cek['paket_ref'];
-         $pgrup = $cek['pgrup'];
+         $pgrup = $cek['paket_group'];
          $ref = $cek['ref'];
       }
 
