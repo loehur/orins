@@ -34,7 +34,7 @@
                                 <td align="right"><a href="<?= PV::BASE_URL ?>Cek/order/<?= $a['ref_transaksi'] ?>/<?= $a['id_client'] ?>" target="_blank">#<?= $a['id_kas'] ?></a></td>
                                 <td><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></td>
                                 <td><?= strtoupper($pelanggan) ?></td>
-                                <td><?= $ref ?></td>
+                                <td><?= $ref ?> <?= isset($data['sds'][$a['ref_transaksi']]) ? "#S" : "" ?></td>
                                 <td align="right">Rp<?= number_format($jumlah) ?></td>
                                 <td>
                                     <?php if ($a['status_mutasi'] == 2) { ?>

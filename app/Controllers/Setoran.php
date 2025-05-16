@@ -174,6 +174,19 @@ class Setoran extends Controller
       $where = "metode_mutasi = 1 AND id_client <> 0 AND ref_setoran = '" . $ref_setor . "' ORDER BY id_kas DESC, id_client ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
 
+      $data['kas_trx'] = $this->db(0)->get_where('kas', $where, 'ref_transaksi', 1);
+      $ref_trx = array_keys($data['kas_trx']);
+      $reft_list = "";
+      foreach ($ref_trx as $r) {
+         if ($r == "") {
+            $r = 0;
+         }
+         $reft_list .= $r . ",";
+      }
+      $reft_list = rtrim($reft_list, ',');
+      $where_ref = "ref IN (" . $reft_list . ") AND sds = 1 AND stat = 1 AND jenis = 2 AND id_sumber = '" . $this->userData['id_toko'] . "'";
+      $data['sds'] = $this->db(0)->get_where('master_mutasi', $where_ref, 'ref');
+
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
       $data['pengeluaran'] = [];
       $where = "id_toko = " . $this->userData['id_toko'] . " AND metode_mutasi = 1 AND jenis_mutasi = 2 AND ref_setoran = '" . $ref_setor . "' ORDER BY id_kas DESC";
