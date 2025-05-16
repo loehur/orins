@@ -42,7 +42,7 @@
                 $no = 0;
                 $bill = 0;
                 $charge[$ref] = 0;
-                $ambil_all = true;
+                $ambil_all[$ref] = true;
                 $ambil_all_aff[$ref] = true;
                 $readyAFF[$ref] = 0;
 
@@ -304,7 +304,7 @@
                                                     <table class="text-sm">
                                                         <?php
                                                         if ($cancel <> 0) {
-                                                            $canceler = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $id_cancel); ?>
+                                                            $canceler = $this->dKaryawanAll[$id_cancel]['nama']; ?>
                                                             <tr>
                                                                 <td><span class="badge text-dark border border-dark"><?= $canceler ?> : <?= $do['cancel_reason'] ?></span></td>
                                                             </tr>
@@ -437,18 +437,17 @@
                                                             }
                                                         } ?>
 
-                                                        <?php
-                                                        if ($do['id_toko'] == $this->userData['id_toko']) { ?>
-                                                            <?php if ($id_ambil == 0 && $cancel == 0) { ?>
-                                                                <?php if ($countSPK > 0 && $cancel == 0) { ?>
-                                                                    <?php $ambil_all = false; ?>
+                                                        <?php if ($id_ambil == 0 && $cancel == 0) { ?>
+                                                            <?php if ($countSPK > 0 && $cancel == 0) { ?>
+                                                                <?php $ambil_all[$ref] = false; ?>
+                                                                <?php if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
                                                                     <span class="btnAmbil" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal4" data-id="<?= $id ?>"><i class="fa-regular fa-circle"></i> Ambil</span>
                                                                 <?php } ?>
-                                                            <?php } else { ?>
-                                                                <?php if ($cancel == 0) { ?>
-                                                                    <?php $karyawan = $this->dKaryawanAll[$id_ambil]["nama"]; ?>
-                                                                    <span class="text-primary"><i class="fa-solid fa-check-double"></i> Ambil (<?= ucwords($karyawan) . $driver_name ?>)</span>
-                                                                <?php } ?>
+                                                            <?php } ?>
+                                                        <?php } else { ?>
+                                                            <?php if ($cancel == 0) { ?>
+                                                                <?php $karyawan = $this->dKaryawanAll[$id_ambil]["nama"]; ?>
+                                                                <span class="text-primary"><i class="fa-solid fa-check-double"></i> Ambil (<?= ucwords($karyawan) . $driver_name ?>)</span>
                                                             <?php } ?>
                                                         <?php } ?>
                                                     </small>
@@ -528,8 +527,8 @@
                                                     <?= number_format($jumlah_real) ?>
                                                 </td>
                                             </tr>
+                                        <?php } ?>
                                     <?php }
-                                    }
 
                                     $sisa = $bill - $dibayar;
 
@@ -545,24 +544,24 @@
                                     if ($dibayar > 0 && $lunas == false && $sisa > 0) {
                                         $showMutasi .= "<span class='text-danger'><b>Sisa Rp" . number_format($sisa) . "</b></span>";
                                     }
-
                                     ?>
+
                                     <tr class="border-top">
                                         <td class="text-end text border-0 pb-0" colspan="3">
-                                            <?php if (($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko'])) { ?>
-                                                <table>
-                                                    <tr>
-                                                        <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border-0 px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i></a></small></td>
-                                                        <?php
-                                                        if ($ambil_all == false) {
-                                                            if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
+                                            <table>
+                                                <tr>
+                                                    <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border-0 px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i></a></small></td>
+                                                    <td><?= $ambil_all[$ref] ?></td>
+                                                    <?php if ($ambil_all[$ref] == false) { ?>
+                                                        <?php if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
+                                                            <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>
+                                                        <?php } else { ?>
+                                                            <?php if ($ambil_all_aff[$ref] == false) { ?>
                                                                 <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>
-                                                                <?php } else {
-                                                                if ($ambil_all_aff[$ref] == false) { ?>
-                                                                    <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>
-                                                            <?php }
-                                                            } ?>
+                                                            <?php } ?>
                                                         <?php } ?>
+                                                    <?php } ?>
+                                                    <?php if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
                                                         <td class="text-end pe-1">
                                                             <button type="button" class="border-0 bg-white ps-0 dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <small>
@@ -595,80 +594,38 @@
                                                         <td class="text-sm pe-1">
                                                             <small><?= $dh['user_id'] ?>#</small>
                                                         </td>
-                                                        <td class="text-sm align-middle" style="cursor: pointer;">
-                                                            <small><span id="span_copy_<?= $ref ?>" class="text-success fw-bold" style="display: none;">Copied!</span></small>
+                                                    <?php } ?>
+                                                    <td class="text-sm align-middle" style="cursor: pointer;">
+                                                        <small><span id="span_copy_<?= $ref ?>" class="text-success fw-bold" style="display: none;">Copied!</span></small>
+                                                        <?php if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
                                                             <?php if ($data['cust_wa']) { ?>
                                                                 <span onclick="copy('<?= $data['cust_wa'] ?>', <?= $ref ?>)" class="text-success"><i class="fa-brands fa-whatsapp"></i></span>
                                                             <?php } ?>
-                                                            &nbsp;<span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
-                                                        </td>
-                                                        <?php if ($ada_produksi[$ref] == true) { ?>
-                                                            <td class="text-sm">
-                                                                <?php if ($this->userData['id_toko'] == $id_toko[$ref]) { ?>
-                                                                    <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
-                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama']) ?></span>
+                                                        <?php } ?>
+                                                        &nbsp;<span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
+                                                    </td>
+
+                                                    <?php if ($ada_produksi[$ref] == true) { ?>
+                                                        <td class="text-sm">
+                                                            <?php if ($this->userData['id_toko'] == $id_toko[$ref]) { ?>
+                                                                <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
+                                                                    &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama']) ?></span>
+                                                                <?php } else { ?>
+                                                                    &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
+                                                                <?php } ?>
+                                                            <?php } else { ?>
+                                                                <?php if ($id_afiliasi[$ref] == $this->userData['id_toko']) { ?>
+                                                                    <?php if (isset($data['karyawan'][$readyAFF[$ref]])) { ?>
+                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$readyAFF[$ref]]['nama']) ?></span>
                                                                     <?php } else { ?>
                                                                         &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
                                                                     <?php } ?>
-                                                                <?php } else { ?>
-                                                                    <?php if ($id_afiliasi[$ref] == $this->userData['id_toko']) { ?>
-                                                                        <?php if (isset($data['karyawan'][$readyAFF[$ref]])) { ?>
-                                                                            &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$readyAFF[$ref]]['nama']) ?></span>
-                                                                        <?php } else { ?>
-                                                                            &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
-                                                                        <?php } ?>
-                                                                    <?php } ?>
                                                                 <?php } ?>
-                                                            </td>
-                                                        <?php } ?>
-                                                    </tr>
-                                                </table>
-                                            <?php } else { ?>
-                                                <table>
-                                                    <tr>
-                                                        <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar border btn btn-sm px-1"><i class="fa-solid fa-print"></i></a></small></td>
-                                                        <?php
-                                                        if ($ambil_all == false) {
-                                                            if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
-                                                                <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>
-                                                                <?php } else {
-                                                                if ($ambil_all_aff[$ref] == false) { ?>
-                                                                    <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>
-                                                            <?php }
-                                                            } ?>
-                                                        <?php } ?>
-                                                        <td class="text-sm pe-1">
-                                                            <small><?= $dh['user_id'] ?>#</small>
-                                                        </td>
-                                                        <td class="text-sm align-middle" style="cursor: pointer;">
-                                                            <small><span id="span_copy_<?= $ref ?>" class="text-success fw-bold" style="display: none;">Copied!</span></small>
-                                                            <?php if ($data['cust_wa']) { ?>
-                                                                <span onclick="copy('<?= $data['cust_wa'] ?>', <?= $ref ?>)" class="text-success"><i class="fa-brands fa-whatsapp"></i></span>
                                                             <?php } ?>
-                                                            &nbsp;<span onclick="copy('<?= $ref ?>', <?= $ref ?>)" class="text-primary"><i class="fa-solid fa-receipt"></i></i></span>
                                                         </td>
-                                                        <?php if ($ada_produksi[$ref] == true) { ?>
-                                                            <td class="text-sm">
-                                                                <?php if ($this->userData['id_toko'] == $id_toko[$ref]) { ?>
-                                                                    <?php if (isset($data['karyawan'][$data['ref'][$ref]['ready_cs']])) { ?>
-                                                                        &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$data['ref'][$ref]['ready_cs']]['nama']) ?></span>
-                                                                    <?php } else { ?>
-                                                                        &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
-                                                                    <?php } ?>
-                                                                <?php } else { ?>
-                                                                    <?php if ($id_afiliasi[$ref] == $this->userData['id_toko']) { ?>
-                                                                        <?php if (isset($data['karyawan'][$readyAFF[$ref]])) { ?>
-                                                                            &nbsp;<span class="text-sm"><i class="fa-solid fa-check-double"></i> <?= ucwords($data['karyawan'][$readyAFF[$ref]]['nama']) ?></span>
-                                                                        <?php } else { ?>
-                                                                            &nbsp;<span class="btnReady text-sm fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal11" data-cs="<?= $id_afiliasi[$ref] == $this->userData['id_toko'] ? $id_user_afiliasi[$ref] : $id_penerima[$ref] ?>" data-ref="<?= $ref ?>"> <small><i class="fa-solid fa-question"></i> Ready</small></span>
-                                                                        <?php } ?>
-                                                                    <?php } ?>
-                                                                <?php } ?>
-                                                            </td>
-                                                        <?php } ?>
-                                                    </tr>
-                                                </table>
-                                            <?php } ?>
+                                                    <?php } ?>
+                                                </tr>
+                                            </table>
                                         </td>
                                         <td class="text-end border-0" nowrap>
                                             <?php if ($charge[$ref] > 0) { ?>
