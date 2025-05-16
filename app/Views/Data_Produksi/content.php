@@ -125,12 +125,15 @@
                             <div class="col px-1" style="min-width: 200px;">
                                 <table class="w-100 mb-0 target bg-white border-bottom table <?= $ref ?>">
                                     <tr data-id="<?= $id_pelanggan ?>">
-                                        <td class="p-1 cekOrder" data-bs-toggle="modal" data-bs-target="#modalOrder" style="cursor: pointer;" data-ref="<?= $ref ?>">
-                                            <small>
-                                                <span class="text-danger"><?= substr($ref, -4) ?></span>
-                                                <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?>
-                                            </small><br>
-                                            <small><?= ucwords($cs) ?>, <?= $since_start->days ?> Hari, <?= $since_start->h ?> Jam</small>
+                                        <td style="width: 30px;"><span class="cekOrder text-purple" data-bs-toggle="modal" data-bs-target="#modalOrder" style="cursor: pointer;" data-ref="<?= $ref ?>"><i class="fa-regular fa-eye"></i></span></td>
+                                        <td class="p-1">
+                                            <a href="<?= PV::BASE_URL ?>Data_Operasi/index/<?= $id_pelanggan ?>" class="cekPLG text-decoration-none text-dark" style="cursor: pointer;">
+                                                <small>
+                                                    <span class="text-danger"><?= substr($ref, -4) ?></span>
+                                                    <span class="text-nowrap text-primary fw-bold"><span class="text-success"><?= $in_toko ?></span><?= strtoupper($pelanggan) ?></span> #<?= substr($id_pelanggan, -2) ?>
+                                                </small><br>
+                                                <small><?= ucwords($cs) ?>, <?= $since_start->days ?> Hari, <?= $since_start->h ?> Jam</small>
+                                            </a>
                                         </td>
                                         <?php
                                         if ($id_afiliasi[$ref] <> 0 && $id_afiliasi[$ref] == $this->userData['id_toko']) { ?>
