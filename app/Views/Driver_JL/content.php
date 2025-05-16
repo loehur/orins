@@ -23,7 +23,9 @@
                             <br>
                             <?= $a['qty'] ?>pcs
                         </div>
-                        <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-id_toko="<?= $id_afiliasi ?>">Done</span></div>
+                        <?php if (!in_array($this->userData['user_tipe'], [0, 9])) { ?>
+                            <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-id_toko="<?= $id_afiliasi ?>">Done</span></div>
+                        <?php } ?>
                     </div>
                 <?php } ?>
             </div>
@@ -52,7 +54,9 @@
                             <br>
                             <?= $a['qty'] ?>pcs
                         </div>
-                        <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-id_toko="<?= $id_toko ?>">Done</span></div>
+                        <?php if (!in_array($this->userData['user_tipe'], [0, 9])) { ?>
+                            <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-id_toko="<?= $id_toko ?>">Done</span></div>
+                        <?php } ?>
                     </div>
                 <?php } ?>
             </div>
