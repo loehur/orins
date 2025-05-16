@@ -895,6 +895,10 @@ class Buka_Order extends Controller
          $cols = 'ref';
          $vals = $ref;
          $do = $this->db(0)->insertCols('ref', $cols, $vals);
+         if ($do['errno'] <> 0) {
+            echo $do['error'];
+            exit();
+         }
       }
 
       $data['paket'] = $this->db(0)->get('paket_main', "id");

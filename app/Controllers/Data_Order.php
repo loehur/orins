@@ -127,51 +127,48 @@ class Data_Order extends Controller
       $cek = $this->db(0)->get_where_row("order_data", "id_order_data = " . $id);
       if (isset($cek['paket_ref'])) {
          $pref = $cek['paket_ref'];
+         $pgrup = $cek['pgrup'];
          $ref = $cek['ref'];
       } else {
          $cek = $this->db(0)->get_where_row("master_mutasi", "id = " . $id);
          $pref = $cek['paket_ref'];
+         $pgrup = $cek['pgrup'];
          $ref = $cek['ref'];
       }
 
-      $tb = $_POST['tb'];
-
       $reason = $_POST['reason'];
       $karyawan = $_POST['id_karyawan'];
-      if ($tb == 0) {
-         $dateNow = date("Y-m-d H:i:s");
-         if ($pref == "") {
-            $where = "id_order_data = " . $id;
-         } else {
-            $where = "ref = '" . $ref . "' AND paket_ref = '" . $pref . "'";
-         }
 
-         $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
-         $update = $this->db(0)->update("order_data", $set, $where);
-         if ($update['errno'] == 0) {
-            $where2 = "pid = " . $id;
-            $set2 = "stat = 2";
-            $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
-            if ($update2 <> 0) {
-               echo $update['error'];
-               exit();
-            }
-         } else {
+      $dateNow = date("Y-m-d H:i:s");
+      if ($pref == "") {
+         $where = "id_order_data = " . $id;
+         $where_b = "id = " . $id;
+      } else {
+         $where = "ref = '" . $ref . "' AND paket_ref = '" . $pref . "' AND paket_group = '" . $pgrup . "'";
+         $where_b = $where;
+      }
+
+      $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
+      $update = $this->db(0)->update("order_data", $set, $where);
+      if ($update['errno'] == 0) {
+         //BATALKAN MUTASI PRODUKSI
+         $where2 = "pid = " . $id;
+         $set2 = "stat = 2";
+         $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
+         if ($update2 <> 0) {
             echo $update['error'];
             exit();
          }
       } else {
-         if ($pref == "") {
-            $where = "id = " . $id;
-         } else {
-            $where = "ref = '" . $ref . "' AND paket_ref = '" . $pref . "'";
-         }
-         $set = "stat = 2";
-         $update = $this->db(0)->update("master_mutasi", $set, $where);
-         if ($update['errno'] <> 0) {
-            echo $update['error'];
-            exit();
-         }
+         echo $update['error'];
+         exit();
+      }
+
+      $set = "stat = 2";
+      $update = $this->db(0)->update("master_mutasi", $set, $where_b);
+      if ($update['errno'] <> 0) {
+         echo $update['error'];
+         exit();
       }
 
       echo 0;

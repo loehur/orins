@@ -99,7 +99,6 @@
                             <div class="col">
                                 <label class="form-label">Karyawan</label>
                                 <input type="hidden" name="cancel_id">
-                                <input type="hidden" name="tb">
                                 <select class="form-select tize" name="id_karyawan" required>
                                     <option></option>
                                     <?php foreach ($this->dKaryawan_cs as $k) { ?>

@@ -587,11 +587,6 @@ $mgpaket = $data['margin_paket'];
         var paid = parseInt($("#paid").attr('data-val'));
         var total_o = parseInt($("#total_order").attr('data-val'));
 
-        if (total_o < paid) {
-            alert("Jumlah pembayaran lebih besar dari order, lakukan pembatalan bayar terlebih dahulu");
-            return;
-        }
-
         $.ajax({
             url: $(this).attr('href'),
             type: 'POST',
