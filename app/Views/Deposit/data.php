@@ -35,8 +35,9 @@
                             <?php } else {
                             if ($d['status_mutasi'] == 0) { ?>
                                 <span class="text-warning">Checking</span>
-                        <?php } else { ?>
+                            <?php } else { ?>
                                 <span class="text-danger">Rejected</span>
+                            <?php } ?>
                         <?php } ?>
                         <?= $d['metode_mutasi'] == 1 ? 'Tunai' : 'NonTunai' ?>
                     </span>
