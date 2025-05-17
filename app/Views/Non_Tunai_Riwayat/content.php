@@ -49,7 +49,7 @@
                                 <tr>
                                     <td>
                                         <span class="text-purple"><?= $data['toko'][$a['id_toko']]['nama_toko'] ?></span><br>
-                                        <small><?= $a['ref_transaksi'] ?></small>
+                                        <small><?= $a['ref_transaksi'] == "" ? "Deposit" : $a['ref_transaksi'] ?></small>
                                     </td>
                                     <td><a href="<?= PV::BASE_URL ?>Cek/order/<?= $a['ref_transaksi'] ?>/<?= $a['id_client'] ?>" target="_blank">#<?= $a['id_kas'] ?></a><br><?= strtoupper($pelanggan) ?></td>
                                     <td align="right" class="pe-2">Rp<?= number_format($jumlah) ?><br><span class="text-primary"><?= $payment_account ?></span><?= $a['note'] ?></td>
