@@ -30,7 +30,15 @@
                 <div class="col text-end">
                     <?= number_format($d['jumlah']) ?><br>
                     <span class="text-sm">
-                        <?= $d['status_mutasi'] == 1 ? '<span class="text-success">Sukses</span>' : '<span class="text-warning">Office Checking</span>'  ?> - <?= $d['metode_mutasi'] == 1 ? 'Tunai' : 'NonTunai' ?>
+                        <?php if ($d['status_mutasi'] == 1) { ?>
+                            <span class="text-success">Success</span>
+                            <?php } else {
+                            if ($d['status_mutasi'] == 0) { ?>
+                                <span class="text-warning">Checking</span>
+                        <?php } else { ?>
+                                <span class="text-danger">Rejected</span>
+                        <?php } ?>
+                        <?= $d['metode_mutasi'] == 1 ? 'Tunai' : 'NonTunai' ?>
                     </span>
                 </div>
             </div>
