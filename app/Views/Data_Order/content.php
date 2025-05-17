@@ -93,7 +93,7 @@
                                 $divisi_arr = unserialize($do['spk_dvs']);
                                 $countSPK = count($divisi_arr);
 
-                                if ($do['id_afiliasi'] <> 0) {
+                                if ($do['id_afiliasi'] <> 0 && $do['cancel'] == 0) {
                                     $id_aff[$ref][$do['id_afiliasi']]['cs'] = $do['id_user_afiliasi'];
                                     $id_aff[$ref][$do['id_afiliasi']]['cs_ready'] = $do['ready_aff_cs'];
                                     $id_ambil_aff[$ref] = $do['id_ambil_aff'];
