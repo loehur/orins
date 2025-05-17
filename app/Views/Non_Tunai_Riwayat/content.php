@@ -32,7 +32,11 @@
                                 $jumlah = $a['jumlah'];
                                 $ref = $a['ref_transaksi'];
 
-                                $tuntas = $data['ref'][$ref]['tuntas'];
+                                if (isset($data['ref'][$ref]['tuntas'])) {
+                                    $tuntas = $data['ref'][$ref]['tuntas'];
+                                } else {
+                                    $tuntas = 0;
+                                }
 
                                 if (isset($data['payment_account'][$a['pa']]['payment_account'])) {
                                     $payment_account = $data['payment_account'][$a['pa']]['payment_account'] . " ";
