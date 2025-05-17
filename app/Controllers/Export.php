@@ -310,6 +310,46 @@ class Export extends Controller
       fpassthru($f);
    }
 
+   public function export_ed() //EXTRA DISKON
+   {
+      $month = $_POST['month'];
+      $delimiter = ",";
+      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-EXTRADISKON-" . $month . ".csv";
+      $f = fopen('php://memory', 'w');
+
+      $where = "insertTime LIKE '" . $month . "%' AND id_toko = " . $this->userData['id_toko'];
+      $data = $this->db(0)->get_where("xtra_diskon", $where);
+      $tanggal = date("Y-m-d");
+
+      $fields = array('TRX_ID', 'NO. REFERENSI', 'TANGGAL', 'JUMLAH', 'DISKON_NOTE', 'STATUS', 'STATUS_NOTE', 'EXPORTED');
+      fputcsv($f, $fields, $delimiter);
+      foreach ($data as $a) {
+         $jumlah = $a['jumlah'];
+         $note = strtoupper($a['note']);
+         $note_S = strtoupper($a['cancel_reason']);
+         $tgl_kas = substr($a['insertTime'], 0, 10);
+
+         switch ($a['cancel']) {
+            case 0:
+               $st = "SUKSES";
+               break;
+            case 1:
+               $st = "CANCEL";
+               break;
+         }
+
+
+
+         $lineData = array($a['id_diskon'], "R" . $a['ref_transaksi'], $tgl_kas, $jumlah, $note, $jumlah, $st, $note_S, $tanggal);
+         fputcsv($f, $lineData, $delimiter);
+      }
+
+      fseek($f, 0);
+      header('Content-Type: text/csv');
+      header('Content-Disposition: attachment; filename="' . $filename . '";');
+      fpassthru($f);
+   }
+
    public function export_pc() //PETYCASH
    {
       $month = $_POST['month'];
