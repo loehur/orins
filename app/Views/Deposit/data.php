@@ -31,12 +31,12 @@
                     <?= number_format($d['jumlah']) ?><br>
                     <span class="text-sm">
                         <?php if ($d['status_mutasi'] == 1) { ?>
-                            <span class="text-success">Success</span>
+                            <span class="text-success">Success</span>,
                             <?php } else {
                             if ($d['status_mutasi'] == 0) { ?>
-                                <span class="text-warning">Checking</span>
+                                <span class="text-warning">Checking</span>,
                             <?php } else { ?>
-                                <span class="text-danger">Rejected</span>
+                                <span class="text-danger">Rejected</span>, (<?= $d['note_batal'] ?>),
                             <?php } ?>
                         <?php } ?>
                         <?= $d['metode_mutasi'] == 1 ? 'Tunai' : 'NonTunai' ?>
