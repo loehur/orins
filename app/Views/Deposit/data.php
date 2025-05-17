@@ -39,7 +39,9 @@
                                 <span class="text-danger">Rejected</span>, (<?= $d['note_batal'] ?>),
                             <?php } ?>
                         <?php } ?>
-                        <?= $d['metode_mutasi'] == 1 ? 'Tunai' : 'NonTunai' ?>
+                        <span class="badge text-dark">
+                            <?= $d['metode_mutasi'] == 1 ? 'Tunai' : 'NonTunai' ?>
+                        </span>
                     </span>
                 </div>
             </div>
