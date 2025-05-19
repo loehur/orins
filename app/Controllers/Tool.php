@@ -10,7 +10,7 @@ class Tool extends Controller
 
       echo "<pre>";
       foreach ($cek as $c) {
-         echo $pelanggan[$c['id_pelanggan']]['nama'] . "<br>";
+         echo $c['id_pelanggan'] . " " . $pelanggan[$c['id_pelanggan']]['nama'] . " ";
       }
       echo "</pre>";
    }
