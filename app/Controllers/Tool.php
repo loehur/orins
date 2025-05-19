@@ -15,7 +15,7 @@ class Tool extends Controller
          if (isset($pelanggan[$c['id_pelanggan']])) {
             $pelanggan[$k] = $pelanggan[$c['id_pelanggan']]['nama'];
          } else {
-            echo $pelanggan[$c['id_pelanggan']] . " ";
+            echo $c['id_pelanggan'] . " ";
             continue;
          }
 
