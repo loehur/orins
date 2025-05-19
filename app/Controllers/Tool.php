@@ -16,8 +16,15 @@ class Tool extends Controller
          if (isset($dPelanggan[$c['id_pelanggan']])) {
             $pelanggan[$k] = $dPelanggan[$c['id_pelanggan']]['nama'];
          } else {
-            echo $c['id_pelanggan'] . " ";
-            continue;
+
+            if (isset($dPelangganDVC[$c['id_pelanggan']])) {
+               $pelanggan[$k] = $dPelangganDVC[$c['id_pelanggan']]['nama'];
+               echo $pelanggan[$k] . " OK<br>";
+               continue;
+            } else {
+               echo $c['id_pelanggan'] . " FUCK<br>";
+               continue;
+            }
          }
 
          $ref[$k] = $c['ref'];
