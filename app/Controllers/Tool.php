@@ -15,6 +15,8 @@ class Tool extends Controller
          $up = $this->db(0)->update("ref", "mark = '" . $pelanggan[$k] . "'", "ref = '" . $ref[$k] . "' AND mark = ''");
          if ($up['errno'] <> 0) {
             echo $up['error'] . "<br>";
+         } else {
+            echo $pelanggan[$k] . " OK<br>";
          }
       }
       echo "</pre>";
