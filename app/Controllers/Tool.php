@@ -30,11 +30,19 @@ class Tool extends Controller
          //    echo $pelanggan[$k] . " OK<br>";
          // }
 
-         $up = $this->db(0)->update("order_data", "id_toko = '" . $id_toko[$k] . "'", "id_order_data = " . $id[$k]);
+         // $up = $this->db(0)->update("order_data", "id_toko = '" . $id_toko[$k] . "'", "id_order_data = " . $id[$k]);
+         // if ($up['errno'] <> 0) {
+         //    echo $up['error'] . "<br>";
+         // } else {
+         //    echo $pelanggan[$k] . " ID TOKO OK<br>";
+         // }
+
+
+         $up = $this->db(0)->update("order_data", "id_pelanggan = '" . $id_rekanan . "'", "id_order_data = " . $id[$k]);
          if ($up['errno'] <> 0) {
             echo $up['error'] . "<br>";
          } else {
-            echo $pelanggan[$k] . " ID TOKO OK<br>";
+            echo $pelanggan[$k] . " OK<br>";
          }
       }
       echo "</pre>";
