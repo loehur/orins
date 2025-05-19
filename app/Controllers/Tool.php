@@ -6,11 +6,16 @@ class Tool extends Controller
    {
       $id_rekanan = 1245;
       $pelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
-      $cek = $this->db(0)->get_where("order_data", "id_toko = 4 AND cancel = 0 AND id_afiliasi <> 0",);
+      $cek = $this->db(0)->get_where("order_data", "id_toko = 4 AND cancel = 0 AND id_afiliasi <> 0 AND id_pelanggan <> 0",);
 
       echo "<pre>";
-      foreach ($cek as $c) {
-         echo $c['id_pelanggan'] . " " . $pelanggan[$c['id_pelanggan']]['nama'] . " ";
+      foreach ($cek as $k => $c) {
+         $pelanggan[$k] = $pelanggan[$c['id_pelanggan']]['nama'];
+         $ref = $c['ref'];
+         $up = $this->db(0)->update("ref", "mark = '" . $pelanggan[$k] . "'", "ref = '" . $ref . "' AND mark = ''");
+         if ($up['errno'] <> 0) {
+            echo $up['error'] . "<br>";
+         }
       }
       echo "</pre>";
    }
