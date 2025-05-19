@@ -11,8 +11,8 @@ class Tool extends Controller
       echo "<pre>";
       foreach ($cek as $k => $c) {
          $pelanggan[$k] = $pelanggan[$c['id_pelanggan']]['nama'];
-         $ref = $c['ref'];
-         $up = $this->db(0)->update("ref", "mark = '" . $pelanggan[$k] . "'", "ref = '" . $ref . "' AND mark = ''");
+         $ref[$k] = $c['ref'];
+         $up = $this->db(0)->update("ref", "mark = '" . $pelanggan[$k] . "'", "ref = '" . $ref[$k] . "' AND mark = ''");
          if ($up['errno'] <> 0) {
             echo $up['error'] . "<br>";
          }
