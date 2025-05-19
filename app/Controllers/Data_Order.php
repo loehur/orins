@@ -28,6 +28,7 @@ class Data_Order extends Controller
             break;
          case 3:
             $title = "Data Order - Proses (Online)";
+            break;
          case 4:
             $title = "Data Order - AFF (IN)";
             break;
