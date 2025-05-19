@@ -31,6 +31,8 @@ class Data_Order extends Controller
          case 4:
             $title = "Data Order - AFF (IN)";
             break;
+         case 5:
+            $title = "Data Order - AFF (OUT)";
             break;
          case 100:
             $title = "Data Order - Proses (Stok)";
@@ -82,8 +84,13 @@ class Data_Order extends Controller
             break;
       }
 
-      if ($parse_2 == 4) {
-         $where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_pelanggan <> 0 AND tuntas = 0 AND id_ambil_aff = 0 AND id_ambil = 0 ORDER BY id_order_data DESC";
+      switch ($parse_2) {
+         case 4:
+            $where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_pelanggan <> 0 AND tuntas = 0 AND id_ambil_aff = 0 AND id_ambil = 0 ORDER BY id_order_data DESC";
+            break;
+         case 5:
+            $where = "id_afiliasi <> " . $this->userData['id_toko'] . " AND id_afiliasi <> 0 AND id_pelanggan <> 0 AND tuntas = 0 AND id_ambil_aff = 0 AND id_ambil = 0 ORDER BY id_order_data DESC";
+            break;
       }
 
       $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
