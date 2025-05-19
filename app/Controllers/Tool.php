@@ -6,7 +6,7 @@ class Tool extends Controller
    {
       $id_rekanan = 1245;
       $pelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
-      $cek = $this->db(0)->get_where("order_data", "id_toko = 4");
+      $cek = $this->db(0)->get_where("order_data", "id_toko = 4 AND cancel = 0 AND id_afiliasi <> 0",);
 
       echo "<pre>";
       foreach ($cek as $c) {
