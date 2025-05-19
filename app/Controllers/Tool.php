@@ -10,9 +10,19 @@ class Tool extends Controller
 
       echo "<pre>";
       foreach ($cek as $k => $c) {
+         $id[$k] = $c['id_order_data'];
          $pelanggan[$k] = $pelanggan[$c['id_pelanggan']]['nama'];
          $ref[$k] = $c['ref'];
-         $up = $this->db(0)->update("ref", "mark = '" . $pelanggan[$k] . "'", "ref = '" . $ref[$k] . "' AND mark = ''");
+         $cs_id[$k] = $c['id_user_afiliasi'];
+
+         // $up = $this->db(0)->update("ref", "mark = '" . $pelanggan[$k] . "'", "ref = '" . $ref[$k] . "' AND mark = ''");
+         // if ($up['errno'] <> 0) {
+         //    echo $up['error'] . "<br>";
+         // } else {
+         //    echo $pelanggan[$k] . " OK<br>";
+         // }
+
+         $up = $this->db(0)->update("order_data", "id_penerima = '" . $cs_id[$k] . "'", "id_order_data = " . $id[$k]);
          if ($up['errno'] <> 0) {
             echo $up['error'] . "<br>";
          } else {
