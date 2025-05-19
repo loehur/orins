@@ -19,8 +19,13 @@ class Tool extends Controller
 
             if (isset($dPelangganDVC[$c['id_pelanggan']])) {
                $pelanggan[$k] = $dPelangganDVC[$c['id_pelanggan']]['nama'];
-               echo $pelanggan[$k] . " OK<br>";
-               continue;
+
+               $up = $this->db(0)->update("order_data", "id_pelanggan = " . $id_rekanan . ", id_afiliasi = 0, id_user_afiliasi = 0", "id_order_data = " . $id[$k]);
+               if ($up['errno'] <> 0) {
+                  echo $up['error'] . "<br>";
+               } else {
+                  echo $pelanggan[$k] . " OK pindah sudah<br>";
+               }
             } else {
                echo $c['id_pelanggan'] . " FUCK<br>";
                continue;
@@ -50,13 +55,6 @@ class Tool extends Controller
          //    echo $up['error'] . "<br>";
          // } else {
          //    echo $pelanggan[$k] . " ID TOKO OK<br>";
-         // }
-
-         // $up = $this->db(0)->update("order_data", "id_pelanggan = " . $id_rekanan, "id_order_data = " . $id[$k]);
-         // if ($up['errno'] <> 0) {
-         //    echo $up['error'] . "<br>";
-         // } else {
-         //    echo $pelanggan[$k] . " OK<br>";
          // }
       }
       echo "</pre>";
