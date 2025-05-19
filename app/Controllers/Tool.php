@@ -5,7 +5,7 @@ class Tool extends Controller
    function mutasi() //davinci aff to davinci rekanan
    {
       $id_rekanan = 1245;
-      $pelanggan = $this->db(0)->get_where('pelanggan', 'id_toko = 2', 'id_pelanggan');
+      $dPelanggan = $this->db(0)->get_where('pelanggan', 'id_toko = 2', 'id_pelanggan');
       $cek = $this->db(0)->get_where("order_data", "id_toko = 2 AND cancel = 0 AND id_afiliasi <> 0 AND id_pelanggan <> 0 AND insertTime LIKE '2025-05%'",);
 
       echo "<pre>";
@@ -13,7 +13,7 @@ class Tool extends Controller
          $id[$k] = $c['id_order_data'];
 
          if (isset($pelanggan[$c['id_pelanggan']])) {
-            $pelanggan[$k] = $pelanggan[$c['id_pelanggan']]['nama'];
+            $pelanggan[$k] = $dPelanggan[$c['id_pelanggan']]['nama'];
          } else {
             echo $c['id_pelanggan'] . " ";
             continue;
