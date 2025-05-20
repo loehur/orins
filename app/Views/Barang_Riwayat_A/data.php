@@ -52,6 +52,7 @@
                         <span class='fw-bold text-<?= $txt ?>'><i class='fa-solid fa-arrow-right'></i></span>
                     </td>
                     <td><?= strtoupper($target) ?></td>
+                    <td><?= $d['sds'] == 1 ? "#S" : "" ?></td>
                     <td class="text-end"><?= $d['qty'] ?></td>
                 </tr>
             <?php } ?>
