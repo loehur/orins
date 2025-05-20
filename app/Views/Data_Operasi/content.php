@@ -67,7 +67,7 @@
                             $charge[$ref] = $ds['jumlah'];
                             if (in_array($this->userData['user_tipe'], PV::PRIV[2])) {
                                 if ($data['ref'][$ref]['tuntas'] == 0) {
-                                    $showSurcharge .= "<i class='fa-regular fa-circle-xmark cancel_charge' data-id='" . $ds['id'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelCharge'></i> <span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
+                                    $showSurcharge .= "<i class='fa-regular fa-circle-xmark cancel_charge' data-id='" . $ds['id'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelCharge'></i> <span class='text-primary'><small>Surcharge#" . $ds['id'] . " (".$ds['note'].")</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
                                 } else {
                                     $showSurcharge .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
                                 }

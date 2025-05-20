@@ -343,8 +343,14 @@
                                 <input name="ref_charge" type="hidden">
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Note</label>
+                                <input type="text" name="note" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
                         <div class="row mb-2">
-                            <div class="col-sm-6">
+                            <div class="col">
                                 <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Tambah</button>
                             </div>
                         </div>

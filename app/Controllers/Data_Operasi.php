@@ -384,12 +384,13 @@ class Data_Operasi extends Controller
    {
       $ref = $_POST['ref_charge'];
       $jumlah = $_POST['charge'];
+      $note = $_POST['note'];
 
       $whereCount = "ref_transaksi = '" . $ref . "' AND cancel = 0";
       $dataCount = $this->db(0)->count_where('charge', $whereCount);
 
-      $cols = "id_toko, ref_transaksi, jumlah, id_user";
-      $vals = $this->userData['id_toko'] . ",'" . $ref . "'," . $jumlah . "," . $this->userData['id_user'];
+      $cols = "id_toko, ref_transaksi, jumlah, id_user, note";
+      $vals = $this->userData['id_toko'] . ",'" . $ref . "'," . $jumlah . "," . $this->userData['id_user'] . ", '" . $note . "'";
 
       if ($dataCount < 1) {
          $do = $this->db(0)->insertCols('charge', $cols, $vals);
