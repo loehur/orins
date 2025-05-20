@@ -62,10 +62,10 @@ class Data_Produksi extends Controller
             }
          }
 
-         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . ")";
+         $where = "ref IN (" . $ref_list . ") AND id_ambil = 0 AND tuntas = 0 AND (id_toko = " . $this->userData['id_toko'] . ")";
          $data['cs_id'] = $this->db(0)->get_where('order_data', $where, 'id_penerima');
 
-         $where = "ref IN (" . $ref_list . ") AND tuntas = 0 AND (id_afiliasi = " . $this->userData['id_toko'] . ") AND id_user_afiliasi <> 0 AND insertTime NOT LIKE '" . date("Y-m-d") . "%' AND cancel = 0";
+         $where = "ref IN (" . $ref_list . ") AND id_ambil = 0 AND tuntas = 0 AND (id_afiliasi = " . $this->userData['id_toko'] . ") AND id_user_afiliasi <> 0 AND insertTime NOT LIKE '" . date("Y-m-d") . "%' AND cancel = 0";
          $data['cs_id_aff'] = $this->db(0)->get_where('order_data', $where, 'id_user_afiliasi');
       }
 
