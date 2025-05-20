@@ -83,6 +83,13 @@
         });
     });
 
+    $(document).on('keydown', function(event) {
+        if (event.keyCode == 112) {
+            event.preventDefault();
+            $('.selectize-input').click();
+        }
+    });
+
     $("#barang").change(function() {
         var get = $(this).val();
         if (get != "") {

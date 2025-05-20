@@ -23,17 +23,17 @@
                     <label>Tanggal</label><br>
                     <input type="date" name="tanggal" class="text-center border-bottom border-0" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d'); ?>">
                 </div>
-                <div class="col-auto px-1 mb-2 text-end">
+                <div class="col-auto px-1 mb-2">
                     <label>No. DO</label><br>
-                    <input class="text-end border-bottom border-0" required name="no_po" style="text-transform: uppercase;">
+                    <input class="border-bottom border-0" id="test" required name="no_po" style="text-transform: uppercase;">
                 </div>
-                <div class="col-auto px-1 mb-2 text-end">
+                <div class="col-auto px-1 mb-2">
                     <label>No. Faktur</label><br>
-                    <input class="text-end border-bottom border-0" required name="no_fak" style="text-transform: uppercase;">
+                    <input class="border-bottom border-0" required name="no_fak" style="text-transform: uppercase;">
                 </div>
-                <div class="col-auto px-1 mb-2 text-end">
+                <div class="col-auto px-1 mb-2">
                     <label>Note</label><br>
-                    <input class="text-end border-bottom border-0" name="note" maxlength="100">
+                    <input class="border-bottom border-0" name="note" maxlength="100">
                 </div>
                 <div class="col-auto px-1 mb-2">
                     <div class="pt-4">
@@ -73,18 +73,8 @@
                         </span>
                     </td>
                     <td>
-                        <?php if ($a['cek'] == 0) { ?>
-                            <span data-id="<?= $a['id'] ?>" data-col="no_faktur" data-tipe="text" data-primary="id" data-tb="master_input" class="cell_edit"><?= $a['no_faktur'] ?></span>
-                        <?php } else { ?>
-                            <?= $a['no_faktur'] ?>
-                        <?php } ?>
-                        <?php if ($a['cek'] == 0) { ?>
-                            <span data-id="<?= $a['id'] ?>" data-col="no_po" data-tipe="text" data-primary="id" data-tb="master_input" class="cell_edit"><?= $a['no_po'] ?></span>
-                        <?php } else { ?>
-                            <?= $a['no_po'] ?>
-                        <?php } ?>
-                        <br>
-                        <?= $a['note'] ?>
+                        <?= $a['no_po'] ?>/<?= $a['no_faktur'] ?><br>
+                        <small><span><i class="fa-regular fa-note-sticky"></i> <?= $a['note'] ?></span></small>
                     </td>
                     <td>
                         <?php if ($a['cek'] == 0) { ?>

@@ -24,6 +24,13 @@ class Audit_BMasuk extends Controller
       $this->viewer();
    }
 
+   function loadEdit($id)
+   {
+      $data['supplier'] = $this->db(0)->get('master_supplier', 'id');
+      $data['input'] = $this->db(0)->get_where_row('master_input', "id = '" . $id . "'");
+      $this->view(__CLASS__ . "/form", $data);
+   }
+
    public function viewer($page = "", $parse = "")
    {
       $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse, "page" => $page]);
@@ -59,6 +66,26 @@ class Audit_BMasuk extends Controller
    {
       $data = $this->db(0)->get_where($table, $col . " = '" . $kode . "'");
       echo json_encode($data);
+   }
+
+   function update_surat()
+   {
+      $supplier = strtoupper($_POST['supplier']);
+      $tanggal = $_POST['tanggal'];
+      $no_fak = strtoupper($_POST['no_fak']);
+      $no_po = strtoupper($_POST['no_po']);
+      $note = strtoupper($_POST['note']);
+      $error = 0;
+
+      $id = $_POST['id'];
+      $set = "id_sumber = '" . $supplier . "', no_faktur = '" . $no_fak . "', no_po = '" . $no_po . "', tanggal = '" . $tanggal . "', note = '" . $note . "'";
+      $where = "id = '" . $id . "'";
+      $do = $this->db(0)->update('master_input', $set, $where);
+      if ($do['errno'] <> 0) {
+         $error = $do['error'];
+      }
+
+      echo $error;
    }
 
    function update()

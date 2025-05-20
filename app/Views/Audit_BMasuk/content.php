@@ -64,12 +64,12 @@
                         <small><?= $a['sds'] == 1 ? "SDS" : "ABF" ?></small>
                     </td>
                     <td>
-                        <?= $a['id'] ?><br>
+                        <?= $a['id'] ?> <span class="editSurat text-primary" style="cursor:pointer;" data-id="<?= $a['id'] ?>" data-bs-target="#modalEdit" data-bs-toggle="modal"><i class="fa-solid fa-pen-to-square"></i></span><br>
                         <span class="fw-bold"><?= $data['supplier'][$a['id_sumber']]['nama'] ?></span>
                     </td>
                     <td>
-                        <?= $a['no_po'] ?> <?= $a['no_faktur'] ?><br>
-                        <?= $a['note'] ?>
+                        <?= $a['no_po'] ?>/<?= $a['no_faktur'] ?><br>
+                        <small><span><i class="fa-regular fa-note-sticky"></i> <?= $a['note'] ?></span></small>
                     </td>
                     <td>
                         <?php if ($a['cek'] == 0) { ?>
@@ -87,6 +87,18 @@
         </table>
     </div>
 </main>
+
+<div class="modal" id="modalEdit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Edit Surat
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="formLoad" class="p-2"></div>
+        </div>
+    </div>
+</div>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
@@ -106,6 +118,13 @@
             "dom": "lfrti"
         });
     });
+
+    $(".editSurat").click(function() {
+        var id = $(this).attr('data-id');
+        $("div#formLoad").load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
+            $("div#formLoad").load('<?= PV::BASE_URL ?>Audit_BMasuk/loadEdit/' + id);
+        });
+    })
 
     $(".update_bol").on('click', function() {
         var id = $(this).attr('data-id');

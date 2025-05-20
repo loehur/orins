@@ -1,6 +1,6 @@
 <?php $d = $data['input'] ?>
 
-<form class="ajax" action="<?= PV::BASE_URL ?>Gudang_Input/update" method="POST">
+<form class="ajax" action="<?= PV::BASE_URL ?>Audit_BMasuk/update_surat" method="POST">
     <div class="row mb-2 mx-0">
         <input name="id" type="hidden" value="<?= $d['id'] ?>">
         <div class="col  px-1 mb-2">
@@ -14,11 +14,11 @@
         </div>
         <div class="col-auto px-1 mb-2">
             <label class="text-primary text-sm">Tanggal</label><br>
-            <input type="date" name="tanggal" value="<?= $d['tanggal'] ?>" class="text-center border-bottom border-0" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>">
+            <input readonly type="date" name="tanggal" value="<?= $d['tanggal'] ?>" class="text-center border-bottom border-0" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>">
         </div>
         <div class="col px-1 mb-2" style="min-width: 200px;">
             <label class="text-primary text-sm">No. DO</label><br>
-            <input class="w-100 border-bottom border-0" value="<?= $d['no_po'] ?>" required name="no_po" style="text-transform: uppercase;">
+            <input readonly class="w-100 border-bottom border-0" value="<?= $d['no_po'] ?>" required name="no_po" style="text-transform: uppercase;">
         </div>
         <div class="col px-1 mb-2">
             <label class="text-primary text-sm">No. Faktur</label><br>
@@ -28,7 +28,7 @@
     <div class="row mb-2 mx-0">
         <div class="col px-1 mb-2">
             <label class="text-primary text-sm">Note</label><br>
-            <input class="border-bottom border-0 w-100" required value="<?= $d['note'] ?>" name="note">
+            <input readonly class="border-bottom border-0 w-100" required value="<?= $d['note'] ?>" name="note">
         </div>
         <div class="col-auto mt-auto mb-2 px-1">
             <button type="submit" class="btn btn-primary bg-gradient">Update</button>
