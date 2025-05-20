@@ -69,13 +69,13 @@
                                 if ($data['ref'][$ref]['tuntas'] == 0) {
                                     $showSurcharge .= "<i class='fa-regular fa-circle-xmark cancel_charge' data-id='" . $ds['id'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelCharge'></i> <span class='text-primary'><small>Surcharge#" . $ds['id'] . " " . $ds['note'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
                                 } else {
-                                    $showSurcharge .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
+                                    $showSurcharge .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . " " . $ds['note'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
                                 }
                             } else {
-                                $showSurcharge .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
+                                $showSurcharge .= "<span class='text-primary'><small>Surcharge#" . $ds['id'] . " " . $ds['note'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
                             }
                         } else {
-                            $showMutasi .= "<span><small>Surcharge#" . $ds['id'] . " <span class='text-danger'>" . $ds['cancel_reason'] . " <i class='fa-solid fa-xmark'></i></span></small> <del>Rp" . number_format($ds['jumlah']) . "</del></span><br>";
+                            $showMutasi .= "<span><small>Surcharge#" . $ds['id'] . " " . $ds['note'] . "<span class='text-danger'>" . $ds['cancel_reason'] . " <i class='fa-solid fa-xmark'></i></span></small> <del>Rp" . number_format($ds['jumlah']) . "</del></span><br>";
                         }
                     }
                 }

@@ -73,6 +73,7 @@
                     } ?>
                     <span><?= $target ?></span>
                 </td>
+                <td><?= $d['sds'] == 1 ? "S" : "" ?></td>
                 <td class="text-end"><?= $d['qty'] ?></td>
             </tr>
         <?php } ?>
