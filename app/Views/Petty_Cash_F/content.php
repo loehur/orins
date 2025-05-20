@@ -64,7 +64,7 @@
                 } ?>
                 <tr>
                     <td class="align-middle">
-                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                        <?= $a['tanggal'] == "" ? '<i class="fa-solid fa-server"></i> ' . date('d/m/y H:i', strtotime($a['insertTime'])) : '<i class="fa-solid fa-file-pen"></i> ' . $a['tanggal'] ?>
                     </td>
                     <td>
                         <span class='fw-bold text-danger'><i class='fa-solid fa-arrow-right'></i></span> <?= $data['jkeluar'][$a['id_target']]['nama'] ?>

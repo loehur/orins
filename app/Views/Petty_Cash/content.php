@@ -78,7 +78,7 @@
             foreach ($data['pakai'] as $a) { ?>
                 <tr id="tr<?= $a['id'] ?>">
                     <td class="align-middle">
-                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                        <?= $a['tanggal'] == "" ? '<i class="fa-solid fa-server"></i> ' . date('d/m/y H:i', strtotime($a['insertTime'])) : '<i class="fa-solid fa-file-pen"></i> ' . $a['tanggal'] ?>
                     </td>
                     <td>
                         <span class='fw-bold text-danger'><i class='fa-solid fa-arrow-right'></i></span> <?= $data['jkeluar'][$a['id_target']]['nama'] ?>
@@ -126,6 +126,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="container">
+                        <div class="row mb-2">
+                            <div class="col-auto">
+                                <label class="form-label">Tanggal Nota/Event</label>
+                                <input type="date" name="tanggal" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
                         <div class="row mb-2">
                             <div class="col">
                                 <label class="form-label">Jumlah</label>

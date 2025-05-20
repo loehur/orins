@@ -74,10 +74,11 @@ class Petty_Cash extends Controller
       $jumlah = $_POST['jumlah'];
       $jenis = $_POST['jenis'];
       $note = $_POST['note'];
+      $tanggal = $_POST['tanggal'];
 
       $ref = date('ymdHi');
-      $cols = 'id_sumber, id_target, tipe, ref, jumlah, st, note';
-      $vals =  "'" . $this->userData['id_toko'] . "','" . $jenis . "',2,'" . $ref . "'," . $jumlah . ",0,'" . $note . "'";
+      $cols = 'id_sumber, id_target, tipe, ref, jumlah, st, note, tanggal';
+      $vals =  "'" . $this->userData['id_toko'] . "','" . $jenis . "',2,'" . $ref . "'," . $jumlah . ",0,'" . $note . "','" . $tanggal . "'";
 
       $cek = $this->db(0)->count_where("kas_kecil", "jumlah = " . $jumlah . " AND ref = '" . $ref . "' AND tipe = '" . $jenis . "'");
       if ($cek == 0) {
