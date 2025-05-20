@@ -3,25 +3,21 @@
 <form class="ajax" action="<?= PV::BASE_URL ?>Audit_BMasuk/update_surat" method="POST">
     <div class="row mb-2 mx-0">
         <input name="id" type="hidden" value="<?= $d['id'] ?>">
-        <div class="col  px-1 mb-2">
-            <label class="text-primary text-sm">Supplier</label><br>
-            <select name="supplier" required class="border-0 tize" id="tujuan" style="text-transform: uppercase; width:300px">
-                <option></option>
-                <?php foreach ($data['supplier'] as $tj) { ?>
-                    <option value="<?= $tj['id'] ?>" <?= $d['id_sumber'] == $tj['id'] ? "selected" : "" ?>><?= strtoupper($tj['nama']) ?></option>
-                <?php } ?>
-            </select>
+        <div class="col px-1 mb-2">
+            <label class="text-primary text-sm" style="min-width: 250px;">Supplier</label><br>
+            <input readonly class="w-100 border-bottom border-0" value="<?= $data['supplier'][$d['id_sumber']]['nama'] ?>" required name="view_sup" style="text-transform: uppercase;">
+            <input readonly type="hidden" class="w-100 border-bottom border-0" value="<?= $d['id_sumber'] ?>" required name="supplier" style="text-transform: uppercase;">
         </div>
         <div class="col-auto px-1 mb-2">
             <label class="text-primary text-sm">Tanggal</label><br>
             <input readonly type="date" name="tanggal" value="<?= $d['tanggal'] ?>" class="text-center border-bottom border-0" value="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d'); ?>">
         </div>
-        <div class="col px-1 mb-2" style="min-width: 200px;">
+        <div class="col px-1 mb-2" style="min-width: 100px;">
             <label class="text-primary text-sm">No. DO</label><br>
             <input readonly class="w-100 border-bottom border-0" value="<?= $d['no_po'] ?>" required name="no_po" style="text-transform: uppercase;">
         </div>
         <div class="col px-1 mb-2">
-            <label class="text-primary text-sm">No. Faktur</label><br>
+            <label class="text-primary text-sm" style="min-width: 100px;">No. Faktur</label><br>
             <input class="w-100 border-bottom border-0" required value="<?= $d['no_faktur'] ?>" name="no_fak" style="text-transform: uppercase;">
         </div>
     </div>
