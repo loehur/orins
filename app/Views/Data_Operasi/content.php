@@ -551,7 +551,6 @@
                                             <table>
                                                 <tr>
                                                     <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border-0 px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i></a></small></td>
-                                                    <td><?= $ambil_all[$ref] ?></td>
                                                     <?php if ($ambil_all[$ref] == false) { ?>
                                                         <?php if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
                                                             <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>

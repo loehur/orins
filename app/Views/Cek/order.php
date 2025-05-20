@@ -444,6 +444,7 @@
                                         ?>
                                             <tr style="<?= ($cancel_barang == 2) ? 'color:silver' : '' ?>">
                                                 <td class="align-top">
+                                                    <small><span class="badge bg-success"><?= $do['fp'] == 1 ? "FP" : "" ?></span></small>
                                                     <small><span class="badge bg-light text-dark"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
                                                     <?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?>
                                                 </td>
