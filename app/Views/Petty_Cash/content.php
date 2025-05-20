@@ -97,7 +97,7 @@
                     <td>
                         <span class='fw-bold text-danger'><i class='fa-solid fa-arrow-right'></i></span> <?= $data['jkeluar'][$a['id_target']]['nama'] ?>
                         <br>
-                        <i class="fa-regular fa-note-sticky"></i>&nbsp;
+                        <i class="fa-regular fa-note-sticky"></i>
                         <?php if ($a['st'] <> 0 || $a['tipe'] == 5) { ?>
                             <?= $a['note'] ?>
                         <?php } else { ?>

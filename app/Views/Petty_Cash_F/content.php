@@ -11,7 +11,7 @@
     $total_setor = 0;
     ?>
     <!-- Main page content-->
-    <div class="container">
+    <div class="container pb-4">
         <div class="row mx-0">
             <div class="col text-sm text-end fw-bold pe-0">
                 Saldo Rp<?= number_format($data['saldo']) ?>
@@ -63,21 +63,20 @@
                     $total_setor += $a['jumlah'];
                 } ?>
                 <tr>
-                    <td class="align-middle">
+                    <td>
                         <?= $a['tanggal'] == "" ? '<i class="fa-solid fa-server"></i> ' . date('d/m/y H:i', strtotime($a['insertTime'])) : '<i class="fa-solid fa-file-pen"></i> ' . $a['tanggal'] ?>
-                    </td>
-                    <td>
-                        <span class='fw-bold text-danger'><i class='fa-solid fa-arrow-right'></i></span> <?= $data['jkeluar'][$a['id_target']]['nama'] ?>
-                    </td>
-                    <td>
-                        <?= $a['note'] ?>
+                        <br>
+                        <span class="text-primary">
+                            <i class="fa-regular fa-note-sticky"></i> <?= $a['note'] ?>
+                        </span>
                     </td>
                     <td class="text-end">
-                        <?= number_format($a['jumlah']) ?>
+                        <span class='fw-bold text-danger'><i class='fa-solid fa-arrow-right'></i></span> <?= $data['jkeluar'][$a['id_target']]['nama'] ?><br>
+                        <span class="text-primary"><?= number_format($a['jumlah']) ?></span>
                     </td>
                     <td class="text-end" style="width:70px">
                         <?php if ($a['st'] == 0) { ?>
-                            <a class="ajax" href="<?= PV::BASE_URL ?>Petty_Cash_F/verify/<?= $a['id'] ?>/1">Verify</a>
+                            <a class="ajax btn btn-sm btn-success bg-gradient" href="<?= PV::BASE_URL ?>Petty_Cash_F/verify/<?= $a['id'] ?>/1">Verify</a>
                         <?php } else { ?>
                             <?php if ($a['st'] == 1) { ?>
                                 <span class="text-sm text-success">Verified</span>
