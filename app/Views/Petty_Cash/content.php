@@ -78,39 +78,34 @@
             foreach ($data['pakai'] as $a) { ?>
                 <tr id="tr<?= $a['id'] ?>">
                     <td class="align-middle">
-                        <?= $a['tanggal'] == "" ? '<i class="fa-solid fa-server"></i> ' . date('d/m/y H:i', strtotime($a['insertTime'])) : '<i class="fa-solid fa-file-pen"></i> ' . $a['tanggal'] ?>
+                        <?= $a['tanggal'] == "" ? '<i class="fa-solid fa-server"></i> ' . date('d/m/y H:i', strtotime($a['insertTime'])) : '<i class="fa-solid fa-file-pen"></i> ' . $a['tanggal'] ?><br>
+                        <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
+                            <?php if ($a['st'] == 0) { ?>
+                                <?php if ($a['tipe'] == 2) { ?>
+                                    <span data-id="<?= $a['id'] ?>" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>&nbsp;
+                                <?php } ?>
+                                <span class="text-sm text-warning">Checking</span>
+                            <?php } else { ?>
+                                <?php if ($a['st'] == 1) { ?>
+                                    <span class="text-sm text-success">Verified</span>
+                                <?php } ?>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <?= $a['st'] == 0 ? "Check" : "Verified" ?>
+                        <?php } ?>
                     </td>
                     <td>
                         <span class='fw-bold text-danger'><i class='fa-solid fa-arrow-right'></i></span> <?= $data['jkeluar'][$a['id_target']]['nama'] ?>
-                    </td>
-                    <td>
+                        <br>
                         <?php if ($a['st'] <> 0 || $a['tipe'] == 5) { ?>
                             <?= $a['note'] ?>
                         <?php } else { ?>
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-col="note"><?= $a['note'] ?></span>
                         <?php } ?>
                     </td>
-                    <td class="text-end">
-                        <?= number_format($a['jumlah']) ?>
+                    <td class="text-end" style="width:70px">
+                        <?= number_format($a['jumlah']) ?><br>&nbsp;
                     </td>
-                    <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
-                        <td class="text-end" style="width:70px">
-                            <?php if ($a['st'] == 0) { ?>
-                                <?php if ($a['tipe'] == 2) { ?>
-                                    <span data-id="<?= $a['id'] ?>" class="cell_delete text-danger" style="cursor: pointer;"><i class="fa-regular fa-trash-can"></i></span>
-                                <?php } ?>
-                                <span class="text-sm text-warning">Check</span>
-                            <?php } else { ?>
-                                <?php if ($a['st'] == 1) { ?>
-                                    <span class="text-sm text-success">Verified</span>
-                                <?php } ?>
-                            <?php } ?>
-                        </td>
-                    <?php } else { ?>
-                        <td class="text-end">
-                            <?= $a['st'] == 0 ? "Check" : "Verified" ?>
-                        </td>
-                    <?php } ?>
                 </tr>
             <?php } ?>
         </table>
