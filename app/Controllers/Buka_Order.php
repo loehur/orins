@@ -16,9 +16,9 @@ class Buka_Order extends Controller
       $this->v_viewer = "Layouts/viewer";
    }
 
-   function Edit_order($ref, $jenis_pelanggan, $id_pelanggan)
+   function Edit_order($ref, $jenis_pelanggan, $dibayar, $id_pelanggan)
    {
-      $_SESSION['edit'][$this->userData['id_user']] = [$ref, $jenis_pelanggan, $id_pelanggan];
+      $_SESSION['edit'][$this->userData['id_user']] = [$ref, $jenis_pelanggan, $dibayar, $id_pelanggan];
 
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0 AND ref = ''";
       $do = $this->db(0)->delete_where('order_data', $where);
@@ -1051,16 +1051,12 @@ class Buka_Order extends Controller
       $this->db(0)->update("pelanggan", "freq = freq+1", "id_pelanggan = " . $id_pelanggan);
       $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
 
-      if ($id_user_afiliasi == 0) {
+      if ($id_user_afiliasi == 0 && $id_pelanggan_jenis <> 100) {
          foreach ($data['mutasi'] as $dbr) {
             $id_barang = $dbr['id_barang'];
             $barang = $this->db(0)->get_where_row('master_barang', "id ='" . $id_barang . "'");
 
-            if ($id_pelanggan_jenis == 100) {
-               $harga = $barang['harga_2'];
-            } else {
-               $harga = $barang['harga_' . $id_pelanggan_jenis];
-            }
+            $harga = $barang['harga_' . $id_pelanggan_jenis];
 
             if ($harga == 0) {
                echo "Harga " . trim($barang['brand'] . " " . $barang['model']) . " belum ditentukan";
