@@ -52,7 +52,7 @@ class Export extends Controller
       $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
 
-      $fields = array('TRX_ID', 'NO. REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'SERIAL NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK/PAKET', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
@@ -168,7 +168,7 @@ class Export extends Controller
 
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX_ID', 'NO. REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE BARANG', 'PRODUK/PAKET', 'KODE MYOB', 'DETAIL BARANG', 'SERIAL NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK/PAKET', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
 
       foreach ($data as $a) {
@@ -248,7 +248,7 @@ class Export extends Controller
 
       $pacc = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
-      $fields = array('TRX_ID', 'NO. REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
+      $fields = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          if (isset($pacc[$a['pa']]['payment_account'])) {
@@ -321,7 +321,47 @@ class Export extends Controller
       $data = $this->db(0)->get_where("xtra_diskon", $where);
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX_ID', 'NO. REFERENSI', 'TANGGAL', 'JUMLAH', 'DISKON_NOTE', 'STATUS', 'STATUS_NOTE', 'EXPORTED');
+      $fields = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JUMLAH', 'DISKON_NOTE', 'STATUS', 'STATUS_NOTE', 'EXPORTED');
+      fputcsv($f, $fields, $delimiter);
+      foreach ($data as $a) {
+         $jumlah = $a['jumlah'];
+         $note = strtoupper($a['note']);
+         $note_S = strtoupper($a['cancel_reason']);
+         $tgl_kas = substr($a['insertTime'], 0, 10);
+
+         switch ($a['cancel']) {
+            case 0:
+               $st = "SUKSES";
+               break;
+            case 1:
+               $st = "CANCEL";
+               break;
+         }
+
+
+
+         $lineData = array($a['id_diskon'], "R" . $a['ref_transaksi'], $tgl_kas, $jumlah, $note, $jumlah, $st, $note_S, $tanggal);
+         fputcsv($f, $lineData, $delimiter);
+      }
+
+      fseek($f, 0);
+      header('Content-Type: text/csv');
+      header('Content-Disposition: attachment; filename="' . $filename . '";');
+      fpassthru($f);
+   }
+
+   public function export_sc() //surcharge
+   {
+      $month = $_POST['month'];
+      $delimiter = ",";
+      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-SURCHARGE-" . $month . ".csv";
+      $f = fopen('php://memory', 'w');
+
+      $where = "insertTime LIKE '" . $month . "%' AND id_toko = " . $this->userData['id_toko'];
+      $data = $this->db(0)->get_where("charge", $where);
+      $tanggal = date("Y-m-d");
+
+      $fields = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JUMLAH', 'CHARGE_NOTE', 'STATUS', 'STATUS_NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
@@ -363,7 +403,7 @@ class Export extends Controller
       $data = $this->db(0)->get_where("kas_kecil", $where);
 
       $tanggal = date("Y-m-d");
-      $fields = array('TRX_ID', 'TANGGAL', 'JENIS', 'KETERANGAN', 'JUMLAH', 'STATUS', 'EXPORTED');
+      $fields = array('TRX_ID', 'INSERT_DATE', 'TRX_DATE', 'JENIS', 'KETERANGAN', 'JUMLAH', 'STATUS', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          if (isset($pj[$a['id_target']]['nama'])) {
@@ -375,6 +415,7 @@ class Export extends Controller
          $jumlah = $a['jumlah'];
          $ket = strtoupper($a['note']);
          $tgl = substr($a['insertTime'], 0, 10);
+         $trx_date = $a['tanggal'];
          $st = "UNDEFINED";
 
          switch ($a['st']) {
@@ -389,7 +430,7 @@ class Export extends Controller
                break;
          }
 
-         $lineData = array($a['id'], $tgl, strtoupper($jenis), $ket, $jumlah, $st, $tanggal);
+         $lineData = array($a['id'], $tgl, $trx_date, strtoupper($jenis), $ket, $jumlah, $st, $tanggal);
          fputcsv($f, $lineData, $delimiter);
       }
 
