@@ -208,7 +208,7 @@
                                                     </div>
                                                 <?php } ?>
                                                 <?php if ($pdo['note'] <> "") { ?>
-                                                    <div style="float: left;padding-right: 4px;line-height: 100%;">
+                                                    <div style="float: left;padding-right: 4px;line-height: 100%;" class="hilang">
                                                         <small>Note<br><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span></small>
                                                     </div>
                                                 <?php } ?>
@@ -287,7 +287,7 @@
                                 </div>
                             <?php } ?>
                             <?php if ($do['note'] <> "") { ?>
-                                <div style="float: left;padding-right: 4px;line-height: 100%;">
+                                <div style="float: left;padding-right: 4px;line-height: 100%;" class="hilang">
                                     <small>Note</small><br>
                                     <span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
                                 </div>
@@ -438,6 +438,10 @@
 <script>
     $(document).ready(function() {
         window.print();
+
+        $(".hilang").dblclick(function() {
+            $(this).css("display", "none");
+        })
 
         setTimeout(function() {
             self.close();
