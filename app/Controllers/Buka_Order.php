@@ -82,7 +82,7 @@ class Buka_Order extends Controller
       if (isset($_SESSION['edit'][$this->userData['id_user']])) {
          $dEdit = $_SESSION['edit'][$this->userData['id_user']];
          $where = "(ref = '" . $dEdit[0] . "' AND cancel <> 1) OR (id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0) AND cancel = 0";;
-         $whereBarang = "(ref = '" . $dEdit[0] . "' AND stat <> 2) OR (id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND stat <> 2 AND pid = 0)";
+         $whereBarang = "(ref = '" . $dEdit[0] . "' AND stat <> 2 AND pid = 0) OR (id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND stat <> 2 AND pid = 0)";
       } else {
          $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0 AND cancel = 0";
          $whereBarang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND stat <> 2 AND pid = 0";
