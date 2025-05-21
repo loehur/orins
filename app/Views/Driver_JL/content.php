@@ -13,7 +13,7 @@
             <div class="mb-4">
                 <?php foreach ($data['ref_pro'][$key] as $ref => $a) { ?>
                     <div class="row py-1 mx-1 border-bottom" id="R<?= $ref ?>">
-                        <div class="col-auto pe-1">
+                        <div class="col-auto pe-1" style="width:70px">
                             <?= strtoupper($this->dKaryawanAll[$a['cs']]['nama']) ?>
                             <br>
                             <small><?= substr($ref, -4) ?></small>
