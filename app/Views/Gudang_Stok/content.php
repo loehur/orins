@@ -5,14 +5,6 @@
     }
 </style>
 
-<?php
-if ($this->userData['id_toko'] == 1) {
-    $data_stok = $data['stok_gudang'];
-} else {
-    $data_stok = $data['stok'];
-}
-?>
-
 <main>
     <!-- Main page content-->
     <div class="container text-sm">
@@ -26,7 +18,7 @@ if ($this->userData['id_toko'] == 1) {
                 <th>Stok</th>
             </thead>
             <?php foreach ($data['barang'] as $a) {
-                if (isset($data_stok[$a['id']])) { ?>
+                if (isset($data['stok'][$a['id']])) { ?>
                     <tr>
                         <td class="">
                             <small><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></small><br>
@@ -45,6 +37,28 @@ if ($this->userData['id_toko'] == 1) {
                             <?= isset($data['stok'][$a['id']]) ? number_format($data['stok'][$a['id']]['qty'], 0) : 0 ?>/<?= isset($data['stok_gudang'][$a['id']]) ? number_format($data['stok_gudang'][$a['id']]['qty'], 0) : 0 ?>
                         </td>
                     </tr>
+                <?php } else { ?>
+                    <?php
+                    if (isset($data['stok_gudang'][$a['id']]) && $this->userData['id_toko'] == 1) { ?>
+                        <tr>
+                            <td class="">
+                                <small><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></small><br>
+                                <small class="fw-bold"><?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?></small>
+                            </td>
+                            <td class="text-end align-top">
+                                <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_1" data-tb="master_barang"><?= $a['harga_1'] ?></span>
+                            </td>
+                            <td class="text-end align-top">
+                                <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_2" data-tb="master_barang"><?= $a['harga_2'] ?></span>
+                            </td>
+                            <td class="text-end align-top">
+                                <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
+                            </td>
+                            <td class="text-end align-top">
+                                <?= isset($data['stok'][$a['id']]) ? number_format($data['stok'][$a['id']]['qty'], 0) : 0 ?>/<?= isset($data['stok_gudang'][$a['id']]) ? number_format($data['stok_gudang'][$a['id']]['qty'], 0) : 0 ?>
+                            </td>
+                        </tr>
+                    <?php } ?>
             <?php }
             } ?>
         </table>
