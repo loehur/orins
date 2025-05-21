@@ -19,6 +19,10 @@ switch ($id_pelanggan_jenis) {
         break;
 }
 
+if ($id_pelanggan_jenis == 100) {
+    $id_pelanggan_jenis = 2;
+}
+
 $total_order = 0;
 $total_item = 0;
 $paket = false;
