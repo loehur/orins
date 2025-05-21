@@ -503,22 +503,10 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
-      // CEK DULU PAKET DOUBLE 
-      if ($paket_ref <> "") {
-         $cek_double_paket = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND cancel = 0");
-         if ($cek_double_paket <> 0) {
-            echo 0;
-            exit();
-         }
-      }
-
-      //CEK DOUBLE PRICE LOCKER
-      if ($price_locker == 1) {
-         $cek_double_pl = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND paket_ref = '" . $paket_ref . "' AND price_locker = 1 AND tuntas = 0 AND cancel = 0");
-         if ($cek_double_pl <> 0) {
-            echo 0;
-            exit();
-         }
+      $cek_double = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND cancel = 0");
+      if ($cek_double <> 0) {
+         echo 0;
+         exit();
       }
 
       if ($afiliasi == 0) {
@@ -568,22 +556,10 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
-      // CEK DULU PAKET DOUBLE 
-      if ($paket_ref <> "") {
-         $cek_double_paket = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND id_barang = " . $id_barang . " AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND stat <> 2");
-         if ($cek_double_paket <> 0) {
-            echo 0;
-            exit();
-         }
-      }
-
-      //CEK DOUBLE PRICE LOCKER
-      if ($price_locker == 1) {
-         $cek_double_pl = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND paket_ref = '" . $paket_ref . "' AND price_locker = 1 AND tuntas = 0 AND stat <> 2");
-         if ($cek_double_pl <> 0) {
-            echo 0;
-            exit();
-         }
+      $cek_double_paket = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND id_barang = " . $id_barang . " AND sn = '" . $sn . "' AND sds = " . $sds . " AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND stat <> 2");
+      if ($cek_double_paket <> 0) {
+         echo 0;
+         exit();
       }
 
       $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $id_barang . "'");
@@ -1163,13 +1139,16 @@ class Buka_Order extends Controller
             $h_beli = $barang['harga'];
             $target_id = $this->userData['id_toko'];
 
-            $cols = 'ref,jenis,id_barang,id_sumber,id_target,harga_beli,qty,pid';
-            $vals = "'" . $ref . "',0," . $id_barang . ",'" . $id_sumber . "','" . $target_id . "'," . $h_beli . "," . $qty . "," . $do['id_order_data'];
-            $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
+            $cek_double = $this->db(0)->count_where("master_mutasi", "ref = '" . $ref . "' AND pid = " . $do['id_order_data']);
+            if ($cek_double == 0) {
+               $cols = 'ref, jenis, id_barang, id_sumber, id_target, harga_beli, qty, pid';
+               $vals = "'" . $ref . "',0," . $id_barang . ",'" . $id_sumber . "','" . $target_id . "'," . $h_beli . "," . $qty . "," . $do['id_order_data'];
+               $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
 
-            if ($do['errno'] <> 0) {
-               echo $do['error'];
-               exit();
+               if ($do['errno'] <> 0) {
+                  echo $do['error'];
+                  exit();
+               }
             }
          }
       }
