@@ -40,8 +40,31 @@
                             <?= $data['stok'][$a['id']]['qty'] ?>/<?= isset($data['stok_gudang'][$a['id']]['qty']) ? $data['stok_gudang'][$a['id']]['qty'] : 0 ?>
                         </td>
                     </tr>
-            <?php }
-            } ?>
+                <?php } else { ?>
+                    <?php if (isset($data['stok_gudang'][$a['id']]) && $this->userData['id_toko'] == 1) { ?>
+                        <tr>
+                            <td class="">
+                                <?= strtoupper($a['grup'] . " " . $a['tipe']) ?>
+                            </td>
+                            <td>
+                                <?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?>
+                            </td>
+                            <td class="text-end">
+                                <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_1" data-tb="master_barang"><?= $a['harga_1'] ?></span>
+                            </td>
+                            <td class="text-end">
+                                <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_2" data-tb="master_barang"><?= $a['harga_2'] ?></span>
+                            </td>
+                            <td class="text-end">
+                                <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
+                            </td>
+                            <td class="text-end">
+                                <?= isset($data['stok'][$a['id']]['qty']) ? $data['stok'][$a['id']]['qty'] : 0 ?>/<?= isset($data['stok_gudang'][$a['id']]['qty']) ? $data['stok_gudang'][$a['id']]['qty'] : 0 ?>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                <?php } ?>
+            <?php } ?>
         </table>
     </div>
 </main>
