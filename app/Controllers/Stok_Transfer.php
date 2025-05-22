@@ -118,10 +118,12 @@ class Stok_Transfer extends Controller
          exit();
       }
 
-      $cek_double = $this->db(0)->count_where("master_mutasi", "id_barang = " . $id_barang . " AND sn = '" . $sn . "' AND jenis = 1 AND stat = 1");
-      if ($cek_double <> 0) {
-         echo "Double Transfer for SN: " . $sn;
-         exit();
+      if ($sn <> "") {
+         $cek_double = $this->db(0)->count_where("master_mutasi", "id_barang = " . $id_barang . " AND sn = '" . $sn . "' AND jenis = 1 AND stat = 1");
+         if ($cek_double <> 0) {
+            echo "Double Transfer for SN: " . $sn;
+            exit();
+         }
       }
 
       $id_sumber = 0;
