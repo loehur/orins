@@ -116,6 +116,13 @@
         $('select.tize').selectize();
     });
 
+    $(document).on('keydown', function(event) {
+        if (event.keyCode == 112) {
+            event.preventDefault();
+            $('.selectize-input').click();
+        }
+    });
+
     $("form").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
