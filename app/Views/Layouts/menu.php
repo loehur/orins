@@ -24,6 +24,14 @@ foreach ($data_spk_lnjut as $ds) {
 $yearNow = date('Y');
 ?>
 
+
+<style>
+	div {
+		scrollbar-color: pink white;
+	}
+</style>
+
+
 <div id="layoutSidenav">
 	<div id="layoutSidenav_nav">
 		<nav class="sidenav sidenav-light border-end" style="z-index: -100;">
@@ -32,7 +40,7 @@ $yearNow = date('Y');
 					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[3])) { ?>
 						<?php if ($aff_c > 0) { ?>
 							<a class="nav-link <?= (str_contains($t, "Afiliasi Order")) ? 'active' : 'collapsed' ?> py-1" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#collapseAff" aria-expanded="true" aria-controls="collapseAff">
-								<div class="nav-link-icon"><i data-feather="plus-square"></i></div>
+								<div class="nav-link-icon text-danger"><i data-feather="plus-square"></i></div>
 								Afiliasi Order <span class="badge bg-danger-soft text-danger ms-2"><?= $aff_c ?></span>
 								<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 							</a>
@@ -54,7 +62,7 @@ $yearNow = date('Y');
 					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[4])) { ?>
 						<?php if ($lanjut_c > 0) { ?>
 							<a class="nav-link <?= (str_contains($t, "SPK - Lanjutan")) ? 'active' : 'collapsed' ?> py-1" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseSPKP" aria-expanded="true" aria-controls="collapseSPKP">
-								<div class="nav-link-icon"><i data-feather="alert-triangle"></i></div>
+								<div class="nav-link-icon text-danger"><i data-feather="alert-triangle"></i></div>
 								SPK - Prioritas <span class="badge bg-danger-soft text-danger ms-2"><?= $lanjut_c ?></span>
 								<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 							</a>
@@ -87,7 +95,7 @@ $yearNow = date('Y');
 						<?php foreach ($md['access'] as $mda) { ?>
 							<?php if (in_array($this->userData['user_tipe'], PV::PRIV[$mda])) { ?>
 								<a class="nav-link <?= in_array($t, $md['active']) ? 'active' : 'collapsed' ?> py-2" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse<?= $key ?>">
-									<div class="nav-link-icon"><i data-feather="<?= $md['icon'] ?>"></i></div>
+									<div class="nav-link-icon text-<?= $md['icon-color'] ?>"><i data-feather="<?= $md['icon'] ?>"></i></div>
 									<?= $md['name'] ?>
 									<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 								</a>
@@ -107,7 +115,7 @@ $yearNow = date('Y');
 
 					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[4])) { ?>
 						<a class="nav-link <?= (str_contains($t, "SPK_Search")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#SPK_Search" aria-expanded="true" aria-controls="SPK">
-							<div class="nav-link-icon"><i class="fa-solid fa-file-signature"></i></div>
+							<div class="nav-link-icon text-success"><i class="fa-solid fa-file-signature"></i></div>
 							SPK - Customer
 							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 						</a>
@@ -121,7 +129,7 @@ $yearNow = date('Y');
 							</nav>
 						</div>
 						<a class="nav-link <?= (str_contains($t, "SPK_C")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#SPK_C" aria-expanded="true" aria-controls="SPK">
-							<div class="nav-link-icon"><i data-feather="file-text"></i></div>
+							<div class="nav-link-icon text-purple"><i data-feather="file-text"></i></div>
 							SPK - Harian
 							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 						</a>
@@ -135,7 +143,7 @@ $yearNow = date('Y');
 							</nav>
 						</div>
 						<a class="nav-link <?= (str_contains($t, "SPK_R")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#SPK" aria-expanded="true" aria-controls="SPK">
-							<div class="nav-link-icon"><i data-feather="file-text"></i></div>
+							<div class="nav-link-icon text-info"><i data-feather="file-text"></i></div>
 							SPK - Rekap
 							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 						</a>
@@ -152,7 +160,7 @@ $yearNow = date('Y');
 
 					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[0])) { ?>
 						<a class="nav-link <?= (str_contains($t, "User")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlowsUser" aria-expanded="false" aria-controls="collapseFlows">
-							<div class="nav-link-icon"><i data-feather="user"></i></div>
+							<div class="nav-link-icon text-dark"><i data-feather="user"></i></div>
 							Orins User
 							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 						</a>
@@ -167,7 +175,7 @@ $yearNow = date('Y');
 					<?php } ?>
 					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[1])) { ?>
 						<a class="nav-link <?= (str_contains($t, "Karyawan")) ? 'active' : 'collapsed' ?>" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseKar" aria-expanded="false" aria-controls="collapseFlows">
-							<div class="nav-link-icon"><i data-feather="user"></i></div>
+							<div class="nav-link-icon text-dark"><i data-feather="user"></i></div>
 							Karyawan
 							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 						</a>
