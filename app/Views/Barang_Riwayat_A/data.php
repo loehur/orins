@@ -69,7 +69,7 @@
                     <td><?= strtoupper($target) ?></td>
                     <td><?= $d['sds'] == 1 ? "#S" : "" ?></td>
                     <td class="text-end"><?= $d['qty'] ?></td>
-                    <td>
+                    <td class="align-middle" style="width: 20px;">
                         <?= $stat ?>
                     </td>
                 </tr>

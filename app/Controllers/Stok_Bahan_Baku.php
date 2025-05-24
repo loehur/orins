@@ -75,9 +75,9 @@ class Stok_Bahan_Baku extends Controller
       $qty = $_POST['qty'];
 
       $ref = date("YmdHi");
-      $cols = 'ref, jenis, id_barang, id_sumber, id_target, qty, cs_id, sds';
+      $cols = 'ref, jenis, id_barang, id_sumber, id_target, qty, cs_id, sds, stat';
 
-      $vals = "'" . $ref . "',4," . $id_barang . ",'" . $id_sumber . "','" . $id_target . "'," . $qty . "," . $karyawan . "," . $sds;
+      $vals = "'" . $ref . "',4," . $id_barang . ",'" . $id_sumber . "','" . $id_target . "'," . $qty . "," . $karyawan . "," . $sds . ",1";
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
