@@ -53,7 +53,7 @@
                             echo 'Retur';
                             break;
                         case 4:
-                            echo 'Retur';
+                            echo 'Pakai';
                             break;
                     } ?>
                 </td>
