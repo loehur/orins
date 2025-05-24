@@ -40,7 +40,7 @@ class Home extends Controller
       $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_pro DESC LIMIT 5";
       $pro = $this->db(0)->get_where('karyawan', $whereKaryawan);
 
-      $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_driver DESC LIMIT 2";
+      $whereKaryawan =  "en = 1 ORDER BY freq_driver DESC LIMIT 2";
       $dr = $this->db(0)->get_where('karyawan', $whereKaryawan);
 
       $data['cs'] = [];
