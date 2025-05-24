@@ -661,7 +661,7 @@
         <span class='title'>
             ORINS PRO
         </span>
-        <span class="txt anim-text-flow"> Order Information System Professional</span>
+        <span class="txt anim-text-flow">Order Information System Professional</span>
     </p>
 </div>
 <!-- Main page content-->
