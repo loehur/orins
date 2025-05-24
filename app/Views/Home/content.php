@@ -5,7 +5,7 @@
     </div>
 </header>
 <!-- Main page content-->
-<div class="container-sm">
+<div class="container-sm pb-3">
     <div class="row mx-1">
         <div class="col px-1 mb-2">
             <div class="card shadow-sm">
