@@ -25,6 +25,7 @@
                             break;
                         case 1:
                         case 2:
+                        case 4:
                             echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
                             break;
                         case 3:
@@ -49,6 +50,9 @@
                             echo 'Jual';
                             break;
                         case 3:
+                            echo 'Retur';
+                            break;
+                        case 4:
                             echo 'Retur';
                             break;
                     } ?>
