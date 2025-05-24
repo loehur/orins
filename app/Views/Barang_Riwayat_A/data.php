@@ -2,7 +2,6 @@
         <table class="table table-sm text-sm">
             <?php foreach ($data['mutasi'] as $d) {
                 $dp = $data['barang'][$d['id_barang']] ?>
-
                 <?php
                 $txt = "";
                 switch ($d['jenis']) {
@@ -40,12 +39,16 @@
                             $target = $data['supplier'][$d['id_target']]['nama'];
                         }
                         break;
+                    case 4:
+                        $txt = "purple";
+                        $sumber = 'GUDANG';
+                        $target = "INVENTARIS";
+                        break;
                 } ?>
 
                 <tr>
                     <td class="">#<?= $d['id'] ?></td>
                     <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
-                    <td class="align-middle"><?= trim($dp['brand'] . " " . $dp['model']) ?><?= $dp['product_name'] ?></td>
                     <td><?= $d['sn'] ?></td>
                     <td class="text-end"><?= strtoupper($sumber) ?></td>
                     <td class="align-middle" style="width: 20px;">
@@ -54,6 +57,21 @@
                     <td><?= strtoupper($target) ?></td>
                     <td><?= $d['sds'] == 1 ? "#S" : "" ?></td>
                     <td class="text-end"><?= $d['qty'] ?></td>
+                    <td>
+                        <?php
+                        switch ($d['stat']) {
+                            case 0:
+                                $stat = '<i class="fa-solid fa-spinner text-warning"></i>';
+                                break;
+                            case 1:
+                                $stat = '<i class="fa-solid fa-check text-success"></i>';
+                                break;
+                            case 2:
+                                $stat = '<i class="fa-solid fa-xmark text-danger"></i>';
+                                break;
+                        }
+                        ?>
+                    </td>
                 </tr>
             <?php } ?>
         </table>

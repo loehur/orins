@@ -42,7 +42,7 @@ class Barang_Riwayat_A extends Controller
       $data['toko'] = $this->db(0)->get('toko', 'id_toko');
 
       $data['barang'] = $this->db(0)->get_where('master_barang', "en = 1", "id");
-      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "stat = 1 AND id_barang = '" . $val . "' ORDER BY id DESC");
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $val . "' ORDER BY id DESC");
       $this->view(__CLASS__ . '/data', $data);
    }
 }
