@@ -503,10 +503,12 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
-      $cek_double = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND cancel = 0");
-      if ($cek_double <> 0) {
-         echo 0;
-         exit();
+      if ($paket_ref <> "") {
+         $cek_double = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND cancel = 0");
+         if ($cek_double <> 0) {
+            echo 0;
+            exit();
+         }
       }
 
       if ($afiliasi == 0) {
