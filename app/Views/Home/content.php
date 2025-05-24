@@ -25,7 +25,7 @@
         </div>
         <div class="col px-1">
             <div class="card shadow-sm">
-                <div class="card-header">Driver Freq Top #2</div>
+                <div class="card-header">Delivery Freq Top #5</div>
                 <div class="card-body">
                     <canvas id="myChart3" class="chartjs-render-monitor" style="display: block;"></canvas>
                 </div>
