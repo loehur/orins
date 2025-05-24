@@ -1,12 +1,12 @@
-<header class="py-5 mb-3 bg-gradient-primary-to-secondary">
+<header class="py-5 mb-3">
     <div class="text-center">
-        <h1 class="text-white">Welcome to Orins PRO</h1>
+        <h1 class="text-purple">Welcome to Orins PRO</h1>
         <p class="lead mb-0 text-white-75">Order Information System - Professional</p>
     </div>
 </header>
 <!-- Main page content-->
 <div class="container pb-3">
-    <div class="row mx-1">
+    <div class="row mx-0">
         <div class="col px-1 mb-2">
             <div class="card shadow-sm">
                 <div class="card-header">CS Freq Top #5</div>
