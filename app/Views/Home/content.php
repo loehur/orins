@@ -6,20 +6,28 @@
 </header>
 <!-- Main page content-->
 <div class="container-sm">
-    <div class="row">
-        <div class="col mb-2">
-            <div class="card">
+    <div class="row mx-1">
+        <div class="col px-1 mb-2">
+            <div class="card shadow-sm">
                 <div class="card-header">CS Freq Top #5</div>
                 <div class="card-body">
-                    <canvas id="myChart" width="400" class="chartjs-render-monitor" style="display: block;"></canvas>
+                    <canvas id="myChart" class="chartjs-render-monitor" style="display: block;"></canvas>
                 </div>
             </div>
         </div>
-        <div class="col">
-            <div class="card">
+        <div class="col px-1 mb-2">
+            <div class="card shadow-sm">
                 <div class="card-header">Production Freq Top #5</div>
                 <div class="card-body">
-                    <canvas id="myChart2" width="400" class="chartjs-render-monitor" style="display: block;"></canvas>
+                    <canvas id="myChart2" class="chartjs-render-monitor" style="display: block;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col px-1">
+            <div class="card shadow-sm">
+                <div class="card-header">Driver Freq Top #2</div>
+                <div class="card-body">
+                    <canvas id="myChart3" class="chartjs-render-monitor" style="display: block;"></canvas>
                 </div>
             </div>
         </div>
@@ -49,6 +57,18 @@
                 labels: <?= json_encode($data['pro']) ?>,
                 datasets: [{
                     data: <?= json_encode($data['pro_data']) ?>,
+                    borderWidth: 1
+                }]
+            },
+        });
+
+        const ctx3 = document.getElementById('myChart3');
+        new Chart(ctx3, {
+            type: 'pie',
+            data: {
+                labels: <?= json_encode($data['dr']) ?>,
+                datasets: [{
+                    data: <?= json_encode($data['dr_data']) ?>,
                     borderWidth: 1
                 }]
             },

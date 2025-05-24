@@ -12,7 +12,7 @@ class Operasi extends Controller
     {
         $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
         if ($id_driver <> 0) {
-            $update = $this->db(0)->update("karyawan", "freq_driver = freq_driver+1", "id_karyawan = " . $id_karyawan);
+            $update = $this->db(0)->update("karyawan", "freq_driver = freq_driver+1", "id_karyawan = " . $id_driver);
         }
         $dateNow = date("Y-m-d H:i:s");
 
@@ -48,7 +48,7 @@ class Operasi extends Controller
 
         $update = $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
         if ($id_driver <> 0) {
-            $update = $this->db(0)->update("karyawan", "freq_driver = freq_driver+1", "id_karyawan = " . $id_karyawan);
+            $update = $this->db(0)->update("karyawan", "freq_driver = freq_driver+1", "id_karyawan = " . $id_driver);
         }
 
         $cek_toko_asal = $this->db(0)->get_where('order_data', "ref = '" . $ref . "' AND (id_toko = " . $id_toko . " OR id_afiliasi = " . $id_toko . ")", 'id_toko');
