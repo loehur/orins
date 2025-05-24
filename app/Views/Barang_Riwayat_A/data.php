@@ -44,6 +44,18 @@
                         $sumber = 'GUDANG';
                         $target = "INVENTARIS";
                         break;
+                }
+
+                switch ($d['stat']) {
+                    case 0:
+                        $stat = '<i class="fa-solid fa-spinner text-warning"></i>';
+                        break;
+                    case 1:
+                        $stat = '<i class="fa-solid fa-check text-success"></i>';
+                        break;
+                    case 2:
+                        $stat = '<i class="fa-solid fa-xmark text-danger"></i>';
+                        break;
                 } ?>
 
                 <tr>
@@ -58,19 +70,7 @@
                     <td><?= $d['sds'] == 1 ? "#S" : "" ?></td>
                     <td class="text-end"><?= $d['qty'] ?></td>
                     <td>
-                        <?php
-                        switch ($d['stat']) {
-                            case 0:
-                                $stat = '<i class="fa-solid fa-spinner text-warning"></i>';
-                                break;
-                            case 1:
-                                $stat = '<i class="fa-solid fa-check text-success"></i>';
-                                break;
-                            case 2:
-                                $stat = '<i class="fa-solid fa-xmark text-danger"></i>';
-                                break;
-                        }
-                        ?>
+                        <?= $stat ?>
                     </td>
                 </tr>
             <?php } ?>
