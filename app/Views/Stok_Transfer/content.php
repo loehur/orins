@@ -28,7 +28,6 @@
         <table class="text-sm stripe" id="dt_tb">
             <thead>
                 <tr>
-                    <th></th>
                     <th>Ref/Tanggal</th>
                     <th>Note</th>
                     <th></th>
@@ -42,20 +41,27 @@
                 } ?>
 
                 <tr>
-                    <td class="align-middle">
-                        <a href="<?= PV::BASE_URL ?>Stok_Transfer/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
-                    </td>
-                    <td>
-                        <?= $a['id'] ?><br>
+                    <td class="align-top">
+                        <a href="<?= PV::BASE_URL ?>Stok_Transfer/list/<?= $a['id'] ?>"> <?= $a['id'] ?></a><br>
                         <?= $a['tanggal'] ?>
                     </td>
-                    <td><?= $a['note'] ?></td>
-                    <td class="align-middle">
+                    <td class="align-top"><?= $a['note'] ?></td>
+                    <td class="align-top">
                         <?php if ($a['cek'] == 0) { ?>
-                            <span class="text-warning"><i class="fa-regular fa-circle"></i> Checking</span>
+                            <span class="text-warning"><i class="fa-regular fa-circle"></i> Checking</span><br>
+                            <?php if ($a['delivery'] == 0) { ?>
+                                <span style="cursor: pointer;" class="reqAntar" data-bs-toggle="modal" data-bs-target="#exampleModalReq" data-id="<?= $a['id'] ?>">
+                                    <i class="fa-solid fa-truck-arrow-right"></i> Minta Antar
+                                </span>
+                            <?php } ?>
                         <?php } else { ?>
                             <?php if ($a['cek'] == 1) { ?>
-                                <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                                <span class="text-success"><i class="fa-solid fa-user-check"></i></span> <?= $a['id_target_cs'] <> 0 ? $this->dKaryawanAll[$a['id_target_cs']]['nama'] : "" ?><br>
+                                <?php if ($a['delivery'] == 1) { ?>
+                                    <span>
+                                        <i class="fa-solid text-purple fa-truck-arrow-right"></i> <?= $a['id_driver'] <> 0 ? $this->dKaryawanAll_driver[$a['id_driver']]['nama'] : "In Delivery" ?>
+                                    </span>
+                                <?php } ?>
                             <?php } else { ?>
                                 <span class="badge bg-danger">Rejected</span>
                             <?php } ?>
@@ -66,6 +72,35 @@
         </table>
     </div>
 </main>
+
+<form action="<?= PV::BASE_URL; ?>Stok_Transfer/req_antar" method="POST">
+    <div class="modal" id="exampleModalReq">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white"><i class="fa-solid fa-truck-arrow-right"></i> Permintaan Antar</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label>Catatan untuk Driver</label>
+                                <input type="text" name="note" class="form-control form-control-sm" required>
+                                <input name="id" type="hidden" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Minta</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 
@@ -82,6 +117,10 @@
             "dom": "lfrti"
         });
     });
+
+    $(".reqAntar").click(function() {
+        $('input[name=id]').val($(this).attr('data-id'));
+    })
 
     $("form").on("submit", function(e) {
         e.preventDefault();

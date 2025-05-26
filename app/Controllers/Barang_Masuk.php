@@ -75,11 +75,22 @@ class Barang_Masuk extends Controller
          $id_karyawan = 0;
       }
 
-      $up1 = $this->db(0)->update("master_input", "cek = 1", "id = '" . $ref . "'");
+      if (isset($_POST['id_driver'])) {
+         $id_driver = $_POST['id_driver'];
+      } else {
+         $id_driver = 0;
+      }
+
+      $up1 = $this->db(0)->update("master_input", "cek = 1, id_target_cs = " . $id_karyawan . ", id_driver = " . $id_driver, "id = '" . $ref . "'");
       if ($up1['errno'] <> 0) {
          echo $up1['error'];
          exit();
       } else {
+
+         if ($id_driver <> 0) {
+            $this->db(0)->update("karyawan", "freq_driver = freq_driver+1", "id_karyawan = " . $id_driver);
+         }
+
          $up2 = $this->db(0)->update("master_mutasi", "stat = 1", "ref = '" . $ref . "'");
          if ($up2['errno'] <> 0) {
             echo $up2['error'];

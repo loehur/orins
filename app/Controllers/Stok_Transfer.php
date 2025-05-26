@@ -125,4 +125,31 @@ class Stok_Transfer extends Controller
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
+
+   function req_antar()
+   {
+      $note = $_POST['note'];
+      $id = $_POST['id'];
+      $target = "6285278703970-1501834492@g.us"; // delivery order
+
+      $ref = $id;
+
+      $cek = $this->db(0)->get_where_row("master_input", "id = '" . $ref . "'");
+      $nama_target = strtoupper($this->dToko[$cek['id_target']]['inisial']);
+
+      $text = "*Permintaan Kirim Barang* \nDari GUDANG ke " . $nama_target . " \n" . $note;
+
+      $up = $this->db(0)->update("master_input", "delivery = 1, note_driver = '" . $note . "'", "id = '" . $ref . "'");
+      if ($up['errno'] <> 0) {
+         echo $up['error'];
+         exit();
+      } else {
+         $kirim = $this->data("WA")->send_wa(PV::API_KEY['fonnte'], $target, $text, 1);
+         if ($kirim['status'] <> true) {
+            print_r($kirim);
+         } else {
+            echo 0;
+         }
+      }
+   }
 }

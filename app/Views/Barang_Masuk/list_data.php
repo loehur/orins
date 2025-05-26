@@ -103,9 +103,20 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class=" form-label">Pengantar</label>
+                                <select class="form-select tize" name="id_driver">
+                                    <option value="0" selected></option>
+                                    <?php foreach ($this->dKaryawanAll_driver as $k) { ?>
+                                        <option value="<?= $k['id_karyawan'] ?>"><?= ucwords($k['nama']) ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
                         <div class="row mb-2">
-                            <div class="col-sm-6">
-                                <button type="submit" data-bs-dismiss="modal" class="btn btn-sm btn-success">Terima</button>
+                            <div class="col">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-success w-100">Terima</button>
                             </div>
                         </div>
                     </div>
