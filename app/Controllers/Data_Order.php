@@ -304,12 +304,17 @@ class Data_Order extends Controller
       $ref = $_POST['ambil_ref'];
       $id_karyawan = $_POST['id_karyawan'];
       $id_driver = $_POST['id_driver'];
-      $mode = $_POST['mode'];
 
       if (isset($_POST['id_toko'])) {
          $id_toko = $_POST['id_toko'];
       } else {
          $id_toko = 0;
+      }
+
+      if (isset($_POST['mode'])) {
+         $mode = $_POST['mode'];
+      } else {
+         $mode = 0;
       }
 
       if ($mode == 1) {

@@ -65,7 +65,7 @@ class Operasi extends Controller
 
                         $cek = $this->db(0)->get_where_row('ref', "ref = '" . $ref . "'");
                         if ($cek['ready_cs'] == 0) {
-                            return $this->ready($ref, $id_karyawan);
+                            return $this->ready($ref, $id_karyawan, 0, 0);
                         } else {
                             return $update;
                         }
@@ -81,7 +81,7 @@ class Operasi extends Controller
                         if ($update['errno'] == 0) {
                             $cek = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND id_afiliasi = " . $id_toko);
                             if ($cek['ready_aff_cs'] == 0) {
-                                return $this->ready($ref, $id_karyawan);
+                                return $this->ready($ref, $id_karyawan, 0, 0);
                             } else {
                                 return $update;
                             }
@@ -96,7 +96,7 @@ class Operasi extends Controller
         }
     }
 
-    function ready($ref, $id_karyawan, $expedisi = 0)
+    function ready($ref, $id_karyawan, $expedisi = 0, $notif = 1)
     {
         $dateNow = date("Y-m-d H:i:s");
         $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
@@ -122,7 +122,7 @@ class Operasi extends Controller
                     $where = "ref = '" . $ref . "' AND id_user_afiliasi = 0 AND id_afiliasi = " . $this->userData['id_toko'];
                     $update = $this->db(0)->update("order_data", $set, $where);
                     if ($update['errno'] == 0) {
-                        if (PV::PRO == 1) {
+                        if (PV::PRO == 1 && $notif == 1) {
                             $get = $cek_toko[$this->userData['id_toko']];
                             $nama_sumber = strtoupper($this->dToko[$get['id_afiliasi']]['nama_toko']);
                             $nama_target = strtoupper($this->dToko[$get['id_toko']]['inisial']);
