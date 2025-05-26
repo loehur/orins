@@ -41,12 +41,12 @@
                 } ?>
 
                 <tr>
-                    <td class="align-top">
+                    <td class="align-middle">
                         <a href="<?= PV::BASE_URL ?>Stok_Transfer/list/<?= $a['id'] ?>"> <?= $a['id'] ?></a><br>
                         <?= $a['tanggal'] ?>
                     </td>
-                    <td class="align-top"><?= $a['note'] ?></td>
-                    <td class="align-top">
+                    <td class="align-middle"><?= $a['note'] ?></td>
+                    <td class="align-middle">
                         <?php if ($a['cek'] == 0) { ?>
                             <span class="text-warning"><i class="fa-regular fa-circle"></i> Checking</span><br>
                             <?php if ($a['delivery'] == 0) { ?>
