@@ -136,11 +136,7 @@ class Operasi extends Controller
                             $kirim = $this->data("WA")->send_wa(PV::API_KEY['fonnte'], $target, $text, 1);
                             if ($kirim['status'] <> true) {
                                 print_r($kirim);
-                            } else {
-                                echo 0;
                             }
-                        } else {
-                            echo 0;
                         }
                     }
                 }
