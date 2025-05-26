@@ -299,18 +299,32 @@ class Data_Order extends Controller
       echo $up['errno'] <> 0 ? $up['error'] : 0;
    }
 
-   function ambil_semua($id_toko = 0)
+   function ambil_semua()
    {
       $ref = $_POST['ambil_ref'];
       $id_karyawan = $_POST['id_karyawan'];
       $id_driver = $_POST['id_driver'];
+      $mode = $_POST['mode'];
 
       if (isset($_POST['id_toko'])) {
          $id_toko = $_POST['id_toko'];
+      } else {
+         $id_toko = 0;
       }
 
-      $up = $this->data('Operasi')->ambil_semua($ref, $id_karyawan, $id_driver, $id_toko);
-      echo $up['errno'] <> 0 ? $up['error'] : 0;
+      if ($mode == 1) {
+         $up1 = $this->db(0)->update("master_input", "id_driver = " . $id_driver, "id = '" . $ref . "'");
+         if ($up1['errno'] <> 0) {
+            echo $up1['error'];
+            exit();
+         } else {
+            echo 0;
+            exit();
+         }
+      } else {
+         $up = $this->data('Operasi')->ambil_semua($ref, $id_karyawan, $id_driver, $id_toko, $mode);
+         echo $up['errno'] <> 0 ? $up['error'] : 0;
+      }
    }
 
    public function print($parse = "")

@@ -135,18 +135,23 @@ class Stok_Transfer extends Controller
       $ref = $id;
 
       $cek = $this->db(0)->get_where_row("master_input", "id = '" . $ref . "'");
-      $nama_target = strtoupper($this->dToko[$cek['id_target']]['inisial']);
+      $nama_target = strtoupper($this->dToko[$cek['id_target']]['nama_toko']);
 
-      $text = "*Permintaan Kirim Barang* \ndari GUDANG ke " . $nama_target . " \n_" . $note . "_";
+      $sort_ref = substr($id, -4);
+      $text = "*Permintaan Kirim Barang* #" . $sort_ref . " \nGUDANG ke " . $nama_target . " \n_" . $note . "_";
 
       $up = $this->db(0)->update("master_input", "delivery = 1, note_driver = '" . $note . "'", "id = '" . $ref . "'");
       if ($up['errno'] <> 0) {
          echo $up['error'];
          exit();
       } else {
-         $kirim = $this->data("WA")->send_wa(PV::API_KEY['fonnte'], $target, $text, 1);
-         if ($kirim['status'] <> true) {
-            print_r($kirim);
+         if (PV::PRO == 1) {
+            $kirim = $this->data("WA")->send_wa(PV::API_KEY['fonnte'], $target, $text, 1);
+            if ($kirim['status'] <> true) {
+               print_r($kirim);
+            } else {
+               echo 0;
+            }
          } else {
             echo 0;
          }

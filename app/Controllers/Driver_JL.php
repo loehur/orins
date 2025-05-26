@@ -33,6 +33,8 @@ class Driver_JL extends Controller
 
    public function content()
    {
+
+      //PRODUKSI
       $cols = "CONCAT(id_afiliasi,'#',id_toko) as unic, id_toko, id_afiliasi, ready_aff_cs, ready_aff_date, id_pelanggan, jumlah, ref, id_user_afiliasi";
       $where = "cancel = 0 AND id_afiliasi <> 0 AND id_ambil_aff = 0 AND id_ambil = 0 AND tuntas = 0 AND ready_aff_cs <> 0 ORDER BY ready_aff_date DESC";
       $data['jl_pro'] = $this->db(0)->get_cols_where('order_data', $cols, $where, 1, 'unic', 1);
@@ -52,7 +54,7 @@ class Driver_JL extends Controller
 
       $data['ref_pro'] = $get;
 
-
+      //EKPEDISI
       $data['ea'] = $this->db(0)->get('expedisi_account', 'id');
       $data['ref_exp'] = $this->db(0)->get_where('ref', 'tuntas = 0 AND expedisi <> 0', 'ref');
       $refs_exp = array_keys($data['ref_exp']);
@@ -95,6 +97,25 @@ class Driver_JL extends Controller
       }
 
       $data['jl_exp'] = $get_exp;
+
+      // transfer stok
+      $data_tfstok = $this->db(0)->get_where('master_input', 'tipe = 1 AND delivery = 1 AND id_driver = 0');
+      $get_ts = [];
+      foreach ($data_tfstok as $a) {
+         $key = $a['id_sumber'] . "#" . $a['id_target'];
+         $ref = $a['id'];
+         $jumlah[$ref] = $this->db(0)->sum_col_where('master_mutasi', "qty", "stat <> 2 AND ref = '" . $ref . "'");
+
+         if (!isset($get_ts[$key][$ref])) {
+            $get_ts[$key][$ref]['id_pelanggan'] = $a['id_target'];
+            $get_ts[$key][$ref]['qty'] = $jumlah[$ref];
+            $get_ts[$key][$ref]['cs'] = 0;
+         } else {
+            $get_ts[$key][$ref]['qty'] +=  $jumlah[$ref];
+         }
+      }
+
+      $data['jl_ts'] = $get_ts;
 
       $this->view($this->v_content, $data);
    }

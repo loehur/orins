@@ -48,11 +48,13 @@
                     <td class="align-middle"><?= $a['note'] ?></td>
                     <td class="align-middle">
                         <?php if ($a['cek'] == 0) { ?>
-                            <span class="text-warning"><i class="fa-regular fa-circle"></i> Checking</span><br>
+                            <span class=""><i class="fa-regular fa-circle text-warning"></i> Checking</span><br>
                             <?php if ($a['delivery'] == 0) { ?>
                                 <span style="cursor: pointer;" class="reqAntar" data-bs-toggle="modal" data-bs-target="#exampleModalReq" data-id="<?= $a['id'] ?>">
                                     <i class="fa-solid fa-truck-arrow-right"></i> Minta Antar
                                 </span>
+                            <?php } else { ?>
+                                <?= $a['id_driver'] <> 0 ? '<i class="fa-solid text-success fa-truck-arrow-right"></i> ' . $this->dKaryawanAll_driver[$a['id_driver']]['nama'] : '<i class="fa-solid text-warning fa-truck-arrow-right"></i> In Delivery' ?>
                             <?php } ?>
                         <?php } else { ?>
                             <?php if ($a['cek'] == 1) { ?>

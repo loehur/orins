@@ -1,4 +1,4 @@
-<main class="container px-2">
+<main class="container px-2" style="max-width: 500px;">
     <div>
         <?php foreach ($data['jl_pro'] as $key => $jl_pro) { ?>
             <?php
@@ -24,7 +24,7 @@
                             <?= $a['qty'] ?>pcs
                         </div>
                         <?php if (in_array($this->userData['user_tipe'], [0, 9])) { ?>
-                            <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-id_toko="<?= $id_afiliasi ?>">Done</span></div>
+                            <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-mode="0" data-id_toko="<?= $id_afiliasi ?>">Done</span></div>
                         <?php } ?>
                     </div>
                 <?php } ?>
@@ -55,7 +55,36 @@
                             <?= $a['qty'] ?>pcs
                         </div>
                         <?php if (in_array($this->userData['user_tipe'], [0, 9])) { ?>
-                            <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-id_toko="<?= $id_toko ?>">Done</span></div>
+                            <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-mode="0" data-id_toko="<?= $id_toko ?>">Done</span></div>
+                        <?php } ?>
+                    </div>
+                <?php } ?>
+            </div>
+        <?php } ?>
+
+        <?php foreach ($data['jl_ts'] as $key => $b) { ?>
+            <?php
+            $ex = explode("#", $key);
+            $id_target = $ex[1];
+
+            ?>
+            <div class="w-100 text-center mt-2 border rounded bg-light bg-gradient fw-bold text-sm">
+                <label class="border-0 rounded-0 text-dark">GUDANG</label> &nbsp;&nbsp;<i class="text-sm fa-solid fa-arrow-right text-secondary"></i>&nbsp;&nbsp; <label style="margin:0;color:<?= $this->dToko[$id_target]['color'] ?>" class="border-0 rounded-0"><?= $this->dToko[$id_target]['inisial'] ?></label>
+            </div>
+            <div class="mb-4">
+                <?php foreach ($b as $ref => $a) { ?>
+                    <div class="row py-1 mx-1 border-bottom" id="R<?= $ref ?>">
+                        <div class="col-auto pe-1">
+                            GUDANG
+                            <br>
+                            <small><?= substr($ref, -4) ?></small>
+                        </div>
+                        <div class="col pe-1">
+                            <?= strtoupper($this->dToko[$a['id_pelanggan']]['inisial']) ?><br>
+                            <?= $a['qty'] ?>pcs
+                        </div>
+                        <?php if (in_array($this->userData['user_tipe'], [0, 9])) { ?>
+                            <div class="col-auto pe-1 pt-1"><span class="btn btn-sm btn-success bg-gradient py-2 btnAmbilSemua" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-ref="<?= $ref ?>" data-mode="1" data-id_toko="<?= $id_toko ?>">Done</span></div>
                         <?php } ?>
                     </div>
                 <?php } ?>
@@ -64,7 +93,7 @@
     </div>
 </main>
 
-<form class="ajax" action="<?= PV::BASE_URL; ?>Data_Order/ambil_semua/1" method="POST">
+<form class="ajax" action="<?= PV::BASE_URL; ?>Data_Order/ambil_semua" method="POST">
     <div class="modal" id="exampleModal3">
         <div class="modal-dialog">
             <div class="modal-content" style="min-height:400px">
@@ -74,7 +103,7 @@
                 <div class="modal-body">
                     <div class="row mb-3">
                         <div class="col">
-                            <label class=" form-label">Pengantar</label>
+                            <label class="form-label">Pengantar</label>
                             <select class="form-select tize" name="id_driver" required>
                                 <option value="0" selected></option>
                                 <?php foreach ($this->dKaryawanAll_driver as $k) { ?>
@@ -86,6 +115,7 @@
                             <label class="form-label">CS Penyedia</label>
                             <input type="hidden" name="ambil_ref">
                             <input type="hidden" name="id_toko">
+                            <input type="hidden" name="mode">
                             <select class="form-select tize" name="id_karyawan" required>
                                 <option></option>
                                 <?php foreach ($this->dKaryawanAll_cs as $k) { ?>
@@ -117,8 +147,10 @@
     $("span.btnAmbilSemua").click(function() {
         ref = $(this).attr("data-ref");
         var id_toko = $(this).attr("data-id_toko");
+        var mode = $(this).attr("data-mode");
         $("input[name=ambil_ref]").val(ref);
         $("input[name=id_toko]").val(id_toko);
+        $("input[name=mode]").val(mode);
     })
 
     $("form.ajax").on("submit", function(e) {
