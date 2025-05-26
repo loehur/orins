@@ -94,14 +94,6 @@ class Operasi extends Controller
                 return $update;
             }
         }
-
-        if ($mode == 1) {
-            $up1 = $this->db(0)->update("master_input", "cek = 1, id_target_cs = " . $id_karyawan . ", id_driver = " . $id_driver, "id = '" . $ref . "'");
-            if ($up1['errno'] <> 0) {
-                echo $up1['error'];
-                exit();
-            }
-        }
     }
 
     function ready($ref, $id_karyawan, $expedisi = 0)
@@ -129,6 +121,28 @@ class Operasi extends Controller
                     $set = "status_order = 0, id_user_afiliasi = " . $id_karyawan;
                     $where = "ref = '" . $ref . "' AND id_user_afiliasi = 0 AND id_afiliasi = " . $this->userData['id_toko'];
                     $update = $this->db(0)->update("order_data", $set, $where);
+                    if ($update['errno'] == 0) {
+                        if (PV::PRO == 1) {
+                            $get = $cek_toko[$this->userData['id_toko']];
+                            $nama_sumber = strtoupper($this->dToko[$get['id_afiliasi']]['nama_toko']);
+                            $nama_target = strtoupper($this->dToko[$get['id_toko']]['inisial']);
+                            $pelanggan = strtoupper($this->dPelangganAll[$get['id_pelanggan']]['nama']);
+                            $cs_name = $this->dKaryawanAll[$get['id_user_afiliasi']]['nama'];
+                            $cs = strtoupper(substr($cs_name, 0, 2) . "-" . $get['id_user_afiliasi']);
+                            $sort_ref = substr($get['ref'], -4);
+                            $text = "*" . $nama_sumber . "* _#" . $sort_ref . "_ \n" . $nama_target . " " . $pelanggan . " SIAP JEMPUT \n_" . $cs . "_";
+
+                            $target = "6285278703970-1501834492@g.us"; // delivery order
+                            $kirim = $this->data("WA")->send_wa(PV::API_KEY['fonnte'], $target, $text, 1);
+                            if ($kirim['status'] <> true) {
+                                print_r($kirim);
+                            } else {
+                                echo 0;
+                            }
+                        } else {
+                            echo 0;
+                        }
+                    }
                 }
             }
         }

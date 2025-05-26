@@ -130,15 +130,7 @@ class Stok_Transfer extends Controller
    {
       $note = $_POST['note'];
       $id = $_POST['id'];
-      $target = "6285278703970-1501834492@g.us"; // delivery order
-
       $ref = $id;
-
-      $cek = $this->db(0)->get_where_row("master_input", "id = '" . $ref . "'");
-      $nama_target = strtoupper($this->dToko[$cek['id_target']]['nama_toko']);
-
-      $sort_ref = substr($id, -4);
-      $text = "*Permintaan Kirim Barang* #" . $sort_ref . " \nGUDANG ke " . $nama_target . " \n_" . $note . "_";
 
       $up = $this->db(0)->update("master_input", "delivery = 1, note_driver = '" . $note . "'", "id = '" . $ref . "'");
       if ($up['errno'] <> 0) {
@@ -146,6 +138,11 @@ class Stok_Transfer extends Controller
          exit();
       } else {
          if (PV::PRO == 1) {
+            $target = "6285278703970-1501834492@g.us"; // delivery order
+            $cek = $this->db(0)->get_where_row("master_input", "id = '" . $ref . "'");
+            $nama_target = strtoupper($this->dToko[$cek['id_target']]['nama_toko']);
+            $sort_ref = substr($id, -4);
+            $text = "*Permintaan Kirim Barang* #" . $sort_ref . " \nGUDANG ke " . $nama_target . " \n_" . $note . "_";
             $kirim = $this->data("WA")->send_wa(PV::API_KEY['fonnte'], $target, $text, 1);
             if ($kirim['status'] <> true) {
                print_r($kirim);
