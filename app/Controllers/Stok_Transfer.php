@@ -137,7 +137,7 @@ class Stok_Transfer extends Controller
       $cek = $this->db(0)->get_where_row("master_input", "id = '" . $ref . "'");
       $nama_target = strtoupper($this->dToko[$cek['id_target']]['inisial']);
 
-      $text = "*Permintaan Kirim Barang* \nDari GUDANG ke " . $nama_target . " \n" . $note;
+      $text = "*Permintaan Kirim Barang* \ndari GUDANG ke " . $nama_target . " \n" . $note;
 
       $up = $this->db(0)->update("master_input", "delivery = 1, note_driver = '" . $note . "'", "id = '" . $ref . "'");
       if ($up['errno'] <> 0) {
