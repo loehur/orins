@@ -39,7 +39,7 @@ class Riwayat_Jual extends Controller
       $data['barang'] = $this->db(0)->get_where('master_barang', "en = 1", "id");
 
       if ($date_f <> "") {
-         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "stat = 1 AND (insertTime BETWEEN '" . $date_f . " 00:00:00' AND  '" . $date_t . " 00:00:00') AND id_sumber = " . $this->userData['id_toko'] . "  AND jenis = 2");
+         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "stat = 1 AND (insertTime BETWEEN '" . $date_f . " 00:00:00' AND  '" . $date_t . " 24:00:00') AND id_sumber = " . $this->userData['id_toko'] . "  AND jenis = 2");
       } else {
          $data['mutasi'] = [];
       }
