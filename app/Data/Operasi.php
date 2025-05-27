@@ -132,7 +132,7 @@ class Operasi extends Controller
                             $sort_ref = substr($get['ref'], -4);
                             $text = "*" . $nama_sumber . "* _#" . $sort_ref . "_ \n" . $nama_target . " " . $pelanggan . " SIAP JEMPUT \n_" . $cs . "_";
 
-                            $target = "6285278703970-1501834492@g.us"; // delivery order
+                            $target = $this->dToko[$get['id_toko']]['hp'];
                             $kirim = $this->data("WA")->send_wa(PV::API_KEY['fonnte'], $target, $text, 1);
                             if ($kirim['status'] <> true) {
                                 print_r($kirim);
