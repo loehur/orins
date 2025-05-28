@@ -27,7 +27,7 @@ $max_length = [2, 2, 2, 3];
                             <div class="col px-1 mb-2">
                                 <div class="row mx-0 mb-1">
                                     <div class="col px-0 overflow-auto text-sm">
-                                        <div id="<?= $i ?>_t" class="text-sm text-secondary border-0 w-100 text-no-wrap" style="height: 105px;"></div>
+                                        <div id="<?= $i ?>_t" class="text-sm text-secondary border-0 w-100 text-nowrap" style="height: 105px;"></div>
                                     </div>
                                 </div>
                                 <div class="row mx-0">
@@ -43,10 +43,7 @@ $max_length = [2, 2, 2, 3];
                                 </div>
                             </div>
                         <?php } ?>
-                        <div class="col mt-auto px-1 mb-2">
-                            <label class="mb-2 text-sm">KODE BARANG PABRIK</label><br>
-                            <input tabindex="<?= $tab += 1 ?>" name="code_f" id="<?= $i ?>" class="border-bottom border-0 mb-1" style="text-transform:uppercase">
-                        </div>
+                        <input tabindex="<?= $tab += 1 ?>" type="hidden" name="code_f" id="<?= $i ?>" class="border-bottom border-0 mb-1" style="text-transform:uppercase">
                         <div class="col mb-2 mt-auto">
                             <div class="mb-2">
                                 <input name="sn" class="form-check-input" type="checkbox" value="1">
