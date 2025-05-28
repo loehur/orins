@@ -160,14 +160,6 @@ class Operasi extends Controller
                 }
             }
         }
-
-        $cek_stok_produksi = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "'");
-        $id = $cek_stok_produksi['id_order_data'];
-        $up_stok = $this->terima_stok_satuan($id, $ref);
-        if ($up_stok['errno'] <> 0) {
-            return $up_stok;
-        }
-
         return $update;
     }
 
