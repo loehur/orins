@@ -79,7 +79,12 @@
 
 <div class="modal" id="exampleModal">
     <div class="modal-dialog">
-        <div class="modal-content" id="load"></div>
+        <div class="modal-content">
+            <div class="modal-header py-2 px-2">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-0 py-2" id="load"></div>
+        </div>
     </div>
 </div>
 
@@ -102,7 +107,7 @@
         var id = $(this).attr("data-id");
 
         $("#load").load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
-            $("#load").load("<?= PV::BASE_URL ?>Gudang_Barang/cek_barang/" + id);
+            $("#load").load("<?= PV::BASE_URL ?>Barang_Harga/cek_barang/" + id);
         });
     })
 

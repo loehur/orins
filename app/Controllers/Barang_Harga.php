@@ -48,4 +48,11 @@ class Barang_Harga extends Controller
       $data['brand'] = $this->db(0)->get('master_brand');
       $this->view(__CLASS__ . "/print", $data);
    }
+
+   function cek_barang($id)
+   {
+      $data['stok'] = $this->data('Barang')->stok_data($id, $this->userData['id_toko']);
+      $data['stok_gudang'] = $this->data('Barang')->stok_data($id, 0);
+      $this->view(__CLASS__ . "/data_cek", $data);
+   }
 }
