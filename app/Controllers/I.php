@@ -33,7 +33,6 @@ class I extends Controller
       $data['r_kas'] = [];
       $data['divisi'] = $this->db(0)->get('divisi', 'id_divisi');
 
-      $data['saldo'] = $this->data("Saldo")->deposit($parse);
       $data['paket'] = $this->db(0)->get('paket_main', "id");
       $data['barang'] = $this->db(0)->get('master_barang', 'id');
 
