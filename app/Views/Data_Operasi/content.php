@@ -806,14 +806,17 @@
                         } ?>
                         <tr class="<?= $cl_tb ?>">
                             <td>
-                                <?= substr($rk['ref_bayar'], 0, 4) . "-" . substr($rk['ref_bayar'], 4, 2) . "-" . substr($rk['ref_bayar'], 6, 2) . " " . substr($rk['ref_bayar'], 8, 2) . ":" . substr($rk['ref_bayar'], 10, 2) ?>
+                                <?= date('d/m/y H:i', strtotime($rk['insertTime'])) ?>
                                 <br><?= $metod ?>
                             </td>
                             <td class="text-end">
-                                Bayar: <?= number_format($rk['bayar']) ?><br>
-                                Kembali: <?= number_format($rk['kembali']) ?></td>
+                                Bayar<br>
+                                Kembali</td>
                             <td class="text-end">
-                                Total: <?= number_format($rk['total']) ?><br>
+                                <?= number_format($rk['bayar']) ?><br>
+                                <?= number_format($rk['kembali']) ?></td>
+                            <td class="text-end">
+                                <?= number_format($rk['total']) ?><br>
                                 <?= $statusP ?>
                             </td>
                         </tr>

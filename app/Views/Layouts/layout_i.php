@@ -87,7 +87,7 @@ $t = $data['title'];
 ?>
 
 <body class="nav-fixed disabled_all">
-	<div style="margin-top: 20px;max-width:1100px" id="content"></div>
+	<div id="content"></div>
 	<script src="<?= PV::ASSETS_URL ?>plugins/bootstrap-5.1/bootstrap.bundle.min.js"></script>
 	<script src="<?= PV::ASSETS_URL ?>js/scripts.js"></script>
 </body>

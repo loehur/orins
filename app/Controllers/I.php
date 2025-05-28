@@ -18,23 +18,10 @@ class I extends Controller
 
    public function i($parse, $parse_2 = 0)
    {
-      if ($parse_2 == 0) {
-         $this->view("Layouts/layout_i", [
-            "content" => $this->v_content,
-            "title" => "Data Order - Customer"
-         ]);
-      } else if ($parse_2 == 1) {
-         $parse_2 = date('Y');
-         $this->view("Layouts/layout_i", [
-            "content" => $this->v_content,
-            "title" => "Data Order - Tuntas"
-         ]);
-      } else {
-         $this->view("Layouts/layout_i", [
-            "content" => $this->v_content,
-            "title" => "Data Order - Tuntas"
-         ]);
-      }
+      $this->view("Layouts/layout_i", [
+         "content" => $this->v_content,
+         "title" => "Realtime Invoice"
+      ]);
       $this->viewer($parse, $parse_2);
    }
 
@@ -108,7 +95,7 @@ class I extends Controller
          $where_ref = "ref IN (" . $ref_list . ")";
          $data['ref'] = $this->db(0)->get_where('ref', $where_ref, 'ref');
 
-         $cols = "ref_bayar, metode_mutasi, sum(jumlah) as total, sum(bayar) as bayar, sum(kembali) as kembali, status_mutasi";
+         $cols = "ref_bayar, metode_mutasi, sum(jumlah) as total, sum(bayar) as bayar, sum(kembali) as kembali, status_mutasi, insertTime";
          $where_2 = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ") GROUP BY ref_bayar";
          $data['r_kas'] = $this->db(0)->get_cols_where('kas', $cols, $where_2, 1);
 
