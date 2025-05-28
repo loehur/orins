@@ -181,6 +181,16 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="row mb-2">
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" name="notif" type="checkbox" value="1" id="flexCheckChecked" checked>
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                        Infokan ke Customer
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row mb-3">
                             <div class="col">
                                 <label class=" form-label">Pengiriman</label>

@@ -79,7 +79,13 @@ class Data_Produksi extends Controller
       $ref = $_POST['ref'];
       $id_karyawan = $_POST['staf_id'];
       $expedisi = $_POST['expedisi'];
-      $up =  $this->data('Operasi')->ready($ref, $id_karyawan, $expedisi);
+      if (isset($_POST['notif'])) {
+         $notif = $_POST['notif'];
+      } else {
+         $notif = 0;
+      }
+
+      $up =  $this->data('Operasi')->ready($ref, $id_karyawan, $expedisi, $notif);
       echo $up['errno'] <> 0 ? $up['error'] : 0;
    }
 }

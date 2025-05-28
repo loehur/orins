@@ -71,7 +71,12 @@ class Retur_Barang_G extends Controller
    function add()
    {
       $tanggal = $_POST['tanggal'];
-      $sds = $_POST['sds'];
+
+      if (isset($_POST['sds'])) {
+         $sds = $_POST['sds'];
+      } else {
+         $sds = 0;
+      }
       $note = $_POST['note'];
       $error = 0;
       $supplier = strtoupper($_POST['supplier']);
