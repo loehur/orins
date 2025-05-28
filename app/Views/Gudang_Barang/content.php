@@ -26,8 +26,8 @@ $max_length = [2, 2, 2, 3];
                             $tab += 1; ?>
                             <div class="col px-1 mb-2">
                                 <div class="row mx-0 mb-1">
-                                    <div class="col px-0 overflow-auto">
-                                        <div id="<?= $i ?>_t" class="text-sm text-secondary border-0 w-100" style="height: 105px;"></div>
+                                    <div class="col px-0 overflow-auto text-sm">
+                                        <div id="<?= $i ?>_t" class="text-sm text-secondary border-0 w-100 text-no-wrap" style="height: 105px;"></div>
                                     </div>
                                 </div>
                                 <div class="row mx-0">

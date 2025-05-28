@@ -42,6 +42,28 @@ class Gudang_Barang extends Controller
 
    function load($kode, $table, $col)
    {
+      if ($table == "master_model") {
+         $get = $this->db(0)->get_where("master_barang", "code LIKE '" . $kode . "%'");
+         foreach ($get as $d) {
+            $id = substr($d['code'], -3);
+            $code_gtb = substr($d['code'], 0, strlen($d['code']) - 3);
+            $code = $code_gtb . $id;
+            $nama = strtoupper($d['model']);
+
+            $cols = "id, code_gtb, code, nama";
+            $vals = "'" . $id . "','" . $code_gtb . "','" . $code . "','" . $nama . "'";
+            $in = $this->db(0)->insertCols("master_model", $cols, $vals);
+            if ($in['errno'] = 1062) {
+               $set = "id = '" . $id . "', code_gtb = '" . $code_gtb . "', nama = '" . $nama . "'";
+               $up = $this->db(0)->update("master_model", $set, "code = '" . $code . "'");
+               if ($up['errno'] <> 0) {
+                  print_r($up['error']);
+                  exit();
+               }
+            }
+         }
+      }
+
       $data = $this->db(0)->get_where($table, $col . " = '" . $kode . "'");
       echo json_encode($data);
    }
