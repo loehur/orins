@@ -19,7 +19,8 @@
                 <th>Stok</th>
             </thead>
             <?php foreach ($data['barang'] as $a) {
-                if (isset($data['stok'][$a['id']])) { ?>
+                if (isset($data['stok'][$a['id']])) {
+                    $dstok = isset($data['stok'][$a['id']]) ? $data['stok'][$a['id']]['qty'] : 0; ?>
                     <tr>
                         <td class="">
                             <?= strtoupper($a['grup'] . " " . $a['tipe']) ?>
@@ -37,11 +38,15 @@
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
                         </td>
                         <td class="text-end">
+                            <?php if ($a['sn'] == 1 && $dstok > 0) { ?>
+                                <i class="fa-solid fa-magnifying-glass text-primary cek" data-id="<?= $a['id'] ?>" data-bs-target="#exampleModal" data-bs-toggle="modal" style="cursor: pointer;"></i>
+                            <?php } ?>
                             <?= $data['stok'][$a['id']]['qty'] ?>/<?= isset($data['stok_gudang'][$a['id']]['qty']) ? $data['stok_gudang'][$a['id']]['qty'] : 0 ?>
                         </td>
                     </tr>
                 <?php } else { ?>
-                    <?php if (isset($data['stok_gudang'][$a['id']]) && $this->userData['id_toko'] == 1) { ?>
+                    <?php if (isset($data['stok_gudang'][$a['id']]) && $this->userData['id_toko'] == 1) {
+                        $dstok = isset($data['stok_gudang'][$a['id']]) ? $data['stok_gudang'][$a['id']]['qty'] : 0; ?>
                         <tr>
                             <td class="">
                                 <?= strtoupper($a['grup'] . " " . $a['tipe']) ?>
@@ -59,6 +64,9 @@
                                 <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
                             </td>
                             <td class="text-end">
+                                <?php if ($a['sn'] == 1 && $dstok > 0) { ?>
+                                    <i class="fa-solid fa-magnifying-glass text-primary cek" data-id="<?= $a['id'] ?>" data-bs-target="#exampleModal" data-bs-toggle="modal" style="cursor: pointer;"></i>
+                                <?php } ?>
                                 <?= isset($data['stok'][$a['id']]['qty']) ? $data['stok'][$a['id']]['qty'] : 0 ?>/<?= isset($data['stok_gudang'][$a['id']]['qty']) ? $data['stok_gudang'][$a['id']]['qty'] : 0 ?>
                             </td>
                         </tr>
@@ -68,6 +76,12 @@
         </table>
     </div>
 </main>
+
+<div class="modal" id="exampleModal">
+    <div class="modal-dialog">
+        <div class="modal-content" id="load"></div>
+    </div>
+</div>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
@@ -81,6 +95,14 @@
             "pageLength": 50,
             "scrollY": 600,
             "dom": "lfrti"
+        });
+    })
+
+    $(".cek").click(function() {
+        var id = $(this).attr("data-id");
+
+        $("#load").load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
+            $("#load").load("<?= PV::BASE_URL ?>Gudang_Barang/cek_barang/" + id);
         });
     })
 
