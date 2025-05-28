@@ -78,7 +78,7 @@
 </main>
 
 <div class="modal" id="exampleModal">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header py-2 px-2">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

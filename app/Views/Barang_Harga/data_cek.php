@@ -1,8 +1,8 @@
 <div class="p-2">
-    <label class="border border-bottom-0 bg-light px-2">Toko</label>
+    <label class="border border-bottom-0 bg-success text-white px-2">Toko</label>
     <div class="border px-1 py-2 text-sm">
         <?php if (count($data['stok']) == 0) { ?>
-            <div class="w-100 text-center">Kosong</div>
+            <div class="w-100 text-center text-sm">Kosong</div>
         <?php } else { ?>
             <table class="table table-sm mb-0 text-sm">
                 <?php foreach ($data['stok'] as $key => $d) {
@@ -18,7 +18,7 @@
         <?php } ?>
     </div>
     <br>
-    <label class="border border-bottom-0 bg-light px-2">Gudang</label>
+    <label class="border border-bottom-0 bg-danger text-white px-2">Gudang</label>
     <div class="border px-1 py-2">
         <?php if (count($data['stok']) == 0) { ?>
 
