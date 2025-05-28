@@ -4,14 +4,6 @@ class I extends Controller
 {
    public function __construct()
    {
-      $this->session_cek();
-      $this->data_order();
-
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[3]) && !in_array($this->userData['user_tipe'], PV::PRIV[5])) {
-         $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
-         $this->logout();
-      }
-
       $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";
    }
@@ -41,31 +33,17 @@ class I extends Controller
       $data['r_kas'] = [];
       $data['divisi'] = $this->db(0)->get('divisi', 'id_divisi');
 
-      if ($this->dToko[$this->userData['id_toko']]['produksi'] == 1) {
-         $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
-      } else {
-         $data['pelanggan'] = $this->db(0)->get_where('pelanggan', 'id_toko = ' . $this->userData['id_toko'], 'id_pelanggan');
-      }
-
       $data['saldo'] = $this->data("Saldo")->deposit($parse);
       $data['paket'] = $this->db(0)->get('paket_main', "id");
       $data['barang'] = $this->db(0)->get('master_barang', 'id');
-      $data['payment_account'] = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
-      if ($parse_2 < 2023) {
-         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 0";
-         $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND id_target = " . $parse . " AND tuntas = 0";
-      } else {
-         $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%'";
-         $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND id_target = " . $parse . " AND tuntas = 1 AND insertTime LIKE '%" . $parse_2 . "%'";
-      }
+      $where = "id_pelanggan = " . $parse . " AND tuntas = 0";
+      $where_mutasi = "id_target = " . $parse . " AND tuntas = 0";
 
       if ($parse == 0) {
          $data['order'] = [];
          $data['mutasi'] = [];
       } else {
-         $pelanggan = $data['pelanggan'][$parse];
-         $data['cust_wa'] = $this->data('Validasi')->valid_wa_direct($pelanggan['no_hp']);
          $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
          $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_mutasi, 'ref', 1);
       }
@@ -89,20 +67,20 @@ class I extends Controller
          }
          $ref_list = rtrim($ref_list, ',');
 
-         $where_kas = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ")";
+         $where_kas = "jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ")";
          $data['kas'] = $this->db(0)->get_where('kas', $where_kas, 'ref_transaksi', 1);
 
          $where_ref = "ref IN (" . $ref_list . ")";
          $data['ref'] = $this->db(0)->get_where('ref', $where_ref, 'ref');
 
          $cols = "ref_bayar, metode_mutasi, sum(jumlah) as total, sum(bayar) as bayar, sum(kembali) as kembali, status_mutasi, insertTime";
-         $where_2 = "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ") GROUP BY ref_bayar";
+         $where_2 = "jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ") GROUP BY ref_bayar";
          $data['r_kas'] = $this->db(0)->get_cols_where('kas', $cols, $where_2, 1);
 
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
+         $where = "ref_transaksi IN (" . $ref_list . ")";
          $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where, 'ref_transaksi', 1);
 
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi IN (" . $ref_list . ")";
+         $where = "ref_transaksi IN (" . $ref_list . ")";
          $data['charge'] = $this->db(0)->get_where('charge', $where, 'ref_transaksi', 1);
 
          //PASTIKAN BELUM TUNTAS INDUK REF
@@ -118,9 +96,6 @@ class I extends Controller
       }
 
       $data['refs'] = $refs;
-      $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
-      $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'], 'id_karyawan');
-
       foreach ($refs as $r) {
          $data['head'][$r]['cs_to'] = 0;
          $data['head'][$r]['id_afiliasi'] = 0;

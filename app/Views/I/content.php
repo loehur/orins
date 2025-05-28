@@ -140,30 +140,7 @@
                             $xtraDiskon += $ds['jumlah'];
                             $dibayar += $ds['jumlah'];
                             $verify_payment += $ds['jumlah'];
-                            if (in_array($this->userData['user_tipe'], PV::PRIV[2])) {
-                                if (isset($data['order'][$ref]) && is_array($data['order'][$ref])) {
-                                    foreach ($data['order'][$ref] as $do) {
-                                        if ($do['ref'] == $ref) {
-                                            $list_xdiskon[$ref] = true;
-                                            $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (isset($data['mutasi'][$ref]) && is_array($data['mutasi'][$ref])) {
-                                    foreach ($data['mutasi'][$ref] as $do) {
-                                        if ($list_xdiskon[$ref] == true) {
-                                            continue;
-                                        }
-
-                                        if ($do['ref'] == $ref) {
-                                            $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
-                                        }
-                                    }
-                                }
-                            } else {
-                                $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
-                            }
+                            $showMutasi .= "<span class='text-success'><small>XtraDiskon#" . $ds['id_diskon'] . "</small> -Rp" . number_format($ds['jumlah']) . "<br></span>";
                         } else {
                             $showMutasi .= "<span><small>XtraDiskon#" . $ds['id_diskon'] . " <span class='text-danger'>" . $ds['cancel_reason'] . " <i class='fa-solid fa-xmark'></i></span></small> <del>-Rp" . number_format($ds['jumlah']) . "</del><br></span>";
                         }
@@ -175,21 +152,7 @@
                         <small>
                             <table class="table table-sm mb-0 text-sm">
                                 <?php
-                                $pelanggan = $data['pelanggan'][$id_pelanggan]['nama'];
-                                $id_toko_pelanggan = $data['pelanggan'][$id_pelanggan]['id_toko'];
-
-                                $in_toko = "";
-                                if ($id_toko_pelanggan <> $this->userData['id_toko']) {
-                                    $in_toko = $this->dToko[$id_toko_pelanggan]['inisial'] . " ";
-                                }
-
                                 $dh = $data['head'][$ref];
-
-                                $cs = $data['karyawan'][$dh['cs']]['nama'];
-                                $cs_to = "...";
-                                if ($dh['cs_to'] <> 0) {
-                                    $cs_to = $this->dKaryawanAll[$dh['cs_to']]['nama'];
-                                }
 
                                 $dRef = $data['ref'][$ref];
                                 $mark = "";
@@ -277,7 +240,6 @@
                                                         foreach ($divisi as $key => $dvs) {
 
                                                             if ($divisi_arr[$key]['status'] == 1) {
-                                                                $karyawan = $this->dKaryawanAll[$divisi_arr[$key]['user_produksi']]["nama"];
                                                                 echo '<i class="fa-solid fa-check text-success"></i> ';
                                                             } else {
                                                                 echo '<i class="fa-regular fa-circle"></i> ';
@@ -295,18 +257,12 @@
                                                             echo $dvs . '<br>';
                                                         }
                                                         ?>
-                                                        <?php if ($id_ambil == 0 && $cancel == 0) { ?>
-                                                            <?php if ($countSPK > 0 && $cancel == 0) { ?>
-                                                                <?php $ambil_all[$ref] = false; ?>
-                                                                <?php if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
-                                                                    <i class="fa-regular fa-circle"></i> Ambil</span>
-                                                                <?php } ?>
+                                                        <?php if ($id_ambil == 0) { ?>
+                                                            <?php if ($countSPK > 0) { ?>
+                                                                <i class="fa-regular fa-circle"></i> Ambil</span>
                                                             <?php } ?>
                                                         <?php } else { ?>
-                                                            <?php if ($cancel == 0) { ?>
-                                                                <?php $karyawan = $this->dKaryawanAll[$id_ambil]["nama"]; ?>
-                                                                <span class="text-primary"><i class="fa-solid fa-check-double"></i> Ambil (<?= ucwords($karyawan) . $driver_name ?>)</span>
-                                                            <?php } ?>
+                                                            <span class="text-primary"><i class="fa-solid fa-check-double"></i> Ambil</span>
                                                         <?php } ?>
                                                     </small>
                                                 </td>
