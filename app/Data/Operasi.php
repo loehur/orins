@@ -163,9 +163,9 @@ class Operasi extends Controller
         return $update;
     }
 
-    function terima_stok_satuan($id, $ref)
+    function terima_stok_satuan($pid, $ref) //terima stok produksi
     {
-        $update = $this->db(0)->update("master_mutasi", "stat = 1", "id_target = '" . $this->userData['id_toko'] . "' AND pid = " . $id);
+        $update = $this->db(0)->update("master_mutasi", "stat = 1", "id_target = '" . $this->userData['id_toko'] . "' AND pid = " . $pid);
         if ($update['errno'] == 0) {
             $count_mutasi = $this->db(0)->count_where("master_mutasi", "ref = '" . $ref . "' AND stat = 0");
             if ($count_mutasi == 0) {

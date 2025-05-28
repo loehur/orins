@@ -29,7 +29,7 @@
             </div>
             <div class="col text-end mt-auto">
                 <?php if ($d['cek'] == 0) { ?>
-                    <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn btn-sm btn-outline-success btnTerima" data-bs-toggle="modal" data-bs-target="#exampleModalTerima"><i class="fa-solid fa-check"></i> Verify</span>
+                    <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn btn-sm btn-success btnTerima" data-bs-toggle="modal" data-bs-target="#exampleModalTerima"><i class="fa-solid fa-check"></i> Verify</span>
                 <?php } else { ?>
                     <?php if ($d['cek'] == 1) { ?>
                         <span class="badge bg-success">VERIFIED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <table class="table table-sm text-sm mx-1 table-hover">
+        <table class="table table-sm text-sm mx-1">
             <?php
             $no = 0;
             foreach ($data['mutasi'] as $a) {
@@ -63,10 +63,11 @@
                         <?= $a['sn'] ?>
                     </td>
                     <td>
-                        <?= $a['sds'] == 1 ? "SDS-YES" : "SDS-NO" ?>
+                        <?= $a['sds'] == 1 ? "SDS" : "" ?>
                     </td>
                     <td class="align-middle text-end">
                         <?php if ($a['stat'] == 0) { ?>
+                            <a href="<?= PV::BASE_URL ?>Barang_Masuk/terima_per_item/<?= $a['id'] ?>/<?= $a['ref'] ?>" class="ajax">Terima</a>&nbsp;
                             <span class="badge bg-warning">Check</span>
                         <?php } else { ?>
                             <?php if ($a['stat'] == 1) { ?>
@@ -135,6 +136,23 @@
         $('select.tize').selectize();
     });
 
+    $('a.ajax').click(function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr('href'),
+            type: 'GET',
+            success: function(res) {
+                if (res == 0) {
+                    content();
+                } else {
+                    alert(res);
+                }
+            },
+            error: function() {
+                alert('An error occurred while processing the request.');
+            }
+        });
+    })
 
     $("span.btnTerima").click(function() {
         ref = $(this).attr("data-ref");

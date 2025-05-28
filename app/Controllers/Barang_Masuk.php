@@ -107,6 +107,16 @@ class Barang_Masuk extends Controller
       echo 0;
    }
 
+   function terima_per_item($id, $ref)
+   {
+      $update = $this->db(0)->update("master_mutasi", "stat = 1", "id_target = '" . $this->userData['id_toko'] . "' AND id = " . $id . " AND ref = '" . $ref . "'");
+      if ($update['errno'] == 0) {
+         echo 0;
+      } else {
+         echo $update['error'];
+      }
+   }
+
    function reject()
    {
       $ref = $_POST['ref'];
