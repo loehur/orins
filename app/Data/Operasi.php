@@ -112,7 +112,7 @@ class Operasi extends Controller
                 if ($update['errno'] == 0) {
                     if (PV::PRO == 1 && $notif == 1) {
                         $get = $cek_toko_asal[$this->userData['id_toko']];
-                        $nama_sumber = strtoupper($this->dToko[$get['id_afiliasi']]['nama_toko']);
+                        $nama_sumber = strtoupper($this->dToko[$get['id_toko']]['nama_toko']);
                         $pelanggan = strtoupper($this->dPelangganAll[$get['id_pelanggan']]['nama']);
                         $cs_name = $this->dKaryawanAll[$get['id_user_afiliasi']]['nama'];
                         $cs = strtoupper(substr($cs_name, 0, 2) . "-" . $get['id_user_afiliasi']);
@@ -146,13 +146,11 @@ class Operasi extends Controller
                     if ($update['errno'] == 0) {
                         if (PV::PRO == 1 && $notif == 1) {
                             $get = $cek_toko[$this->userData['id_toko']];
-                            $nama_sumber = strtoupper($this->dToko[$get['id_afiliasi']]['nama_toko']);
-                            $nama_target = strtoupper($this->dToko[$get['id_toko']]['inisial']);
                             $pelanggan = strtoupper($this->dPelangganAll[$get['id_pelanggan']]['nama']);
                             $cs_name = $this->dKaryawanAll[$get['id_user_afiliasi']]['nama'];
                             $cs = strtoupper(substr($cs_name, 0, 2) . "-" . $get['id_user_afiliasi']);
                             $sort_ref = substr($get['ref'], -4);
-                            $text = "*" . $nama_sumber . "* _#" . $sort_ref . "_ \n" . $nama_target . " " . $pelanggan . " SIAP JEMPUT \n_" . $cs . "_";
+                            $text = "*" . $pelanggan . "* _#" . $sort_ref . "_ \nSudah Selesai. _" . $cs . "_";
 
                             $target = $this->dToko[$get['id_toko']]['hp'];
                             $kirim = $this->data("WA")->send_wa(PV::API_KEY['fonnte'], $target, $text, 1);
