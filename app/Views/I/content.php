@@ -109,7 +109,7 @@
 
                         switch ($dk['status_mutasi']) {
                             case 0:
-                                $statusP = "<small class='text-warning'>Office Checking</small> ";
+                                $statusP = "<small class='text-warning'>Checking</small> ";
                                 $jumlahShow = "-Rp" . number_format($dk['jumlah']) . $show_charge . "<br>";
                                 break;
                             case 1:
@@ -380,7 +380,7 @@
                         $cl_tb = "";
                         switch ($rk['status_mutasi']) {
                             case 0:
-                                $statusP = "<small class='text-warning'>Office Checking</small> ";
+                                $statusP = "<small class='text-warning'>Checking</small> ";
                                 break;
                             case 1:
                                 $statusP = '<small><i class="fa-solid fa-check text-success"></i></small> ';
