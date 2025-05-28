@@ -331,7 +331,7 @@ $max_length = [2, 2, 2, 3];
         var grup_t = "";
         for (var key in grup) {
             if (grup.hasOwnProperty(key)) {
-                grup_t += grup[key].id + ' ' + grup[key].nama + "<br>";
+                grup_t += '<b>' + grup[key].id + '</b> ' + grup[key].nama + "<br>";
             }
         }
         $('#grup_t').html(grup_t);
@@ -339,7 +339,7 @@ $max_length = [2, 2, 2, 3];
         var tipe_t = "";
         for (var key in tipe) {
             if (tipe.hasOwnProperty(key)) {
-                tipe_t += tipe[key].id + ' ' + tipe[key].nama + "<br>";
+                tipe_t += '<b>' + tipe[key].id + '</b> ' + tipe[key].nama + "<br>";
             }
         }
         $('#tipe_t').html(tipe_t);
@@ -347,7 +347,7 @@ $max_length = [2, 2, 2, 3];
         var brand_t = "";
         for (var key in brand) {
             if (brand.hasOwnProperty(key)) {
-                brand_t += brand[key].id + ' ' + brand[key].nama + "<br>";
+                brand_t += '<b>' + brand[key].id + '</b> ' + brand[key].nama + "<br>";
             }
         }
         $('#brand_t').html(brand_t);
@@ -385,7 +385,7 @@ $max_length = [2, 2, 2, 3];
                         var model_t = "";
                         for (var key in model) {
                             if (model.hasOwnProperty(key)) {
-                                model_t += model[key].id + ' ' + model[key].nama + "<br>";
+                                model_t += '<b>' + model[key].id + '</b> ' + model[key].nama + "<br>";
                             }
                         }
                         $('#model_t').html(model_t);
