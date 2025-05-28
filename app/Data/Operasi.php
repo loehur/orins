@@ -115,7 +115,7 @@ class Operasi extends Controller
                         $nama_sumber = strtoupper($this->dToko[$get['id_toko']]['nama_toko']);
                         $pelanggan = strtoupper($this->dPelangganAll[$get['id_pelanggan']]['nama']);
                         $no_ref = substr($ref, 0, strlen($ref) - 4) . "-" . substr($ref, -4);
-                        $text = "*" . $nama_sumber . "* \nAN. " . $pelanggan . " \nNo. " . $no_ref . ", " . " Sudah Selesai. \n" . PV::DOMAIN . "/I/i/" . $get['id_pelanggan'];
+                        $text = "*" . $nama_sumber . "* \nAn. " . $pelanggan . " \nNo. " . $no_ref . ", " . " Sudah Selesai. \n" . PV::DOMAIN . "/I/i/" . $get['id_pelanggan'];
 
                         $hp = $this->dPelangganAll[$get['id_pelanggan']]['no_hp'];
                         $no_wa = $this->valid_number($hp);
