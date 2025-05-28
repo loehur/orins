@@ -247,7 +247,6 @@
 
                                                             if ($divisi_arr[$key]['cm'] == 1) {
                                                                 if ($divisi_arr[$key]['cm_status'] == 1) {
-                                                                    $karyawan = $this->dKaryawanAll[$divisi_arr[$key]['user_cm']]["nama"];
                                                                     echo '<i class="fa-solid text-success fa-check-double"></i> ';
                                                                 } else {
                                                                     echo '<i class="fa-regular fa-circle"></i> ';

@@ -93,33 +93,3 @@ $t = $data['title'];
 </body>
 
 </html>
-
-<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-
-<script>
-	$("a#sync").click(function(e) {
-		e.preventDefault();
-		sync();
-	});
-
-	function sync() {
-		$.ajax({
-			url: $("a#sync").attr('href'),
-			type: "GET",
-			success: function() {
-				location.reload(true);
-			},
-		});
-	}
-
-	$("a.sync").click(function(e) {
-		e.preventDefault();
-		$.ajax({
-			url: $(this).attr('href'),
-			type: "GET",
-			success: function() {
-				sync();
-			},
-		});
-	});
-</script>

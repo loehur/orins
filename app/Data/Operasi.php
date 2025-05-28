@@ -117,7 +117,7 @@ class Operasi extends Controller
                         $cs_name = $this->dKaryawanAll[$get['id_user_afiliasi']]['nama'];
                         $cs = strtoupper(substr($cs_name, 0, 2) . "-" . $get['id_user_afiliasi']);
                         $no_ref = substr($ref, 0, strlen($ref) - 4) . "-" . substr($ref, -4);
-                        $text = "*" . $nama_sumber . "* \nOrder AN. " . $pelanggan . ", No. " . $no_ref . ", " . "Sudah Selesai. \n" . PV::DOMAIN . "/I/i/" . $get['id_pelanggan'];
+                        $text = "*" . $nama_sumber . "* \nAN. " . $pelanggan . ", No. " . $no_ref . ", " . "Sudah Selesai. \n" . PV::DOMAIN . "/I/i/" . $get['id_pelanggan'];
 
                         $hp = $this->dPelangganAll[$get['id_pelanggan']]['no_hp'];
                         $no_wa = $this->valid_number($hp);
