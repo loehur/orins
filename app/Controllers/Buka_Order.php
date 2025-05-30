@@ -504,7 +504,7 @@ class Buka_Order extends Controller
       }
 
       if ($paket_ref <> "") {
-         $cek_double = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND cancel = 0");
+         $cek_double = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND id_user = " . $this->userData['id_user'] . " AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND cancel = 0");
          if ($cek_double <> 0) {
             echo 0;
             exit();
@@ -558,10 +558,12 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
-      $cek_double_paket = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND id_barang = " . $id_barang . " AND sn = '" . $sn . "' AND sds = " . $sds . " AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND stat <> 2");
-      if ($cek_double_paket <> 0) {
-         echo 0;
-         exit();
+      if ($paket_ref <> "") {
+         $cek_double_paket = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND user_id = " . $this->userData['id_user'] . " AND id_barang = " . $id_barang . " AND sn = '" . $sn . "' AND sds = " . $sds . " AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND stat <> 2");
+         if ($cek_double_paket <> 0) {
+            echo 0;
+            exit();
+         }
       }
 
       $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $id_barang . "'");
