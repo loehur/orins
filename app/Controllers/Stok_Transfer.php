@@ -113,6 +113,9 @@ class Stok_Transfer extends Controller
 
       $sisa_stok = $this->data('Barang')->sisa_stok($id_barang, 0, $sn, $sds);
 
+      echo $sisa_stok;
+      exit();
+
       if ($sisa_stok <= 0) {
          echo "Stok ter-update tidak tersedia";
          exit();
