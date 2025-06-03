@@ -66,6 +66,11 @@ class Gudang_Barang extends Controller
                   print_r($up['error']);
                   exit();
                }
+            } else {
+               if ($in['errno'] <> 0) {
+                  print_r($in['error']);
+                  exit();
+               }
             }
          }
       }
