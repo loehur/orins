@@ -229,7 +229,7 @@ class Data_Order extends Controller
       $max -= $cek['diskon'];
 
       if ($refund > $max) {
-         echo "Refund melebihi jumlah transaksi!";
+         echo "Refund melebihi jumlah transaksi yang telah disetor!";
          exit();
       }
 
