@@ -50,29 +50,37 @@ class Gudang_Barang extends Controller
    {
       if (strlen($kode) == 6) {
          $get = $this->db(0)->get_where("master_barang", "code LIKE '" . $kode . "%'");
-         foreach ($get as $d) {
-            $id = substr($d['code'], -3);
-            $code_gtb = $kode;
-            $code = $code_gtb . $id;
-            $nama = strtoupper($d['model']);
+         if (count($get) > 0) {
+            $del = $this->db(0)->delete_where("master_model", "code_gtb = '" . $kode . "'");
+            if ($del['errno'] == 0) {
+               foreach ($get as $d) {
+                  $id = substr($d['code'], -3);
+                  $code_gtb = $kode;
+                  $code = $code_gtb . $id;
+                  $nama = strtoupper($d['model']);
 
-            $cols = "id, code_gtb, code, nama";
-            $vals = "'" . $id . "','" . $code_gtb . "','" . $code . "','" . $nama . "'";
-            $in = $this->db(0)->insertCols("master_model", $cols, $vals);
-            if ($in['errno'] = 1062) {
-               $set = "id = '" . $id . "', code_gtb = '" . $code_gtb . "', nama = '" . $nama . "'";
-               $up = $this->db(0)->update("master_model", $set, "code = '" . $code . "'");
-               if ($up['errno'] <> 0) {
-                  print_r($up['error']);
-                  exit();
-               }
-            } else {
-               if ($in['errno'] <> 0) {
-                  print_r($in['error']);
-                  exit();
+                  $cols = "id, code_gtb, code, nama";
+                  $vals = "'" . $id . "','" . $code_gtb . "','" . $code . "','" . $nama . "'";
+                  $in = $this->db(0)->insertCols("master_model", $cols, $vals);
+                  if ($in['errno'] = 1062) {
+                     $set = "id = '" . $id . "', code_gtb = '" . $code_gtb . "', nama = '" . $nama . "'";
+                     $up = $this->db(0)->update("master_model", $set, "code = '" . $code . "'");
+                     if ($up['errno'] <> 0) {
+                        print_r($up['error']);
+                        exit();
+                     }
+                  } else {
+                     if ($in['errno'] <> 0) {
+                        print_r($in['error']);
+                        exit();
+                     }
+                  }
                }
             }
          }
+         echo 0;
+      } else {
+         echo 0;
       }
    }
 
