@@ -366,7 +366,7 @@
 
         $showR = "";
         if ($this->userData['id_toko'] == 1) {
-            if ($countBarang > 0) {
+            if ($countProduksi == 0) {
                 $showR = "display:none";
             }
         }
