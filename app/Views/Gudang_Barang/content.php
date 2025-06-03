@@ -33,7 +33,7 @@ $max_length = [2, 2, 2, 3];
                                 <div class="row mx-0">
                                     <div class="col px-0">
                                         <div style="min-width: 100px;">
-                                            <label class="text-sm"><?= strtoupper($i) ?></label>
+                                            <label class="text-sm"><?= strtoupper($i) ?></label> <?= $i == "model" ? '<i onclick="update_model()" style="cursor:pointer" class="text-success fa-solid fa-rotate-right"></i>' : "" ?>
                                             <input tabindex="99999" <?= $required[$k] ?> name="<?= $i ?>_c" id="<?= $i ?>_c" minlength="2" class="float-end border-bottom border-0 mb-2 text-center" maxlength="<?= $max_length ?>" style="width: 50px; text-transform:uppercase">
                                         </div>
                                         <div class="autocomplete">
@@ -152,6 +152,22 @@ $max_length = [2, 2, 2, 3];
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 
 <script>
+    function update_model() {
+        var gtb = $('#grup_c').val() + $('#tipe_c').val() + $('#brand_c').val();
+        $.ajax({
+            url: "<?= PV::BASE_URL ?>Gudang_Barang/update_model/" + gtb,
+            data: [],
+            type: "GET",
+            success: function(res) {
+                if (res != 0) {
+                    alert(res);
+                } else {
+                    get_model_list();
+                }
+            },
+        });
+    }
+
     $(document).ready(function() {
         $('#tb_barang').dataTable({
             "order": [],
@@ -374,29 +390,32 @@ $max_length = [2, 2, 2, 3];
         if (new_gtb != gtb) {
             gtb = new_gtb;
             if (gtb.length == 6) {
-                $.ajax({
-                    url: '<?= PV::BASE_URL ?>Gudang_Barang/load/' + gtb + '/master_model/code_gtb',
-                    dataType: "json",
-                    data: {},
-                    success: function(res) {
-                        model = res;
-                        autocomplete(document.getElementById("model"), model);
-
-                        var model_t = "";
-                        for (var key in model) {
-                            if (model.hasOwnProperty(key)) {
-                                model_t += '<b>' + model[key].id + '</b> ' + model[key].nama + "<br>";
-                            }
-                        }
-                        $('#model_t').html(model_t);
-                    }
-                });
-                console.log(gtb);
+                get_model_list();
             } else {
                 $('#model_t').html('');
             };
         }
     }, 1000);
+
+    function get_model_list() {
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Gudang_Barang/load/' + gtb + '/master_model/code_gtb',
+            dataType: "json",
+            data: {},
+            success: function(res) {
+                model = res;
+                autocomplete(document.getElementById("model"), model);
+
+                var model_t = "";
+                for (var key in model) {
+                    if (model.hasOwnProperty(key)) {
+                        model_t += '<b>' + model[key].id + '</b> ' + model[key].nama + "<br>";
+                    }
+                }
+                $('#model_t').html(model_t);
+            }
+        });
+    }
 
     $("form").on("submit", function(e) {
         e.preventDefault();

@@ -42,11 +42,17 @@ class Gudang_Barang extends Controller
 
    function load($kode, $table, $col)
    {
-      if ($table == "master_model") {
+      $data = $this->db(0)->get_where($table, $col . " = '" . $kode . "'");
+      echo json_encode($data);
+   }
+
+   function update_model($kode)
+   {
+      if (strlen($kode) == 6) {
          $get = $this->db(0)->get_where("master_barang", "code LIKE '" . $kode . "%'");
          foreach ($get as $d) {
             $id = substr($d['code'], -3);
-            $code_gtb = substr($d['code'], 0, strlen($d['code']) - 3);
+            $code_gtb = $kode;
             $code = $code_gtb . $id;
             $nama = strtoupper($d['model']);
 
@@ -63,9 +69,6 @@ class Gudang_Barang extends Controller
             }
          }
       }
-
-      $data = $this->db(0)->get_where($table, $col . " = '" . $kode . "'");
-      echo json_encode($data);
    }
 
    function add()
