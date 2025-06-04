@@ -6,43 +6,54 @@
     <!-- Main page content-->
     <div class="container">
         <div class="row mb-2">
-            <div class="col-auto mt-auto px-1 mb-2">
+            <div class="col-auto mt-auto px-1">
                 <a href="<?= PV::BASE_URL ?>Gudang_Input"><button class="btn btn-outline pb-0 border-0"><i class="fa-solid fa-chevron-left"></i> <small>Back</small></button></a>
             </div>
-            <div class="col-auto text-center px-1 mb-2">
-                <label>Code Suppiler</label><br>
-                <input name="supplier_c" id="supplier_c" value="<?= $d['id_sumber'] ?>" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
-            </div>
-            <div class="col-auto px-1 mb-2 text-center">
-                <label>Tanggal</label><br>
-                <input type="date" name="tanggal" readonly class="text-center border-bottom border-0" value="<?= $d['tanggal'] ?>">
-            </div>
-            <div class="col-auto px-1 mb-2 text-end">
-                <label>No. Faktur</label><br>
-                <input class="text-end border-bottom border-0" value="<?= $d['no_faktur'] ?>" name="no_fak" readonly style="text-transform: uppercase;">
-            </div>
-            <div class="col-auto px-1 mb-2 text-end">
-                <label>No. PO</label><br>
-                <input class="text-end border-bottom border-0" value="<?= $d['no_po'] ?>" name="no_po" readonly style="text-transform: uppercase;">
-            </div>
-            <div class="col-auto px-1 mb-2">
-                <div class="pt-4">
-                    <input name="sds" class="form-check-input" type="checkbox" <?= $d['sds'] == 1 ? "checked" : "" ?> disabled>
-                    <label class="form-check-label" for="flexCheckDefault">
-                        SDS
-                    </label>
-                </div>
-            </div>
         </div>
-        <hr>
+        <div class="border rounded px-2 py-2 pb-0">
+            <table class="mb-2 text-sm mb-0 w-100">
+                <tr>
+                    <td style="width: 100px;">Tanggal</td>
+                    <td>: <?= $d['tanggal'] ?></td>
+                    <td><?= $d['sds'] == 1 ? "#SDS" : "" ?></td>
+                    <td class="text-end">
+                        <?php if ($d['cek'] == 0) { ?>
+                            <span class="badge bg-warning">Checking</span>
+                        <?php } else { ?>
+                            <?php if ($d['cek'] == 1) { ?>
+                                <span class="badge bg-success">VERIFIED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
+                            <?php } else { ?>
+                                <span class="badge bg-danger">REJECTED</span>
+                            <?php } ?>
+                        <?php } ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Supplier
+                    </td>
+                    <td colspan="3">
+                        : <?= $data['supplier'][$d['id_sumber']]['nama'] ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="pe-2">No. Faktur/PO</td>
+                    <td>: <?= $d['no_faktur'] ?>/<?= $d['no_po'] ?></td>
+                </tr>
+                <tr>
+                    <td>Note</td>
+                    <td colspan="3">: <?= $d['note'] ?></td>
+                </tr>
+            </table>
+        </div>
+
         <?php if ($d['cek'] == 0) { ?>
             <form action="<?= PV::BASE_URL ?>Gudang_Input/add_mutasi" method="POST">
-                <div class="row mx-0">
-                    <div class="col px-1 mb-2">
-                        <label>Barang</label><br>
+                <div class="row mt-3 mx-0">
+                    <div class="col px-0 mb-2">
                         <input type="hidden" name="head_id" value="<?= $d['id'] ?>">
                         <select name="barang" class="ac tize border-0 w-100" required id="barang">
-                            <option></option>
+                            <option value="">Pilih Barang</option>
                             <?php foreach ($data['barang'] as $br) {
                                 $code_split = str_split($br['code'], 2); ?>
                                 <option value="<?= $br['id'] ?>"><?= $code_split[0] ?> <?= $br['product_name'] ?><?= $br['nama'] ?></option>
@@ -50,10 +61,9 @@
                         </select>
                     </div>
                     <div class="col-auto px-1 mb-2 text-end" id="col_qty">
-                        <label>Qty</label><br>
-                        <input id="qty" required type="decimal" min="1" class="text-end border-bottom border-0" name="qty" style="text-transform: uppercase;width:60px">
+                        <input id="qty" placeholder="qty" required type="decimal" min="1" class="text-end border-bottom border-0" name="qty" style="text-transform: uppercase;width:60px">
                     </div>
-                    <div class="col-auto mt-auto mb-2">
+                    <div class="col-auto px-0 mt-auto mb-2">
                         <button type="submit" class="btn btn-outline-success">Add</button>
                     </div>
                 </div>
