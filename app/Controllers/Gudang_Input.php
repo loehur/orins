@@ -99,8 +99,8 @@ class Gudang_Input extends Controller
       if ($do['errno'] <> 0) {
          $error = $do['error'];
       } else {
-         $set = "id_sumber = '" . $supplier . "' AND jenis = 0 AND id_target = 0";
-         $where = "ref = '" . $id . "'";
+         $set = "id_sumber = '" . $supplier . "'";
+         $where = "ref = '" . $id . "' AND jenis = 0 AND id_target = 0";
          $up = $this->db(0)->update('master_mutasi', $set, $where);
          if ($up['errno'] <> 0) {
             $error = $up['error'];
