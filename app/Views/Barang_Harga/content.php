@@ -97,7 +97,7 @@
             "bFilter": true,
             "bInfo": false,
             "bAutoWidth": false,
-            "pageLength": 50,
+            "pageLength": -1,
             "scrollY": 600,
             "dom": "lfrti"
         });
