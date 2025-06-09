@@ -46,7 +46,8 @@
                         <?= $no ?>
                     </td>
                     <td class="">
-                        <?= $data['barang'][$a['id_barang']]['code'] ?>
+                        <?= $data['barang'][$a['id_barang']]['code'] ?>&nbsp;
+                        <?= $data['barang'][$a['id_barang']]['code_myob'] ?>
                     </td>
                     <td class="">
                         <?= $data['barang'][$a['id_barang']]['nama'] ?>
