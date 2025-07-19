@@ -27,7 +27,11 @@
                         } else {
                             $sumber = $data['toko'][$d['id_sumber']]['nama_toko'];
                         }
-                        $target = $data['pelanggan'][$d['id_target']]['nama'];
+                        if (isset($data['pelanggan'][$d['id_target']]['nama'])) {
+                            $target = $data['pelanggan'][$d['id_target']]['nama'];
+                        } else {
+                            $target = "UNDEFINED ID " . $d['id_target'];
+                        }
                         break;
                     case 3:
                         $txt = "primary";
