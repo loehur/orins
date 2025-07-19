@@ -10,7 +10,7 @@
                     <option></option>
                     <?php foreach ($data['barang'] as $key => $br) {
                         $code_split = str_split($br['code'], 2); ?>
-                        <option value="<?= $key ?>"><?= $code_split[0] ?> <?= trim($br['brand'] . " " . $br['model']) ?></span></option>
+                        <option value="<?= $key ?>"><?= $br['code'] ?> <?= trim($br['brand'] . " " . $br['model']) ?></span></option>
                     <?php } ?>
                 </select>
             </div>

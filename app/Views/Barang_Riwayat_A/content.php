@@ -9,7 +9,7 @@
                 <select name="barang" class="tize border-0" id="barang">
                     <option value="">Pilih Barang</option>
                     <?php foreach ($data['barang'] as $key => $br) { ?>
-                        <option value="<?= $key ?>"><?= trim($br['brand'] . " " . $br['model']) ?></option>
+                        <option value="<?= $key ?>"><?= $br['code'] ?> <?= trim($br['brand'] . " " . $br['model']) ?></option>
                     <?php } ?>
                 </select>
             </div>
