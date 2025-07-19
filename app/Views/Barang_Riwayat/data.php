@@ -147,7 +147,7 @@
                 url: '<?= PV::BASE_URL ?>Barang_Riwayat/update_sds',
                 data: {
                     'id': id,
-                    'value': value_after,
+                    'value': value,
                 },
                 type: 'POST',
                 dataType: 'html',
