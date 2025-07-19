@@ -78,7 +78,7 @@
                     } ?>
                     <span><?= $target ?></span>
                 </td>
-                <td>S#<span style="cursor: pointer;" data-id="<?= $d['id'] ?>" class='sds_edit'><?= $d['sds'] == 1 ? "1" : "0" ?></span> <?= $d['sds'] == 1 ? "SDS" : "TOKO" ?></td>
+                <td>S#<span style="cursor: pointer;" data-id="<?= $d['id'] ?>" class='sds_edit'><?= $d['sds'] == 1 ? "1" : "0" ?></span> <small class="fw-bold"><?= $d['sds'] == 1 ? "SDS" : "ABF" ?></small></td>
                 <td class="text-end"><?= $d['qty'] ?></td>
             </tr>
         <?php } ?>
