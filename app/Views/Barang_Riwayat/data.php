@@ -152,7 +152,7 @@
                 type: 'POST',
                 dataType: 'html',
                 success: function(res) {
-                    el.html(res);
+                    $("#cek").click()
                 },
             });
         });
