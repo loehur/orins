@@ -78,7 +78,7 @@
                     } ?>
                     <span><?= $target ?></span>
                 </td>
-                <td><span data-id="<?= $d['id'] ?>" class='sds_edit'><?= $d['sds'] == 1 ? "S" : "T" ?></span></td>
+                <td>S#<span style="cursor: pointer;" data-id="<?= $d['id'] ?>" class='sds_edit'><?= $d['sds'] == 1 ? "1" : "0" ?></span></td>
                 <td class="text-end"><?= $d['qty'] ?></td>
             </tr>
         <?php } ?>
