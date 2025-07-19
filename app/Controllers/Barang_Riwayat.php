@@ -80,10 +80,10 @@ class Barang_Riwayat extends Controller
       $data = $this->db(0)->get_where_row('master_mutasi', "id = '" . $id . "'");
 
       if (isset($data['sn'])) {
-         $new_sds = !($value);
+         $new_sds = $value == 0 ? 1 : 0;
          $where = "id_barang = '" . $data['id_barang'] . "' AND sn = '" . $data['sn'] . "'";
          $up = $this->db(0)->update("master_mutasi", "sds = " . $new_sds, $where);
-         echo $up['errno'] == 0 ? $new_sds : $up['query'];
+         echo $up['errno'] == 0 ? $new_sds : $up['error'];
       } else {
          echo $data['sds'] == 1 ? "S" : "T";
       }
