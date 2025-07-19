@@ -85,7 +85,7 @@ class Barang_Riwayat extends Controller
          $up = $this->db(0)->update("master_mutasi", "sds = " . $new_sds, $where);
          echo $up['errno'] == 0 ? $new_sds : $up['error'];
       } else {
-         echo $data['sds'] == 1 ? "S" : "T";
+         echo $data['sds'];
       }
    }
 }
