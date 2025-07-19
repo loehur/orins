@@ -89,6 +89,9 @@
                         <td class="">
                             <?= $data['barang'][$a['id_barang']]['nama'] ?> <?= $data['barang'][$a['id_barang']]['product_name'] ?>
                         </td>
+                        <td>
+                            <?= $a['sds'] == 1 ? "S" : "T" ?>
+                        </td>
                         <td class="text-end">
                             <?= $a['qty'] ?>
                         </td>

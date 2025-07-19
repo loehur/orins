@@ -78,7 +78,7 @@
                     } ?>
                     <span><?= $target ?></span>
                 </td>
-                <td><?= $d['sds'] == 1 ? "#S" : "" ?></td>
+                <td><span data-id="<?= $d['id'] ?>" class='sds_edit'><?= $d['sds'] == 1 ? "S" : "T" ?></span></td>
                 <td class="text-end"><?= $d['qty'] ?></td>
             </tr>
         <?php } ?>
@@ -136,6 +136,24 @@
                         },
                     });
                 }
+            });
+        });
+
+        $(".sds_edit").on('dblclick', function() {
+            var el = $(this);
+            var id = $(this).attr('data-id');
+            var value = $(this).html();
+            $.ajax({
+                url: '<?= PV::BASE_URL ?>Barang_Riwayat/update_sds',
+                data: {
+                    'id': id,
+                    'value': value_after,
+                },
+                type: 'POST',
+                dataType: 'html',
+                success: function(res) {
+                    el.html(res);
+                },
             });
         });
     </script>

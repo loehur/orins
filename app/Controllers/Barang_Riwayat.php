@@ -71,4 +71,22 @@ class Barang_Riwayat extends Controller
       }
       echo 0;
    }
+
+   function update_sds()
+   {
+      $id = $_POST['id'];
+      $value = $_POST['value'];
+
+      $data = $this->db(0)->get_where_row('master_mutasi', "id = '" . $id . "'");
+
+      if (isset($data['sn'])) {
+         $new_sds = !($value);
+         $where = "id_barang = '" . $data['id_barang'] . "' AND sn = '" . $data['sn'] . "'";
+         $up = $this->db(0)->update("master_mutasi", "sds = " . $new_sds, $where);
+         echo $up['errno'] == 0 ? $new_sds : $up['errno'];
+      } else {
+         echo $data['sds'] == 1 ? "S" : "T";
+      }
+      echo 0;
+   }
 }
