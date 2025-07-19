@@ -87,6 +87,5 @@ class Barang_Riwayat extends Controller
       } else {
          echo $data['sds'] == 1 ? "S" : "T";
       }
-      echo 0;
    }
 }
