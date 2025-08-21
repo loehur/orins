@@ -65,7 +65,7 @@
                         if ($ds['cancel'] == 0) {
                             $bill += $ds['jumlah'];
                             $charge[$ref] = $ds['jumlah'];
-                            if (in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+                            if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { // hanya kasir
                                 if ($data['ref'][$ref]['tuntas'] == 0) {
                                     $showSurcharge .= "<i class='fa-regular fa-circle-xmark cancel_charge' data-id='" . $ds['id'] . "' data-bs-toggle='modal' style='cursor:pointer' data-bs-target='#modalCancelCharge'></i> <span class='text-primary'><small>Surcharge#" . $ds['id'] . " " . $ds['note'] . "</small> Rp" . number_format($ds['jumlah']) . "</span><br>";
                                 } else {
@@ -318,13 +318,16 @@
                                                                 <?php } else { ?>
                                                                     <span class="text-nowrap text-success"><small><?= $id . "# " . ucwords($produk) ?></small></span>
                                                                 <?php } ?>
+
                                                                 <div class="btn-group">
                                                                     <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                                                         <span class="visually-hidden">Toggle Dropdown</span>
                                                                     </button>
                                                                     <ul class="dropdown-menu p-0 border-0 shadow-sm text-sm">
-                                                                        <?php if ($do['tuntas'] == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
-                                                                            <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item px-2 cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
+                                                                        <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { // hanya kasir
+                                                                            if ($do['tuntas'] == 0 && $cancel == 0 && $do['id_afiliasi'] <> $this->userData['id_toko']) { ?>
+                                                                                <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item px-2 cancel" data-id="<?= $id ?>" href="#">Cancel</a></li>
+                                                                            <?php } ?>
                                                                         <?php } ?>
                                                                         <?php if ($do['tuntas'] == 1 && $do['refund'] == 0 && $cancel == 0 && $do['stok'] == 0 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#modalRefund" class="dropdown-item px-2 refund" data-id="<?= $id ?>" href="#">Refund</a></li>
@@ -512,8 +515,14 @@
                                                         </button>
                                                         <ul class="dropdown-menu p-0 border-0 shadow-sm text-sm">
                                                             <li><a class="dropdown-item px-2 ajax" href="<?= PV::BASE_URL ?>Data_Operasi/faktur_pajak/<?= $do['id'] ?>/<?= $do['fp'] == 1 ? 0 : 1 ?>">Faktur Pajak (<?= $do['fp'] == 1 ? "-" : "+" ?>)</a></li>
-                                                            <?php if ($do['stat'] == 1) { ?>
-                                                                <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancelBarang px-2" data-id="<?= $do['id'] ?>" href="#">Cancel</a></li>
+
+                                                            <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
+                                                                <?php if ($do['stat'] == 1) { ?>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarSN" class="dropdown-item tukarSN px-2" data-id="<?= $do['id'] ?>" href="#">Tukar SN</a></li>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancelBarang px-2" data-id="<?= $do['id'] ?>" href="#">Cancel (+)</a></li>
+                                                                <?php } else { ?>
+                                                                    <li><a class="dropdown-item px-2 ajax" href="<?= PV::BASE_URL ?>Data_Operasi/jadikan/<?= $do['id'] ?>">Cancel (-)</a></li>
+                                                                <?php } ?>
                                                             <?php } ?>
                                                         </ul>
                                                     </div>
@@ -564,9 +573,7 @@
                                                         <td class="text-end pe-1">
                                                             <button type="button" class="border-0 bg-white ps-0 dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <small>
-                                                                    <span data-bs-toggle="modal" data-bs-target="#modalDiskon" data-bs-toggle="dropdown" class="border-0 rounded text-info px-1 dropdown-toggle dropdown-toggle-split">
-                                                                        <i class="fa-solid fa-sliders"></i>
-                                                                    </span>
+                                                                    <i class="fa-solid fa-sliders"></i>
                                                                 </small>
                                                                 <span class="visually-hidden">Toggle Dropdown</span>
                                                             </button>
@@ -932,6 +939,11 @@
         id = $(this).attr("data-id");
         $("input[name=cancel_id]").val(id);
         $("input[name=tb]").val(1);
+    })
+
+    $("a.tukarSN").click(function() {
+        id = $(this).attr("data-id");
+        $("input[name=tukarSN_id]").val(id);
     })
 
     $("a.refund").click(function() {

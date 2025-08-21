@@ -169,7 +169,7 @@ class Data_Order extends Controller
          if ($update['errno'] == 0) {
             //BATALKAN MUTASI PRODUKSI
             $where2 = "pid = " . $id;
-            $set2 = "stat = 2";
+            $set2 = "stat = 2, note = '" . $reason . "'";
             $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
             if ($update2 <> 0) {
                echo $update['error'];
@@ -186,7 +186,7 @@ class Data_Order extends Controller
             if ($update['errno'] == 0) {
                //BATALKAN MUTASI PRODUKSI
                $where2 = "pid = " . $id;
-               $set2 = "stat = 2";
+               $set2 = "stat = 2, note = '" . $reason . "'";
                $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
                if ($update2 <> 0) {
                   echo $update['error'];
@@ -200,13 +200,39 @@ class Data_Order extends Controller
             $where = "id = " . $id;
          }
 
-         $set = "stat = 2";
+         $set = "stat = 2, note = '" . $reason . "'";
          $update = $this->db(0)->update("master_mutasi", $set, $where);
          if ($update['errno'] <> 0) {
             echo $update['error'];
             exit();
          }
       }
+
+      echo 0;
+   }
+
+   function tukarSN()
+   {
+      $id = $_POST['tukarSN_id'];
+      $reason = $_POST['reason'];
+      $sn_baru = $_POST['sn_baru'];
+      $where = "id = " . $id;
+      $cek = $this->db(0)->get_where_row("master_mutasi", $where);
+
+      $sisa_stok = $this->data('Barang')->sisa_stok($cek['id_barang'], $cek['id_sumber'], $sn_baru, $cek['sds']);
+
+      if ($sisa_stok <= 0) {
+         echo "Stok Produk SN tersebut tidak tersedia!";
+         exit();
+      }
+
+      $set = "sn = '" . $sn_baru . "', note = '" . $reason . "'";
+      $update = $this->db(0)->update("master_mutasi", $set, $where);
+      if ($update['errno'] <> 0) {
+         echo $update['error'];
+         exit();
+      }
+
 
       echo 0;
    }

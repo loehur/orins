@@ -176,6 +176,14 @@ class Data_Operasi extends Controller
       echo $update['errno'] == 0 ? 0 : $update['error'];
    }
 
+   function jadikan($id)
+   {
+      $set = "stat = 1";
+      $where = "id = " . $id;
+      $update = $this->db(0)->update("master_mutasi", $set, $where);
+      echo $update['errno'] == 0 ? 0 : $update['error'];
+   }
+
    public function bayar_multi()
    {
       if (isset($_POST['ref_multi'])) {

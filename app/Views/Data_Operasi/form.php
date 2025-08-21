@@ -126,6 +126,40 @@
     </div>
 </form>
 
+<form action="<?= PV::BASE_URL; ?>Data_Order/tukarSN" method="POST">
+    <div class="modal" id="exampleModalTukarSN">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <h5 class="modal-title text-white">Penukaran SN Produk</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-2">
+                            <div class="col">
+                                <label class="form-label">Serial Number (SN) Baru</label>
+                                <input type="text" name="sn_baru" class="form-control form-control-sm" required>
+                                <input type="hidden" name="tukarSN_id">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Alasan Tukar SN</label>
+                                <input type="text" name="reason" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-success">Tukar SN</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 <form action="<?= PV::BASE_URL; ?>Data_Order/cancel_diskon" method="POST">
     <div class="modal" id="modalCancelDiskon">
         <div class="modal-dialog">
