@@ -63,14 +63,20 @@ class Export extends Controller
          $jenis_pelanggan = $a['id_pelanggan_jenis'];
          $price_locker = $a['price_locker'];
 
-         $nama_paket = $paket[$paket_ref]['nama'];
-         if ($paket_ref != "" && isset($paket[$paket_ref]['harga_' . $jenis_pelanggan]) && $price_locker == 1) {
-            $cek = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $paket_ref . "' AND price_locker = 1");
-            $qty_paket = $cek['qty'] / $jumlah;
-            $harga_paket = $paket[$paket_ref]['harga_jual'] * $qty_paket;
+         if (isset($paket[$paket_ref]['nama'])) {
+            $nama_paket = $paket[$paket_ref]['nama'];
+            if ($paket_ref != "" && isset($paket[$paket_ref]['harga_' . $jenis_pelanggan]) && $price_locker == 1) {
+               $cek = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $paket_ref . "' AND price_locker = 1");
+               $qty_paket = $cek['qty'] / $jumlah;
+               $harga_paket = $paket[$paket_ref]['harga_jual'] * $qty_paket;
+            } else {
+               $harga_paket = 0;
+            }
          } else {
+            $nama_paket = '';
             $harga_paket = 0;
          }
+
 
          $jenis = strtoupper($pj[$a['id_pelanggan_jenis']]['pelanggan_jenis']);
 
@@ -196,12 +202,17 @@ class Export extends Controller
          $jenis_pelanggan = $a['jenis'];
          $price_locker = $a['price_locker'];
 
-         $nama_paket = $paket[$paket_ref]['nama'];
-         if ($paket_ref != "" && isset($paket[$paket_ref]['harga_' . $jenis_pelanggan]) && $price_locker == 1) {
-            $cek = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $paket_ref . "' AND price_locker = 1");
-            $qty_paket = $cek['qty'] / $jumlah;
-            $harga_paket = $paket[$paket_ref]['harga_jual'] * $qty_paket;
+         if (isset($paket[$paket_ref]['nama'])) {
+            $nama_paket = $paket[$paket_ref]['nama'];
+            if ($paket_ref != "" && isset($paket[$paket_ref]['harga_' . $jenis_pelanggan]) && $price_locker == 1) {
+               $cek = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $paket_ref . "' AND price_locker = 1");
+               $qty_paket = $cek['qty'] / $jumlah;
+               $harga_paket = $paket[$paket_ref]['harga_jual'] * $qty_paket;
+            } else {
+               $harga_paket = 0;
+            }
          } else {
+            $nama_paket = '';
             $harga_paket = 0;
          }
 
