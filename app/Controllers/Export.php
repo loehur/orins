@@ -52,7 +52,7 @@ class Export extends Controller
       $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
       $paket = $this->db(0)->get('paket_main', "id");
-      $fields = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'HARGA_PAKET', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'HARGA_PAKET', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
@@ -62,6 +62,7 @@ class Export extends Controller
          $paket_ref = $a['paket_ref'];
          $jenis_pelanggan = $a['id_pelanggan_jenis'];
          $price_locker = $a['price_locker'];
+         $paket_group = $a['paket_group'];
 
          if (isset($paket[$paket_ref]['nama'])) {
             $nama_paket = $paket[$paket_ref]['nama'];
@@ -141,7 +142,7 @@ class Export extends Controller
                $nb = strtoupper($dh['n_v']);
                $harga = $dh['h'];
                $total = $harga * $jumlah;
-               $lineData = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, $nama_paket, $harga_paket, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+               $lineData = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, $nama_paket, $paket_group, $harga_paket, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
                fputcsv($f, $lineData, $delimiter);
             }
          } else {
@@ -155,7 +156,7 @@ class Export extends Controller
             }
 
             $nb = rtrim($nb);
-            $lineData = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+            $lineData = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, $nama_paket, $paket_group, $harga_paket, '', $nb, '', $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
             fputcsv($f, $lineData, $delimiter);
          }
       }
@@ -188,7 +189,7 @@ class Export extends Controller
 
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'HARGA_PAKET', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
+      $fields = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'HARGA_PAKET', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'MARGIN_PAKET', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
       fputcsv($f, $fields, $delimiter);
 
       foreach ($data as $a) {
@@ -201,6 +202,7 @@ class Export extends Controller
          $paket_ref = $a['paket_ref'];
          $jenis_pelanggan = $a['jenis'];
          $price_locker = $a['price_locker'];
+         $paket_group = $a['paket_group'];
 
          if (isset($paket[$paket_ref]['nama'])) {
             $nama_paket = $paket[$paket_ref]['nama'];
@@ -259,7 +261,7 @@ class Export extends Controller
             }
          }
 
-         $lineData = array($a['id'], "R" . $ref, $fp, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'], $a['paket_ref'], $nama_paket, $harga_paket, $db['code_myob'], $barang, $a['sn'], $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $store, $order_status, '', $tanggal);
+         $lineData = array($a['id'], "R" . $ref, $fp, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'], $a['paket_ref'], $nama_paket, $paket_group, $harga_paket, $db['code_myob'], $barang, $a['sn'], $jumlah, $harga, $diskon, $margin_paket, $total, $cs, $store, $order_status, '', $tanggal);
          fputcsv($f, $lineData, $delimiter);
       }
 
