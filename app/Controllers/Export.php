@@ -67,7 +67,7 @@ class Export extends Controller
             $nama_paket = $paket[$paket_ref]['nama'];
             if ($paket_ref != "" && isset($paket[$paket_ref]['harga_' . $jenis_pelanggan]) && $price_locker == 1) {
                $cek = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $paket_ref . "' AND price_locker = 1");
-               $qty_paket = $cek['qty'] / $jumlah;
+               $qty_paket = $cek['jumlah'] / $jumlah;
                $harga_paket = $paket[$paket_ref]['harga_jual'] * $qty_paket;
             } else {
                $harga_paket = 0;
