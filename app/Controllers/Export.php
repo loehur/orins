@@ -61,10 +61,13 @@ class Export extends Controller
          $margin_paket = $a['margin_paket'];
          $paket_ref = $a['paket_ref'];
          $jenis_pelanggan = $a['id_pelanggan_jenis'];
+         $price_locker = $a['price_locker'];
 
          $nama_paket = $paket[$paket_ref]['nama'];
-         if ($paket_ref != "" && isset($paket[$paket_ref]['harga_' . $jenis_pelanggan])) {
-            $harga_paket = $paket[$paket_ref]['harga_jual'];
+         if ($paket_ref != "" && isset($paket[$paket_ref]['harga_' . $jenis_pelanggan]) && $price_locker == 1) {
+            $cek = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $paket_ref . "' AND price_locker = 1");
+            $qty_paket = $cek['qty'] / $jumlah;
+            $harga_paket = $paket[$paket_ref]['harga_jual'] * $qty_paket;
          } else {
             $harga_paket = 0;
          }
@@ -191,10 +194,13 @@ class Export extends Controller
          $jenis = strtoupper($pj[$a['jenis_target']]['pelanggan_jenis']);
          $paket_ref = $a['paket_ref'];
          $jenis_pelanggan = $a['jenis'];
+         $price_locker = $a['price_locker'];
 
          $nama_paket = $paket[$paket_ref]['nama'];
-         if ($paket_ref != "" && isset($paket[$paket_ref]['harga_' . $jenis_pelanggan])) {
-            $harga_paket = $paket[$paket_ref]['harga_jual'];
+         if ($paket_ref != "" && isset($paket[$paket_ref]['harga_' . $jenis_pelanggan]) && $price_locker == 1) {
+            $cek = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $paket_ref . "' AND price_locker = 1");
+            $qty_paket = $cek['qty'] / $jumlah;
+            $harga_paket = $paket[$paket_ref]['harga_jual'] * $qty_paket;
          } else {
             $harga_paket = 0;
          }
