@@ -350,14 +350,13 @@ class Export extends Controller
       }
 
       $dBarang = $this->db(0)->get('master_barang', 'id');
-      $where = "paket_group = '' AND insertTime LIKE '" . $month . "%' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
+      $where = "paket_group <> '' AND insertTime LIKE '" . $month . "%' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
       $data2 = $this->db(0)->get_where("master_mutasi", $where);
 
       foreach ($data2 as $a) {
          $jumlah = $a['qty'];
          $ref = $a['ref'];
          $diskon = $a['diskon'] * $jumlah;
-         $fp = $a['fp'] == 0 ? "NO" : "YA";
          $jenis = strtoupper($pj[$a['jenis_target']]['pelanggan_jenis']);
          $db = $dBarang[$a['id_barang']];
          $barang = strtoupper($db['product_name'] . $db['brand'] . " " . $db['model']);
