@@ -519,6 +519,7 @@
                                                             <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                 <?php if ($do['stat'] == 1) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarSN" class="dropdown-item tukarSN px-2" data-id="<?= $do['id'] ?>" href="#">Tukar SN</a></li>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarBarang" class="dropdown-item tukarBarang px-2" data-id="<?= $do['id'] ?>" href="#">Tukar Barang</a></li>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancelBarang px-2" data-id="<?= $do['id'] ?>" href="#">Cancel (+)</a></li>
                                                                 <?php } else { ?>
                                                                     <li><a class="dropdown-item px-2 ajax" href="<?= PV::BASE_URL ?>Data_Operasi/jadikan/<?= $do['id'] ?>">Cancel (-)</a></li>
@@ -944,6 +945,11 @@
     $("a.tukarSN").click(function() {
         id = $(this).attr("data-id");
         $("input[name=tukarSN_id]").val(id);
+    })
+
+    $("a.tukarBarang").click(function() {
+        id = $(this).attr("data-id");
+        $("input[name=tukarBarang_id]").val(id);
     })
 
     $("a.refund").click(function() {

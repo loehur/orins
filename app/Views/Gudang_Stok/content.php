@@ -22,7 +22,7 @@
                     <tr>
                         <td class="">
                             <small><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></small><br>
-                            <small class="fw-bold"><?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?></small>
+                            <small class="fw-bold"><span class="text-success"><?= $a['id'] ?></span> <?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?></small>
                         </td>
                         <td class="text-end align-top">
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_1" data-tb="master_barang"><?= $a['harga_1'] ?></span>
@@ -43,7 +43,7 @@
                         <tr>
                             <td class="">
                                 <small><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></small><br>
-                                <small class="fw-bold"><?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?></small>
+                                <small class="fw-bold"><span class="text-success"><?= $a['id'] ?></span> <?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?></small>
                             </td>
                             <td class="text-end align-top">
                                 <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_1" data-tb="master_barang"><?= $a['harga_1'] ?></span>

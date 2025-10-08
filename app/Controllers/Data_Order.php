@@ -231,6 +231,48 @@ class Data_Order extends Controller
       if ($update['errno'] <> 0) {
          echo $update['error'];
          exit();
+      } else {
+         $cols = "ref, jenis, id_barang_1, id_barang_2, sn_1, sn_2";
+         $vals = "'" . $cek['ref'] . "',1,'" . $cek['id_barang'] . "','" . $cek['id_barang'] . "','" . $cek['sn'] . "','" . $sn_baru . "'";
+         $do = $this->db(0)->insertCols('barang_log', $cols, $vals);
+         if ($do['errno'] <> 0) {
+            echo $do['error'];
+            exit();
+         }
+      }
+
+      echo 0;
+   }
+
+   function tukarBarang()
+   {
+      $id = $_POST['tukarBarang_id'];
+      $reason = $_POST['reason'];
+      $sn_baru = $_POST['sn_baru'];
+      $id_baru = $_POST['id_baru'];
+      $where = "id = " . $id;
+      $cek = $this->db(0)->get_where_row("master_mutasi", $where);
+
+      $sisa_stok = $this->data('Barang')->sisa_stok($id_baru, $cek['id_sumber'], $sn_baru, $cek['sds']);
+
+      if ($sisa_stok <= 0) {
+         echo "Stok Barang tersebut tidak tersedia!";
+         exit();
+      }
+
+      $set = "id_barang = '" . $id_baru . "', sn = '" . $sn_baru . "', note = '" . $reason . "'";
+      $update = $this->db(0)->update("master_mutasi", $set, $where);
+      if ($update['errno'] <> 0) {
+         echo $update['error'];
+         exit();
+      } else {
+         $cols = "ref, jenis, id_barang_1, id_barang_2, sn_1, sn_2";
+         $vals = "'" . $cek['ref'] . "',1,'" . $cek['id_barang'] . "','" . $id_baru . "','" . $cek['sn'] . "','" . $sn_baru . "'";
+         $do = $this->db(0)->insertCols('barang_log', $cols, $vals);
+         if ($do['errno'] <> 0) {
+            echo $do['error'];
+            exit();
+         }
       }
 
 

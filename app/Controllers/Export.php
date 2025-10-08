@@ -119,7 +119,7 @@ class Export extends Controller
                $ch = str_replace(['-', '&', '#'], '', $ch);
                $nb = strtoupper($dh['n_v']);
                $harga = $dh['h'];
-               $total = $harga * $jumlah;
+               $total = ($harga * $jumlah) - $diskon;
                $lineData = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
                fputcsv($f, $lineData, $delimiter);
             }
