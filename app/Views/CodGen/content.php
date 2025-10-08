@@ -236,13 +236,13 @@ $max_length = [2, 2, 3, 3, 2];
     }, 200);
 
     setInterval(function() {
-        var new_gtb = $('#grup_c').val() + $('#tipe_c').val() + $('#brand_c').val() + $('#c4_c').val();
+        var new_gtb = $('#c1_c').val() + $('#c2_c').val() + $('#c3_c').val() + $('#c4_c').val();
 
         if (new_gtb != gtb) {
             gtb = new_gtb;
             if (gtb.length == 10) {
                 $.ajax({
-                    url: '<?= PV::BASE_URL ?>CodGen/load/' + gtb + '/master_c5/code_gtb',
+                    url: '<?= PV::BASE_URL ?>CodGen/load/' + gtb + '/master_c5/code_1234',
                     dataType: "json",
                     data: {},
                     success: function(res) {
