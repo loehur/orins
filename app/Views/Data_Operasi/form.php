@@ -177,7 +177,7 @@
                             </div>
                             <div class="col">
                                 <label class="form-label">Serial Number (SN)</label>
-                                <input type="text" name="sn_baru" class="form-control form-control-sm" required>
+                                <input type="text" name="sn_baru" class="form-control form-control-sm">
                                 <input type="hidden" name="tukarBarang_id">
                             </div>
                         </div>
