@@ -33,9 +33,9 @@ class CodGen extends Controller
    public function content()
    {
       $data['barang'] = $this->db(1)->get_where('master_barang', "code <> '' ORDER BY id DESC");
-      $data['grup'] = $this->db(1)->get('master_grup');
-      $data['tipe'] = $this->db(1)->get('master_tipe');
-      $data['brand'] = $this->db(1)->get('master_brand');
+      $data['c1'] = $this->db(1)->get('master_c1');
+      $data['c2'] = $this->db(1)->get('master_c2');
+      $data['c3'] = $this->db(1)->get('master_c3');
       $data['c4'] = $this->db(1)->get('master_c4');
       $this->view($this->v_content, $data);
    }
@@ -49,31 +49,31 @@ class CodGen extends Controller
    function add()
    {
       $code = "";
-      $grup_c = strtoupper($_POST['grup_c']);
-      $grup = strtoupper($_POST['grup']);
-      $tipe_c = strtoupper($_POST['tipe_c']);
-      $tipe = strtoupper($_POST['tipe']);
-      $brand_c = strtoupper($_POST['brand_c']);
-      $brand = strtoupper($_POST['brand']);
+      $c1_c = strtoupper($_POST['c1_c']);
+      $c1 = strtoupper($_POST['c1']);
+      $c2_c = strtoupper($_POST['c2_c']);
+      $c2 = strtoupper($_POST['c2']);
+      $c3_c = strtoupper($_POST['c3_c']);
+      $c3 = strtoupper($_POST['c3']);
       $c4_c = strtoupper($_POST['c4_c']);
       $c4 = strtoupper($_POST['c4']);
-      $model_c = strtoupper($_POST['model_c']);
-      $model = strtoupper($_POST['model']);
-      $code_gtbc = $grup_c . $tipe_c . $brand_c . $c4_c;
-      $code_model = $code_gtbc . $model_c;
-      $code = $code_model;
-      $code_s = "G-" . $grup_c . "#T-" . $tipe_c . "#B-" . $brand_c . "#C4-" . $c4_c . "#M-" . $model_c . "#";
+      $c5_c = strtoupper($_POST['c5_c']);
+      $c5 = strtoupper($_POST['c5']);
+      $code_1234 = $c1_c . $c2_c . $c3_c . $c4_c;
+      $code_full = $code_1234 . $c5_c;
+      $code = $code_full;
+      $code_s = "C1-" . $c1_c . "#C2-" . $c2_c . "#C3-" . $c3_c . "#C4-" . $c4_c . "#C5-" . $c5_c . "#";
       if (strlen($code) < 12) {
          echo "kode barang belum lengkap";
          exit();
       }
 
-      if (strlen($grup) == 0 || strlen($tipe) == 0 || strlen($brand) == 0 || strlen($c4) == 0 || strlen($model) == 0) {
+      if (strlen($c1) == 0 || strlen($c2) == 0 || strlen($c3) == 0 || strlen($c4) == 0 || strlen($c5) == 0) {
          echo "Data belum lengkap";
          exit();
       }
 
-      $forbid = ['G-', 'T-', 'B-', 'M-', 'C4-', '#'];
+      $forbid = ['C1-', 'C2-', 'C3-', 'C4-', 'C5-', '#'];
       foreach ($forbid as $f) {
          if (str_contains($code, $f)) {
             echo "Character dilarang!";
@@ -82,15 +82,15 @@ class CodGen extends Controller
       }
 
       //GRUP
-      $tb = "master_grup";
+      $tb = "master_c1";
       $cols = 'id,nama';
-      $vals = "'" . $grup_c . "','" . $grup . "'";
+      $vals = "'" . $c1_c . "','" . $c1 . "'";
       $do = $this->db(1)->insertCols($tb, $cols, $vals);
       if ($do['errno'] <> 0) {
          if ($do['errno'] == 1062) {
-            $cek = $this->db(1)->count_where($tb, "id = '" . $grup_c . "' AND nama = '" . $grup . "'");
+            $cek = $this->db(1)->count_where($tb, "id = '" . $c1_c . "' AND nama = '" . $c1 . "'");
             if ($cek == 0) {
-               echo "Kode C1: " . $grup_c . " sudah digunakan";
+               echo "Kode C1: " . $c1_c . " sudah digunakan";
                exit();
             }
          } else {
@@ -100,15 +100,15 @@ class CodGen extends Controller
       }
 
       //TIPE
-      $tb = "master_tipe";
+      $tb = "master_c2";
       $cols = 'id,nama';
-      $vals = "'" . $tipe_c . "','" . $tipe . "'";
+      $vals = "'" . $c2_c . "','" . $c2 . "'";
       $do = $this->db(1)->insertCols($tb, $cols, $vals);
       if ($do['errno'] <> 0) {
          if ($do['errno'] == 1062) {
-            $cek = $this->db(1)->count_where($tb, "id = '" . $tipe_c . "' AND nama = '" . $tipe . "'");
+            $cek = $this->db(1)->count_where($tb, "id = '" . $c2_c . "' AND nama = '" . $c2 . "'");
             if ($cek == 0) {
-               echo "Kode C2: " . $tipe_c . " sudah digunakan";
+               echo "Kode C2: " . $c2_c . " sudah digunakan";
                exit();
             }
          } else {
@@ -118,15 +118,15 @@ class CodGen extends Controller
       }
 
       //BRAND
-      $tb = "master_brand";
+      $tb = "master_c3";
       $cols = 'id,nama';
-      $vals = "'" . $brand_c . "','" . $brand . "'";
-      $do = $this->db(1)->insertCols('master_brand', $cols, $vals);
+      $vals = "'" . $c3_c . "','" . $c3 . "'";
+      $do = $this->db(1)->insertCols('master_c3', $cols, $vals);
       if ($do['errno'] <> 0) {
          if ($do['errno'] == 1062) {
-            $cek = $this->db(1)->count_where($tb, "id = '" . $brand_c . "' AND nama = '" . $brand . "'");
+            $cek = $this->db(1)->count_where($tb, "id = '" . $c3_c . "' AND nama = '" . $c3 . "'");
             if ($cek == 0) {
-               echo "Kode C3: " . $brand_c . " sudah digunakan";
+               echo "Kode C3: " . $c3_c . " sudah digunakan";
                exit();
             }
          } else {
@@ -154,15 +154,15 @@ class CodGen extends Controller
       }
 
       //MODEL
-      $tb = "master_model";
-      $cols = 'id,nama,code_gtb,code';
-      $vals = "'" . $model_c . "','" . $model . "','" . $code_gtbc . "','" . $code_model . "'";
-      $do = $this->db(1)->insertCols('master_model', $cols, $vals);
+      $tb = "master_c5";
+      $cols = 'id,nama,code_1234,code';
+      $vals = "'" . $c5_c . "','" . $c5 . "','" . $code_1234 . "','" . $code_full . "'";
+      $do = $this->db(1)->insertCols('master_c5', $cols, $vals);
       if ($do['errno'] <> 0) {
          if ($do['errno'] == 1062) {
-            $cek = $this->db(1)->count_where($tb, "code = '" . $grup_c . $tipe_c . $brand_c . $c4_c . $model_c . "' AND nama = '" . $brand . "'");
+            $cek = $this->db(1)->count_where($tb, "code = '" . $c1_c . $c2_c . $c3_c . $c4_c . $c5_c . "' AND nama = '" . $c3 . "'");
             if ($cek == 0) {
-               echo "Kode C5: " . $grup_c . $tipe_c . $brand_c . $model_c . " sudah digunakan";
+               echo "Kode C5: " . $c1_c . $c2_c . $c3_c . $c5_c . " sudah digunakan";
                exit();
             }
          } else {
@@ -172,8 +172,8 @@ class CodGen extends Controller
       }
 
       //BARANG
-      $cols = 'code,code_s,grup,tipe,brand,c4,model';
-      $vals = "'" . $code . "','" . $code_s . "','" . $grup . "','" . $tipe . "','" . $brand . "','" . $c4 . "','" . $model . "'";
+      $cols = 'code,code_s,c1,c2,c3,c4,c5';
+      $vals = "'" . $code . "','" . $code_s . "','" . $c1 . "','" . $c2 . "','" . $c3 . "','" . $c4 . "','" . $c5 . "'";
       $do = $this->db(1)->insertCols('master_barang', $cols, $vals);
       if ($do['errno'] <> 0) {
          echo $do['error'];
@@ -183,102 +183,59 @@ class CodGen extends Controller
       echo 0;
    }
 
-   function update_code()
-   {
-      //cek dulu
-      $id = $_POST['id'];
-
-      $value = $_POST['value'];
-      $col = $_POST['col'];
-      $parent = $_POST['parent'];
-      $value_before = $_POST['value_before'];
-
-      $mode = "NON";
-      switch ($col) {
-         case 1:
-            $set = "id = '" . $value . "'";
-            $where_grup = "id = '" . $value_before . "'";
-            $up = $this->db(1)->update('master_grup', $set, $where_grup);
-            if ($up['errno'] <> 0) {
-               echo $col . $up['error'];
-               exit();
-            }
-
-            $mode = 'G';
-            break;
-         case 2:
-            $set = "id = '" . $value . "'";
-            $where_tipe = "id = '" . $value_before . "'";
-            $up = $this->db(1)->update('master_tipe', $set, $where_tipe);
-            if ($up['errno'] <> 0) {
-               echo $col . $up['error'];
-               exit();
-            }
-
-            $mode = 'T';
-            break;
-         case 3:
-            $set = "id = '" . $value . "'";
-            $where_brand = "id = '" . $value_before . "'";
-            $up = $this->db(1)->update('master_brand', $set, $where_brand);
-            if ($up['errno'] <> 0) {
-               echo $col . $up['error'];
-               exit();
-            }
-            $mode = 'B';
-            break;
-         case 4:
-            $set = "id = '" . $value . "'";
-            $where_c4 = "id = '" . $value_before . "'";
-            $up = $this->db(1)->update('master_c4', $set, $where_c4);
-            if ($up['errno'] <> 0) {
-               echo $col . $up['error'];
-               exit();
-            }
-            $mode = 'C4';
-            break;
-         case 5:
-            $set = "id = '" . $value . "', code = '" . $parent . $value . "'";
-            $where_brand = "code = '" . $parent . $value_before . "'";
-            $up = $this->db(1)->update('master_model', $set, $where_brand);
-            if ($up['errno'] <> 0) {
-               echo $col . $up['error'];
-               exit();
-            }
-            $mode = 'M';
-            break;
-      }
-
-      $data = $this->db(1)->get_where('master_barang', "code LIKE '" . $parent . $value_before . "%' AND code_s LIKE '%" . $mode . "-" . $value_before . "#%'");
-      foreach ($data as $d) {
-         $new_code_s = str_replace($mode . "-" . $value_before . "#", $mode . "-" . $value . "#", $d['code_s']);
-         $new_code = str_replace(['G-', 'T-', 'B-', 'C4-', 'M-', '#'], '', $new_code_s);
-
-         $set = "code_s = '" . $new_code_s . "', code = '" . $new_code . "'";
-         $where = "code_s = '" . $d['code_s'] . "'";
-         $up = $this->db(1)->update('master_barang', $set, $where);
-         if ($up['errno'] <> 0) {
-            echo "Barang" . $up['error'];
-            exit();
-         }
-      }
-
-      echo 0;
-   }
-
    function update_name()
    {
       //cek dulu
-      $id = $_POST['id'];
       $mode = $_POST['mode'];
-      $value = $_POST['value'];
-      $code = $_POST['code'];
+      $value = strtoupper($_POST['value']);
+      $code_s = $_POST['code_s'];
 
       switch ($mode) {
-         case 'M':
+         case 'c1':
             $set = "nama = '" . $value . "'";
-            $where_model = "code = '" . $code . "'";
-            $up = $this->db(1)->update('master_model', $set, $where_model);
+            $id = $this->getStringBetween($code_s, "C1-", "#");
+            $where = "id = '" . $id . "'";
+            $up = $this->db(1)->update('master_c1', $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+            break;
+         case 'c2':
+            $set = "nama = '" . $value . "'";
+            $id = $this->getStringBetween($code_s, "C2-", "#");
+            $where = "id = '" . $id . "'";
+            $up = $this->db(1)->update('master_c2', $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+            break;
+         case 'c3':
+            $set = "nama = '" . $value . "'";
+            $id = $this->getStringBetween($code_s, "C3-", "#");
+            $where = "id = '" . $id . "'";
+            $up = $this->db(1)->update('master_c3', $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+            break;
+         case 'c4':
+            $set = "nama = '" . $value . "'";
+            $id = $this->getStringBetween($code_s, "C4-", "#");
+            $where = "id = '" . $id . "'";
+            $up = $this->db(1)->update('master_c4', $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'];
+               exit();
+            }
+            break;
+         case 'c5':
+            $set = "nama = '" . $value . "'";
+            $id = $this->getStringBetween($code_s, "C5-", "#");
+            $where = "id = '" . $id . "'";
+            $up = $this->db(1)->update('master_c5', $set, $where);
             if ($up['errno'] <> 0) {
                echo $up['error'];
                exit();
@@ -286,13 +243,32 @@ class CodGen extends Controller
             break;
       }
 
-      $set = "model = '" . $value . "'";
-      $where = "id = '" . $id . "'";
+      $set = $mode . " = '" . $value . "'";
+      $where = "code_s LIKE '%" . strtoupper($mode) . "-" . $id . "#%'";
       $up = $this->db(1)->update('master_barang', $set, $where);
       if ($up['errno'] <> 0) {
          echo $up['error'];
          exit();
       }
+
       echo 0;
+   }
+
+   function delete()
+   {
+      $id = $_POST['id'];
+      if (!is_numeric($id)) {
+         echo "Data tidak valid";
+         exit();
+      }
+
+      $where = "id = '" . $id . "'";
+      $do = $this->db(1)->delete_where('master_barang', $where);
+      if ($do['errno'] <> 0) {
+         echo $do['error'];
+         exit();
+      } else {
+         echo 0;
+      }
    }
 }

@@ -1,5 +1,4 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
-
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
 <style>
     .dt-search {
@@ -10,7 +9,7 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
 
 <?php
-$input = ["grup", "tipe", "brand", "c4", "model"];
+$input = ["c1", "c2", "c3", "c4", "c5"];
 $required = ["required", "required", "required", "required", "required"];
 $name = ["Akun", "Grup", "Merk", "Tipe", "Detail"];
 $max_length = [2, 2, 3, 3, 2];
@@ -30,7 +29,7 @@ $max_length = [2, 2, 3, 3, 2];
                         <div class="row mx-0 mt-2">
                             <div class="col px-0">
                                 <div style="min-width: 100px;">
-                                    <label class="text-sm"><?= strtoupper($name[$k]) ?></label>
+                                    <label class="text-sm"><?= strtoupper($name[$k]) ?> - <?= $input[$k] ?></label>
                                     <input <?= $required[$k] ?> name="<?= $i ?>_c" id="<?= $i ?>_c" minlength="2" class="float-end border-bottom border-0 mb-2 text-center" maxlength="<?= $max_length ?>" style="width: 50px; text-transform:uppercase">
                                 </div>
                                 <div class="autocomplete">
@@ -50,15 +49,17 @@ $max_length = [2, 2, 3, 3, 2];
                 <tr>
                     <td>Code</td>
                     <td>Item</td>
+                    <td></td>
                 </tr>
             </thead>
             <?php foreach ($data['barang'] as $a) { ?>
                 <tr>
                     <td class="align-top">D<?= $a['code'] ?></span></td>
                     <td class="">
-                        <span class="text-sm"><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></span> <span class="text-sm"><?= strtoupper($a['brand']) ?> <?= strtoupper($a['brand']) ?></span><br>
-                        <span class="cell_edit_name" data-code="<?= $a['code'] ?>" data-id="<?= $a['id'] ?>" data-mode="M"><?= strtoupper($a['model']) ?></span>
+                        <small><span class="cell_edit_name text-primary" data-code_s="<?= $a['code_s'] ?>" data-mode="c4"><?= strtoupper($a['c4']) ?></span></small><br>
+                        <span class="cell_edit_name" data-code_s="<?= $a['code_s'] ?>" data-mode="c5"><?= strtoupper($a['c5']) ?></span>
                     </td>
+                    <td class="text-danger text-center"><i data-id="<?= $a['id'] ?>" style="cursor: pointer;" class="fa-solid fa-trash apus"></i></td>
                 </tr>
             <?php } ?>
         </table>
@@ -70,15 +71,40 @@ $max_length = [2, 2, 3, 3, 2];
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 
 <script>
+    $(".apus").dblclick(function() {
+        if (!confirm("Yakin hapus? cius?")) {
+            return;
+        }
+
+        var id = $(this).attr('data-id');
+        var el = $(this);
+
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>CodGen/delete/' + id,
+            data: {
+                'id': id,
+            },
+            type: 'POST',
+            dataType: 'html',
+            success: function(res) {
+                if (res == 0) {
+                    el.parent().parent().remove();
+                } else {
+                    alert(res);
+                }
+            },
+        });
+    });
+
+    var click = 0;
     $(".cell_edit_name").on('dblclick', function() {
         click = click + 1;
         if (click != 1) {
             return;
         }
 
-        var id = $(this).attr('data-id');
         var mode = $(this).attr('data-mode');
-        var code = $(this).attr('data-code');
+        var code_s = $(this).attr('data-code_s');
 
         var value = $(this).html();
         var value_before = value;
@@ -90,7 +116,7 @@ $max_length = [2, 2, 3, 3, 2];
         var align = "left";
 
         el.css("width", width);
-        el.html("<input required type=" + tipe + " style='text-transform:uppercase;outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value='" + value + "'>");
+        el.html("<input required type=" + c2 + " style='text-transform:uppercase;outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value='" + value + "'>");
 
         $("#value_").focus();
         $('#value_').keypress(function(e) {
@@ -107,10 +133,9 @@ $max_length = [2, 2, 3, 3, 2];
                 $.ajax({
                     url: '<?= PV::BASE_URL ?>CodGen/update_name',
                     data: {
-                        'id': id,
                         'value': value_after,
                         'mode': mode,
-                        'code': code
+                        'code_s': code_s
                     },
                     type: 'POST',
                     dataType: 'html',
@@ -128,15 +153,15 @@ $max_length = [2, 2, 3, 3, 2];
         });
     });
 
-    var grup = JSON.parse('<?= json_encode($data['grup']) ?>');
-    var tipe = JSON.parse('<?= json_encode($data['tipe']) ?>');
-    var brand = JSON.parse('<?= json_encode($data['brand']) ?>');
+    var c1 = JSON.parse('<?= json_encode($data['c1']) ?>');
+    var c2 = JSON.parse('<?= json_encode($data['c2']) ?>');
+    var c3 = JSON.parse('<?= json_encode($data['c3']) ?>');
     var c4 = JSON.parse('<?= json_encode($data['c4']) ?>');
 
     $(document).ready(function() {
-        autocomplete(document.getElementById("grup"), grup);
-        autocomplete(document.getElementById("tipe"), tipe);
-        autocomplete(document.getElementById("brand"), brand);
+        autocomplete(document.getElementById("c1"), c1);
+        autocomplete(document.getElementById("c2"), c2);
+        autocomplete(document.getElementById("c3"), c3);
         autocomplete(document.getElementById("c4"), c4);
         list_gtb();
 
@@ -152,34 +177,34 @@ $max_length = [2, 2, 3, 3, 2];
         });
     });
 
-    var grup_name, tipe_name, brand_name, c4_name, model_name;
+    var c1_name, c2_name, c3_name, c4_name, c5_name;
     var gtb, model_c;
-    var model = [];
+    var c5 = [];
 
     function list_gtb() {
-        var grup_t = "";
-        for (var key in grup) {
-            if (grup.hasOwnProperty(key)) {
-                grup_t += grup[key].id + ' ' + grup[key].nama + "<br>";
+        var c1_t = "";
+        for (var key in c1) {
+            if (c1.hasOwnProperty(key)) {
+                c1_t += c1[key].id + ' ' + c1[key].nama + "<br>";
             }
         }
-        $('#grup_t').html(grup_t);
+        $('#c1_t').html(c1_t);
 
-        var tipe_t = "";
-        for (var key in tipe) {
-            if (tipe.hasOwnProperty(key)) {
-                tipe_t += tipe[key].id + ' ' + tipe[key].nama + "<br>";
+        var c2_t = "";
+        for (var key in c2) {
+            if (c2.hasOwnProperty(key)) {
+                c2_t += c2[key].id + ' ' + c2[key].nama + "<br>";
             }
         }
-        $('#tipe_t').html(tipe_t);
+        $('#c2_t').html(c2_t);
 
-        var brand_t = "";
-        for (var key in brand) {
-            if (brand.hasOwnProperty(key)) {
-                brand_t += brand[key].id + ' ' + brand[key].nama + "<br>";
+        var c3_t = "";
+        for (var key in c3) {
+            if (c3.hasOwnProperty(key)) {
+                c3_t += c3[key].id + ' ' + c3[key].nama + "<br>";
             }
         }
-        $('#brand_t').html(brand_t);
+        $('#c3_t').html(c3_t);
 
         var c4_t = "";
         for (var key in c4) {
@@ -212,25 +237,25 @@ $max_length = [2, 2, 3, 3, 2];
             gtb = new_gtb;
             if (gtb.length == 10) {
                 $.ajax({
-                    url: '<?= PV::BASE_URL ?>CodGen/load/' + gtb + '/master_model/code_gtb',
+                    url: '<?= PV::BASE_URL ?>CodGen/load/' + gtb + '/master_c5/code_gtb',
                     dataType: "json",
                     data: {},
                     success: function(res) {
-                        model = res;
-                        autocomplete(document.getElementById("model"), model);
+                        c5 = res;
+                        autocomplete(document.getElementById("c5"), c5);
 
-                        var model_t = "";
-                        for (var key in model) {
-                            if (model.hasOwnProperty(key)) {
-                                model_t += model[key].id + ' ' + model[key].nama + "<br>";
+                        var c5_t = "";
+                        for (var key in c5) {
+                            if (c5.hasOwnProperty(key)) {
+                                c5_t += c5[key].id + ' ' + c5[key].nama + "<br>";
                             }
                         }
-                        $('#model_t').html(model_t);
+                        $('#c5_t').html(c5_t);
                     }
                 });
                 console.log(gtb);
             } else {
-                $('#model_t').html('');
+                $('#c5_t').html('');
             };
         }
     }, 1000);
@@ -248,65 +273,6 @@ $max_length = [2, 2, 3, 3, 2];
                     alert(result)
                 }
             },
-        });
-    });
-
-    var click = 0;
-    $(".cell_edit").on('dblclick', function() {
-        click = click + 1;
-        if (click != 1) {
-            return;
-        }
-
-        var id = $(this).attr('data-id');
-        var col = $(this).attr('data-col');
-        var parent = $(this).attr('data-parent');
-        var value = $(this).html();
-        var value_before = value;
-        if (value == "[ ]") {
-            value = "";
-        }
-        var el = $(this);
-        var width = el.parent().width();
-        var align = "center";
-
-        el.parent().css("width", width);
-        el.html("<input required type=" + tipe + " style='text-transform:uppercase;outline:none;border:none;width:" + width + ";text-align:" + align + "' id='value_' value='" + value + "'>");
-
-        $("#value_").focus();
-        $('#value_').keypress(function(e) {
-            if (e.which == 13) {
-                $(this).blur();
-            }
-        });
-        $("#value_").focusout(function() {
-            var value_after = $(this).val().toUpperCase();
-            if (value_after === value_before || value_after == "") {
-                el.html(value);
-                click = 0;
-            } else {
-                $.ajax({
-                    url: '<?= PV::BASE_URL ?>CodGen/update_code',
-                    data: {
-                        'id': id,
-                        'value': value_after,
-                        'value_before': value_before,
-                        'col': col,
-                        'parent': parent,
-                    },
-                    type: 'POST',
-                    dataType: 'html',
-                    success: function(res) {
-                        click = 0;
-                        if (res == 0) {
-                            el.html(value_after);
-                        } else {
-                            alert(res);
-                            content();
-                        }
-                    },
-                });
-            }
         });
     });
 </script>

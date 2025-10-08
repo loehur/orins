@@ -187,4 +187,22 @@ class Controller extends PV
             return false;
         }
     }
+
+    function getStringBetween($string, $startChar, $endChar)
+    {
+        $startIndex = strpos($string, $startChar);
+        if ($startIndex === false) {
+            return ''; // Start character not found
+        }
+
+        $startIndex += strlen($startChar); // Move past the start character
+
+        $endIndex = strpos($string, $endChar, $startIndex);
+        if ($endIndex === false) {
+            return ''; // End character not found after the start
+        }
+
+        $length = $endIndex - $startIndex;
+        return substr($string, $startIndex, $length);
+    }
 }
