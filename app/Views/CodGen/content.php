@@ -117,7 +117,7 @@ $max_length = [2, 2, 3, 3, 2];
             value = "";
         }
         var el = $(this);
-        var width = el.parent().width();
+        var width = el.width();
         var align = "left";
 
         el.css("width", width);
