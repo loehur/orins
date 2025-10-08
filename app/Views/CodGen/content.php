@@ -56,8 +56,13 @@ $max_length = [2, 2, 3, 3, 2];
                 <tr>
                     <td class="align-top">D<?= $a['code'] ?></span></td>
                     <td class="">
-                        <small><span class="cell_edit_name text-primary" data-code_s="<?= $a['code_s'] ?>" data-mode="c4"><?= strtoupper($a['c4']) ?></span></small><br>
-                        <span class="cell_edit_name" data-code_s="<?= $a['code_s'] ?>" data-mode="c5"><?= strtoupper($a['c5']) ?></span>
+                        <small>
+                            <span class="cell_edit_name text-danger" data-code_s="<?= $a['code_s'] ?>" data-mode="c1"><?= strtoupper($a['c1']) ?></span>
+                            <span class="cell_edit_name text-primary" data-code_s="<?= $a['code_s'] ?>" data-mode="c2"><?= strtoupper($a['c2']) ?></span>
+                            <span class="cell_edit_name text-success" data-code_s="<?= $a['code_s'] ?>" data-mode="c3"><?= strtoupper($a['c3']) ?></span>
+                            <span class="cell_edit_name text-info" data-code_s="<?= $a['code_s'] ?>" data-mode="c4"><?= strtoupper($a['c4']) ?></span>
+                        </small><br>
+                        <span class="cell_edit_name text-dark fw-bold" data-code_s="<?= $a['code_s'] ?>" data-mode="c5"><?= strtoupper($a['c5']) ?></span>
                     </td>
                     <td class="text-danger text-center"><i data-id="<?= $a['id'] ?>" style="cursor: pointer;" class="fa-solid fa-trash apus"></i></td>
                 </tr>
