@@ -415,11 +415,9 @@ class Export extends Controller
 
       foreach ($lineData as $key => $ld) {
          $paket_group = $ld[9];
-         if (!isset($cekSum[$key])) {
-            $ld[14] = $sumPaket[$paket_group];
-            $cekSum[$key] = true;
-         }
+         $ld[14] = $sumPaket[$paket_group];
          fputcsv($f, $ld, $delimiter);
+         $sumPaket[$paket_group] = 0;
       }
 
       fseek($f, 0);
