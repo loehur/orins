@@ -194,6 +194,7 @@ class CodGen extends Controller
          case 'c1':
             $set = "nama = '" . $value . "'";
             $id = $this->getStringBetween($code_s, "C1-", "#");
+            $where_b = "code_s LIKE '%" . strtoupper($mode) . "-" . $id . "#%'";
             $where = "id = '" . $id . "'";
             $up = $this->db(1)->update('master_c1', $set, $where);
             if ($up['errno'] <> 0) {
@@ -204,6 +205,7 @@ class CodGen extends Controller
          case 'c2':
             $set = "nama = '" . $value . "'";
             $id = $this->getStringBetween($code_s, "C2-", "#");
+            $where_b = "code_s LIKE '%" . strtoupper($mode) . "-" . $id . "#%'";
             $where = "id = '" . $id . "'";
             $up = $this->db(1)->update('master_c2', $set, $where);
             if ($up['errno'] <> 0) {
@@ -214,6 +216,7 @@ class CodGen extends Controller
          case 'c3':
             $set = "nama = '" . $value . "'";
             $id = $this->getStringBetween($code_s, "C3-", "#");
+            $where_b = "code_s LIKE '%" . strtoupper($mode) . "-" . $id . "#%'";
             $where = "id = '" . $id . "'";
             $up = $this->db(1)->update('master_c3', $set, $where);
             if ($up['errno'] <> 0) {
@@ -224,6 +227,7 @@ class CodGen extends Controller
          case 'c4':
             $set = "nama = '" . $value . "'";
             $id = $this->getStringBetween($code_s, "C4-", "#");
+            $where_b = "code_s LIKE '%" . strtoupper($mode) . "-" . $id . "#%'";
             $where = "id = '" . $id . "'";
             $up = $this->db(1)->update('master_c4', $set, $where);
             if ($up['errno'] <> 0) {
@@ -233,9 +237,8 @@ class CodGen extends Controller
             break;
          case 'c5':
             $set = "nama = '" . $value . "'";
-            $id = $this->getStringBetween($code_s, "C5-", "#");
-            $where = "id = '" . $id . "'";
-            $up = $this->db(1)->update('master_c5', $set, $where);
+            $where_b = "code = '" . $code_s . "'";
+            $up = $this->db(1)->update('master_c5', $set, $where_b);
             if ($up['errno'] <> 0) {
                echo $up['error'];
                exit();
@@ -244,8 +247,7 @@ class CodGen extends Controller
       }
 
       $set = $mode . " = '" . $value . "'";
-      $where = "code_s LIKE '%" . strtoupper($mode) . "-" . $id . "#%'";
-      $up = $this->db(1)->update('master_barang', $set, $where);
+      $up = $this->db(1)->update('master_barang', $set, $where_b);
       if ($up['errno'] <> 0) {
          echo $up['error'];
          exit();

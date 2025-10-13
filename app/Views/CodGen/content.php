@@ -62,7 +62,7 @@ $max_length = [2, 2, 3, 3, 2];
                             <span class="cell_edit_name text-success" data-code_s="<?= $a['code_s'] ?>" data-mode="c3"><?= strtoupper($a['c3']) ?></span>
                             <span class="cell_edit_name text-info" data-code_s="<?= $a['code_s'] ?>" data-mode="c4"><?= strtoupper($a['c4']) ?></span>
                         </small><br>
-                        <span class="cell_edit_name text-dark fw-bold" data-code_s="<?= $a['code_s'] ?>" data-mode="c5"><?= strtoupper($a['c5']) ?></span>
+                        <span class="cell_edit_name text-dark fw-bold" data-code_s="<?= $a['code'] ?>" data-mode="c5"><?= strtoupper($a['c5']) ?></span>
                     </td>
                     <td class="text-danger text-center"><i data-id="<?= $a['id'] ?>" style="cursor: pointer;" class="fa-solid fa-trash apus"></i></td>
                 </tr>
