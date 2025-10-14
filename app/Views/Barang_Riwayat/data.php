@@ -24,6 +24,8 @@
                             echo '<i class="fa-solid fa-arrow-down text-success"></i>';
                             break;
                         case 1:
+                            echo '<i class="fa-solid fa-arrow-right text-warning"></i>';
+                            break;
                         case 2:
                         case 4:
                             echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
