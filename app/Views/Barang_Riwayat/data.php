@@ -60,7 +60,7 @@
                 <td class="">
                     <?php switch ($d['jenis']) {
                         case 0: //masuk
-                            if ($d['id_sumber'] == 0) {
+                            if ($d['id_target'] == 0) {
                                 $target = isset($data['supplier'][$d['id_sumber']]['nama']) ? $data['supplier'][$d['id_sumber']]['nama'] : "UNDEFINED " . $d['id_sumber'];
                             }
                             break;
