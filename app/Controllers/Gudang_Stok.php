@@ -48,7 +48,7 @@ class Gudang_Stok extends Controller
    {
       $data['stok'] = $this->data('Barang')->stok_data_list_all($this->userData['id_toko']);
       $data['stok_gudang'] = $this->data('Barang')->stok_data_list_all(0);
-      $data['barang'] = $this->db(0)->get_where('master_barang', 'en = 1 ORDER BY CONCAT(model, product_name) ASC', 'grup', 1);
+      $data['barang'] = $this->db(0)->get_where('master_barang', 'en = 1 ORDER BY brand ASC, CONCAT(model, product_name) ASC', 'grup', 1);
       $data['grup'] = $this->db(0)->get('master_grup');
       $data['tipe'] = $this->db(0)->get('master_tipe');
       $data['brand'] = $this->db(0)->get('master_brand');
