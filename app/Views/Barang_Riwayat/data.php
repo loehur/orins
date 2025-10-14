@@ -30,13 +30,13 @@
                             echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
                             break;
                         case 4:
-                            echo '<i class="fa-solid fa-arrow-up text-primary"></i>';
+                            echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
                             break;
                         case 3:
                             if ($d['id_target'] == 0) {
                                 echo '<i class="fa-solid fa-arrow-down text-success"></i>';
                             } else {
-                                echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
+                                echo '<i class="fa-solid fa-arrow-up text-primary"></i>';
                             }
                             break;
                     } ?>
