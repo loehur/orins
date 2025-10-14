@@ -46,7 +46,10 @@
                 $no++; ?>
                 <tr id="tr<?= $a['id'] ?>">
                     <td class="text-end">
-                        <?= $no ?>#
+                        <?= $a['id'] ?>#
+                    </td>
+                    <td class="text-end">
+                        <?= $no ?>
                     </td>
                     <td class="">
                         <?= $data['barang'][$a['id_barang']]['nama'] ?>
