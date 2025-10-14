@@ -75,9 +75,5 @@
 <script>
     $(document).ready(function() {
         window.print();
-
-        setTimeout(function() {
-            self.close();
-        }, 20000);
     });
 </script>
