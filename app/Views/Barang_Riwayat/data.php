@@ -30,7 +30,7 @@
                             echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
                             break;
                         case 4:
-                            echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
+                            echo '<i class="fa-solid fa-arrow-up text-warning"></i>';
                             break;
                         case 3:
                             if ($d['id_target'] == 0) {
