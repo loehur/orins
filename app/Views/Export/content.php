@@ -24,7 +24,7 @@
                 <div class="col" style="min-width:270px;min-width:300px">
                     <form action="<?php PV::BASE_URL ?>Export/export_paket" method="POST">
                         <div class="input-group input-group-sm">
-                            <span class="input-group-text bg-white text-primary" style="width: 120px;">Paket Sales</span>
+                            <span class="input-group-text bg-white text-primary" style="width: 120px;">Package Sales</span>
                             <input name="month" type="month" min="2023-07" max="<?= date("Y-m") ?>" placeholder="YYYY-MM" class="form-control" required>
                             <button type="submit" class="btn bg-gradient btn-primary">Export</button>
                         </div>
@@ -92,7 +92,7 @@
                 <div class="col" style="min-width:270px;min-width:300px">
                     <form action="<?php PV::BASE_URL ?>Export/export_paket" method="POST">
                         <div class="input-group input-group-sm">
-                            <span class="input-group-text bg-white text-primary" style="width: 120px;">Paket Sales</span>
+                            <span class="input-group-text bg-white text-primary" style="width: 120px;">Package Sales</span>
                             <input name="month" type="date" min="2023-07-01" max="<?= date("Y-m-d") ?>" placeholder="YYYY-MM-DD" class="form-control" required>
                             <button type="submit" class="btn bg-gradient btn-primary">Export</button>
                         </div>
