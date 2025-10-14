@@ -17,12 +17,7 @@
                     <a href="<?= PV::BASE_URL ?>Cek/order/<?= $d['ref'] ?>/<?= $d['id_target'] ?>" target="_blank">#<?= $d['id'] ?></a>
                 </td>
                 <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
-                <td>
-                    <?php if ($d['id_sumber'] <> $this->userData['id_toko']) { ?>
-                        <a href="<?= PV::BASE_URL ?>Cek/order/<?= $d['ref'] ?>/<?= $d['id_target'] ?>" target="_blank"><?= trim($dp['brand'] . " " . $dp['model']) ?> <?= $dp['product_name'] ?></a>
-                    <?php } ?>
-                    <a href="<?= PV::BASE_URL . $target_link ?>/list/<?= $d['ref'] ?>"><?= $d['ref'] ?></a>
-                </td>
+                <td><a href="<?= PV::BASE_URL . $target_link ?>/list/<?= $d['ref'] ?>"><?= $d['ref'] ?></a></td>
                 <td><span data-id="<?= $d['id'] ?>" class="<?= strlen($d['sn']) > 0 ? 'cell_edit' : "" ?>"><?= $d['sn'] ?></span></td>
                 <td class="align-middle">
                     <?php
