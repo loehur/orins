@@ -66,38 +66,36 @@ if (is_array($data)) {
 <body class="bg-primary">
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
-            <main>
-                <div class="container-xl px-4">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-5">
-                            <!-- Basic login form-->
-                            <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="card-body login-card-body">
-                                    <p class="login-box-msg">ORINS LOGIN</p>
-                                    <div id="info" class="text-danger pb-2 float-end"><?= $failed ?></div>
-                                    <form action="<?= PV::BASE_URL ?>Login_99/cek_login" method="post">
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
-                                            <input type="text" name="HP" readonly value="<?= $user ?>" class="form-control" placeholder="User Login" required autocomplete="off">
-                                        </div>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-lock"></i></span>
-                                            <input type="password" name="PASS" class="form-control" placeholder="Password" required autocomplete="off">
-                                        </div>
+            <div class="container-sm px-4" style="max-width: 400px;">
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <!-- Basic login form-->
+                        <div class="card shadow-lg border-0 rounded-lg mt-5">
+                            <div class="card-body login-card-body">
+                                <p class="login-box-msg text-center"><b>ORINS LOGIN</b></p>
+                                <div id="info" class="text-danger pb-2 float-end"><?= $failed ?></div>
+                                <form action="<?= PV::BASE_URL ?>Login_99/cek_login" method="post">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
+                                        <input type="text" name="HP" readonly value="<?= $user ?>" class="form-control" placeholder="User Login" required autocomplete="off">
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-lock"></i></span>
+                                        <input type="password" name="PASS" class="form-control" placeholder="Password" required autocomplete="off">
+                                    </div>
 
-                                        <div class="row">
-                                            <div class="col">
-                                                <span id="span_loader" class="loader d-none"></span>
-                                                <button type="submit" id="btnSubmit" onclick="hide()" class="btn btn-success btn-block">Log In</button>
-                                            </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <span id="span_loader" class="loader d-none"></span>
+                                            <button type="submit" id="btnSubmit" onclick="hide()" class="btn btn-success bg-gradient w-100 btn-block">Log In</button>
                                         </div>
-                                    </form>
-                                </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

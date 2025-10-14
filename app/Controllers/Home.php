@@ -51,17 +51,17 @@ class Home extends Controller
       $data['dr_data'] = [];
 
       foreach ($cs as $c) {
-         array_push($data['cs'], $c['nama']);
+         array_push($data['cs'], ucwords($c['nama']));
          array_push($data['cs_data'], $c['freq_cs']);
       }
 
       foreach ($pro as $c) {
-         array_push($data['pro'], $c['nama']);
+         array_push($data['pro'], ucwords($c['nama']));
          array_push($data['pro_data'], $c['freq_pro']);
       }
 
       foreach ($dr as $c) {
-         array_push($data['dr'], $c['nama']);
+         array_push($data['dr'], ucwords($c['nama']));
          array_push($data['dr_data'], $c['freq_driver']);
       }
 

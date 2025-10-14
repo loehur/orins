@@ -54,11 +54,11 @@ class Login extends Controller
     public function captcha()
     {
         $random_alpha = md5(rand());
-        $captcha_code = substr($random_alpha, 0, 4);
+        $captcha_code = substr($random_alpha, 0, 2);
         $_SESSION['captcha'] = $captcha_code;
 
-        $target_layer = imagecreatetruecolor(45, 24);
-        $captcha_background = imagecolorallocate($target_layer, 255, 160, 199);
+        $target_layer = imagecreatetruecolor(30, 24);
+        $captcha_background = imagecolorallocate($target_layer, 255, 100, 199);
         imagefill($target_layer, 0, 0, $captcha_background);
         $captcha_text_color = imagecolorallocate($target_layer, 0, 0, 0);
         imagestring($target_layer, 5, 5, 5, $captcha_code, $captcha_text_color);

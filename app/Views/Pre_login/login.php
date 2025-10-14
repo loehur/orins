@@ -64,42 +64,47 @@ if (!is_array($data)) {
 <body class="bg-info">
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
-            <main>
-                <div class="container-xl px-4">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-5">
-                            <!-- Basic login form-->
-                            <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="card-body login-card-body">
-                                    <p class="login-box-msg">ORINS PRE LOGIN</p>
-                                    <div id="info" class="text-danger pb-2 float-end"><?= $failed ?></div>
-                                    <form action="<?= PV::BASE_URL ?>Login/cek_login" method="post">
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
-                                            <input type="text" name="HP" class="form-control" placeholder="User Login" autocomplete="on" required>
-                                        </div>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-lock"></i></span>
-                                            <input type="text" name="token_" class="form-control" placeholder="Secret Key" required autocomplete="off">
-                                        </div>
-                                        <div class="input-group mb-3">
-                                            <input type="text" name="c_" class="form-control" placeholder="Captcha Code" required autocomplete="off">
-                                            <span class="input-group-text" id="basic-addon2"> <img class="rounded" src="<?= PV::BASE_URL ?>Login/captcha" alt="captcha" /></span>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col">
-                                                <span id="span_loader" class="loader d-none"></span>
-                                                <button type="submit" id="btnSubmit" onclick="hide()" class="btn btn-success btn-block">Pre Log In</button>
-                                            </div>
-                                        </div>
-                                    </form>
+            <div class="container-sm px-4" style="max-width: 400px;">
+                <!-- Basic login form-->
+                <div class="card shadow-lg border-0 rounded-lg mt-5">
+                    <div class="card-body login-card-body">
+                        <p class="login-box-msg text-center"><b>ORINS PRE LOGIN</b></p>
+                        <div id="info" class="text-danger pb-2 float-end"><?= $failed ?></div>
+                        <form action="<?= PV::BASE_URL ?>Login/cek_login" method="post">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-user"></i></span>
+                                        <input type="text" name="HP" class="form-control" placeholder="User Login" autocomplete="on" required>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-lock"></i></span>
+                                        <input type="text" name="token_" class="form-control" placeholder="Secret Key" required autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-group mb-3">
+                                        <input type="text" name="c_" class="form-control" placeholder="Captcha Code" required autocomplete="off">
+                                        <span class="input-group-text" id="basic-addon2"><img class="rounded" src="<?= PV::BASE_URL ?>Login/captcha" alt="captcha" /></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <span id="span_loader" class="loader d-none"></span>
+                                    <button type="submit" id="btnSubmit" onclick="hide()" class="btn w-100 bg-gradient btn-warning btn-block">Pre Log In</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
