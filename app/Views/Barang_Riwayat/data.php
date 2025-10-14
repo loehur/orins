@@ -17,6 +17,11 @@
                         $href = PV::BASE_URL . "Gudang_Penjualan/list/" . $d['ref'];
                     }
                     break;
+                case 3:
+                    if ($d['id_sumber'] == 0) {
+                        $href = PV::BASE_URL . "Retur_Barang_G/list/" . $d['ref'];
+                    }
+                    break;
                 default:
                     $href = "#";
                     break;
@@ -42,7 +47,7 @@
                         case 4:
                             echo '<i class="fa-solid fa-arrow-up text-warning"></i>';
                             break;
-                        case 3:
+                        case 3: //retur
                             if ($d['id_target'] == 0) {
                                 echo '<i class="fa-solid fa-arrow-down text-success"></i>';
                             } else {
