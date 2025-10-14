@@ -46,7 +46,11 @@
                             echo '<i class="fa-solid fa-arrow-right text-warning"></i>';
                             break;
                         case 2:
-                            echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
+                            if ($d['id_target'] == 0) {
+                                echo '<i class="fa-solid fa-arrow-up text-danger"></i>';
+                            } else {
+                                echo '<i class="fa-solid fa-arrow-up text-purple"></i>';
+                            }
                             break;
                         case 3: //retur
                             if ($d['id_target'] == 0) {
@@ -115,7 +119,7 @@
                             }
                             break;
                         case 4: //pakai
-                            $target = $data['akun_pakai'][$d['id_target']]['nama'];
+                            $target = strtoupper($data['akun_pakai'][$d['id_target']]['nama']);
                             break;
                         default:
                             $target = "UNDEFINED";
