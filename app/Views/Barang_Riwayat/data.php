@@ -5,10 +5,20 @@
 
             switch ($d['jenis']) {
                 case 0:
-                    $target_link = "Gudang_Input";
+                    $href = PV::BASE_URL . "Gudang_Input/list/" . $d['ref'];
                     break;
                 case 1:
-                    $target_link = "Stok_Transfer";
+                    $href = PV::BASE_URL . "Stok_Transfer/list/" . $d['ref'];
+                    break;
+                case 2:
+                    if ($d['id_sumber'] == $this->userData['id_toko']) {
+                        $href = PV::BASE_URL . "Cek/order/" . $d['ref'] . "/" . $d['id_target'];
+                    } else {
+                        $href = PV::BASE_URL . "Gudang_Penjualan/list/" . $d['ref'];
+                    }
+                    break;
+                default:
+                    $href = "#";
                     break;
             } ?>
 

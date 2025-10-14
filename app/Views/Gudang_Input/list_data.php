@@ -5,11 +5,6 @@
 <main>
     <!-- Main page content-->
     <div class="container">
-        <div class="row mb-2">
-            <div class="col-auto mt-auto px-1">
-                <a href="<?= PV::BASE_URL ?>Gudang_Input"><button class="btn btn-outline pb-0 border-0"><i class="fa-solid fa-chevron-left"></i> <small>Back</small></button></a>
-            </div>
-        </div>
         <div class="border rounded px-2 py-2 pb-0">
             <table class="mb-2 text-sm mb-0 w-100">
                 <tr>

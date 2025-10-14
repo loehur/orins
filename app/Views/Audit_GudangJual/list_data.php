@@ -12,9 +12,6 @@
     <!-- Main page content-->
     <div class="container">
         <div class="row mb-2">
-            <div class="col-auto mt-auto px-1 mb-2">
-                <a href="<?= PV::BASE_URL ?>Audit_GudangJual"><button class="btn btn-outline pb-0 border-0"><i class="fa-solid fa-chevron-left"></i> <small>Back</small></button></a>
-            </div>
             <div class="col-auto text-center px-1 mb-2">
                 <label>Tujuan</label><br>
                 <input name="sumber" value="<?= $data['toko'][$d['id_target']]['nama'] ?>" readonly class="text-center border-bottom border-0" style="text-transform: uppercase; background-color:aliceblue">
