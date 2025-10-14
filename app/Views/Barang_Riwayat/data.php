@@ -20,6 +20,8 @@
                 case 3:
                     if ($d['id_sumber'] == 0) {
                         $href = PV::BASE_URL . "Retur_Barang_G/list/" . $d['ref'];
+                    } else {
+                        $href = PV::BASE_URL . "Gudang_BMasuk/list/" . $d['ref'];
                     }
                     break;
                 default:
