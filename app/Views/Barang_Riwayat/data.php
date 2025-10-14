@@ -115,7 +115,7 @@
                             }
                             break;
                         case 4: //pakai
-                            $target = $data['akun_pakai']['id_target']['nama'];
+                            $target = $data['akun_pakai'][$d['id_target']]['nama'];
                             break;
                         default:
                             $target = "UNDEFINED";
