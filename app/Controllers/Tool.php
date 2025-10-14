@@ -72,11 +72,8 @@ class Tool extends Controller
          }
          $ref_list = rtrim($ref_list, ',');
 
-         $mutasi = $this->db(0)->get_where('master_mutasi', "ref IN (" . $ref_list . ")");
+         $update_mutasi = $this->db(0)->update('master_mutasi', "jenis = 2", "ref IN (" . $ref_list . ")");
+         print_r($update_mutasi);
       }
-
-      echo "<pre>";
-      print_r($mutasi);
-      echo "</pre>";
    }
 }
