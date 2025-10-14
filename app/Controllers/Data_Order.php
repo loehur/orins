@@ -267,7 +267,7 @@ class Data_Order extends Controller
          exit();
       } else {
          $cols = "ref, jenis, id_barang_1, id_barang_2, sn_1, sn_2";
-         $vals = "'" . $cek['ref'] . "',1,'" . $cek['id_barang'] . "','" . $id_baru . "','" . $cek['sn'] . "','" . $sn_baru . "'";
+         $vals = "'" . $cek['ref'] . "',2,'" . $cek['id_barang'] . "','" . $id_baru . "','" . $cek['sn'] . "','" . $sn_baru . "'";
          $do = $this->db(0)->insertCols('barang_log', $cols, $vals);
          if ($do['errno'] <> 0) {
             echo $do['error'];
