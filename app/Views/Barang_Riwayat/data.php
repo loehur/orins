@@ -25,7 +25,7 @@
             <tr>
                 <td>#<?= $d['id'] ?></td>
                 <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
-                <td><a href="<?= PV::BASE_URL . $target_link ?>/list/<?= $d['ref'] ?>"><?= $d['ref'] ?></a></td>
+                <td><a href="<?= $href ?>"><?= $d['ref'] ?></a></td>
                 <td><span data-id="<?= $d['id'] ?>" class="<?= strlen($d['sn']) > 0 ? 'cell_edit' : "" ?>"><?= $d['sn'] ?></span></td>
                 <td class="align-middle">
                     <?php
