@@ -27,7 +27,9 @@
                 default:
                     $href = "#";
                     break;
-            } ?>
+            }
+
+            $target = "UNDEFINED"; ?>
 
             <tr>
                 <td>#<?= $d['id'] ?></td>
@@ -104,6 +106,8 @@
                                 } else {
                                     $target = $data['supplier'][$d['id_target']]['nama'];
                                 }
+                            } else {
+                                $target = $this->dToko[$d['id_sumber']]['inisial'];
                             }
                             break;
                         default:
