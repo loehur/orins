@@ -56,7 +56,6 @@
                             } else {
                                 echo 'ABF Jual';
                             }
-                            echo 'Jual';
                             break;
                         case 3:
                             echo 'Retur';
@@ -81,6 +80,8 @@
                         case 2: //jual
                             if ($d['id_sumber'] == 0) {
                                 $target = $data['pelanggan'][$d['id_target']]['nama'];
+                            } else {
+                                $target = $data['pelanggan_toko'][$d['id_target']]['nama'];
                             }
                             break;
                         case 3: //retur
