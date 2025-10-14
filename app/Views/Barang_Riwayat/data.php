@@ -59,21 +59,32 @@
                 </td>
                 <td class="">
                     <?php switch ($d['jenis']) {
-                        case 0:
-                            $target = isset($data['supplier'][$d['id_sumber']]['nama']) ? $data['supplier'][$d['id_sumber']]['nama'] : "UNDEFINED " . $d['id_sumber'];
-                            break;
-                        case 1:
-                            $target = $this->dToko[$d['id_target']]['inisial'];
-                            break;
-                        case 2:
-                            $target = $data['pelanggan'][$d['id_target']]['nama'];
-                            break;
-                        case 3:
-                            if ($d['id_target'] == 0) {
-                                $target = "GUDANG";
-                            } else {
-                                $target = $data['supplier'][$d['id_target']]['nama'];
+                        case 0: //masuk
+                            if ($d['id_sumber'] == 0) {
+                                $target = isset($data['supplier'][$d['id_sumber']]['nama']) ? $data['supplier'][$d['id_sumber']]['nama'] : "UNDEFINED " . $d['id_sumber'];
                             }
+                            break;
+                        case 1: //transfer
+                            if ($d['id_sumber'] == 0) {
+                                $target = $this->dToko[$d['id_target']]['inisial'];
+                            }
+                            break;
+                        case 2: //jual
+                            if ($d['id_sumber'] == 0) {
+                                $target = $data['pelanggan'][$d['id_target']]['nama'];
+                            }
+                            break;
+                        case 3: //retur
+                            if ($d['id_sumber'] == 0) {
+                                if ($d['id_target'] == 0) {
+                                    $target = "GUDANG";
+                                } else {
+                                    $target = $data['supplier'][$d['id_target']]['nama'];
+                                }
+                            }
+                            break;
+                        default:
+                            $target = "UNDEFINED";
                             break;
                     } ?>
                     <span><?= $target ?></span>
