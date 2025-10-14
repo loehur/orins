@@ -59,4 +59,24 @@ class Tool extends Controller
    //    }
    //    echo "</pre>";
    // }
+
+   function fix_jual_gudang()
+   {
+      $input = $this->db(0)->get_where('master_input', "tipe = 3 AND id_sumber = 0", 'id');
+      $refs = array_keys($input);
+      $mutasi = array();
+      if (count($refs) > 0) {
+         $ref_list = "";
+         foreach ($refs as $r) {
+            $ref_list .= $r . ",";
+         }
+         $ref_list = rtrim($ref_list, ',');
+
+         $mutasi = $this->db(0)->get_where('master_mutasi', "ref IN (" . $ref_list . ")");
+      }
+
+      echo "<pre>";
+      print_r($mutasi);
+      echo "</pre>";
+   }
 }

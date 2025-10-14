@@ -111,6 +111,7 @@ class Stok_Transfer extends Controller
          $sn_c = 1;
       }
 
+      $id_sumber = 0;
       $sisa_stok = $this->data('Barang')->sisa_stok($id_barang, 0, $sn, $sds);
 
       if ($sisa_stok < $qty) {
@@ -118,9 +119,7 @@ class Stok_Transfer extends Controller
          exit();
       }
 
-      $id_sumber = 0;
       $cols = 'ref, jenis, id_barang, id_sumber, id_target, qty, sds, sn, sn_c';
-
       $vals = "'" . $ref . "',1," . $id_barang . ",'" . $id_sumber . "','" . $target . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];

@@ -92,7 +92,6 @@ class Gudang_Penjualan extends Controller
    function add_mutasi($ref)
    {
       $id_barang = $_POST['kode'];
-
       $head = $this->db(0)->get_where_row('master_input', "id = '" . $ref . "'");
       $target = $head['id_target'];
       $qty = $_POST['qty'];
@@ -104,14 +103,14 @@ class Gudang_Penjualan extends Controller
       }
 
       $id_sumber = 0;
-      $cek = $this->data('Barang')->cek($id_barang, 0, $sn, $sds, $qty);
-      if ($cek == false) {
-         echo "Stok ter-update tidak tersedia";
+      $sisa_stok = $this->data('Barang')->sisa_stok($id_barang, 0, $sn, $sds);
+
+      if ($sisa_stok < $qty) {
+         echo "Sisa stok tersedia hanya " . $qty;
          exit();
       }
 
       $cols = 'ref, jenis, id_barang, id_sumber, id_target, qty, sds, sn, sn_c';
-
       $vals = "'" . $ref . "',2," . $id_barang . ",'" . $id_sumber . "','" . $target . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];

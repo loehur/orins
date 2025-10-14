@@ -1,6 +1,6 @@
 <?php foreach ($data['stok'] as $d) { ?>
     <?php if ($d['qty'] > 0) { ?>
-        <form action="<?= PV::BASE_URL ?>Stok_Transfer/add_mutasi/<?= $data['ref'] ?>" method="POST">
+        <form action="<?= PV::BASE_URL ?>Gudang_Penjualan/add_mutasi/<?= $data['ref'] ?>" method="POST">
             <div class="row mb-2 mx-0 px-1 text-sm border-bottom">
                 <div class="col-auto px-1 mb-2 text-center">
                     <input type="hidden" name="sds" value="<?= $d['sds'] ?>">
