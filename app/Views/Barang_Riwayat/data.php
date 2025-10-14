@@ -51,6 +51,11 @@
                             echo 'Transfer';
                             break;
                         case 2:
+                            if ($a['id_sumber'] == 0) {
+                                echo 'Gudang Jual';
+                            } else {
+                                echo 'ABF Jual';
+                            }
                             echo 'Jual';
                             break;
                         case 3:
