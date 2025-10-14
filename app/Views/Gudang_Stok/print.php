@@ -40,11 +40,14 @@
         <table class="text-sm" style="margin: auto;">
             <?php foreach ($data['barang'] as $key => $g) { ?>
                 <tr>
-                    <td colspan="5" class="border-bottom pt-2"><small class="fw-bold"><?= $key ?></small></td>
+                    <td colspan="10" class="border-bottom pt-2"><small class="fw-bold"><?= $key ?></small></td>
                 </tr>
                 <?php foreach ($g as $a) {
                     if (isset($data['stok'][$a['id']])) { ?>
                         <tr>
+                            <td class="pe-1">
+                                <?= $a['code_myob'] ?>
+                            </td>
                             <td class="pe-1">
                                 <?= strtoupper($a['tipe']) <> "" ? strtoupper($a['tipe']) :  "PRODUKSI"  ?>
                             </td>
@@ -55,10 +58,10 @@
                                 <?= strtoupper($a['model']) ?><?= $a['product_name'] ?>
                             </td>
                             <td class="text-end">
-                                <?= $data['stok'][$a['id']]['qty'] ?>
+                                <?= number_format($data['stok'][$a['id']]['qty'], 0, 1) ?>
                             </td>
                             <td class="text-end">
-                                <?= isset($data['stok_gudang'][$a['id']]['qty']) ? $data['stok_gudang'][$a['id']]['qty'] : 0 ?>
+                                <?= isset($data['stok_gudang'][$a['id']]['qty']) ? number_format($data['stok_gudang'][$a['id']]['qty']) : 0 ?>
                             </td>
                         </tr>
                     <?php } ?>
