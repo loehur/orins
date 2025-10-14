@@ -73,14 +73,18 @@
                             if ($d['id_sumber'] == 0) {
                                 echo 'Gudang Jual';
                             } else {
-                                echo 'ABF Jual';
+                                echo 'Toko Jual';
                             }
                             break;
                         case 3:
                             echo 'Retur';
                             break;
                         case 4:
-                            echo 'Pakai';
+                            if ($d['id_sumber'] == 0) {
+                                echo 'Gudang Pakai';
+                            } else {
+                                echo 'Toko Pakai';
+                            }
                             break;
                     } ?>
                 </td>
@@ -109,6 +113,9 @@
                             } else {
                                 $target = $this->dToko[$d['id_sumber']]['inisial'];
                             }
+                            break;
+                        case 4: //pakai
+                            $target = $data['akun_pakai']['id_target']['nama'];
                             break;
                         default:
                             $target = "UNDEFINED";
