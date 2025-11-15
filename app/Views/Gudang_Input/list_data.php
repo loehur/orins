@@ -16,7 +16,7 @@
                             <span class="badge bg-warning">Checking</span>
                         <?php } else { ?>
                             <?php if ($d['cek'] == 1) { ?>
-                                <span class="badge bg-success">VERIFIED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
+                                <span class="badge bg-success">CONFIRMED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
                             <?php } else { ?>
                                 <span class="badge bg-danger">REJECTED</span>
                             <?php } ?>

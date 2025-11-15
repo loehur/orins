@@ -38,9 +38,9 @@
             </div>
             <div class="col text-end mt-auto">
                 <?php if ($d['cek'] == 0) { ?>
-                    <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn btn-outline-success update_bol"><i class="fa-solid fa-check"></i> Verify</span>
+                    <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn btn-outline-success update_bol"><i class="fa-solid fa-check"></i> CONFIRM</span>
                 <?php } else { ?>
-                    VERIFIED
+                    CONFIRMED
                 <?php } ?>
             </div>
         </div>

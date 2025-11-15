@@ -75,7 +75,7 @@
                             <span class="badge bg-warning">CHECKING</span>
                         <?php } else { ?>
                             <?php if ($a['cek'] == 1) { ?>
-                                <span class="badge bg-success">VERIFIED</span>
+                                <span class="badge bg-success">CONFIRMED</span>
                             <?php } else { ?>
                                 <span class="badge bg-danger">REJECTED</span>
                             <?php } ?>

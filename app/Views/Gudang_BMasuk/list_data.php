@@ -30,7 +30,7 @@
                             <span class="badge bg-warning">Checking</span> <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn p-0 text-success update_bol">Verify ?</span>
                         <?php } else { ?>
                             <?php if ($d['cek'] == 1) { ?>
-                                <span class="badge bg-success">VERIFIED</span>
+                                <span class="badge bg-success">CONFIRMED</span>
                             <?php } else { ?>
                                 <span class="badge bg-danger">REJECTED</span>
                             <?php } ?>

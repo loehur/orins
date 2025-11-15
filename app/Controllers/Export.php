@@ -617,7 +617,7 @@ class Export extends Controller
                $st = "CHECKING";
                break;
             case 1:
-               $st = "VERIFIED";
+               $st = "CONFIRMED";
                break;
             case 2:
                $st = "REJECTED";
