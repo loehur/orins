@@ -5,7 +5,14 @@
                 <div class="input-group">
                     <span class="input-group-text text-primary">Tanggal</span>
                     <input name="month" type="date" min="2023-07-01" max="<?= date("Y-m-d") ?>" value="<?= $data['m'] ?>" placeholder="YYYY-MM-DD" class="form-control" required>
-                    <button id="cekS" class="btn btn-primary">Cek</button>
+                    <button class="cekS btn btn-primary">Cek</button>
+                </div>
+            </div>
+            <div class="col mb-2" style="min-width:270px;max-width:350px">
+                <div class="input-group">
+                    <span class="input-group-text text-success">ID</span>
+                    <input name="id" type="text" class="form-control" required>
+                    <button class="cekS btn btn-success">Cek</button>
                 </div>
             </div>
             <div class="col-auto ps-0" id="loading">
@@ -120,7 +127,7 @@
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
-    $("button#cekS").click(function() {
+    $("button.cekS").click(function() {
         $("#loading").show();
         var mon = $("input[name=month]").val();
         content(mon);
