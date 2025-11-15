@@ -41,9 +41,9 @@ class Barang_Riwayat extends Controller
       $data['supplier'] = $this->db(0)->get('master_supplier', "id");
       $data['akun_pakai'] = $this->db(0)->get('akun_pakai', "id");
       if ($sn == "") {
-         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "'");
+         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND stat <> 0");
       } else {
-         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND sn = '" . $sn . "'");
+         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND sn = '" . $sn . "' AND stat <> 0");
       }
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $this->view(__CLASS__ . '/data', $data);
