@@ -33,10 +33,10 @@
                     </td>
                     <td>:
                         <?php if ($d['cek'] == 0) { ?>
-                            <span class="badge bg-warning">Checking</span> <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn p-0 text-success update_bol">Verify ?</span>
+                            <span class="badge bg-warning">Checking</span> <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn p-0 text-success update_bol">CONFIRM ?</span>
                         <?php } else { ?>
                             <?php if ($d['cek'] == 1) { ?>
-                                <span class="badge bg-success">VERIFIED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
+                                <span class="badge bg-success">CONFIRMED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
                             <?php } else { ?>
                                 <span class="badge bg-danger">REJECTED</span>
                             <?php } ?>

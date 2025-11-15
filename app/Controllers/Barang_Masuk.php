@@ -133,16 +133,14 @@ class Barang_Masuk extends Controller
          }
 
          if ($g['sn'] <> '') {
-            $cek = $this->db(0)->get_where_row("master_mutasi", "sn = '" . $g['sn'] . "' AND jenis = 2 AND stat <> 2");
+            $cek = $this->db(0)->get_where_row("master_mutasi", "sn = '" . $g['sn'] . "' AND id_barang = " . $g['id_barang'] . " AND jenis = 2 AND stat <> 2");
             if (isset($cek['stat'])) {
-               if ($cek['stat'] == 1) {
-                  $message = "Reject Gagal. SN: " . $cek['sn'] . " sudah terjual";
+               $up_s = $this->db(0)->update("master_mutasi", "sold = 1", "sn = '" . $g['sn'] . "' AND id_barang = " . $g['id_barang']);
+               if ($up_s['errno'] <> 0) {
+                  $message = "Reject Gagal. terjadi kesalahan pada sistem";
                   $boleh_reject = false;
-               } else {
-                  $message = "Reject Gagal. SN: " . $cek['sn'] . " sedang dalam keranjang";
-                  $boleh_reject = false;
+                  break;
                }
-               break;
             }
          }
       }
@@ -152,12 +150,12 @@ class Barang_Masuk extends Controller
          exit();
       }
 
-      $up1 = $this->db(0)->update("master_input", "cek = 2", "id = '" . $ref . "'");
+      $up1 = $this->db(0)->update("master_input", "cek = 0", "id = '" . $ref . "'");
       if ($up1['errno'] <> 0) {
          echo $up1['errno'];
          exit();
       } else {
-         $up2 = $this->db(0)->update("master_mutasi", "stat = 2", "ref = '" . $ref . "'");
+         $up2 = $this->db(0)->update("master_mutasi", "stat = 0", "ref = '" . $ref . "' AND sold = 0");
          if ($up2['errno'] <> 0) {
             echo $up2['errno'];
             exit();

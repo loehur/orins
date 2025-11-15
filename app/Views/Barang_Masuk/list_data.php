@@ -26,10 +26,10 @@
             </div>
             <div class="col text-end mt-auto">
                 <?php if ($d['cek'] == 0) { ?>
-                    <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn btn-sm btn-success btnTerima" data-bs-toggle="modal" data-bs-target="#exampleModalTerima"><i class="fa-solid fa-check"></i> Verify</span>
+                    <span data-ref="<?= $d['id'] ?>" style="cursor: pointer;" class="btn btn-sm btn-success btnTerima" data-bs-toggle="modal" data-bs-target="#exampleModalTerima"><i class="fa-solid fa-check"></i> CONFIRM</span>
                 <?php } else { ?>
                     <?php if ($d['cek'] == 1) { ?>
-                        <span class="badge bg-success">VERIFIED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
+                        <span class="badge bg-success">CONFIRMED</span> | <span class="text-danger reject_ref" data-ref="<?= $d['id'] ?>" style="cursor: pointer;">Reject</span>
                     <?php } else { ?>
                         <span class="badge bg-danger">REJECTED</span>
                     <?php } ?>
