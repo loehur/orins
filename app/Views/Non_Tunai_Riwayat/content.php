@@ -11,8 +11,8 @@
             <div class="col mb-2" style="min-width:270px;max-width:350px">
                 <div class="input-group">
                     <span class="input-group-text text-success">ID</span>
-                    <input name="id" type="text" class="form-control" required>
-                    <button class="cekS btn btn-success">Cek</button>
+                    <input name="idKas" type="text" class="form-control" required>
+                    <button class="cekID btn btn-success">Cek</button>
                 </div>
             </div>
             <div class="col-auto ps-0" id="loading">
@@ -130,6 +130,12 @@
     $("button.cekS").click(function() {
         $("#loading").show();
         var mon = $("input[name=month]").val();
+        content(mon);
+    });
+
+    $("button.cekID").click(function() {
+        $("#loading").show();
+        var mon = $("input[name=idKas]").val();
         content(mon);
     });
 

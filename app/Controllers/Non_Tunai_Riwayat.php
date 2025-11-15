@@ -43,8 +43,6 @@ class Non_Tunai_Riwayat extends Controller
          }
       }
 
-      echo $id;
-
       $data['m'] = $month;
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $data['toko'] = $this->db(0)->get('toko', 'id_toko');
