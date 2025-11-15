@@ -31,7 +31,7 @@
 
             $target = "UNDEFINED"; ?>
 
-            <tr class="<?= $d['stat'] == 2 ? 'text-secondary' : '' ?>">
+            <tr class="<?= $d['stat'] == 2 ? 'table-danger' : '' ?>">
                 <td>#<?= $d['id'] ?></td>
                 <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
                 <td><a target="_blank" href="<?= $href ?>"><?= $d['ref'] ?></a></td>
