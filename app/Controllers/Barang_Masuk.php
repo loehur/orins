@@ -121,6 +121,12 @@ class Barang_Masuk extends Controller
    {
       $ref = $_POST['ref'];
 
+      $reset_keep = $this->db(0)->update("master_mutasi", "keep = 0", "ref = '" . $ref . "'");
+      if ($reset_keep['errno'] <> 0) {
+         echo $reset_keep['error'];
+         exit();
+      }
+
       $get = $this->db(0)->get_where("master_mutasi", "ref = '" . $ref . "'");
 
       $boleh_reject = true;
@@ -135,7 +141,7 @@ class Barang_Masuk extends Controller
          if ($g['sn'] <> '') {
             $cek = $this->db(0)->get_where_row("master_mutasi", "sn = '" . $g['sn'] . "' AND id_barang = " . $g['id_barang'] . " AND jenis = 2 AND stat <> 2");
             if (isset($cek['stat'])) {
-               $up_s = $this->db(0)->update("master_mutasi", "sold = 1", "sn = '" . $g['sn'] . "' AND id_barang = " . $g['id_barang']);
+               $up_s = $this->db(0)->update("master_mutasi", "keep = 1", "sn = '" . $g['sn'] . "' AND id_barang = " . $g['id_barang']);
                if ($up_s['errno'] <> 0) {
                   $message = "Reject Gagal. terjadi kesalahan pada sistem";
                   $boleh_reject = false;
@@ -155,7 +161,7 @@ class Barang_Masuk extends Controller
          echo $up1['errno'];
          exit();
       } else {
-         $up2 = $this->db(0)->update("master_mutasi", "stat = 0", "ref = '" . $ref . "' AND sold = 0");
+         $up2 = $this->db(0)->update("master_mutasi", "stat = 0", "ref = '" . $ref . "' AND keep = 0");
          if ($up2['errno'] <> 0) {
             echo $up2['errno'];
             exit();
