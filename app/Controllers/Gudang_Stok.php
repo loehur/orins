@@ -32,7 +32,9 @@ class Gudang_Stok extends Controller
 
    public function content()
    {
+      $data['stok'] = $this->data('Barang')->stok_data_list_all($this->userData['id_toko']);
       $data['stok_sds'] = $this->data('Barang')->stok_data_list_sds($this->userData['id_toko']);
+      $data['stok_gudang'] = $this->data('Barang')->stok_data_list_all(0);
       $data['stok_sds_gudang'] = $this->data('Barang')->stok_data_list_sds(0);
       $data['barang'] = $this->db(0)->get_where('master_barang', 'en = 1 ORDER BY id DESC');
       $this->view($this->v_content, $data);
