@@ -8,6 +8,15 @@
 <main>
     <!-- Main page content-->
     <div class="container text-sm">
+
+        <pre>
+        <?php print_r($data['stok_sds']); ?>
+    </pre>
+        <pre>
+        <?php print_r($data['stok_sds_gudang']); ?>
+    </pre>
+
+
         <a href="<?= PV::BASE_URL ?>Gudang_Stok/print" target="_blank"><span class="btn btn-sm btn-primary">Print Stok</span></a>
         <table id="tb_barang" class="hover text-sm stripe">
             <thead>
