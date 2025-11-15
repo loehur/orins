@@ -140,7 +140,7 @@ class Audit_BMasuk extends Controller
 
             $cek = $this->db(0)->get_where_row("master_mutasi", "sn = '" . $g['sn'] . "' AND id_barang = " . $g['id_barang'] . " AND jenis = 1 AND stat <> 2");
             if (isset($cek['stat'])) {
-               $message = "Reject Gagal. SN: " . $cek['sn'] . " sudah/sedang bermutasi";
+               $message = "Reject Gagal. SN: " . $cek['sn'] . " sudah/sedang bermutasi dengang REf: " . $cek['ref'];
                $boleh_reject = false;
                break;
             }
