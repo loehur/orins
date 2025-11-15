@@ -98,6 +98,29 @@ class Barang extends Controller
         return $masuk;
     }
 
+    function stok_data_list_sds($id_toko)
+    {
+        $cols = "id_barang, CONCAT(id_barang,'#',sds) as unic, sds, sum(qty) as qty";
+        $where_masuk = "id_target = '" . $id_toko . "' AND stat = 1 GROUP BY id_barang, sds";
+        $where_keluar = "id_sumber = '" . $id_toko . "' AND stat <> 2 GROUP BY id_barang, sds";
+        $where_cart = "id_sumber = '" . $id_toko . "' AND stat = 0 AND jenis = 2 GROUP BY id_barang, sds";
+
+        $masuk = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_masuk, 1, "unic");
+        $keluar = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_keluar, 1, "unic");
+        $cart = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_cart, 1, "unic");
+
+        foreach ($masuk as $key => $ms) {
+            if (isset($keluar[$key])) {
+                $masuk[$key]['qty'] -= $keluar[$key]['qty'];
+            }
+            if (isset($cart[$key])) {
+                $masuk[$key]['cart'] = $cart[$key]['qty'];
+            }
+        }
+
+        return $masuk;
+    }
+
     function sisa_stok($kode, $id_toko, $sn, $sds)
     {
         $stok = $this->stok_data($kode, $id_toko);
