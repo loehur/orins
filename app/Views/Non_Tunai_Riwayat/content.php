@@ -76,35 +76,19 @@
                                     </td>
 
                                     <?php
-
-                                    if ($tuntas == 0) {
-                                        switch ($a['status_mutasi']) {
-                                            case 1: ?>
-                                                <td align="right">
-                                                    <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
-                                                </td>
-                                            <?php break;
-                                            default: ?>
-                                                <td align="right">
-                                                    <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
-                                                    <br>
-                                                    <span class="pe-2"><?= $a['note_batal'] ?></span>
-                                                </td>
-                                            <?php break;
-                                        }
-                                    } else {
-                                        switch ($a['status_mutasi']) {
-                                            case 1: ?>
-                                                <td align="right" class="text-secondary">
-                                                    <small><span class="pe-2">Transaction Complete<br><?= $a['note_office'] ?></span></small>
-                                                </td>
-                                            <?php break;
-                                            default: ?>
-                                                <td align="right">
-                                                    <small><span class="pe-2">Transaction Complete<br><?= $a['note_batal'] ?></span></small>
-                                                </td>
+                                    switch ($a['status_mutasi']) {
+                                        case 1: ?>
+                                            <td align="right">
+                                                <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
+                                            </td>
+                                        <?php break;
+                                        default: ?>
+                                            <td align="right">
+                                                <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
+                                                <br>
+                                                <span class="pe-2"><?= $a['note_batal'] ?></span>
+                                            </td>
                                     <?php break;
-                                        }
                                     }
                                     ?>
                                 </tr>

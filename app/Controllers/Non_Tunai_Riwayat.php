@@ -82,6 +82,7 @@ class Non_Tunai_Riwayat extends Controller
          $ref = $this->db(0)->get_where_row("kas", $where_kas)['ref_transaksi'];
          $where = "ref = '" . $ref . "'";
          $this->db(0)->update("order_data", $set_, $where);
+         $this->db(0)->update("ref", $set_, $where);
 
          $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
       }
