@@ -34,7 +34,6 @@
                             <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
                         </td>
                         <td class="text-end align-top">
-                            <?= isset($data['stok'][$a['id']]) ? number_format($data['stok'][$a['id']]['qty'], 0) : 0 ?>/<?= isset($data['stok_gudang'][$a['id']]) ? number_format($data['stok_gudang'][$a['id']]['qty'], 0) : 0 ?><br>
                             <span class="text-success"><?= isset($data['stok_sds'][$a['id'] . "#0"]) ? number_format($data['stok_sds'][$a['id'] . "#0"]['qty'], 0) : 0 ?>/<?= isset($data['stok_sds_gudang'][$a['id'] . "#0"]) ? number_format($data['stok_sds_gudang'][$a['id'] . "#0"]['qty'], 0) : 0 ?></span>&nbsp;
                             <span class="text-primary"><?= isset($data['stok_sds'][$a['id'] . "#1"]) ? number_format($data['stok_sds'][$a['id'] . "#1"]['qty'], 0) : 0 ?>/<?= isset($data['stok_sds_gudang'][$a['id'] . "#1"]) ? number_format($data['stok_sds_gudang'][$a['id'] . "#1"]['qty'], 0) : 0 ?></span>
                         </td>
@@ -57,7 +56,6 @@
                                 <span class="cell_edit" data-id="<?= $a['id'] ?>" data-primary="id" data-col="harga_3" data-tb="master_barang"><?= $a['harga_3'] ?></span>
                             </td>
                             <td class="text-end align-top">
-                                <?= isset($data['stok'][$a['id']]) ? number_format($data['stok'][$a['id']]['qty'], 0) : 0 ?>/<?= isset($data['stok_gudang'][$a['id']]) ? number_format($data['stok_gudang'][$a['id']]['qty'], 0) : 0 ?><br>
                                 <span class="text-success"><?= isset($data['stok_sds'][$a['id'] . "#0"]) ? number_format($data['stok_sds'][$a['id'] . "#0"]['qty'], 0) : 0 ?>/<?= isset($data['stok_sds_gudang'][$a['id'] . "#0"]) ? number_format($data['stok_sds_gudang'][$a['id'] . "#0"]['qty'], 0) : 0 ?></span>&nbsp;
                                 <span class="text-primary"><?= isset($data['stok_sds'][$a['id'] . "#1"]) ? number_format($data['stok_sds'][$a['id'] . "#1"]['qty'], 0) : 0 ?>/<?= isset($data['stok_sds_gudang'][$a['id'] . "#1"]) ? number_format($data['stok_sds_gudang'][$a['id'] . "#1"]['qty'], 0) : 0 ?></span>
                             </td>
