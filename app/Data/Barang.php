@@ -109,7 +109,7 @@ class Barang extends Controller
 
         foreach ($masuk as $key => $ms) {
             if (isset($keluar[$key])) {
-                $masuk[$key]['qty'] -= $keluar[$key]['qty'];
+                $masuk[$key]['stock'] -= $keluar[$key]['stock'];
             }
         }
 
