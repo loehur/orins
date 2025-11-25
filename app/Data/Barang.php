@@ -100,7 +100,7 @@ class Barang extends Controller
 
     function stok_data_web($id_toko = 1)
     {
-        $cols = "id_barang, sum(qty) as qty";
+        $cols = "id_barang, sum(qty) as stock";
         $where_masuk = "id_target = '" . $id_toko . "' AND stat = 1 GROUP BY id_barang";
         $where_keluar = "id_sumber = '" . $id_toko . "' AND stat <> 2 GROUP BY id_barang";
 
