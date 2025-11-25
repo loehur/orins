@@ -12,7 +12,7 @@ class Product extends Controller
    function getStock()
    {
       $where = "en = 1 AND model != '' ";
-      $barang = $this->db(0)->get_cols_where('master_barang', ('id_barang, CONCAT(brand, model) as nama_barang, harga_1'), $where, 1, 'id');
+      $barang = $this->db(0)->get_cols_where('master_barang', ('CONCAT(brand, model) as nama_barang, harga_1'), $where, 1, 'id');
       $stok = $this->data('Barang')->stok_data_web();
 
       $hasil = array_merge_recursive($barang, $stok);
