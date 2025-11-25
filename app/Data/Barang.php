@@ -100,12 +100,12 @@ class Barang extends Controller
 
     function stok_data_web($id_toko = 1)
     {
-        $cols = "id_barang, sum(qty) as stock";
-        $where_masuk = "id_target = '" . $id_toko . "' AND stat = 1 GROUP BY id_barang";
-        $where_keluar = "id_sumber = '" . $id_toko . "' AND stat <> 2 GROUP BY id_barang";
+        $cols = "id_barang as id, sum(qty) as stock";
+        $where_masuk = "id_target = '" . $id_toko . "' AND stat = 1 GROUP BY id";
+        $where_keluar = "id_sumber = '" . $id_toko . "' AND stat <> 2 GROUP BY id";
 
-        $masuk = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_masuk, 1, "id_barang");
-        $keluar = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_keluar, 1, "id_barang");
+        $masuk = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_masuk, 1, "id");
+        $keluar = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_keluar, 1, "id");
 
         foreach ($masuk as $key => $ms) {
             if (isset($keluar[$key])) {
