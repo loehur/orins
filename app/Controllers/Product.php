@@ -4,8 +4,18 @@ class Product extends Controller
 {
    function get()
    {
-      $where = "en = 1";
+      $where = "en = 1 AND model != '' ";
       $products = $this->db(0)->get_cols_where('master_barang', ('id, CONCAT(brand, model) as nama_barang'), $where, 1, 'id');
       echo json_encode($products, JSON_UNESCAPED_UNICODE);
+   }
+
+   function getStock()
+   {
+      $where = "en = 1 AND model != '' ";
+      $barang = $this->db(0)->get_cols_where('master_barang', ('id_barang, CONCAT(brand, model) as nama_barang, harga_1'), $where, 1, 'id');
+      $stok = $this->data('Barang')->stok_data_web();
+
+      $hasil = array_merge_recursive($barang, $stok);
+      echo json_encode($hasil, JSON_UNESCAPED_UNICODE);
    }
 }

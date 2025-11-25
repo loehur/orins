@@ -98,6 +98,24 @@ class Barang extends Controller
         return $masuk;
     }
 
+    function stok_data_web($id_toko = 1)
+    {
+        $cols = "id_barang, sum(qty) as qty";
+        $where_masuk = "id_target = '" . $id_toko . "' AND stat = 1 GROUP BY id_barang";
+        $where_keluar = "id_sumber = '" . $id_toko . "' AND stat <> 2 GROUP BY id_barang";
+
+        $masuk = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_masuk, 1, "id_barang");
+        $keluar = $this->db(0)->get_cols_where('master_mutasi', $cols, $where_keluar, 1, "id_barang");
+
+        foreach ($masuk as $key => $ms) {
+            if (isset($keluar[$key])) {
+                $masuk[$key]['qty'] -= $keluar[$key]['qty'];
+            }
+        }
+
+        return $masuk;
+    }
+
     function stok_data_list_sds($id_toko)
     {
         $cols = "id_barang, CONCAT(id_barang,'#',sds) as unic, sds, sum(qty) as qty";
