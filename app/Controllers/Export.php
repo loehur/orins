@@ -36,23 +36,24 @@ class Export extends Controller
 
    public function export()
    {
-      $month = $_POST['month'];
-      $delimiter = ",";
-      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-PRODUCTION-SALES-" . $month . ".csv";
-      $f = fopen('php://memory', 'w');
+      list($date_from, $date_to) = $this->getPeriod();
+      $periodLabel = $date_from . "_to_" . $date_to;
+      $startTime = $date_from . " 00:00:00";
+      $endTime = $date_to . " 23:59:59";
+      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-PRODUCTION-SALES-" . $periodLabel . ".xlsx";
 
-      $where = "paket_group = '' AND insertTime LIKE '" . $month . "%' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
+      $where = "paket_group = '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
       $data = $this->db(0)->get_where("order_data", $where);
       $tanggal = date("Y-m-d");
 
-      $where = "insertTime LIKE '" . $month . "%'";
+      $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
 
       $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
-      $fields = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
-      fputcsv($f, $fields, $delimiter);
+      $rows = [];
+      $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
          $ref = $a['ref'];
@@ -120,8 +121,7 @@ class Export extends Controller
                $nb = strtoupper($dh['n_v']);
                $harga = $dh['h'];
                $total = ($harga * $jumlah) - $diskon;
-               $lineData = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
-               fputcsv($f, $lineData, $delimiter);
+               $rows[] = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
             }
          } else {
             $detail_harga = unserialize($a['produk_detail']);
@@ -134,31 +134,27 @@ class Export extends Controller
             }
 
             $nb = rtrim($nb);
-            $lineData = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
-            fputcsv($f, $lineData, $delimiter);
+            $rows[] = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
          }
       }
-
-      fseek($f, 0);
-      header('Content-Type: text/csv');
-      header('Content-Disposition: attachment; filename="' . $filename . '";');
-      fpassthru($f);
+      $this->output_xlsx($filename, $rows);
    }
 
    public function export_pbarang()
    {
-      $month = $_POST['month'];
-      $delimiter = ",";
-      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-ITEM-SALES-" . $month . ".csv";
-      $f = fopen('php://memory', 'w');
+      list($date_from, $date_to) = $this->getPeriod();
+      $periodLabel = $date_from . "_to_" . $date_to;
+      $startTime = $date_from . " 00:00:00";
+      $endTime = $date_to . " 23:59:59";
+      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-ITEM-SALES-" . $periodLabel . ".xlsx";
 
       $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $dBarang = $this->db(0)->get('master_barang', 'id');
 
-      $where = "paket_group = '' AND insertTime LIKE '" . $month . "%' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
+      $where = "paket_group = '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
       $data = $this->db(0)->get_where("master_mutasi", $where);
 
-      $where = "insertTime LIKE '" . $month . "%'";
+      $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
 
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
@@ -166,8 +162,8 @@ class Export extends Controller
 
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
-      fputcsv($f, $fields, $delimiter);
+      $rows = [];
+      $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
 
       foreach ($data as $a) {
          $jumlah = $a['qty'];
@@ -218,27 +214,23 @@ class Export extends Controller
             }
          }
 
-         $lineData = array($a['id'], "R" . $ref, $fp, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'], '', $db['code_myob'], $barang, $a['sn'], $jumlah, $harga, $diskon, $total, $cs, $store, $order_status, '', $tanggal);
-         fputcsv($f, $lineData, $delimiter);
+         $rows[] = array($a['id'], "R" . $ref, $fp, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'], '', $db['code_myob'], $barang, $a['sn'], $jumlah, $harga, $diskon, $total, $cs, $store, $order_status, '', $tanggal);
       }
-
-      fseek($f, 0);
-      header('Content-Type: text/csv');
-      header('Content-Disposition: attachment; filename="' . $filename . '";');
-      fpassthru($f);
+      $this->output_xlsx($filename, $rows);
    }
 
    public function export_paket()
    {
-      $month = $_POST['month'];
+      list($date_from, $date_to) = $this->getPeriod();
+      $periodLabel = $date_from . "_to_" . $date_to;
+      $startTime = $date_from . " 00:00:00";
+      $endTime = $date_to . " 23:59:59";
       $lineData = [];
-      $delimiter = ",";
-      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-BUNDLE-SALES-" . $month . ".csv";
-      $f = fopen('php://memory', 'w');
+      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-BUNDLE-SALES-" . $periodLabel . ".xlsx";
 
       $tanggal = date("Y-m-d");
 
-      $where = "insertTime LIKE '" . $month . "%'";
+      $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
 
       $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
@@ -246,10 +238,10 @@ class Export extends Controller
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
       $paket = $this->db(0)->get('paket_main', "id");
 
-      $fields = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
-      fputcsv($f, $fields, $delimiter);
+      $rows = [];
+      $rows[] = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
 
-      $where = "paket_group <> '' AND insertTime LIKE '" . $month . "%' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
+      $where = "paket_group <> '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
       $data = $this->db(0)->get_where("order_data", $where);
 
       foreach ($data as $a) {
@@ -350,7 +342,7 @@ class Export extends Controller
       }
 
       $dBarang = $this->db(0)->get('master_barang', 'id');
-      $where = "paket_group <> '' AND insertTime LIKE '" . $month . "%' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
+      $where = "paket_group <> '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
       $data2 = $this->db(0)->get_where("master_mutasi", $where);
 
       foreach ($data2 as $a) {
@@ -417,34 +409,31 @@ class Export extends Controller
       foreach ($lineData as $key => $ld) {
          $paket_group = $ld[9];
          $ld[14] = $sumPaket[$paket_group];
-         fputcsv($f, $ld, $delimiter);
+         $rows[] = $ld;
          $sumPaket[$paket_group] = 0;
       }
-
-      fseek($f, 0);
-      header('Content-Type: text/csv');
-      header('Content-Disposition: attachment; filename="' . $filename . '";');
-      fpassthru($f);
+      $this->output_xlsx($filename, $rows);
    }
 
    public function export_p()
    {
-      $month = $_POST['month'];
-      $delimiter = ",";
-      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-PAYMENT-" . $month . ".csv";
-      $f = fopen('php://memory', 'w');
+      list($date_from, $date_to) = $this->getPeriod();
+      $periodLabel = $date_from . "_to_" . $date_to;
+      $startTime = $date_from . " 00:00:00";
+      $endTime = $date_to . " 23:59:59";
+      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-PAYMENT-" . $periodLabel . ".xlsx";
 
-      $where = "insertTime LIKE '" . $month . "%' AND jenis_transaksi = 1 AND id_toko = " . $this->userData['id_toko'];
+      $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND jenis_transaksi = 1 AND id_toko = " . $this->userData['id_toko'];
       $data = $this->db(0)->get_where("kas", $where);
       $tanggal = date("Y-m-d");
 
-      $where = "insertTime LIKE '" . $month . "%'";
+      $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
 
       $pacc = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
-      $fields = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
-      fputcsv($f, $fields, $delimiter);
+      $rows = [];
+      $rows[] = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
       foreach ($data as $a) {
          if (isset($pacc[$a['pa']]['payment_account'])) {
             $payment_account = strtoupper($pacc[$a['pa']]['payment_account']) . " ";
@@ -495,29 +484,25 @@ class Export extends Controller
             }
          }
 
-         $lineData = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, $mark, $jumlah, $method, $payment_account, $note, $st, $tanggal);
-         fputcsv($f, $lineData, $delimiter);
+         $rows[] = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, $mark, $jumlah, $method, $payment_account, $note, $st, $tanggal);
       }
-
-      fseek($f, 0);
-      header('Content-Type: text/csv');
-      header('Content-Disposition: attachment; filename="' . $filename . '";');
-      fpassthru($f);
+      $this->output_xlsx($filename, $rows);
    }
 
    public function export_ed() //EXTRA DISKON
    {
-      $month = $_POST['month'];
-      $delimiter = ",";
-      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-EXTRADISKON-" . $month . ".csv";
-      $f = fopen('php://memory', 'w');
+      list($date_from, $date_to) = $this->getPeriod();
+      $periodLabel = $date_from . "_to_" . $date_to;
+      $startTime = $date_from . " 00:00:00";
+      $endTime = $date_to . " 23:59:59";
+      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-EXTRADISKON-" . $periodLabel . ".xlsx";
 
-      $where = "insertTime LIKE '" . $month . "%' AND id_toko = " . $this->userData['id_toko'];
+      $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND id_toko = " . $this->userData['id_toko'];
       $data = $this->db(0)->get_where("xtra_diskon", $where);
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JUMLAH', 'DISKON_NOTE', 'STATUS', 'STATUS_NOTE', 'EXPORTED');
-      fputcsv($f, $fields, $delimiter);
+      $rows = [];
+      $rows[] = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JUMLAH', 'DISKON_NOTE', 'STATUS', 'STATUS_NOTE', 'EXPORTED');
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
          $note = strtoupper($a['note']);
@@ -535,29 +520,25 @@ class Export extends Controller
 
 
 
-         $lineData = array($a['id_diskon'], "R" . $a['ref_transaksi'], $tgl_kas, $jumlah, $note, $jumlah, $st, $note_S, $tanggal);
-         fputcsv($f, $lineData, $delimiter);
+         $rows[] = array($a['id_diskon'], "R" . $a['ref_transaksi'], $tgl_kas, $jumlah, $note, $jumlah, $st, $note_S, $tanggal);
       }
-
-      fseek($f, 0);
-      header('Content-Type: text/csv');
-      header('Content-Disposition: attachment; filename="' . $filename . '";');
-      fpassthru($f);
+      $this->output_xlsx($filename, $rows);
    }
 
    public function export_sc() //surcharge
    {
-      $month = $_POST['month'];
-      $delimiter = ",";
-      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-SURCHARGE-" . $month . ".csv";
-      $f = fopen('php://memory', 'w');
+      list($date_from, $date_to) = $this->getPeriod();
+      $periodLabel = $date_from . "_to_" . $date_to;
+      $startTime = $date_from . " 00:00:00";
+      $endTime = $date_to . " 23:59:59";
+      $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-SURCHARGE-" . $periodLabel . ".xlsx";
 
-      $where = "insertTime LIKE '" . $month . "%' AND id_toko = " . $this->userData['id_toko'];
+      $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND id_toko = " . $this->userData['id_toko'];
       $data = $this->db(0)->get_where("charge", $where);
       $tanggal = date("Y-m-d");
 
-      $fields = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JUMLAH', 'CHARGE_NOTE', 'STATUS', 'STATUS_NOTE', 'EXPORTED');
-      fputcsv($f, $fields, $delimiter);
+      $rows = [];
+      $rows[] = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JUMLAH', 'CHARGE_NOTE', 'STATUS', 'STATUS_NOTE', 'EXPORTED');
       foreach ($data as $a) {
          $jumlah = $a['jumlah'];
          $note = strtoupper($a['note']);
@@ -575,31 +556,27 @@ class Export extends Controller
 
 
 
-         $lineData = array($a['id_diskon'], "R" . $a['ref_transaksi'], $tgl_kas, $jumlah, $note, $jumlah, $st, $note_S, $tanggal);
-         fputcsv($f, $lineData, $delimiter);
+         $rows[] = array($a['id_diskon'], "R" . $a['ref_transaksi'], $tgl_kas, $jumlah, $note, $jumlah, $st, $note_S, $tanggal);
       }
-
-      fseek($f, 0);
-      header('Content-Type: text/csv');
-      header('Content-Disposition: attachment; filename="' . $filename . '";');
-      fpassthru($f);
+      $this->output_xlsx($filename, $rows);
    }
 
    public function export_pc() //PETYCASH
    {
-      $month = $_POST['month'];
-      $delimiter = ",";
-      $filename = strtoupper($this->dToko[$this->userData['id_toko']]["nama_toko"]) . "-PETTYCASH-" . $month . ".csv";
-      $f = fopen('php://memory', 'w');
+      list($date_from, $date_to) = $this->getPeriod();
+      $periodLabel = $date_from . "_to_" . $date_to;
+      $startTime = $date_from . " 00:00:00";
+      $endTime = $date_to . " 23:59:59";
+      $filename = strtoupper($this->dToko[$this->userData['id_toko']]["nama_toko"]) . "-PETTYCASH-" . $periodLabel . ".xlsx";
 
       $pj = $this->db(0)->get('pengeluaran_jenis', 'id');
 
-      $where = "id_sumber = " . $this->userData['id_toko'] . " AND tipe = 2 AND insertTime LIKE '" . $month . "%'";
+      $where = "id_sumber = " . $this->userData['id_toko'] . " AND tipe = 2 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
       $data = $this->db(0)->get_where("kas_kecil", $where);
 
       $tanggal = date("Y-m-d");
-      $fields = array('TRX_ID', 'INSERT_DATE', 'TRX_DATE', 'JENIS', 'KETERANGAN', 'JUMLAH', 'STATUS', 'EXPORTED');
-      fputcsv($f, $fields, $delimiter);
+      $rows = [];
+      $rows[] = array('TRX_ID', 'INSERT_DATE', 'TRX_DATE', 'JENIS', 'KETERANGAN', 'JUMLAH', 'STATUS', 'EXPORTED');
       foreach ($data as $a) {
          if (isset($pj[$a['id_target']]['nama'])) {
             $jenis = $pj[$a['id_target']]['nama'];
@@ -625,13 +602,99 @@ class Export extends Controller
                break;
          }
 
-         $lineData = array($a['id'], $tgl, $trx_date, strtoupper($jenis), $ket, $jumlah, $st, $tanggal);
-         fputcsv($f, $lineData, $delimiter);
+         $rows[] = array($a['id'], $tgl, $trx_date, strtoupper($jenis), $ket, $jumlah, $st, $tanggal);
       }
+      $this->output_xlsx($filename, $rows);
+   }
 
-      fseek($f, 0);
-      header('Content-Type: text/csv');
-      header('Content-Disposition: attachment; filename="' . $filename . '";');
-      fpassthru($f);
+   private function getPeriod()
+   {
+      $df = isset($_POST['date_from']) ? $_POST['date_from'] : '';
+      $dt = isset($_POST['date_to']) ? $_POST['date_to'] : '';
+      if ($df == '' || $dt == '') {
+         echo "Periode tidak lengkap";
+         exit();
+      }
+      $tsf = strtotime($df);
+      $tst = strtotime($dt);
+      if ($tsf === false || $tst === false) {
+         echo "Format tanggal tidak valid";
+         exit();
+      }
+      if ($tsf > $tst) {
+         echo "Tanggal From melewati Date To";
+         exit();
+      }
+      $days = ($tst - $tsf) / 86400;
+      if ($days > 366) {
+         echo "Maksimal periode 1 tahun";
+         exit();
+      }
+      return [$df, $dt];
+   }
+
+   private function output_xlsx($filename, $rows, $sheetName = 'Sheet1')
+   {
+      $tmp = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('xlsx_', true) . '.xlsx';
+      $zip = new \ZipArchive();
+      $zip->open($tmp, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+      $rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+         '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' .
+         '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' .
+         '</Relationships>';
+      $zip->addFromString('_rels/.rels', $rels);
+      $ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+         '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' .
+         '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' .
+         '<Default Extension="xml" ContentType="application/xml"/>' .
+         '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' .
+         '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' .
+         '</Types>';
+      $zip->addFromString('[Content_Types].xml', $ct);
+      $wbRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+         '<Relationships xmlns="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' .
+         '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' .
+         '</Relationships>';
+      $zip->addFromString('xl/_rels/workbook.xml.rels', $wbRels);
+      $wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+         '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' .
+         '<sheets><sheet name="' . htmlspecialchars($sheetName, ENT_QUOTES | ENT_XML1) . '" sheetId="1" r:id="rId1"/></sheets>' .
+         '</workbook>';
+      $zip->addFromString('xl/workbook.xml', $wb);
+      $sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+      $rowNum = 1;
+      foreach ($rows as $row) {
+         $sheet .= '<row r="' . $rowNum . '">';
+         $colNum = 0;
+         foreach ($row as $val) {
+            $colNum++;
+            $col = $this->xlsxCol($colNum) . $rowNum;
+            $text = htmlspecialchars((string)$val, ENT_QUOTES | ENT_XML1);
+            $sheet .= '<c r="' . $col . '" t="inlineStr"><is><t>' . $text . '</t></is></c>';
+         }
+         $sheet .= '</row>';
+         $rowNum++;
+      }
+      $sheet .= '</sheetData></worksheet>';
+      $zip->addFromString('xl/worksheets/sheet1.xml', $sheet);
+      $zip->close();
+      header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      header('Content-Disposition: attachment; filename="' . $filename . '"');
+      header('Content-Length: ' . filesize($tmp));
+      readfile($tmp);
+      unlink($tmp);
+      exit();
+   }
+
+   private function xlsxCol($i)
+   {
+      $s = '';
+      while ($i > 0) {
+         $i--;
+         $s = chr(65 + ($i % 26)) . $s;
+         $i = intdiv($i, 26);
+      }
+      return $s;
    }
 }
