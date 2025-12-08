@@ -519,8 +519,10 @@ $mgpaket = $data['margin_paket'];
                             </td>
                             <td class="text-end">
                                 <?= number_format($db['qty']) ?>x<br>
-                                <?php if ($db['ref'] == '' && (!isset($db['paket_ref']) || $db['paket_ref'] == '') && (!isset($db['paket_group']) || $db['paket_group'] == '')) { ?>
-                                    <b><span data-bs-toggle="modal" data-code="<?= $db['id_barang'] ?>" data-jenis="<?= $db['jenis_target'] ?>" data-bs-target="#exampleModalPbarang" style="cursor: pointer;" class="tetapkanHargaBarang px-2">P</span></b>
+                                <?php if ((!isset($db['paket_ref']) || $db['paket_ref'] == '') && (!isset($db['paket_group']) || $db['paket_group'] == '')) { ?>
+                                    <?php if ($db['ref'] == '') { ?>
+                                        <b><span data-bs-toggle="modal" data-code="<?= $db['id_barang'] ?>" data-jenis="<?= $db['jenis_target'] ?>" data-bs-target="#exampleModalPbarang" style="cursor: pointer;" class="tetapkanHargaBarang px-2">P</span></b>
+                                    <?php } ?>
                                     <b><span data-bs-toggle="modal" data-id="<?= $db['id'] . "_" . $dp['harga_' . $id_pelanggan_jenis] ?>" data-bs-target="#modalDiskonBarang" style="cursor: pointer;" class="tetapkanDiskonBarang pe-2">D</span></b>
                                 <?php } ?>
 

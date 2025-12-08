@@ -239,9 +239,9 @@ class Export extends Controller
       $paket = $this->db(0)->get('paket_main', "id");
 
       $rows = [];
-      $rows[] = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
+      $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
 
-      $where = "paket_group <> '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
+      $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
       $data = $this->db(0)->get_where("order_data", $where);
 
       foreach ($data as $a) {
@@ -279,8 +279,6 @@ class Export extends Controller
             $tgl_order[$ref] = substr($a['insertTime'], 0, 10);
          }
 
-         $main_order = strtoupper($a['produk']);
-
          if ($a['cancel'] == 0) {
             if ($a['tuntas'] == 1) {
                $order_status = "LUNAS " . substr($a['tuntas_date'], 0, 10);
@@ -308,37 +306,8 @@ class Export extends Controller
             }
          }
 
-         $detail_harga = @unserialize($a['detail_harga']);
-         if ($detail_harga !== false) {
-            $detail_harga = unserialize($a['detail_harga']);
-            $harga = 0;
-            foreach ($detail_harga as $dh) {
-               $cb = $dh['c_b'];
-               $cb = str_replace(['-', '&', '#'], '', $cb);
-               $ch = $dh['c_h'];
-               $ch = str_replace(['-', '&', '#'], '', $ch);
-               $nb = strtoupper($dh['n_v']);
-               $harga = $dh['h'];
-               $total = $harga * $jumlah;
-               $sumPaket[$paket_group] += ($total + $harga_paket);
-               //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
-               $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, $nama_paket, $paket_group, $nb, '', $jumlah, ($total + $harga_paket), 0, $cs, $afiliasi, $order_status, $note, $tanggal);
-            }
-         } else {
-            $detail_harga = unserialize($a['produk_detail']);
-            $cb = $a['produk_code'];
-            $harga = $a['harga'];
-            $total = ($harga * $jumlah) - $diskon;
-            $nb = "";
-            foreach ($detail_harga as $dh) {
-               $nb .= strtoupper($dh['detail_name']) . " ";
-            }
-
-            $nb = rtrim($nb);
-            $sumPaket[$paket_group] += ($total + $harga_paket);
-            //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
-            $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, $nama_paket, $paket_group, $nb, '', $jumlah, $harga, ($total + $harga_paket), 0, $cs, $afiliasi, $order_status, $note, $tanggal);
-         }
+         // $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
+         $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $paket_ref, 'PAKET', '', $nama_paket, $paket_group, 1, $harga_paket, 0, $harga_paket, $cs, $afiliasi, $order_status, $note, $tanggal);
       }
 
       $dBarang = $this->db(0)->get('master_barang', 'id');
