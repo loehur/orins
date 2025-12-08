@@ -104,7 +104,7 @@
 
                                 $id_toko[$ref] = $do['id_toko'];
 
-                                $jumlah = ($do['harga'] * $do['jumlah']) + $do['margin_paket'];
+                                $jumlah = ($do['harga'] * $do['jumlah']) + $do['harga_paket'];
 
                                 if ($cancel == 0 && $do['stok'] == 0) {
                                     $bill[$ref] += $jumlah;
@@ -251,7 +251,7 @@
                                 $cancel = $do['stat'];
                                 $id_toko = $do['id_sumber'];
 
-                                $jumlah = ($do['harga_jual'] * $do['qty']) + $do['margin_paket'];
+                                $jumlah = ($do['harga_jual'] * $do['qty']) + $do['harga_paket'];
                                 $diskon = $do['diskon'] * $do['qty'];
                                 if ($cancel <> 2) {
                                     $no++;

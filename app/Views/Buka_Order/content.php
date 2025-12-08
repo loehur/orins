@@ -196,9 +196,9 @@ $mgpaket = $data['margin_paket'];
                                             <table class="table table-sm w-100 mb-0">
                                                 <tr class="<?= $do['id_afiliasi'] == 0 ? 'bg-primary' : 'bg-warning' ?> bg-gradient bg-opacity-10">
                                                     <td class="ps-2 align-middle">
-                                                        <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b></span>
+                                                        <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><b><small> <?= ucwords($produk) ?></small></b><?= $do['price_locker'] == 1 ? ' <i class="fa-solid fa-key"></i>' : '' ?></span>
                                                         <?php if ($do['paket_ref'] <> "") { ?>
-                                                            <span class="badge bg-light text-dark"><?= $data['paket'][$do['paket_ref']]['nama'] ?> <?= $do['price_locker'] == 1 ? '<i class="fa-solid fa-key"></i>' : '' ?></span>
+                                                            <span class="badge bg-light text-dark"><?= $data['paket'][$do['paket_ref']]['nama'] ?></span>
                                                         <?php } ?>
                                                         <?php if ($do['id_afiliasi'] <> 0) { ?>
                                                             <small class="fw-bold badge bg-warning text-dark">
@@ -405,7 +405,7 @@ $mgpaket = $data['margin_paket'];
                                                 <table class="table table-sm w-100 mb-0">
                                                     <tr class="<?= $do['id_afiliasi'] == 0 ? 'bg-primary' : 'bg-warning' ?> bg-gradient bg-opacity-10">
                                                         <td class="ps-2 align-middle">
-                                                            <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><small> <?= ucwords($do['produk']) ?></small></span>
+                                                            <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><small> <?= ucwords($do['produk']) ?></small><?= $do['price_locker'] == 1 ? ' <i class="fa-solid fa-key"></i>' : '' ?></span>
                                                             <span class="badge bg-light text-dark"><?= $paket_nama ?></span>
                                                         </td>
                                                         <td class="text-end" style="width: 1px;white-space: nowrap;">
@@ -443,24 +443,7 @@ $mgpaket = $data['margin_paket'];
                                                                         </div>
                                                                     </td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td colspan="10" valign="top" class="p-0 border border-top-0">
-                                                                        <small>
-                                                                            <?php
-                                                                            foreach ($listDetail as $kl => $ld_o) {
-                                                                                $harga_d = isset($data['harga'][$keyD]) ? $data['harga'][$keyD][$ld_o['c_h']] : 0; ?>
-                                                                                <div class="border-bottom mx-0">
-                                                                                    <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
-                                                                                    <div class="float-end">
-                                                                                        <!-- hide per-component harga and P/D for paket items -->
-                                                                                    </div>
-                                                                                </div>
-                                                                                <br>
-                                                                            <?php }
-                                                                            ?>
-                                                                        </small>
-                                                                    </td>
-                                                                </tr>
+                                                                <!-- listDetail hidden for paket items -->
                                                             </table>
                                                             <div class="row">
                                                                 <div class="col text-sm">
@@ -530,7 +513,7 @@ $mgpaket = $data['margin_paket'];
                                 #<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?>
                             </td>
                             <td>
-                                <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?>
+                                <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?><?= $db['price_locker'] == 1 ? ' <i class="fa-solid fa-key"></i>' : '' ?>
                                 <?= $db['sn'] <> "" ? "<br>" . $db['sn'] : "" ?>
 
                             </td>
@@ -592,7 +575,7 @@ $mgpaket = $data['margin_paket'];
                                     #<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?>
                                 </td>
                                 <td>
-                                    <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?>
+                                    <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?><?= $db['price_locker'] == 1 ? ' <i class="fa-solid fa-key"></i>' : '' ?>
                                     <?= $db['sn'] <> "" ? "<br>" . $db['sn'] : "" ?>
                                     <?= $db['paket_ref'] <> "" ? "<br><span class='badge text-dark bg-light'>" . $data['paket'][$db['paket_ref']]['nama'] . "</span>" : "" ?>
                                 </td>
@@ -631,6 +614,22 @@ $mgpaket = $data['margin_paket'];
 </main>
 
 <?php require_once('form.php') ?>
+<div class="modal fade" id="modalUpdateError" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Terjadi Kesalahan</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="updateErrorText" class="text-danger"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 <script>
@@ -829,7 +828,9 @@ $mgpaket = $data['margin_paket'];
             cache: false,
             success: function(res) {
                 if (isNumeric(res) == false) {
-                    $('body').html(res);
+                    $("#updateErrorText").text(res);
+                    var m = new bootstrap.Modal(document.getElementById('modalUpdateError'));
+                    m.show();
                 } else {
                     location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + res;
                 }

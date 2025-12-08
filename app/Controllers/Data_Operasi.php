@@ -298,6 +298,89 @@ class Data_Operasi extends Controller
       echo $error;
    }
 
+   public function transfer_item()
+   {
+      $item_type = isset($_POST['item_type']) ? $_POST['item_type'] : '';
+      $item_id = isset($_POST['item_id']) ? $_POST['item_id'] : 0;
+      $dest_ref = isset($_POST['dest_ref']) ? $_POST['dest_ref'] : '';
+      if ($item_type == '' || $item_id == 0 || $dest_ref == '') {
+         echo "Data tidak lengkap";
+         exit();
+      }
+
+      $pelanggan = 0;
+      $source_ref = '';
+      if ($item_type == 'order') {
+         $row = $this->db(0)->get_where_row('order_data', "id_order_data = " . $item_id);
+         if (!isset($row['id_order_data'])) {
+            echo "Item tidak ditemukan";
+            exit();
+         }
+         $pelanggan = $row['id_pelanggan'];
+         $source_ref = $row['ref'];
+         $pg_group = isset($row['paket_group']) ? $row['paket_group'] : '';
+      } else if ($item_type == 'mutasi') {
+         $row = $this->db(0)->get_where_row('master_mutasi', "id = " . $item_id);
+         if (!isset($row['id'])) {
+            echo "Item tidak ditemukan";
+            exit();
+         }
+         $pelanggan = $row['id_target'];
+         $source_ref = $row['ref'];
+         $pg_group = isset($row['paket_group']) ? $row['paket_group'] : '';
+      } else {
+         echo "Tipe item tidak valid";
+         exit();
+      }
+
+      $count1 = $this->db(0)->count_where("order_data", "ref = '" . $dest_ref . "' AND id_pelanggan = " . $pelanggan . " AND tuntas = 0");
+      $count2 = $this->db(0)->count_where("master_mutasi", "ref = '" . $dest_ref . "' AND id_target = " . $pelanggan . " AND tuntas = 0");
+      if ($count1 == 0 && $count2 == 0) {
+         echo "Ref tujuan tidak valid";
+         exit();
+      }
+
+      $set = "ref = '" . $dest_ref . "'";
+      if (strlen($pg_group) > 0) {
+         $where_od = "paket_group = '" . $pg_group . "' AND ref = '" . $source_ref . "' AND tuntas = 0";
+         $update1 = $this->db(0)->update("order_data", $set, $where_od);
+         if ($update1['errno'] <> 0) {
+            echo $update1['error'];
+            exit();
+         }
+         $where_mm = "paket_group = '" . $pg_group . "' AND ref = '" . $source_ref . "' AND tuntas = 0";
+         $update2 = $this->db(0)->update("master_mutasi", $set, $where_mm);
+         if ($update2['errno'] <> 0) {
+            echo $update2['error'];
+            exit();
+         }
+         $update = ['errno' => 0];
+      } else {
+         if ($item_type == 'order') {
+            $where = "id_order_data = " . $item_id;
+            $update = $this->db(0)->update("order_data", $set, $where);
+         } else {
+            $where = "id = " . $item_id;
+            $update = $this->db(0)->update("master_mutasi", $set, $where);
+         }
+      }
+
+      if ($update['errno'] <> 0) {
+         echo $update['error'];
+         exit();
+      }
+
+      if ($source_ref <> '') {
+         $remain_order = $this->db(0)->count_where('order_data', "ref = '" . $source_ref . "'");
+         $remain_mutasi = $this->db(0)->count_where('master_mutasi', "ref = '" . $source_ref . "'");
+         if ($remain_order == 0 && $remain_mutasi == 0) {
+            $this->db(0)->delete_where('ref', "ref = '" . $source_ref . "'");
+         }
+      }
+
+      echo 0;
+   }
+
    public function refundCash()
    {
       $ref = $_POST['ref_refund'];

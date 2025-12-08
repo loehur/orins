@@ -1070,7 +1070,13 @@ class Buka_Order extends Controller
             if ((isset($dbr['paket_ref']) && strlen($dbr['paket_ref']) > 0) || (isset($dbr['paket_group']) && strlen($dbr['paket_group']) > 0)) {
                $harga_to_set = 0;
             }
-            $set = "margin_paket = 0, stat = 1, harga_jual = " . $harga_to_set . ", sn_c = " . $sn_c . ", cs_id = " . $id_karyawan . ", id_target = " . $id_pelanggan . ", jenis_target = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
+            // Build update set: if item has paket_ref/paket_group, do not update any price fields
+            $base_set = "stat = 1, sn_c = " . $sn_c . ", cs_id = " . $id_karyawan . ", id_target = " . $id_pelanggan . ", jenis_target = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
+            if ((isset($dbr['paket_ref']) && strlen($dbr['paket_ref']) > 0) || (isset($dbr['paket_group']) && strlen($dbr['paket_group']) > 0)) {
+               $set = $base_set;
+            } else {
+               $set = "harga_jual = " . $harga_to_set . ", " . $base_set;
+            }
             $update = $this->db(0)->update("master_mutasi", $set, $where);
             if ($update['errno'] <> 0) {
                echo $update['error'];
@@ -1134,11 +1140,11 @@ class Buka_Order extends Controller
          }
 
          //SET ORDER, HARGA DAN AFILIASI
-         // If this order item belongs to a paket (paket_ref or paket_group), keep harga = 0
-         if ((isset($do['paket_ref']) && strlen($do['paket_ref']) > 0) || (isset($do['paket_group']) && strlen($do['paket_group']) > 0)) {
-            $harga = 0;
+         $is_paket_item = (isset($do['paket_ref']) && strlen($do['paket_ref']) > 0) || (isset($do['paket_group']) && strlen($do['paket_group']) > 0);
+         $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", stok = " . $stok_order . $st_order;
+         if (!$is_paket_item) {
+            $set = "harga = " . $harga . ", " . $set;
          }
-         $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", stok = " . $stok_order . $st_order;
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {
             echo $update['error'];
@@ -1183,18 +1189,9 @@ class Buka_Order extends Controller
          $adjuster = [];
          foreach ($total_per_paket as $key => $tpp) {
             $adjuster[$key] = ($data['paket'][$key]['harga_' . $id_pelanggan_jenis] * $id_margin[$key]['qty']) - $tpp;
-            $id_margin[$key]['margin_paket'] = $adjuster[$key];
+            $id_margin[$key]['harga_paket'] = $adjuster[$key];
          }
-
-         foreach ($id_margin as $key => $val) {
-            $where = $val['primary'] . " = " . $val['id'];
-            $set = "margin_paket = " . $val['margin_paket'];
-            $update = $this->db(0)->update($val['tb'], $set, $where);
-            if ($update['errno'] <> 0) {
-               echo $update['error'];
-               exit();
-            }
-         }
+         // Do not persist harga_paket updates during proses
       }
 
       if (isset($_SESSION['edit'])) {

@@ -256,7 +256,7 @@ class Export extends Controller
          $jumlah = $a['jumlah'];
          $ref = $a['ref'];
          $diskon = $a['diskon'];
-         $margin_paket = $a['margin_paket'];
+         $harga_paket = $a['harga_paket'];
          $paket_ref = $a['paket_ref'];
          $paket_group = $a['paket_group'];
 
@@ -328,9 +328,9 @@ class Export extends Controller
                $nb = strtoupper($dh['n_v']);
                $harga = $dh['h'];
                $total = $harga * $jumlah;
-               $sumPaket[$paket_group] += ($total + $margin_paket);
+               $sumPaket[$paket_group] += ($total + $harga_paket);
                //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
-               $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, $nama_paket, $paket_group, $nb, '', $jumlah, ($total + $margin_paket), 0, $cs, $afiliasi, $order_status, $note, $tanggal);
+               $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, $nama_paket, $paket_group, $nb, '', $jumlah, ($total + $harga_paket), 0, $cs, $afiliasi, $order_status, $note, $tanggal);
             }
          } else {
             $detail_harga = unserialize($a['produk_detail']);
@@ -343,9 +343,9 @@ class Export extends Controller
             }
 
             $nb = rtrim($nb);
-            $sumPaket[$paket_group] += ($total + $margin_paket);
+            $sumPaket[$paket_group] += ($total + $harga_paket);
             //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
-            $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, $nama_paket, $paket_group, $nb, '', $jumlah, $harga, ($total + $margin_paket), 0, $cs, $afiliasi, $order_status, $note, $tanggal);
+            $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, $nama_paket, $paket_group, $nb, '', $jumlah, $harga, ($total + $harga_paket), 0, $cs, $afiliasi, $order_status, $note, $tanggal);
          }
       }
 
@@ -395,6 +395,7 @@ class Export extends Controller
 
          $harga = $a['harga_jual'];
          $total = ($harga * $jumlah) - $diskon;
+         $harga_paket = $a['harga_paket'];
 
          if (isset($ref_data[$a['ref']]['mark'])) {
             $mark = strtoupper($ref_data[$a['ref']]['mark']);
@@ -408,7 +409,7 @@ class Export extends Controller
             }
          }
 
-         $sumPaket[$paket_group] += ($total + $margin_paket);
+         $sumPaket[$paket_group] += ($total + $harga_paket);
          //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
          $lineData["2" . $a['id']] = array($a['id'], "R" . $ref, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'], $db['code_myob'], $nama_paket, $paket_group, $barang, $a['sn'], $jumlah, $total, 0, $cs, $store, $order_status, $a['note'], $tanggal);
       }

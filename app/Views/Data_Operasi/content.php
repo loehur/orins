@@ -274,7 +274,7 @@
                                             $id_cancel = $do['id_cancel'];
 
                                             if ($cancel == 0 && $do['stok'] == 0) {
-                                                $bill += $jumlah + $do['margin_paket'];
+                                                $bill += $jumlah + $do['harga_paket'];
                                             }
 
                                             $bill -= $do['diskon'];
@@ -331,6 +331,9 @@
                                                                         <?php } ?>
                                                                         <?php if ($do['tuntas'] == 1 && $do['refund'] == 0 && $cancel == 0 && $do['stok'] == 0 && in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#modalRefund" class="dropdown-item px-2 refund" data-id="<?= $id ?>" href="#">Refund</a></li>
+                                                                        <?php } ?>
+                                                                        <?php if ($cancel == 0) { ?>
+                                                                            <li><a data-bs-toggle="modal" data-bs-target="#modalTransfer" class="dropdown-item px-2 transfer" data-type="order" data-id="<?= $id ?>" href="#">Transfer</a></li>
                                                                         <?php } ?>
                                                                     </ul>
                                                                 </div>
@@ -460,7 +463,7 @@
                                                 </td>
                                                 <td class="text-end">
                                                     <?php
-                                                    if ($do['margin_paket'] == 0) {
+                                                    if ($do['harga_paket'] == 0) {
                                                         if ($do['diskon'] > 0) { ?>
                                                             <del>Rp<?= number_format($jumlah) ?></del><br><small>Disc. Rp<?= number_format($do['diskon']) ?></small><br>Rp<?= number_format($jumlah - $do['diskon']) ?>
                                                         <?php } else { ?>
@@ -468,9 +471,9 @@
                                                         <?php }
                                                     } else {
                                                         if ($do['diskon'] > 0) { ?>
-                                                            <del>Rp<?= number_format($jumlah + $do['margin_paket']) ?></del><br><small>Disc. Rp<?= number_format($do['diskon']) ?></small><br>Rp<?= number_format($jumlah - $do['diskon'] + $do['margin_paket']) ?>
+                                                            <del>Rp<?= number_format($jumlah + $do['harga_paket']) ?></del><br><small>Disc. Rp<?= number_format($do['diskon']) ?></small><br>Rp<?= number_format($jumlah - $do['diskon'] + $do['harga_paket']) ?>
                                                         <?php } else { ?>
-                                                            <?= number_format($jumlah + $do['margin_paket']) ?>
+                                                            <?= number_format($jumlah + $do['harga_paket']) ?>
                                                     <?php }
                                                     } ?>
                                                     <br>
@@ -494,15 +497,15 @@
                                             $id_penerima[$ref] = $do['cs_id'];
 
                                             if ($cancel_barang <> 2) {
-                                                $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']);
+                                                $bill += (($jumlah * $do['harga_jual']) + $do['harga_paket']);
                                                 $bill -= ($do['diskon'] * $jumlah);
                                             }
 
                                             $jumlah_semula = "";
                                             if ($do['diskon'] > 0) {
-                                                $jumlah_semula = "<s>" . number_format(($jumlah * $do['harga_jual']) + $do['margin_paket']) . "</s><br><small>Disc. " . number_format($do['diskon'] * $jumlah) . "</small><br>";
+                                                $jumlah_semula = "<s>" . number_format(($jumlah * $do['harga_jual']) + $do['harga_paket']) . "</s><br><small>Disc. " . number_format($do['diskon'] * $jumlah) . "</small><br>";
                                             }
-                                            $jumlah_real = ($jumlah * $do['harga_jual']) + $do['margin_paket'] - ($do['diskon'] * $jumlah); ?>
+                                            $jumlah_real = ($jumlah * $do['harga_jual']) + $do['harga_paket'] - ($do['diskon'] * $jumlah); ?>
                                             <tr style="<?= ($cancel_barang == 2) ? 'color:silver' : '' ?>">
                                                 <td class="align-top">
                                                     <small><span class="badge bg-light text-dark"><?= $do['paket_ref'] <> "" ? $data['paket'][$do['paket_ref']]['nama'] : "" ?></span></small>
@@ -524,6 +527,7 @@
                                                                 <?php } else { ?>
                                                                     <li><a class="dropdown-item px-2 ajax" href="<?= PV::BASE_URL ?>Data_Operasi/jadikan/<?= $do['id'] ?>">Cancel (-)</a></li>
                                                                 <?php } ?>
+                                                                <li><a data-bs-toggle="modal" data-bs-target="#modalTransfer" class="dropdown-item px-2 transfer" data-type="mutasi" data-id="<?= $do['id'] ?>" href="#">Transfer</a></li>
                                                             <?php } ?>
                                                         </ul>
                                                     </div>
@@ -986,6 +990,32 @@
         kembalian();
     });
 
+    // Specific handler for transfer modal to clean up backdrop
+    $("#modalTransfer form").on("submit", function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        var form = $(this);
+        $.ajax({
+            url: form.attr('action'),
+            data: form.serialize(),
+            type: form.attr("method"),
+            success: function(res) {
+                if (res == 0) {
+                    var modalEl = document.getElementById('modalTransfer');
+                    var m = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    m.hide();
+                    $(".modal-backdrop").remove();
+                    $("body").removeClass("modal-open").css({
+                        "padding-right": ""
+                    });
+                    location.reload();
+                } else {
+                    alert(res);
+                }
+            }
+        });
+    });
+
     $("form").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
@@ -1086,4 +1116,45 @@
         $("span#span_copy_" + ref).fadeIn(200);
         $("span#span_copy_" + ref).fadeOut(1000);
     }
+</script>
+<div class="modal fade" id="modalTransfer" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Transfer Item</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= PV::BASE_URL ?>Data_Operasi/transfer_item" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="item_type" value="">
+                    <input type="hidden" name="item_id" value="">
+                    <div class="mb-2">
+                        <label class="form-label">Ref Tujuan</label>
+                        <select name="dest_ref" class="form-select form-select-sm">
+                            <?php foreach ($data['refs'] as $r) {
+                                if ($data['head'][$r]['tuntas'] == 0) { ?>
+                                    <option value="<?= $r ?>"><?= $r ?></option>
+                            <?php }
+                            } ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Transfer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (t.classList.contains('transfer')) {
+            var mt = t.getAttribute('data-type');
+            var id = t.getAttribute('data-id');
+            document.querySelector('#modalTransfer input[name=item_type]').value = mt;
+            document.querySelector('#modalTransfer input[name=item_id]').value = id;
+        }
+    });
 </script>
