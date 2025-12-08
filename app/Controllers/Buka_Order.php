@@ -272,13 +272,19 @@ class Buka_Order extends Controller
       $data['mutasi'] = $this->db(0)->get_where("paket_mutasi", "paket_ref = '" . $id . "'");
       $data['barang'] = $this->db(0)->get('master_barang', 'code');
 
+      // Get harga_paket from paket_main
+      $paket_main = $this->db(0)->get_where_row("paket_main", "id = '" . $id . "'");
+      $harga_paket_column = 'harga_' . $id_pelanggan_jenis;
+      $harga_paket = isset($paket_main[$harga_paket_column]) ? $paket_main[$harga_paket_column] : 0;
+
       foreach ($data['mutasi'] as $dm) {
          $_POST['kode'] = $dm['id_barang'];
          $_POST['qty'] = $_POST['qty_paket'] * $dm['qty'];
          $_POST['sds'] = $dm['sds'];
          $_POST['sn'] = '';
          $id_sumber = $dm['id_sumber'];
-         $this->add_barang($id_pelanggan_jenis, $dm['price_locker'], $id, $id_sumber, 0, $paket_group);
+         $harga_paket_item = ($dm['price_locker'] == 1) ? $harga_paket : 0;
+         $this->add_barang($id_pelanggan_jenis, $dm['price_locker'], $id, $id_sumber, $harga_paket_item, $paket_group);
       }
 
       foreach ($data['order'] as $do) {
@@ -290,11 +296,12 @@ class Buka_Order extends Controller
          $_POST['produk_code'] = $do['produk_code'];
          $_POST['produk_detail'] = $do['produk_detail'];
          $_POST['jumlah'] = $_POST['qty_paket'] * $do['jumlah'];
-         $this->add($do['id_afiliasi'], $id, $paket_group, $do['price_locker'], $do['pj']);
+         $harga_paket_item = ($do['price_locker'] == 1) ? $harga_paket : 0;
+         $this->add($do['id_afiliasi'], $id, $paket_group, $do['price_locker'], $harga_paket_item, $do['pj']);
       }
    }
 
-   function add($afiliasi = 0, $paket_ref = '', $paket_group = '', $price_locker = 0, $margin_paket = 0, $pj = 0)
+   function add($afiliasi = 0, $paket_ref = '', $paket_group = '', $price_locker = 0, $harga_paket = 0, $pj = 0)
    {
       $this->dataSynchrone();
       $this->data_order();
@@ -511,12 +518,14 @@ class Buka_Order extends Controller
          }
       }
 
+      // If this is part of a paket, ensure harga field is set to 0 at insert time
+      $harga_insert = 0;
       if ($afiliasi == 0) {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, margin_paket, pj, pending_spk';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $margin_paket . "," . $pj . ",'" . $spkR_ . "'";
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "";
       } else {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, margin_paket, pj, pending_spk';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $margin_paket . "," . $pj . ",'" . $spkR_ . "'";
+         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga';
+         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "";
       }
 
       $do = $this->db(0)->insertCols('order_data', $cols, $vals);
@@ -529,7 +538,7 @@ class Buka_Order extends Controller
       }
    }
 
-   function add_barang($id_jenis_pelanggan, $price_locker = 0, $paket_ref = "", $id_sumber = 0, $margin_paket = 0, $paket_group = "")
+   function add_barang($id_jenis_pelanggan, $price_locker = 0, $paket_ref = "", $id_sumber = 0, $harga_paket = 0, $paket_group = "")
    {
       $ref = "";
       if (isset($_SESSION['edit'][$this->userData['id_user']])) {
@@ -568,9 +577,13 @@ class Buka_Order extends Controller
 
       $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $id_barang . "'");
       $harga = $barang['harga_' . $id_jenis_pelanggan];
+      // if this item is part of a paket, keep harga_jual at 0
+      if ($paket_ref <> "") {
+         $harga = 0;
+      }
 
-      $cols = 'jenis, jenis_target, id_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual, price_locker, paket_ref, paket_group, margin_paket';
-      $vals = "2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $margin_paket;
+      $cols = 'jenis, jenis_target, id_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual, price_locker, paket_ref, paket_group, harga_paket';
+      $vals = "2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $harga_paket;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
@@ -1052,7 +1065,12 @@ class Buka_Order extends Controller
             }
 
             $where = "id = " . $dbr['id'] . " AND ref = ''";
-            $set = "margin_paket = 0, stat = 1, harga_jual = " . $harga . ", sn_c = " . $sn_c . ", cs_id = " . $id_karyawan . ", id_target = " . $id_pelanggan . ", jenis_target = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
+            // If this mutasi item belongs to a paket (paket_ref or paket_group), keep harga_jual = 0
+            $harga_to_set = $harga;
+            if ((isset($dbr['paket_ref']) && strlen($dbr['paket_ref']) > 0) || (isset($dbr['paket_group']) && strlen($dbr['paket_group']) > 0)) {
+               $harga_to_set = 0;
+            }
+            $set = "margin_paket = 0, stat = 1, harga_jual = " . $harga_to_set . ", sn_c = " . $sn_c . ", cs_id = " . $id_karyawan . ", id_target = " . $id_pelanggan . ", jenis_target = " . $id_pelanggan_jenis . ", ref = '" . $ref . "'";
             $update = $this->db(0)->update("master_mutasi", $set, $where);
             if ($update['errno'] <> 0) {
                echo $update['error'];
@@ -1116,6 +1134,10 @@ class Buka_Order extends Controller
          }
 
          //SET ORDER, HARGA DAN AFILIASI
+         // If this order item belongs to a paket (paket_ref or paket_group), keep harga = 0
+         if ((isset($do['paket_ref']) && strlen($do['paket_ref']) > 0) || (isset($do['paket_group']) && strlen($do['paket_group']) > 0)) {
+            $harga = 0;
+         }
          $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', harga = " . $harga . ", id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", stok = " . $stok_order . $st_order;
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] <> 0) {

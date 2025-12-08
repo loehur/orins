@@ -597,7 +597,7 @@ class Paket extends Controller
       echo ($update['errno'] <> 0) ? $update['error'] : $update['errno'];
    }
 
-   function load_aff($target)
+   function load_aff($target, $ref = "", $id_pelanggan_jenis = "")
    {
       foreach ($this->dToko as $dt) {
          if ($dt['id_toko'] == $target) {
@@ -607,6 +607,8 @@ class Paket extends Controller
 
       $data['produk'] = $this->db(0)->get_where('produk', 'pj = 0 ORDER BY freq DESC, id_produk');
       $data['id_toko'] = $target;
+      $data['ref'] = $ref;
+      $data['id_pelanggan_jenis'] = $id_pelanggan_jenis;
       $this->view(__CLASS__ . "/afiliasi", $data);
    }
 }

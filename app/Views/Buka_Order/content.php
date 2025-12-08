@@ -136,14 +136,34 @@ $mgpaket = $data['margin_paket'];
                     } ?>
                 </div>
             </div>
-            <?php if (count($data['order']) > 0) { ?>
+            <?php
+            // Prepare grouping: separate paket items (grouped by paket_group) and non-paket items
+            $order_nonpaket = [];
+            $order_paket_groups = []; // paket_group => ['paket_ref'=>..., 'items'=>[], 'harga_paket'=>...]
+            foreach ($data['order'] as $keyD => $do) {
+                if (isset($do['paket_ref']) && strlen($do['paket_ref']) > 0) {
+                    $pg = $do['paket_group'];
+                    if (!isset($order_paket_groups[$pg])) {
+                        $order_paket_groups[$pg] = ['paket_ref' => $do['paket_ref'], 'items' => [], 'harga_paket' => $do['harga_paket']];
+                    }
+                    $order_paket_groups[$pg]['items'][] = ['key' => $keyD, 'do' => $do];
+                } else {
+                    $order_nonpaket[] = ['key' => $keyD, 'do' => $do];
+                }
+            }
+
+            ?>
+            <?php if (count($order_nonpaket) > 0 || count($order_paket_groups) > 0) { ?>
                 <div class="row">
                     <div class="col border-start border-end border-top px-0">
                         <table class="table table-sm mb-0">
                             <tbody>
                                 <?php
                                 $no = 0;
-                                foreach ($data['order'] as $keyD => $do) {
+                                // Render non-paket items first
+                                foreach ($order_nonpaket as $item) {
+                                    $keyD = $item['key'];
+                                    $do = $item['do'];
                                     $no++;
                                     $total_item += 1;
                                     $akum_diskon = 0;
@@ -196,7 +216,8 @@ $mgpaket = $data['margin_paket'];
                                                                 if ($harga_ok == false) {
                                                                     echo $btnSetHarga;
                                                                 } else {
-                                                                    if ($do['price_locker'] == 0) {
+                                                                    // only show per-item harga for non-paket items (also hide when paket_group present)
+                                                                    if ((!isset($do['paket_ref']) || $do['paket_ref'] == '') && (!isset($do['paket_group']) || $do['paket_group'] == '') && $do['price_locker'] == 0) {
                                                                         if ($akum_diskon > 0) {
                                                                             echo "<del>" . number_format($do['harga']) . "</del> <small>@" . number_format($do['harga'] - $akum_diskon);
                                                                         } else {
@@ -213,7 +234,8 @@ $mgpaket = $data['margin_paket'];
                                                                 if ($harga_ok == false) {
                                                                     echo $btnSetHarga;
                                                                 } else {
-                                                                    if ($do['price_locker'] == 0) {
+                                                                    // only show per-item total for non-paket items (also hide when paket_group present)
+                                                                    if ((!isset($do['paket_ref']) || $do['paket_ref'] == '') && (!isset($do['paket_group']) || $do['paket_group'] == '') && $do['price_locker'] == 0) {
                                                                         if ($akum_diskon > 0) {
                                                                             echo "<del>" . number_format($do['harga'] * $do['jumlah']) . "</del> " . number_format(($do['harga'] * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
                                                                             $total_order -= ($akum_diskon * $do['jumlah']);
@@ -222,6 +244,7 @@ $mgpaket = $data['margin_paket'];
                                                                         }
                                                                         $total_order += ($do['harga'] * $do['jumlah']);
                                                                     } else {
+                                                                        // paket items: do not display per-item harga; keep using paket margin formula
                                                                         echo number_format(($do['harga'] * $do['jumlah']) + $mgpaket[$do['paket_ref']]['margin_paket']);
                                                                         $total_order += (($do['harga'] * $do['jumlah']) + $mgpaket[$do['paket_ref']]['margin_paket']);
                                                                     }
@@ -271,9 +294,11 @@ $mgpaket = $data['margin_paket'];
                                                                                         <?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
                                                                                     <?php } ?>
 
-                                                                                    <b><span data-bs-toggle="modal" data-id_produk="<?= $id_produk ?>" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
-                                                                                    <?php if ($harga_d > 0) { ?>
-                                                                                        <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
+                                                                                    <?php if ((!isset($do['paket_ref']) || $do['paket_ref'] == '') && (!isset($do['paket_group']) || $do['paket_group'] == '')) { ?>
+                                                                                        <b><span data-bs-toggle="modal" data-id_produk="<?= $id_produk ?>" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
+                                                                                        <?php if ($harga_d > 0) { ?>
+                                                                                            <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
+                                                                                        <?php } ?>
                                                                                     <?php } ?>
                                                                                 </div>
                                                                             </div>
@@ -317,6 +342,141 @@ $mgpaket = $data['margin_paket'];
                                         </td>
                                     </tr>
                                 <?php }
+                                // Now render paket groups: show header + all items (items still deletable, but hide per-item harga and P/D)
+                                foreach ($order_paket_groups as $pg => $group) {
+                                    $no++;
+                                    $paket_ref = $group['paket_ref'];
+                                    $paket_nama = isset($data['paket'][$paket_ref]['nama']) ? $data['paket'][$paket_ref]['nama'] : $paket_ref;
+                                    $harga_paket_val = 0;
+                                    if (isset($data['paket'][$paket_ref])) {
+                                        $harga_paket_val = $data['paket'][$paket_ref]['harga_' . $id_pelanggan_jenis];
+                                    }
+                                    if ($harga_paket_val == 0 && isset($group['harga_paket'])) {
+                                        $harga_paket_val = $group['harga_paket'];
+                                    }
+                                    $total_order += $harga_paket_val;
+                                ?>
+                                    <tr>
+                                        <td>
+                                            <table class="table table-sm w-100 mb-0">
+                                                <tr class="bg-secondary bg-gradient bg-opacity-10">
+                                                    <td class="ps-2 align-middle">
+                                                        <span class="text-nowrap text-dark"><small class="text-secondary">#PK<?= $pg ?></small><b><small> <?= ucwords($paket_nama) ?></small></b></span>
+                                                    </td>
+                                                    <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                                        <small>
+                                                            <span class="">x</span>
+                                                        </small>
+                                                    </td>
+                                                    <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                                        <small>
+                                                            <?= '@' . number_format($harga_paket_val) ?>
+                                                        </small>
+                                                    </td>
+                                                    <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                                        <b>
+                                                            <small>
+                                                                <?= number_format($harga_paket_val) ?>
+                                                            </small>
+                                                        </b>
+                                                    </td>
+                                                    <td class="align-middle" style="width: 30px;"></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                    // render each item in the paket group (show details, but hide harga and P/D controls)
+                                    foreach ($group['items'] as $item) {
+                                        $keyD = $item['key'];
+                                        $do = $item['do'];
+                                        $total_item += 1;
+                                        $akum_diskon = 0;
+                                        $id_order_data = $do['id_order_data'];
+                                        $id_produk = $do['id_produk'];
+                                        $detail_arr = unserialize($do['produk_detail']);
+                                        $listDetail = unserialize($do['detail_harga']);
+                                        foreach ($listDetail as $kl => $ld_o) {
+                                            $akum_diskon += $ld_o['d'];
+                                        }
+                                    ?>
+                                        <tr>
+                                            <td class="">
+                                                <table class="table table-sm w-100 mb-0">
+                                                    <tr class="<?= $do['id_afiliasi'] == 0 ? 'bg-primary' : 'bg-warning' ?> bg-gradient bg-opacity-10">
+                                                        <td class="ps-2 align-middle">
+                                                            <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><small> <?= ucwords($do['produk']) ?></small></span>
+                                                            <span class="badge bg-light text-dark"><?= $paket_nama ?></span>
+                                                        </td>
+                                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                                            <small>
+                                                                <span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= $do['jumlah'] ?></span>x
+                                                            </small>
+                                                        </td>
+                                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                                            <small>
+                                                                <!-- per-item harga hidden for paket items -->
+                                                            </small>
+                                                        </td>
+                                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                                            <b>
+                                                                <small>
+                                                                    <!-- per-item total hidden; totals computed earlier -->
+                                                                </small>
+                                                            </b>
+                                                        </td>
+                                                        <td class="align-middle" style="width: 30px;"><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="10" class="border-bottom-0">
+                                                            <table class="table table-sm table-borderless mb-1">
+                                                                <tr>
+                                                                    <td class="pe-1 border-bottom-0" nowrap>
+                                                                        <div class="row">
+                                                                            <?php foreach ($detail_arr as $da) { ?>
+                                                                                <div class="col-auto" style="line-height: 80%;">
+                                                                                    <small>
+                                                                                        <small><u><?= $da['group_name'] ?></u></small><br> <?= strtoupper($da['detail_name']) ?>
+                                                                                    </small>
+                                                                                </div>
+                                                                            <?php } ?>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="10" valign="top" class="p-0 border border-top-0">
+                                                                        <small>
+                                                                            <?php
+                                                                            foreach ($listDetail as $kl => $ld_o) {
+                                                                                $harga_d = isset($data['harga'][$keyD]) ? $data['harga'][$keyD][$ld_o['c_h']] : 0; ?>
+                                                                                <div class="border-bottom mx-0">
+                                                                                    <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
+                                                                                    <div class="float-end">
+                                                                                        <!-- hide per-component harga and P/D for paket items -->
+                                                                                    </div>
+                                                                                </div>
+                                                                                <br>
+                                                                            <?php }
+                                                                            ?>
+                                                                        </small>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                            <div class="row">
+                                                                <div class="col text-sm">
+                                                                    <small style="cursor: pointer;" class="updateNote" data-id="<?= $do['id_order_data'] ?>" data-note_mode="main" data-note_val="<?= $do['note'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModalUtama"><span class="fw-bold">Utama</span></small><br>
+                                                                    <?php if (strlen($do['note']) > 0) { ?>
+                                                                        <span class="text-danger"><?= $do['note'] ?></span>
+                                                                    <?php } ?>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                <?php } // end items loop
+                                } // end groups loop
                                 ?>
                             </tbody>
                         </table>
@@ -328,7 +488,22 @@ $mgpaket = $data['margin_paket'];
         <div class="row mt-2">
             <div class="col border border-bottom-0 px-0">
                 <table class="table table-sm m-0 text-sm">
-                    <?php foreach ($data['order_barang'] as $db) {
+                    <?php
+                    // Group order_barang by paket_group as well
+                    $ob_nonpaket = [];
+                    $ob_paket_groups = [];
+                    foreach ($data['order_barang'] as $db) {
+                        if (isset($db['paket_ref']) && strlen($db['paket_ref']) > 0) {
+                            $pg = $db['paket_group'];
+                            if (!isset($ob_paket_groups[$pg])) {
+                                $ob_paket_groups[$pg] = ['paket_ref' => $db['paket_ref'], 'items' => [], 'harga_paket' => $db['harga_paket']];
+                            }
+                            $ob_paket_groups[$pg]['items'][] = $db;
+                        } else {
+                            $ob_nonpaket[] = $db;
+                        }
+                    }
+                    foreach ($ob_nonpaket as $db) {
                         $total_item += 1;
                         $dp = $data['barang'][$db['id_barang']];
 
@@ -357,11 +532,11 @@ $mgpaket = $data['margin_paket'];
                             <td>
                                 <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?>
                                 <?= $db['sn'] <> "" ? "<br>" . $db['sn'] : "" ?>
-                                <?= $db['paket_ref'] <> "" ? "<br><span class='badge text-dark bg-light'>" . $data['paket'][$db['paket_ref']]['nama'] . "</span>" : "" ?>
+
                             </td>
                             <td class="text-end">
                                 <?= number_format($db['qty']) ?>x<br>
-                                <?php if ($db['ref'] == '') { ?>
+                                <?php if ($db['ref'] == '' && (!isset($db['paket_ref']) || $db['paket_ref'] == '') && (!isset($db['paket_group']) || $db['paket_group'] == '')) { ?>
                                     <b><span data-bs-toggle="modal" data-code="<?= $db['id_barang'] ?>" data-jenis="<?= $db['jenis_target'] ?>" data-bs-target="#exampleModalPbarang" style="cursor: pointer;" class="tetapkanHargaBarang px-2">P</span></b>
                                     <b><span data-bs-toggle="modal" data-id="<?= $db['id'] . "_" . $dp['harga_' . $id_pelanggan_jenis] ?>" data-bs-target="#modalDiskonBarang" style="cursor: pointer;" class="tetapkanDiskonBarang pe-2">D</span></b>
                                 <?php } ?>
@@ -375,11 +550,71 @@ $mgpaket = $data['margin_paket'];
 
                                 $totalnya -= ($db['diskon'] * $db['qty']);
                                 ?>
-                                <?= $db['price_locker'] == 0 ? $harga_semula . " @" . number_format($harga_satuan)  : "" ?>
+                                <?= ($db['price_locker'] == 0 && (!isset($db['paket_ref']) || $db['paket_ref'] == '') && (!isset($db['paket_group']) || $db['paket_group'] == '')) ? $harga_semula . " @" . number_format($harga_satuan)  : "" ?>
                             </td>
-                            <td class="text-end pe-2"><?= number_format($totalnya) ?></td>
+                            <td class="text-end pe-2"></td>
                             <td class="pt-2" style="width: 30px;"><a class="deleteItemBarang" data-id="<?= $db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                         </tr>
+                    <?php } ?>
+                    <?php
+                    // Render grouped paket barang: header + individual items (hide per-item harga/P/D but keep delete)
+                    foreach ($ob_paket_groups as $pg => $group) {
+                        $paket_ref = $group['paket_ref'];
+                        $paket_nama = isset($data['paket'][$paket_ref]['nama']) ? $data['paket'][$paket_ref]['nama'] : $paket_ref;
+                        $harga_paket_val = 0;
+                        if (isset($data['paket'][$paket_ref])) {
+                            $harga_paket_val = $data['paket'][$paket_ref]['harga_' . $id_pelanggan_jenis];
+                        }
+                        if ($harga_paket_val == 0 && isset($group['harga_paket'])) {
+                            $harga_paket_val = $group['harga_paket'];
+                        }
+                        // do not render paket header or add to total in master_mutasi section
+                    ?>
+                        <?php foreach ($group['items'] as $db) {
+                            $total_item += 1;
+                            $dp = $data['barang'][$db['id_barang']];
+
+                            if ($db['harga_jual'] > 0) {
+                                $harga_satuan = $db['harga_jual'];
+                            } else {
+                                $harga_satuan = $dp['harga_' . $id_pelanggan_jenis];
+                            }
+
+                            if ($db['price_locker'] == 1) {
+                                $classKeyPrice = 'text-danger';
+                                $totalnya = ($harga_satuan * $db['qty']) + $mgpaket[$db['paket_ref']]['margin_paket'];
+                            } else {
+                                $totalnya = ($harga_satuan * $db['qty']);
+                            }
+                        ?>
+                            <tr>
+                                <td class="text-secondary text-end ps-2">
+                                    #<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?>
+                                </td>
+                                <td>
+                                    <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?>
+                                    <?= $db['sn'] <> "" ? "<br>" . $db['sn'] : "" ?>
+                                    <?= $db['paket_ref'] <> "" ? "<br><span class='badge text-dark bg-light'>" . $data['paket'][$db['paket_ref']]['nama'] . "</span>" : "" ?>
+                                </td>
+                                <td class="text-end">
+                                    <?= number_format($db['qty']) ?>x<br>
+                                    <!-- hide P/D controls for paket items -->
+                                    <?php
+                                    $harga_semula = "";
+                                    if ($db['diskon'] > 0) {
+                                        $harga_semula = "<s>" . number_format($harga_satuan) . "</s>";
+                                        $harga_satuan -= $db['diskon'];
+                                    }
+
+                                    $totalnya -= ($db['diskon'] * $db['qty']);
+                                    ?>
+                                    <?= ($db['price_locker'] == 0 && (!isset($db['paket_ref']) || $db['paket_ref'] == '') && (!isset($db['paket_group']) || $db['paket_group'] == '')) ? $harga_semula . " @" . number_format($harga_satuan)  : "" ?>
+                                </td>
+                                <td class="text-end pe-2"><?= (!isset($db['paket_ref']) || $db['paket_ref'] == '') ? number_format($totalnya) : '' ?></td>
+                                <td class="pt-2" style="width: 30px;"><a class="deleteItemBarang" data-id="<?= $db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
+                            </tr>
+                        <?php } // end items loop 
+                        ?>
                     <?php } ?>
                 </table>
             </div>

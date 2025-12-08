@@ -1,4 +1,4 @@
-<form class="aff_form" action="<?= PV::BASE_URL ?>Paket/add/<?= $data['id_toko'] ?>" method="POST">
+<form class="aff_form" action="<?= PV::BASE_URL ?>Paket/add/<?= $data['id_toko'] ?>/0/<?= $data['ref'] ?>" method="POST">
     <div class="modal-body px-2 bg-warning-soft">
         <div class="mb-3">
             <select class="tize loadDetail" name="id_produk" required>
@@ -33,7 +33,7 @@
             type: $(this).attr("method"),
             success: function(res) {
                 if (res == 0) {
-                    content();
+                    parent.content(<?= $data['id_pelanggan_jenis'] ?>, '<?= $data['ref'] ?>');
                 } else if (res == 1) {
                     var parse = $("select[name=id_pelanggan]").val();
                     location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + parse;

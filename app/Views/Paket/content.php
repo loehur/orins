@@ -163,8 +163,8 @@ $total_item = 0;
                                                                         }
                                                                         $total_order += ($do['harga'] * $do['jumlah']);
                                                                     } else {
-                                                                        echo number_format(($do['harga'] * $do['jumlah']) + $do['margin_paket']);
-                                                                        $total_order += (($do['harga'] * $do['jumlah']) + $do['margin_paket']);
+                                                                        echo number_format(($do['harga'] * $do['jumlah']) + $do['harga_paket']);
+                                                                        $total_order += (($do['harga'] * $do['jumlah']) + $do['harga_paket']);
                                                                     }
                                                                 } ?>
                                                             </small>
@@ -281,8 +281,8 @@ $total_item = 0;
 
                         if ($db['price_locker'] == 1) {
                             $classKeyPrice = 'text-danger';
-                            $total_order += (($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $db['margin_paket']);
-                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $db['margin_paket'];
+                            $total_order += (($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $db['harga_paket']);
+                            $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']) + $db['harga_paket'];
                         } else {
                             $total_order += ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
                             $totalnya = ($dp['harga_' . $id_pelanggan_jenis] * $db['qty']);
@@ -378,7 +378,7 @@ $total_item = 0;
 
     $("a.aff").click(function() {
         var target = $(this).attr("data-id");
-        $("div#aff").load('<?= PV::BASE_URL ?>Paket/load_aff/' + target);
+        $("div#aff").load('<?= PV::BASE_URL ?>Paket/load_aff/' + target + '/<?= $data['ref'] ?>/<?= $id_pelanggan_jenis ?>');
     })
 
     $("a.deleteItem").click(function() {
