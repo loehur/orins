@@ -154,7 +154,7 @@ class Data_Order extends Controller
 
       if ($mode == 0) {
          if ($plock == 1) {
-            $set = "stat = 2";
+            $set = "stat = 2, diskon = 0";
             $update = $this->db(0)->update("master_mutasi", $set, $where);
             if ($update['errno'] <> 0) {
                echo $update['error'];
@@ -164,12 +164,12 @@ class Data_Order extends Controller
             $where = "id_order_data = " . $id;
          }
 
-         $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
+         $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "', diskon = 0";
          $update = $this->db(0)->update("order_data", $set, $where);
          if ($update['errno'] == 0) {
             //BATALKAN MUTASI PRODUKSI
             $where2 = "pid = " . $id;
-            $set2 = "stat = 2, note = '" . $reason . "'";
+            $set2 = "stat = 2, note = '" . $reason . "', diskon = 0";
             $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
             if ($update2 <> 0) {
                echo $update['error'];
@@ -181,12 +181,12 @@ class Data_Order extends Controller
          }
       } else {
          if ($plock == 1) {
-            $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "'";
+            $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "', diskon = 0";
             $update = $this->db(0)->update("order_data", $set, $where);
             if ($update['errno'] == 0) {
                //BATALKAN MUTASI PRODUKSI
                $where2 = "pid = " . $id;
-               $set2 = "stat = 2, note = '" . $reason . "'";
+               $set2 = "stat = 2, note = '" . $reason . "', diskon = 0";
                $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
                if ($update2 <> 0) {
                   echo $update['error'];
@@ -200,7 +200,7 @@ class Data_Order extends Controller
             $where = "id = " . $id;
          }
 
-         $set = "stat = 2, note = '" . $reason . "'";
+         $set = "stat = 2, note = '" . $reason . "', diskon = 0";
          $update = $this->db(0)->update("master_mutasi", $set, $where);
          if ($update['errno'] <> 0) {
             echo $update['error'];

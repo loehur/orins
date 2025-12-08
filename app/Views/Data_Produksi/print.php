@@ -299,17 +299,17 @@
                         <td style="text-align: right;vertical-align:text-top; padding-left:7px;">
                             <?php
                             if ($akum_diskon > 0) {
-                                echo "<del>" . number_format(($do['harga'] + $do['margin_paket'])) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format(($do['harga'] + $do['margin_paket']) - $akum_diskon);
+                                echo "<del>" . number_format(($do['harga'] + $do['harga_paket'])) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format(($do['harga'] + $do['harga_paket']) - $akum_diskon);
                             } else {
-                                echo number_format(($do['harga'] + $do['margin_paket']));
+                                echo number_format(($do['harga'] + $do['harga_paket']));
                             } ?>
                         </td>
                         <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                             <?php
                             if ($akum_diskon > 0) {
-                                echo "<del>" . number_format(($do['harga'] + $do['margin_paket']) * $do['jumlah']) . "</del><br><small>Disc. " . number_format($akum_diskon * $do['jumlah']) . "</small><br>" . number_format((($do['harga'] + $do['margin_paket']) * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                echo "<del>" . number_format(($do['harga'] + $do['harga_paket']) * $do['jumlah']) . "</del><br><small>Disc. " . number_format($akum_diskon * $do['jumlah']) . "</small><br>" . number_format((($do['harga'] + $do['harga_paket']) * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
                             } else {
-                                echo number_format(($do['harga'] + $do['margin_paket']) * $do['jumlah']);
+                                echo number_format(($do['harga'] + $do['harga_paket']) * $do['jumlah']);
                             } ?>
                         </td>
                     </tr>
@@ -341,18 +341,18 @@
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px;">
                         <?php
                         if ($akum_diskon > 0) {
-                            echo "<del>" . number_format(($do['harga_jual'] + $do['margin_paket'])) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format(($do['harga_jual'] + $do['margin_paket']) - $akum_diskon);
+                            echo "<del>" . number_format(($do['harga_jual'] + $do['harga_paket'])) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format(($do['harga_jual'] + $do['harga_paket']) - $akum_diskon);
                         } else {
-                            echo number_format(($do['harga_jual'] + $do['margin_paket']));
+                            echo number_format(($do['harga_jual'] + $do['harga_paket']));
                         } ?>
                     </td>
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                         <?php
                         if ($akum_diskon > 0) {
                             $total_disc += $akum_diskon * $do['qty'];
-                            echo "<del>" . number_format(($do['harga_jual'] * $do['qty']) + $do['margin_paket']) . "</del><br><small>Disc. " . number_format($akum_diskon * $do['qty']) . "</small><br>" . number_format((($do['harga_jual'] * $do['qty']) + $do['margin_paket']) - ($akum_diskon * $do['qty']));
+                            echo "<del>" . number_format(($do['harga_jual'] * $do['qty']) + $do['harga_paket']) . "</del><br><small>Disc. " . number_format($akum_diskon * $do['qty']) . "</small><br>" . number_format((($do['harga_jual'] * $do['qty']) + $do['harga_paket']) - ($akum_diskon * $do['qty']));
                         } else {
-                            echo number_format(($do['harga_jual'] * $do['qty']) + $do['margin_paket']);
+                            echo number_format(($do['harga_jual'] * $do['qty']) + $do['harga_paket']);
                         } ?>
                     </td>
                 </tr>

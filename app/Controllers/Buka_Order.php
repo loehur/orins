@@ -98,7 +98,16 @@ class Buka_Order extends Controller
       }
 
       if ($this->userData['id_toko'] == 1) {
-         $data['stok'] = $this->data('Barang')->stok_data_list(0);
+         $stok_gudang = $this->data('Barang')->stok_data_list(0);
+         $stok_toko = $this->data('Barang')->stok_data_list(1);
+         $gabung = [];
+         foreach ($stok_gudang as $item) {
+            $gabung[$item['id_barang']] = $item;
+         }
+         foreach ($stok_toko as $item) {
+            $gabung[$item['id_barang']] = $item;
+         }
+         $data['stok'] = array_values($gabung);
       } else {
          $data['stok'] = $this->data('Barang')->stok_data_list($this->userData['id_toko']);
       }
