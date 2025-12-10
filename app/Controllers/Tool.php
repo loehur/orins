@@ -77,14 +77,26 @@ class Tool extends Controller
       }
    }
 
-   function update_harga_paket_by_group()
+   function update_harga_paket_by_group($month = null)
    {
+      // sanitize/normalize month input (expected format: YYYY-MM). If empty or invalid, use current month.
+      if ($month === null) {
+         $month = date('Y-m');
+      } else {
+         $month = preg_replace('/[^0-9\-]/', '', $month);
+         if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
+            $month = date('Y-m');
+         }
+      }
+
+      $timeFilter = " AND insertTime LIKE '" . $month . "%'";
+
       $cols_od = "paket_group, SUM((harga*jumlah)+harga_paket) as total";
-      $where_od = "paket_group <> '' GROUP BY paket_group";
+      $where_od = "paket_group <> ''" . $timeFilter . " GROUP BY paket_group";
       $sum_od = $this->db(0)->get_cols_where('order_data', $cols_od, $where_od);
 
       $cols_mm = "paket_group, SUM((harga_jual*qty)+harga_paket) as total";
-      $where_mm = "paket_group <> '' GROUP BY paket_group";
+      $where_mm = "paket_group <> ''" . $timeFilter . " GROUP BY paket_group";
       $sum_mm = $this->db(0)->get_cols_where('master_mutasi', $cols_mm, $where_mm);
 
       $od_total = [];
@@ -112,7 +124,7 @@ class Tool extends Controller
       foreach (array_keys($groups) as $pg) {
          $total = (isset($od_total[$pg]) ? $od_total[$pg] : 0) + (isset($mm_total[$pg]) ? $mm_total[$pg] : 0);
          $set = "harga_paket = " . $total;
-         $where = "paket_group = '" . $pg . "' AND price_locker = 1";
+         $where = "paket_group = '" . $pg . "' AND price_locker = 1" . $timeFilter;
          $u1 = $this->db(0)->update('order_data', $set, $where);
          $u2 = $this->db(0)->update('master_mutasi', $set, $where);
          $e1 = isset($u1['errno']) ? $u1['errno'] : 0;
@@ -128,8 +140,9 @@ class Tool extends Controller
       }
 
       if ($all_ok) {
-         $r1 = $this->db(0)->update('order_data', "harga = 0", "paket_group <> ''");
-         $r2 = $this->db(0)->update('master_mutasi', "harga_jual = 0", "paket_group <> ''");
+         // only reset harga for rows within the selected month to avoid touching historical data
+         $r1 = $this->db(0)->update('order_data', "harga = 0", "paket_group <> ''" . $timeFilter);
+         $r2 = $this->db(0)->update('master_mutasi', "harga_jual = 0", "paket_group <> ''" . $timeFilter);
          $result['_reset'] = [
             'order_errno' => isset($r1['errno']) ? $r1['errno'] : null,
             'mutasi_errno' => isset($r2['errno']) ? $r2['errno'] : null
