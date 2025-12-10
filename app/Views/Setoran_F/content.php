@@ -105,8 +105,9 @@
 
                                     <span class="">Setor <span class=""><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></span> <span class="text-success"><?= number_format($totalSetor - $sds_done[$set['ref_setoran']] - $total_refund[$set['ref_setoran']]) ?></span>
                                 </td>
-                                <td style="width: 80px;">
+                                <td style="width: 160px;">
                                     <button data-id="<?= $set['ref_setoran'] ?>" data-val="1" class="verify btn btn-sm shadow-sm btn-primary bg-gradient rounded-pill">Verify</button>
+                                    <button ondblclick="batalkanSetoran('<?= $set['ref_setoran'] ?>')" class="btn btn-sm shadow-sm btn-danger bg-gradient rounded-pill">Batalkan</button>
                                 </td>
                                 <td class="text-end">
 
@@ -280,4 +281,51 @@
         var ref = $(this).attr("data-ref");
         $("div#cek_load").load('<?= PV::BASE_URL ?>Setoran_F/cek/' + ref);
     });
+
+    $(document).on("dblclick", "button.batalkan", function() {
+        console.log("Batalkan clicked!");
+        var ref_ = $(this).attr('data-id');
+        console.log("Ref: " + ref_);
+        if (confirm('Apakah Anda yakin ingin membatalkan setoran ini? Data akan dikembalikan seperti semula.')) {
+            $.ajax({
+                url: "<?= PV::BASE_URL ?>Setoran/batalkan_setoran",
+                data: {
+                    ref_setoran: ref_
+                },
+                type: "POST",
+                success: function(result) {
+                    console.log("Result: " + result);
+                    if (result == 0) {
+                        content();
+                    } else {
+                        alert(result);
+                    }
+                },
+            });
+        }
+    });
+    
+    function batalkanSetoran(ref_) {
+        console.log("Batalkan called with ref: " + ref_);
+        $.ajax({
+            url: "<?= PV::BASE_URL ?>Setoran/batalkan_setoran",
+            data: {
+                ref_setoran: ref_
+            },
+            type: "POST",
+            success: function(result) {
+                console.log("Result: " + result);
+                if (result == 0) {
+                    alert('Setoran berhasil dibatalkan');
+                    content();
+                } else {
+                    alert('Error: ' + result);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log("Error: " + error);
+                alert('Gagal: ' + error);
+            }
+        });
+    }
 </script>

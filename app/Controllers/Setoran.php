@@ -166,6 +166,36 @@ class Setoran extends Controller
       echo 0;
    }
 
+   function batalkan_setoran()
+   {
+      $ref_setoran = $_POST['ref_setoran'];
+      
+      // 1. Reset kas table - clear ref_setoran
+      $set = "ref_setoran = ''";
+      $where = "ref_setoran = '" . $ref_setoran . "'";
+      $update = $this->db(0)->update("kas", $set, $where);
+      if ($update['errno'] <> 0) {
+         echo $update['error'];
+         exit();
+      }
+      
+      // 2. Reset order_data table - clear ref_setoran
+      $update = $this->db(0)->update("order_data", $set, $where);
+      if ($update['errno'] <> 0) {
+         echo $update['error'];
+         exit();
+      }
+      
+      // 3. Delete kas_kecil entries for this ref_setoran
+      $delete = $this->db(0)->delete_where("kas_kecil", "ref = '" . $ref_setoran . "'");
+      if ($delete['errno'] <> 0) {
+         echo $delete['error'];
+         exit();
+      }
+      
+      echo 0;
+   }
+
    function cek($ref_setor)
    {
       $wherePelanggan =  "id_toko = " . $this->userData['id_toko'];
