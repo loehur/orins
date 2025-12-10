@@ -183,8 +183,35 @@
             foreach ($data['paket'] as $pref => $do) {
                 $akum_diskon = 0;
                 $no += 1;
-                $jumlah = $do['qty'];
-                $total += (isset($do['harga_paket']) && isset($do['paket_qty']) && $do['harga_paket'] > 0 && $do['paket_qty'] > 0) ? ($do['harga_paket'] * $do['paket_qty']) : $do['harga']; ?>
+                
+                // Find harga_paket and paket_qty from price_locker = 1 item
+                $paket_harga = 0;
+                $paket_qty_val = 0;
+                
+                // Check order items for price_locker = 1
+                if (isset($do['order'])) {
+                    foreach ($do['order'] as $pdo) {
+                        if (isset($pdo['price_locker']) && $pdo['price_locker'] == 1) {
+                            $paket_harga = isset($pdo['harga_paket']) ? $pdo['harga_paket'] : 0;
+                            $paket_qty_val = isset($pdo['paket_qty']) ? $pdo['paket_qty'] : 0;
+                            break;
+                        }
+                    }
+                }
+                
+                // If not found in order, check barang items
+                if ($paket_harga == 0 && isset($do['barang'])) {
+                    foreach ($do['barang'] as $pdo) {
+                        if (isset($pdo['price_locker']) && $pdo['price_locker'] == 1) {
+                            $paket_harga = isset($pdo['harga_paket']) ? $pdo['harga_paket'] : 0;
+                            $paket_qty_val = isset($pdo['paket_qty']) ? $pdo['paket_qty'] : 0;
+                            break;
+                        }
+                    }
+                }
+                
+                $jumlah = $paket_qty_val > 0 ? $paket_qty_val : $do['qty'];
+                $total += ($paket_harga > 0 && $paket_qty_val > 0) ? ($paket_harga * $paket_qty_val) : $do['harga']; ?>
 
                 <tr style="border-bottom: 1px solid silver;">
                     <td style="text-align: right; vertical-align:text-top; padding-right:5px" valign="top">
@@ -236,7 +263,7 @@
                     </td>
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px;">
                         <?php
-                        $paket_harga_display = (isset($do['harga_paket']) && $do['harga_paket'] > 0) ? $do['harga_paket'] : ($do['harga'] / $jumlah);
+                        $paket_harga_display = $paket_harga > 0 ? $paket_harga : ($do['harga'] / $do['qty']);
                         if ($akum_diskon > 0) {
                             echo "<del>" . number_format($paket_harga_display) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format($paket_harga_display - $akum_diskon);
                         } else {
@@ -245,7 +272,7 @@
                     </td>
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                         <?php
-                        $paket_total_display = (isset($do['harga_paket']) && isset($do['paket_qty']) && $do['harga_paket'] > 0 && $do['paket_qty'] > 0) ? ($do['harga_paket'] * $do['paket_qty']) : $do['harga'];
+                        $paket_total_display = ($paket_harga > 0 && $paket_qty_val > 0) ? ($paket_harga * $paket_qty_val) : $do['harga'];
                         if ($akum_diskon > 0) {
                             echo "<del>" . number_format($paket_total_display) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format($paket_total_display - $akum_diskon);
                         } else {
@@ -261,6 +288,10 @@
             foreach ($data['order'] as $do) {
                 if ($do['id_toko'] == $this->userData['id_toko'] || $do['id_afiliasi'] == $this->userData['id_toko']) {
                     if ($do['paket_ref'] <> "" || $do['cancel'] <> 0) {
+                        // For items with paket_ref: add to total only if price_locker = 1
+                        if ($do['paket_ref'] <> "" && isset($do['price_locker']) && $do['price_locker'] == 1) {
+                            $total += ($do['harga_paket'] * $do['paket_qty']);
+                        }
                         continue;
                     }
                     $no += 1;
@@ -321,6 +352,16 @@
         if (count($data['mutasi']) > 0) {
             foreach ($data['mutasi'] as $do) {
                 if ($do['stat'] == 2) {
+                    continue;
+                }
+                
+                // Skip items with paket_ref (except for display), but add to total only if price_locker = 1
+                if (isset($do['paket_ref']) && $do['paket_ref'] <> "") {
+                    // Item has paket_ref: only add to total if price_locker = 1
+                    if (isset($do['price_locker']) && $do['price_locker'] == 1) {
+                        $total += ($do['harga_paket'] * $do['paket_qty']);
+                    }
+                    // Continue to skip displaying individual paket items
                     continue;
                 }
 
