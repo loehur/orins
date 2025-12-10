@@ -82,7 +82,7 @@
                             <?= $no ?>.
                         </td>
                         <td class="">
-                            <?= $data['barang'][$a['id_barang']]['nama'] ?> <?= $data['barang'][$a['id_barang']]['product_name'] ?>
+                            <b><?= substr($data['barang'][$a['id_barang']]['code'], 0, 2) ?></b> <?= $data['barang'][$a['id_barang']]['nama'] ?> <?= $data['barang'][$a['id_barang']]['product_name'] ?>
                         </td>
                         <td>
                             <?= $a['sds'] == 1 ? "S" : "T" ?>
