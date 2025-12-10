@@ -184,7 +184,7 @@
                 $akum_diskon = 0;
                 $no += 1;
                 $jumlah = $do['qty'];
-                $total += $do['harga']; ?>
+                $total += (isset($do['harga_paket']) && isset($do['paket_qty']) && $do['harga_paket'] > 0 && $do['paket_qty'] > 0) ? ($do['harga_paket'] * $do['paket_qty']) : $do['harga']; ?>
 
                 <tr style="border-bottom: 1px solid silver;">
                     <td style="text-align: right; vertical-align:text-top; padding-right:5px" valign="top">
@@ -236,18 +236,20 @@
                     </td>
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px;">
                         <?php
+                        $paket_harga_display = (isset($do['harga_paket']) && $do['harga_paket'] > 0) ? $do['harga_paket'] : ($do['harga'] / $jumlah);
                         if ($akum_diskon > 0) {
-                            echo "<del>" . number_format($do['harga'] / $jumlah) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format(($do['harga'] / $jumlah)  - $akum_diskon);
+                            echo "<del>" . number_format($paket_harga_display) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format($paket_harga_display - $akum_diskon);
                         } else {
-                            echo number_format($do['harga'] / $jumlah);
+                            echo number_format($paket_harga_display);
                         } ?>
                     </td>
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                         <?php
+                        $paket_total_display = (isset($do['harga_paket']) && isset($do['paket_qty']) && $do['harga_paket'] > 0 && $do['paket_qty'] > 0) ? ($do['harga_paket'] * $do['paket_qty']) : $do['harga'];
                         if ($akum_diskon > 0) {
-                            echo "<del>" . number_format($do['harga']) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format(($do['harga'] * $do['qty'])) - ($akum_diskon);
+                            echo "<del>" . number_format($paket_total_display) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format($paket_total_display - $akum_diskon);
                         } else {
-                            echo number_format($do['harga']);
+                            echo number_format($paket_total_display);
                         } ?>
                     </td>
                 </tr>

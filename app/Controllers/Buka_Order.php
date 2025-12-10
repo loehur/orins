@@ -18,8 +18,51 @@ class Buka_Order extends Controller
 
    function Edit_order($ref, $jenis_pelanggan, $dibayar, $id_pelanggan)
    {
-      $_SESSION['edit'][$this->userData['id_user']] = [$ref, $jenis_pelanggan, $dibayar, $id_pelanggan];
+      // Create snapshot before entering edit mode
+      $session_key = 'edit_' . $this->userData['id_user'] . '_' . $ref . '_' . time();
 
+      // Get current order data
+      $order_data = $this->db(0)->get_where('order_data', "ref = '" . $ref . "' AND cancel <> 1");
+      $mutasi_data = $this->db(0)->get_where('master_mutasi', "ref = '" . $ref . "' AND stat <> 2");
+
+      // Convert to JSON for snapshot
+      $snapshot_order = json_encode($order_data);
+      $snapshot_mutasi = json_encode($mutasi_data);
+
+      // Clean up any existing active sessions for this user
+      $this->db(0)->update('edit_sessions', "status = 'cancelled'", "user_id = " . $this->userData['id_user'] . " AND status = 'active'");
+
+      // Determine current id_penerima from existing ref data
+      $id_penerima_cur = 0;
+      foreach ($order_data as $od) {
+         if (isset($od['id_penerima']) && $od['id_penerima'] <> 0) {
+            $id_penerima_cur = $od['id_penerima'];
+            break;
+         }
+      }
+      if ($id_penerima_cur == 0) {
+         foreach ($mutasi_data as $mm) {
+            if (isset($mm['cs_id']) && $mm['cs_id'] <> 0) {
+               $id_penerima_cur = $mm['cs_id'];
+               break;
+            }
+         }
+      }
+
+      // Create new edit session with snapshot
+      $cols = 'session_key, user_id, ref, id_pelanggan, jenis_pelanggan, dibayar, id_penerima, snapshot_data, snapshot_mutasi, status';
+      $vals = "'" . $session_key . "'," . $this->userData['id_user'] . ", '" . $ref . "'," . $id_pelanggan . "," . $jenis_pelanggan . "," . $dibayar . "," . $id_penerima_cur . ", '" . addslashes($snapshot_order) . "', '" . addslashes($snapshot_mutasi) . "', 'active'";
+
+      $result = $this->db(0)->insertCols('edit_sessions', $cols, $vals);
+      if ($result['errno'] != 0) {
+         echo "Error creating edit session: " . $result['error'];
+         exit();
+      }
+
+      // Set session with session_key
+      $_SESSION['edit'][$this->userData['id_user']] = [$ref, $jenis_pelanggan, $dibayar, $id_pelanggan, $session_key, $id_penerima_cur];
+
+      // Clean up temporary items (items with no ref or id_pelanggan)
       $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0 AND ref = ''";
       $do = $this->db(0)->delete_where('order_data', $where);
       if ($do['errno'] <> 0) {
@@ -533,11 +576,11 @@ class Buka_Order extends Controller
       // If this is part of a paket, ensure harga field is set to 0 at insert time
       $harga_insert = 0;
       if ($afiliasi == 0) {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
+         $cols = 'ref, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
+         $vals = "'" . $ref . "','" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
       } else {
-         $cols = 'detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
-         $vals = "'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
+         $cols = 'ref, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
+         $vals = "'" . $ref . "','" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
       }
 
       $do = $this->db(0)->insertCols('order_data', $cols, $vals);
@@ -553,9 +596,32 @@ class Buka_Order extends Controller
    function add_barang($id_jenis_pelanggan, $price_locker = 0, $paket_ref = "", $id_sumber = 0, $harga_paket = 0, $paket_group = "", $paket_qty = 0)
    {
       $ref = "";
+      $cs_id = 0;
+      $id_target = 0;
+      
       if (isset($_SESSION['edit'][$this->userData['id_user']])) {
          $dEdit = $_SESSION['edit'][$this->userData['id_user']];
          $ref = $dEdit[0];
+         
+         // Get cs_id (id_penerima) and id_target (id_pelanggan) for edit mode
+         // First try to get from order_data with this ref
+         if (!empty($ref)) {
+            $order_row = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND cancel <> 1 AND id_penerima > 0 LIMIT 1");
+            if (isset($order_row['id_penerima']) && $order_row['id_penerima'] > 0) {
+               $cs_id = $order_row['id_penerima'];
+            }
+            if (isset($order_row['id_pelanggan']) && $order_row['id_pelanggan'] > 0) {
+               $id_target = $order_row['id_pelanggan'];
+            }
+         }
+         
+         // Fallback to session data if not found in order_data
+         if ($cs_id == 0 && isset($dEdit[5]) && $dEdit[5] > 0) {
+            $cs_id = $dEdit[5];
+         }
+         if ($id_target == 0 && isset($dEdit[3]) && $dEdit[3] > 0) {
+            $id_target = $dEdit[3];
+         }
       }
 
       $id_barang = $_POST['kode'];
@@ -594,8 +660,8 @@ class Buka_Order extends Controller
          $harga = 0;
       }
 
-      $cols = 'jenis, jenis_target, id_barang, id_sumber, qty, sds, sn, sn_c, user_id, harga_jual, price_locker, paket_ref, paket_group, harga_paket, paket_qty';
-      $vals = "2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $id_sumber . "'," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $harga_paket . "," . $paket_qty;
+      $cols = 'ref, jenis, jenis_target, id_barang, id_sumber, id_target, qty, sds, sn, sn_c, user_id, cs_id, harga_jual, price_locker, paket_ref, paket_group, harga_paket, paket_qty';
+      $vals = "'" . $ref . "',2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $id_sumber . "'," . $id_target . "," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $cs_id . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $harga_paket . "," . $paket_qty;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
@@ -809,10 +875,15 @@ class Buka_Order extends Controller
    function proses($id_pelanggan_jenis, $id_pelanggan = 0, $ref = "")
    {
       $id_user_afiliasi = 0;
+      if (isset($_GET['id_karyawan']) && intval($_GET['id_karyawan']) > 0) {
+         $id_karyawan = intval($_GET['id_karyawan']);
+      }
 
       if (isset($_POST['id_karyawan_aff'])) {
          $id_user_afiliasi = $_POST['id_karyawan_aff'];
-         $id_pelanggan = $_POST['id_pelanggan'];
+         if (isset($_POST['id_pelanggan'])) {
+            $id_pelanggan = $_POST['id_pelanggan'];
+         }
       }
 
       if ($id_user_afiliasi <> 0) {
@@ -829,70 +900,103 @@ class Buka_Order extends Controller
       if (isset($_SESSION['edit'][$this->userData['id_user']])) {
          $dEdit = $_SESSION['edit'][$this->userData['id_user']];
          $ref = $dEdit[0];
+         if (isset($_POST['id_pelanggan']) && $_POST['id_pelanggan'] <> "") {
+            $id_pelanggan = $_POST['id_pelanggan'];
+         }
+
+         if (isset($_POST['id_karyawan']) && $_POST['id_karyawan'] <> "") {
+            $id_karyawan = $_POST['id_karyawan'];
+         }
+
+         if ((!isset($id_karyawan) || $id_karyawan == 0) && isset($dEdit[5]) && $dEdit[5] > 0) {
+            $id_karyawan = $dEdit[5];
+         }
+
+         if ($id_pelanggan == 0 && isset($dEdit[3]) && $dEdit[3] > 0) {
+            $id_pelanggan = $dEdit[3];
+         }
          $where_order = "(ref = '" . $ref . "' AND cancel <> 1) OR (id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0)";
          $where_barang = "(ref = '" . $ref . "' AND stat <> 2) OR (id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND id_target = 0 AND jenis = 2)";
       } else {
          if ($id_user_afiliasi == 0) {
-            if ($_POST['id_pelanggan'] <> "") {
-               $id_pelanggan = $_POST['id_pelanggan'];
-            } else {
-               $hp = $_POST['hp'];
-
-               if (strlen($hp) > 0) {
-                  $hp = $this->data('Validasi')->valid_wa($hp);
-                  if ($hp == false) {
-                     echo "Nomor HP tidak valid";
-                     exit();
-                  }
-               }
-
-               $nama = strtoupper($_POST['new_customer']);
-               if (strlen($nama) == 0) {
-                  echo "Lengkapi Nama Customer";
-                  exit();
-               }
-
-               $cek_pelanggan = $this->db(0)->get_where_row('pelanggan', "UPPER(nama) = '" . $nama . "' AND no_hp = '" . $hp . "' AND id_toko = " . $this->userData['id_toko']);
-
-               if (isset($cek_pelanggan['id_pelanggan'])) {
-                  $id_pelanggan = $cek_pelanggan['id_pelanggan'];
+            if (!empty($ref)) {
+               $where_order = "ref = '" . $ref . "' AND cancel <> 1";
+               $where_barang = "ref = '" . $ref . "' AND stat <> 2";
+               $row_od = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' LIMIT 1");
+               if (isset($row_od['id_pelanggan']) && $row_od['id_pelanggan'] <> 0) {
+                  $id_pelanggan = $row_od['id_pelanggan'];
                } else {
-                  $get_lastID = $this->db(0)->get_cols('pelanggan', 'MAX(id_pelanggan) as max', 0);
-                  $id_pelanggan = $get_lastID['max'] + 1;
-
-                  $cols = 'id_pelanggan, id_toko, nama, no_hp, id_pelanggan_jenis';
-                  $vals = $id_pelanggan . ",'" . $this->userData['id_toko'] . "','" . $nama . "','" . $hp . "'," . $id_pelanggan_jenis;
-
-                  $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
-                  if ($do['errno'] <> 0) {
-                     echo $do['error'];
-                     exit();
+                  $row_mm = $this->db(0)->get_where_row('master_mutasi', "ref = '" . $ref . "' LIMIT 1");
+                  if (isset($row_mm['id_target']) && $row_mm['id_target'] <> 0) {
+                     $id_pelanggan = $row_mm['id_target'];
                   }
                }
-            }
-
-            $id_karyawan = $_POST['id_karyawan'];
-
-            $where_order = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
-            $where_barang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND id_target = 0 AND jenis = 2";
-
-            $n_ref = [];
-            $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' AND ref <> '' GROUP BY ref";
-            $n_ref =  $this->db(0)->get_cols_where('order_data', 'ref', $where_n, 1, 'ref');
-
-            $n2_ref = [];
-            $where_n2 = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' AND ref <> '' GROUP BY ref";
-            $n2_ref =  $this->db(0)->get_cols_where('master_mutasi', 'ref', $where_n2, 1, 'ref');
-            foreach ($n2_ref as $key => $n2) {
-               if (isset($n_ref[$key])) {
-                  unset($n2_ref[$key]);
+               if (!isset($id_karyawan) || $id_karyawan == 0) {
+                  if (isset($row_od['id_penerima']) && $row_od['id_penerima'] <> 0) {
+                     $id_karyawan = $row_od['id_penerima'];
+                  } else {
+                     $row_mm_k = $this->db(0)->get_where_row('master_mutasi', "ref = '" . $ref . "' AND cs_id <> 0 LIMIT 1");
+                     if (isset($row_mm_k['cs_id']) && $row_mm_k['cs_id'] <> 0) {
+                        $id_karyawan = $row_mm_k['cs_id'];
+                     }
+                  }
                }
+            } else {
+               if (isset($_POST['id_pelanggan']) && $_POST['id_pelanggan'] <> "") {
+                  $id_pelanggan = $_POST['id_pelanggan'];
+               } else {
+                  if (isset($_POST['new_customer']) || isset($_POST['hp'])) {
+                     $hp = isset($_POST['hp']) ? $_POST['hp'] : '';
+                     if (strlen($hp) > 0) {
+                        $hp = $this->data('Validasi')->valid_wa($hp);
+                        if ($hp == false) {
+                           echo "Nomor HP tidak valid";
+                           exit();
+                        }
+                     }
+                     $nama = strtoupper(isset($_POST['new_customer']) ? $_POST['new_customer'] : '');
+                     if (strlen($nama) == 0) {
+                        echo "Lengkapi Nama Customer";
+                        exit();
+                     }
+                     $cek_pelanggan = $this->db(0)->get_where_row('pelanggan', "UPPER(nama) = '" . $nama . "' AND no_hp = '" . $hp . "' AND id_toko = " . $this->userData['id_toko']);
+                     if (isset($cek_pelanggan['id_pelanggan'])) {
+                        $id_pelanggan = $cek_pelanggan['id_pelanggan'];
+                     } else {
+                        $get_lastID = $this->db(0)->get_cols('pelanggan', 'MAX(id_pelanggan) as max', 0);
+                        $id_pelanggan = $get_lastID['max'] + 1;
+                        $cols = 'id_pelanggan, id_toko, nama, no_hp, id_pelanggan_jenis';
+                        $vals = $id_pelanggan . ", '" . $this->userData['id_toko'] . "', '" . $nama . "', '" . $hp . "', " . $id_pelanggan_jenis;
+                        $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
+                        if ($do['errno'] <> 0) {
+                           echo $do['error'];
+                           exit();
+                        }
+                     }
+                  }
+               }
+               if (isset($_POST['id_karyawan'])) {
+                  $id_karyawan = $_POST['id_karyawan'];
+               }
+               $where_order = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0";
+               $where_barang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND id_target = 0 AND jenis = 2";
+               $n_ref = [];
+               $where_n = "id_toko = " . $this->userData['id_toko'] . " AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' AND ref <> '' GROUP BY ref";
+               $n_ref =  $this->db(0)->get_cols_where('order_data', 'ref', $where_n, 1, 'ref');
+               $n2_ref = [];
+               $where_n2 = "id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND insertTime LIKE '" . date("Y") . "-" . date('m') . "-%' AND ref <> '' GROUP BY ref";
+               $n2_ref =  $this->db(0)->get_cols_where('master_mutasi', 'ref', $where_n2, 1, 'ref');
+               foreach ($n2_ref as $key => $n2) {
+                  if (isset($n_ref[$key])) {
+                     unset($n2_ref[$key]);
+                  }
+               }
+               $qty_ref = count($n_ref) + count($n2_ref);
+               $qty_ref += 1;
+               $qty_ref = substr($qty_ref, -4);
+               $nv = str_pad($qty_ref, 4, "0", STR_PAD_LEFT);
+               $ref = $this->userData['id_toko'] . date("ymd") . rand(0, 9) . $nv;
             }
-            $qty_ref = count($n_ref) + count($n2_ref);
-            $qty_ref += 1;
-            $qty_ref = substr($qty_ref, -4);
-            $nv = str_pad($qty_ref, 4, "0", STR_PAD_LEFT);
-            $ref = $this->userData['id_toko'] . date("ymd") . rand(0, 9) . $nv;
          }
       }
 
@@ -909,11 +1013,27 @@ class Buka_Order extends Controller
          $data['order'] = $this->db(0)->get_where('order_data', $where_order);
          $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_barang);
 
+         $default_cs_id = 0;
+         foreach ($data['order'] as $od_) {
+            if ($od_['ref'] <> '' && isset($od_['id_penerima']) && $od_['id_penerima'] <> 0) {
+               $default_cs_id = $od_['id_penerima'];
+               break;
+            }
+         }
+         if ($default_cs_id == 0) {
+            foreach ($data['mutasi'] as $mm_) {
+               if ($mm_['ref'] <> '' && isset($mm_['cs_id']) && $mm_['cs_id'] <> 0) {
+                  $default_cs_id = $mm_['cs_id'];
+                  break;
+               }
+            }
+         }
+
          foreach ($data['mutasi'] as $dbr) {
             $id_sumber = $dbr['id_sumber'];
             $id_barang = $dbr['id_barang'];
 
-            if ($dbr['ref'] <> '') {
+            if ($dbr['ref'] <> '' && isset($dbr['cs_id']) && $dbr['cs_id'] > 0) {
                $id_karyawan = $dbr['cs_id'];
             }
 
@@ -966,7 +1086,7 @@ class Buka_Order extends Controller
             }
          }
 
-         if ($do['ref'] <> '') {
+         if ($do['ref'] <> '' && isset($do['id_penerima']) && $do['id_penerima'] > 0) {
             $id_karyawan = $do['id_penerima'];
          }
 
@@ -1018,28 +1138,39 @@ class Buka_Order extends Controller
       }
 
       if (!isset($id_karyawan)) {
-         $get_ik = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' LIMIT 1");
-         if (isset($get_ik['id_penerima'])) {
+         // Try to get from order_data
+         $get_ik = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND id_penerima <> 0 LIMIT 1");
+         if (isset($get_ik['id_penerima']) && $get_ik['id_penerima'] <> 0) {
             $id_karyawan = $get_ik['id_penerima'];
-         } else {
-            $get_ik = $this->db(0)->get_where_row('master_mutasi', "ref = '" . $ref . "' LIMIT 1");
-            if (isset($get_ik['cs_id'])) {
+         }
+         // Try to get from master_mutasi
+         if (!isset($id_karyawan)) {
+            $get_ik = $this->db(0)->get_where_row('master_mutasi', "ref = '" . $ref . "' AND cs_id <> 0 LIMIT 1");
+            if (isset($get_ik['cs_id']) && $get_ik['cs_id'] <> 0) {
                $id_karyawan = $get_ik['cs_id'];
-            } else {
-               echo "Error Data";
-               exit();
             }
+         }
+         // Fallback to POST if available
+         if (!isset($id_karyawan) && isset($_POST['id_karyawan']) && $_POST['id_karyawan'] <> '') {
+            $id_karyawan = $_POST['id_karyawan'];
+         }
+         // Final fallback: do not block, set 0
+         if (!isset($id_karyawan)) {
+            $id_karyawan = 0;
          }
       }
 
-      // Insert ke tabel ref dan master_input setelah semua validasi selesai
-      if (!isset($_SESSION['edit'][$this->userData['id_user']]) && $id_user_afiliasi == 0) {
-         $cols = 'ref, id_toko';
-         $vals = $ref . "," . $this->userData['id_toko'];
-         $do = $this->db(0)->insertCols('ref', $cols, $vals);
-         if ($do['errno'] <> 0) {
-            echo $do['error'];
-            exit();
+      // Insert ke tabel ref hanya jika belum ada (hindari duplikasi saat update edit)
+      if ($id_user_afiliasi == 0 && !empty($ref)) {
+         $exists_ref = $this->db(0)->count_where('ref', "ref = '" . $ref . "'");
+         if ($exists_ref == 0) {
+            $cols = 'ref, id_toko';
+            $vals = $ref . "," . $this->userData['id_toko'];
+            $do = $this->db(0)->insertCols('ref', $cols, $vals);
+            if ($do['errno'] <> 0 && $do['errno'] <> 1062) {
+               echo $do['error'];
+               exit();
+            }
          }
       }
 
@@ -1057,7 +1188,9 @@ class Buka_Order extends Controller
       }
 
       $this->db(0)->update("pelanggan", "freq = freq+1", "id_pelanggan = " . $id_pelanggan);
-      $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
+      if ($id_karyawan > 0) {
+         $this->db(0)->update("karyawan", "freq_cs = freq_cs+1", "id_karyawan = " . $id_karyawan);
+      }
 
       if ($id_user_afiliasi == 0 && $id_pelanggan_jenis <> 100) {
          foreach ($data['mutasi'] as $dbr) {
@@ -1156,7 +1289,18 @@ class Buka_Order extends Controller
 
          //SET ORDER, HARGA DAN AFILIASI
          $is_paket_item = (isset($do['paket_ref']) && strlen($do['paket_ref']) > 0) || (isset($do['paket_group']) && strlen($do['paket_group']) > 0);
-         $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', id_penerima = " . $id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", stok = " . $stok_order . $st_order;
+         $effective_id_karyawan = $id_karyawan;
+         if ($effective_id_karyawan == 0) {
+            if (isset($default_cs_id) && $default_cs_id <> 0) {
+               $effective_id_karyawan = $default_cs_id;
+            } else {
+               $row_k = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND id_penerima <> 0 LIMIT 1");
+               if (isset($row_k['id_penerima']) && $row_k['id_penerima'] <> 0) {
+                  $effective_id_karyawan = $row_k['id_penerima'];
+               }
+            }
+         }
+         $set = "diskon = " . $diskon . ", detail_harga = '" . serialize($detail_harga) . "', id_penerima = " . $effective_id_karyawan . ", id_pelanggan = " . $id_pelanggan . ", id_pelanggan_jenis = " . $id_pelanggan_jenis . ", stok = " . $stok_order . $st_order;
          if (!$is_paket_item) {
             $set = "harga = " . $harga . ", " . $set;
          }
@@ -1208,6 +1352,28 @@ class Buka_Order extends Controller
          }
          // Do not persist harga_paket updates during proses
       }
+
+      // Ensure master_mutasi rows for this ref carry correct customer and CS
+      // Use id_karyawan (which equals id_penerima) and id_pelanggan from parameters
+      $final_cs_id = 0;
+      $final_id_target = $id_pelanggan;
+      
+      // Get cs_id from id_karyawan (set from GET/POST/session earlier in this function)
+      if (isset($id_karyawan) && $id_karyawan > 0) {
+         $final_cs_id = $id_karyawan;
+      } elseif (isset($default_cs_id) && $default_cs_id > 0) {
+         $final_cs_id = $default_cs_id;
+      }
+      
+      // Update master_mutasi with the correct values
+      $where_mm_ref = "ref = '" . $ref . "'";
+      $set_mm_ref = "id_target = " . $final_id_target . ", jenis_target = " . $id_pelanggan_jenis . ", cs_id = " . $final_cs_id;
+      $this->db(0)->update("master_mutasi", $set_mm_ref, $where_mm_ref);
+
+      // Also update temporary mutasi rows (no ref yet) belonging to current user
+      $where_mm_tmp = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND ref = ''";
+      $set_mm_tmp = "id_target = " . $final_id_target . ", jenis_target = " . $id_pelanggan_jenis . ", cs_id = " . $final_cs_id . ", ref = '" . $ref . "'";
+      $this->db(0)->update("master_mutasi", $set_mm_tmp, $where_mm_tmp);
 
       if (isset($_SESSION['edit'])) {
          unset($_SESSION['edit']);
@@ -1366,6 +1532,310 @@ class Buka_Order extends Controller
             exit();
          }
       }
+
+      echo 0;
+   }
+
+   function commit_edit_changes()
+   {
+      $changes_json = $_POST['changes'];
+      $changes = json_decode($changes_json, true);
+
+      if (!$changes) {
+         echo "Invalid changes data";
+         exit();
+      }
+
+      // Process deletions for order_data
+      if (!empty($changes['deletedOrders'])) {
+         foreach ($changes['deletedOrders'] as $id_order) {
+            $delete_result = $this->db(0)->delete_where('order_data', "id_order_data = " . intval($id_order));
+            if ($delete_result['errno'] != 0) {
+               echo "Error deleting order " . $id_order . ": " . $delete_result['error'];
+               exit();
+            }
+         }
+      }
+
+      // Process deletions for master_mutasi
+      if (!empty($changes['deletedBarang'])) {
+         foreach ($changes['deletedBarang'] as $id_barang) {
+            $delete_result = $this->db(0)->delete_where('master_mutasi', "id = " . intval($id_barang));
+            if ($delete_result['errno'] != 0) {
+               echo "Error deleting barang " . $id_barang . ": " . $delete_result['error'];
+               exit();
+            }
+         }
+      }
+
+      // Process quantity updates for order_data
+      if (!empty($changes['updatedQty'])) {
+         foreach ($changes['updatedQty'] as $id => $qty) {
+            $set = "jumlah = " . intval($qty);
+            $where = "id_order_data = " . intval($id);
+            $update_result = $this->db(0)->update('order_data', $set, $where);
+            if ($update_result['errno'] != 0) {
+               echo "Error updating qty for order " . $id . ": " . $update_result['error'];
+               exit();
+            }
+         }
+      }
+
+      // Process paket quantity updates
+      if (!empty($changes['updatedPaketQty'])) {
+         foreach ($changes['updatedPaketQty'] as $key => $paket_qty_new) {
+            // Parse key: paket_group_paket_ref
+            $parts = explode('_', $key);
+            $paket_ref = array_pop($parts);
+            $paket_group = implode('_', $parts);
+
+            if (!$paket_ref || !$paket_group) {
+               continue;
+            }
+
+            // Get base quantities from paket definitions
+            $paket_order_items = $this->db(0)->get_where("paket_order", "paket_ref = '" . $paket_ref . "'");
+            $paket_mutasi_items = $this->db(0)->get_where("paket_mutasi", "paket_ref = '" . $paket_ref . "'");
+
+            // Create map of base qty
+            $base_qty_order = [];
+            foreach ($paket_order_items as $item) {
+               $base_qty_order[$item['id_produk']] = $item['jumlah'];
+            }
+
+            $base_qty_mutasi = [];
+            foreach ($paket_mutasi_items as $item) {
+               $base_qty_mutasi[$item['id_barang']] = $item['qty'];
+            }
+
+            // Update order_data items
+            $order_items = $this->db(0)->get_where("order_data", "paket_group = '" . $paket_group . "' AND paket_ref = '" . $paket_ref . "'");
+            foreach ($order_items as $item) {
+               $base_jumlah = isset($base_qty_order[$item['id_produk']]) ? $base_qty_order[$item['id_produk']] : 1;
+               $new_jumlah = $base_jumlah * intval($paket_qty_new);
+
+               $where = "id_order_data = " . $item['id_order_data'];
+               if ($item['price_locker'] == 1) {
+                  $set = "jumlah = " . $new_jumlah . ", paket_qty = " . intval($paket_qty_new);
+               } else {
+                  $set = "jumlah = " . $new_jumlah;
+               }
+
+               $update = $this->db(0)->update("order_data", $set, $where);
+               if ($update['errno'] != 0) {
+                  echo "Error updating paket order: " . $update['error'];
+                  exit();
+               }
+            }
+
+            // Update master_mutasi items
+            $mutasi_items = $this->db(0)->get_where("master_mutasi", "paket_group = '" . $paket_group . "' AND paket_ref = '" . $paket_ref . "'");
+            foreach ($mutasi_items as $item) {
+               $base_qty = isset($base_qty_mutasi[$item['id_barang']]) ? $base_qty_mutasi[$item['id_barang']] : 1;
+               $new_qty = $base_qty * intval($paket_qty_new);
+
+               $where = "id = " . $item['id'];
+               if ($item['price_locker'] == 1) {
+                  $set = "qty = " . $new_qty . ", paket_qty = " . intval($paket_qty_new);
+               } else {
+                  $set = "qty = " . $new_qty;
+               }
+
+               $update = $this->db(0)->update("master_mutasi", $set, $where);
+               if ($update['errno'] != 0) {
+                  echo "Error updating paket mutasi: " . $update['error'];
+                  exit();
+               }
+            }
+         }
+      }
+
+      // Update cs_id and id_target in master_mutasi based on order_data
+      if (isset($_SESSION['edit'][$this->userData['id_user']])) {
+         $dEdit = $_SESSION['edit'][$this->userData['id_user']];
+         $ref = $dEdit[0];
+         
+         // Always get id_penerima and id_pelanggan from order_data first (most accurate source)
+         $id_penerima = 0;
+         $id_pelanggan = 0;
+         
+         if (!empty($ref)) {
+            $order_row = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND cancel <> 1 AND id_penerima > 0 LIMIT 1");
+            if (isset($order_row['id_penerima']) && $order_row['id_penerima'] > 0) {
+               $id_penerima = $order_row['id_penerima'];
+            }
+            if (isset($order_row['id_pelanggan']) && $order_row['id_pelanggan'] > 0) {
+               $id_pelanggan = $order_row['id_pelanggan'];
+            }
+         }
+         
+         // Fallback to session if order_data doesn't have values
+         if ($id_penerima == 0 && isset($dEdit[5]) && $dEdit[5] > 0) {
+            $id_penerima = intval($dEdit[5]);
+         }
+         if ($id_pelanggan == 0 && isset($dEdit[3]) && $dEdit[3] > 0) {
+            $id_pelanggan = intval($dEdit[3]);
+         }
+
+         // Update master_mutasi with cs_id = id_penerima and id_target = id_pelanggan
+         if ($ref <> '' && ($id_penerima > 0 || $id_pelanggan > 0)) {
+            $set_mm = [];
+            if ($id_penerima > 0) {
+               $set_mm[] = "cs_id = " . $id_penerima;
+            }
+            if ($id_pelanggan > 0) {
+               $set_mm[] = "id_target = " . $id_pelanggan;
+            }
+            if (count($set_mm) > 0) {
+               $update_mm = $this->db(0)->update("master_mutasi", implode(", ", $set_mm), "ref = '" . $ref . "'");
+            }
+         }
+      }
+
+      echo 0;
+   }
+
+   /**
+    * Cancel Edit - Restore from snapshot
+    * This function restores order data from the snapshot taken when entering edit mode
+    */
+   function cancel_edit()
+   {
+      if (!isset($_SESSION['edit'][$this->userData['id_user']])) {
+         echo "No active edit session";
+         exit();
+      }
+
+      $dEdit = $_SESSION['edit'][$this->userData['id_user']];
+      $ref = $dEdit[0];
+      $session_key = isset($dEdit[4]) ? $dEdit[4] : '';
+
+      if (empty($session_key)) {
+         echo "Invalid edit session";
+         exit();
+      }
+
+      // Get edit session
+      $session = $this->db(0)->get_where_row('edit_sessions', "session_key = '" . $session_key . "' AND status = 'active'");
+
+      if (!$session) {
+         echo "Edit session not found or already processed";
+         exit();
+      }
+
+      // Decode snapshots
+      $snapshot_order = json_decode($session['snapshot_data'], true);
+      $snapshot_mutasi = json_decode($session['snapshot_mutasi'], true);
+
+      // Delete all current items with this ref
+      $delete_order = $this->db(0)->delete_where('order_data', "ref = '" . $ref . "'");
+      if ($delete_order['errno'] != 0) {
+         echo "Error deleting current order data: " . $delete_order['error'];
+         exit();
+      }
+
+      $delete_mutasi = $this->db(0)->delete_where('master_mutasi', "ref = '" . $ref . "'");
+      if ($delete_mutasi['errno'] != 0) {
+         echo "Error deleting current mutasi data: " . $delete_mutasi['error'];
+         exit();
+      }
+
+      // Restore from snapshot - order_data
+      foreach ($snapshot_order as $item) {
+         // Build column names and values from snapshot
+         $cols = array_keys($item);
+         $vals = [];
+         foreach ($item as $key => $value) {
+            if ($key == 'id_order_data') {
+               continue; // Skip auto-increment ID
+            }
+            if (is_null($value)) {
+               $vals[] = "NULL";
+            } elseif (is_numeric($value)) {
+               $vals[] = $value;
+            } else {
+               $vals[] = "'" . addslashes($value) . "'";
+            }
+         }
+
+         // Remove id_order_data from cols
+         $cols = array_filter($cols, function ($col) {
+            return $col != 'id_order_data';
+         });
+
+         $cols_str = implode(', ', $cols);
+         $vals_str = implode(', ', $vals);
+
+         $insert = $this->db(0)->query("INSERT INTO order_data ($cols_str) VALUES ($vals_str)");
+         if ($insert === false || (isset($insert['errno']) && $insert['errno'] != 0)) {
+            $error_msg = is_array($insert) && isset($insert['error']) ? $insert['error'] : 'Unknown error';
+            echo "Error restoring order item: " . $error_msg;
+            exit();
+         }
+      }
+
+      // Restore from snapshot - master_mutasi
+      foreach ($snapshot_mutasi as $item) {
+         $cols = array_keys($item);
+         $vals = [];
+         foreach ($item as $key => $value) {
+            if ($key == 'id') {
+               continue; // Skip auto-increment ID
+            }
+            if (is_null($value)) {
+               $vals[] = "NULL";
+            } elseif (is_numeric($value)) {
+               $vals[] = $value;
+            } else {
+               $vals[] = "'" . addslashes($value) . "'";
+            }
+         }
+
+         // Remove id from cols
+         $cols = array_filter($cols, function ($col) {
+            return $col != 'id';
+         });
+
+         $cols_str = implode(', ', $cols);
+         $vals_str = implode(', ', $vals);
+
+         $insert = $this->db(0)->query("INSERT INTO master_mutasi ($cols_str) VALUES ($vals_str)");
+         if ($insert === false || (isset($insert['errno']) && $insert['errno'] != 0)) {
+            $error_msg = is_array($insert) && isset($insert['error']) ? $insert['error'] : 'Unknown error';
+            echo "Error restoring mutasi item: " . $error_msg;
+            exit();
+         }
+      }
+
+      // Mark session as cancelled
+      $this->db(0)->update('edit_sessions', "status = 'cancelled'", "session_key = '" . $session_key . "'");
+
+      // Clear edit session
+      unset($_SESSION['edit'][$this->userData['id_user']]);
+
+      echo 0;
+   }
+
+   /**
+    * Commit Edit - Finalize changes and mark session as committed
+    */
+   function commit_edit_session()
+   {
+      if (!isset($_SESSION['edit'][$this->userData['id_user']])) {
+         echo 0; // No edit session, proceed normally
+         return;
+      }
+
+      $dEdit = $_SESSION['edit'][$this->userData['id_user']];
+      $session_key = isset($dEdit[4]) ? $dEdit[4] : '';
+
+      if (!empty($session_key)) {
+         // Mark session as committed
+         $this->db(0)->update('edit_sessions', "status = 'committed'", "session_key = '" . $session_key . "' AND status = 'active'");
+      }
+
+      // Clear edit session
+      unset($_SESSION['edit'][$this->userData['id_user']]);
 
       echo 0;
    }

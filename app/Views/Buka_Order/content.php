@@ -86,7 +86,8 @@ $mgpaket = $data['margin_paket'];
                         <span class="fw-bold" id="paid" data-val="<?= $dEdit[2] ?>"><?= number_format($dEdit[2]) ?></span>
                     </div>
                     <div class="col mt-auto">
-                        <a class="submit" href="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $dEdit[1] ?>/<?= $dEdit[3] ?>"><span class="btn btn-sm btn-secondary bg-gradient">Update</span></a>
+                        <button type="button" class="btn btn-sm btn-warning bg-gradient me-2" id="btnCancelEdit">Cancel</button>
+                        <a class="submit" href="<?= PV::BASE_URL ?>Buka_Order/proses/<?= $dEdit[1] ?>/<?= $dEdit[3] ?>?id_karyawan=<?= isset($dEdit[5]) ? $dEdit[5] : 0 ?>"><span class="btn btn-sm btn-secondary bg-gradient">Update</span></a>
                     </div>
                 </div>
             <?php }
@@ -652,6 +653,25 @@ $mgpaket = $data['margin_paket'];
     </div>
 </div>
 
+<!-- Confirmation Modal -->
+<div class="modal fade" id="modalConfirm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning bg-gradient text-dark" id="modalConfirmHeader">
+                <h6 class="modal-title" id="modalConfirmTitle">Konfirmasi</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalConfirmText" class="text-dark"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-sm btn-danger" id="modalConfirmYes">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -682,6 +702,40 @@ $mgpaket = $data['margin_paket'];
 
         var modal = new bootstrap.Modal(document.getElementById('modalAlert'));
         modal.show();
+    }
+
+    // Helper function to show confirmation modal
+    function showConfirm(message, onConfirm, options = {}) {
+        const title = options.title || 'Konfirmasi';
+        const confirmText = options.confirmText || 'Ya, Lanjutkan';
+        const confirmClass = options.confirmClass || 'btn-danger';
+        const type = options.type || 'warning';
+
+        $('#modalConfirmText').html(message);
+        $('#modalConfirmTitle').text(title);
+        $('#modalConfirmYes').text(confirmText);
+        $('#modalConfirmYes').removeClass('btn-danger btn-success btn-primary btn-warning').addClass(confirmClass);
+
+        // Change header color based on type
+        const header = $('#modalConfirmHeader');
+        if (type === 'danger') {
+            header.removeClass('bg-success bg-warning bg-info').addClass('bg-danger text-white');
+            header.find('.btn-close').addClass('btn-close-white');
+        } else if (type === 'warning') {
+            header.removeClass('bg-danger bg-success bg-info').addClass('bg-warning text-dark');
+            header.find('.btn-close').removeClass('btn-close-white');
+        }
+
+        var modal = new bootstrap.Modal(document.getElementById('modalConfirm'));
+        modal.show();
+
+        // Remove previous click handlers and add new one
+        $('#modalConfirmYes').off('click').on('click', function() {
+            modal.hide();
+            if (typeof onConfirm === 'function') {
+                onConfirm();
+            }
+        });
     }
 
     $(".updateNote").click(function() {
@@ -973,4 +1027,99 @@ $mgpaket = $data['margin_paket'];
             }
         });
     });
+
+    // ========== NEW SERVER-SIDE EDIT SYSTEM ==========
+    <?php if (isset($_SESSION['edit'][$this->userData['id_user']])) { ?>
+
+        // Cancel button - Restore from snapshot
+        $('#btnCancelEdit').on('click', function() {
+            showConfirm(
+                '<strong>Batalkan semua perubahan?</strong><br><br>Semua perubahan yang sudah dilakukan akan dikembalikan ke kondisi awal saat mulai edit.',
+                function() {
+                    // Show loading
+                    $('#btnCancelEdit').html('<span class="spinner-border spinner-border-sm"></span> Membatalkan...');
+                    $('#btnCancelEdit').prop('disabled', true);
+
+                    $.ajax({
+                        url: '<?= PV::BASE_URL ?>Buka_Order/cancel_edit',
+                        type: 'POST',
+                        success: function(res) {
+                            if (res == 0) {
+                                showAlert('Perubahan berhasil dibatalkan', 'success');
+                                setTimeout(function() {
+                                    location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/<?= isset($_SESSION['edit'][$this->userData['id_user']]) ? $_SESSION['edit'][$this->userData['id_user']][3] : 0 ?>";
+                                }, 600);
+                            } else {
+                                showAlert(res, 'danger');
+                                $('#btnCancelEdit').html('Cancel');
+                                $('#btnCancelEdit').prop('disabled', false);
+                            }
+                        },
+                        error: function() {
+                            showAlert('Terjadi kesalahan saat membatalkan perubahan', 'danger');
+                            $('#btnCancelEdit').html('Cancel');
+                            $('#btnCancelEdit').prop('disabled', false);
+                        }
+                    });
+                }, {
+                    title: 'Batalkan Perubahan',
+                    confirmText: 'Ya, Batalkan',
+                    confirmClass: 'btn-danger',
+                    type: 'danger'
+                }
+            );
+        });
+
+        // Override Update button to commit edit session
+        $('a.submit').off('click').on('click', function(e) {
+            e.preventDefault();
+
+            var url = $(this).attr('href');
+            var submitBtn = $(this);
+
+            // Show loading indicator
+            submitBtn.find('span').html('<span class="spinner-border spinner-border-sm"></span> Updating...');
+            submitBtn.addClass('disabled');
+
+            // First commit the edit session
+            $.ajax({
+                url: '<?= PV::BASE_URL ?>Buka_Order/commit_edit_session',
+                type: 'POST',
+                success: function(res) {
+                    if (res == 0) {
+                        // Now proceed with normal update
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {},
+                            success: function(res) {
+                                if (isNumeric(res) == false) {
+                                    showAlert(res, 'danger');
+                                    submitBtn.find('span').html('Update');
+                                    submitBtn.removeClass('disabled');
+                                } else {
+                                    location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + res;
+                                }
+                            },
+                            error: function() {
+                                showAlert('Terjadi kesalahan saat update order', 'danger');
+                                submitBtn.find('span').html('Update');
+                                submitBtn.removeClass('disabled');
+                            }
+                        });
+                    } else {
+                        showAlert(res, 'danger');
+                        submitBtn.find('span').html('Update');
+                        submitBtn.removeClass('disabled');
+                    }
+                },
+                error: function() {
+                    showAlert('Terjadi kesalahan saat commit perubahan', 'danger');
+                    submitBtn.find('span').html('Update');
+                    submitBtn.removeClass('disabled');
+                }
+            });
+        });
+
+    <?php } ?>
 </script>
