@@ -61,7 +61,8 @@
                             $start_date = new DateTime($insertTime);
                             $since_start = $start_date->diff(new DateTime(date("Y-m-d H:i:s")));
 
-                            $jumlah = ($do['harga'] * $do['jumlah']) + $do['harga_paket'];
+                            $paket_qty_val = isset($do['paket_qty']) && $do['paket_qty'] > 0 ? $do['paket_qty'] : 1;
+                            $jumlah = ($do['harga'] * $do['jumlah']) + ($do['harga_paket'] * $paket_qty_val);
 
                             if ($cancel == 0 && $do['stok'] == 0) {
                                 $no++;

@@ -253,7 +253,8 @@
                                             $id_cancel = $do['id_cancel'];
 
                                             if ($cancel == 0) {
-                                                $bill += $jumlah + $do['harga_paket'];
+                                                $paket_qty_val = isset($do['paket_qty']) && $do['paket_qty'] > 0 ? $do['paket_qty'] : 1;
+                                                $bill += $jumlah + ($do['harga_paket'] * $paket_qty_val);
                                             }
 
                                             $bill -= $do['diskon'];
@@ -399,6 +400,7 @@
                                                 <td class="text-end td-auto"><?= number_format($do['jumlah']) ?></td>
                                                 <td class="text-end td-auto">
                                                     <?php
+                                                    $paket_qty_val = isset($do['paket_qty']) && $do['paket_qty'] > 0 ? $do['paket_qty'] : 1;
                                                     if ($do['harga_paket'] == 0) {
                                                         if ($do['diskon'] > 0) { ?>
                                                             <del>Rp<?= number_format($jumlah) ?></del><br><small>Disc. Rp<?= number_format($do['diskon']) ?></small><br>Rp<?= number_format($jumlah - $do['diskon']) ?>
@@ -407,9 +409,9 @@
                                                         <?php }
                                                     } else {
                                                         if ($do['diskon'] > 0) { ?>
-                                                            <del>Rp<?= number_format($jumlah + $do['harga_paket']) ?></del><br><small>Disc. Rp<?= number_format($do['diskon']) ?></small><br>Rp<?= number_format($jumlah - $do['diskon'] + $do['harga_paket']) ?>
+                                                            <del>Rp<?= number_format($jumlah + ($do['harga_paket'] * $paket_qty_val)) ?></del><br><small>Disc. Rp<?= number_format($do['diskon']) ?></small><br>Rp<?= number_format($jumlah - $do['diskon'] + ($do['harga_paket'] * $paket_qty_val)) ?>
                                                         <?php } else { ?>
-                                                            <?= number_format($jumlah + $do['harga_paket']) ?>
+                                                            <?= number_format($jumlah + ($do['harga_paket'] * $paket_qty_val)) ?>
                                                     <?php }
                                                     } ?>
                                                     <br>
@@ -430,16 +432,17 @@
                                             $id_pelanggan_jenis = $do['jenis_target'];
                                             $dp = $data['barang'][$do['id_barang']];
 
+                                            $paket_qty_val = isset($do['paket_qty']) && $do['paket_qty'] > 0 ? $do['paket_qty'] : 1;
                                             if ($cancel_barang <> 2) {
-                                                $bill += (($jumlah * $do['harga_jual']) + $do['harga_paket']);
+                                                $bill += (($jumlah * $do['harga_jual']) + ($do['harga_paket'] * $paket_qty_val));
                                                 $bill -= ($do['diskon'] * $jumlah);
                                             }
 
                                             $jumlah_semula = "";
                                             if ($do['diskon'] > 0) {
-                                                $jumlah_semula = "<s>" . number_format(($jumlah * $do['harga_jual']) + $do['harga_paket']) . "</s><br><small>Disc. " . number_format($do['diskon'] * $jumlah) . "</small><br>";
+                                                $jumlah_semula = "<s>" . number_format(($jumlah * $do['harga_jual']) + ($do['harga_paket'] * $paket_qty_val)) . "</s><br><small>Disc. " . number_format($do['diskon'] * $jumlah) . "</small><br>";
                                             }
-                                            $jumlah_real = ($jumlah * $do['harga_jual']) + $do['harga_paket'] - ($do['diskon'] * $jumlah);
+                                            $jumlah_real = ($jumlah * $do['harga_jual']) + ($do['harga_paket'] * $paket_qty_val) - ($do['diskon'] * $jumlah);
 
                                         ?>
                                             <tr style="<?= ($cancel_barang == 2) ? 'color:silver' : '' ?>">

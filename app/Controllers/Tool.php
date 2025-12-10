@@ -151,4 +151,157 @@ class Tool extends Controller
 
       echo json_encode($result);
    }
+
+   /**
+    * Clean orphaned ref records based on month
+    * Deletes ref records that don't exist in order_data or master_mutasi
+    *
+    * @param string $month Format: YYYY-MM (default: current month)
+    * @return void Outputs JSON result
+    */
+   function clean_ref($month = null)
+   {
+      // Sanitize/normalize month input (expected format: YYYY-MM)
+      if ($month === null) {
+         $month = date('Y-m');
+      } else {
+         $month = preg_replace('/[^0-9\-]/', '', $month);
+         if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
+            echo json_encode([
+               'success' => false,
+               'error' => 'Invalid month format. Use YYYY-MM format (e.g., 2025-01)'
+            ]);
+            return;
+         }
+      }
+
+      $timeFilter = "insertTime LIKE '" . $month . "%'";
+      $result = [
+         'month' => $month,
+         'total_checked' => 0,
+         'total_deleted' => 0,
+         'orphaned_refs' => [],
+         'errors' => []
+      ];
+
+      // Get all refs from ref table for the specified month
+      $refs_in_table = $this->db(0)->get_where('ref', $timeFilter, 'ref');
+
+      if (!is_array($refs_in_table) || count($refs_in_table) == 0) {
+         echo json_encode([
+            'success' => true,
+            'message' => 'No ref records found for month ' . $month,
+            'data' => $result
+         ]);
+         return;
+      }
+
+      $result['total_checked'] = count($refs_in_table);
+
+      // Check each ref if it exists in order_data or master_mutasi
+      foreach ($refs_in_table as $ref_key => $ref_data) {
+         // Check in order_data
+         $exists_in_order = $this->db(0)->count_where('order_data', "ref = '" . $ref_key . "'");
+
+         // Check in master_mutasi
+         $exists_in_mutasi = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref_key . "'");
+
+         // If ref doesn't exist in both tables, it's orphaned
+         if ($exists_in_order == 0 && $exists_in_mutasi == 0) {
+            $result['orphaned_refs'][] = [
+               'ref' => $ref_key,
+               'id_toko' => $ref_data['id_toko'],
+               'insertTime' => $ref_data['insertTime']
+            ];
+
+            // Delete orphaned ref
+            $delete_result = $this->db(0)->delete_where('ref', "ref = '" . $ref_key . "'");
+
+            if ($delete_result['errno'] == 0) {
+               $result['total_deleted']++;
+            } else {
+               $result['errors'][] = [
+                  'ref' => $ref_key,
+                  'error' => $delete_result['error']
+               ];
+            }
+         }
+      }
+
+      echo json_encode([
+         'success' => true,
+         'message' => 'Cleanup completed for month ' . $month . '. Deleted ' . $result['total_deleted'] . ' out of ' . $result['total_checked'] . ' ref records.',
+         'data' => $result
+      ], JSON_PRETTY_PRINT);
+   }
+
+   /**
+    * Preview orphaned ref records without deleting
+    *
+    * @param string $month Format: YYYY-MM (default: current month)
+    * @return void Outputs JSON result
+    */
+   function preview_orphaned_ref($month = null)
+   {
+      // Sanitize/normalize month input
+      if ($month === null) {
+         $month = date('Y-m');
+      } else {
+         $month = preg_replace('/[^0-9\-]/', '', $month);
+         if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
+            echo json_encode([
+               'success' => false,
+               'error' => 'Invalid month format. Use YYYY-MM format (e.g., 2025-01)'
+            ]);
+            return;
+         }
+      }
+
+      $timeFilter = "insertTime LIKE '" . $month . "%'";
+      $result = [
+         'month' => $month,
+         'total_checked' => 0,
+         'total_orphaned' => 0,
+         'orphaned_refs' => []
+      ];
+
+      // Get all refs from ref table for the specified month
+      $refs_in_table = $this->db(0)->get_where('ref', $timeFilter, 'ref');
+
+      if (!is_array($refs_in_table) || count($refs_in_table) == 0) {
+         echo json_encode([
+            'success' => true,
+            'message' => 'No ref records found for month ' . $month,
+            'data' => $result
+         ]);
+         return;
+      }
+
+      $result['total_checked'] = count($refs_in_table);
+
+      // Check each ref if it exists in order_data or master_mutasi
+      foreach ($refs_in_table as $ref_key => $ref_data) {
+         // Check in order_data
+         $exists_in_order = $this->db(0)->count_where('order_data', "ref = '" . $ref_key . "'");
+
+         // Check in master_mutasi
+         $exists_in_mutasi = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref_key . "'");
+
+         // If ref doesn't exist in both tables, it's orphaned
+         if ($exists_in_order == 0 && $exists_in_mutasi == 0) {
+            $result['orphaned_refs'][] = [
+               'ref' => $ref_key,
+               'id_toko' => $ref_data['id_toko'],
+               'insertTime' => $ref_data['insertTime']
+            ];
+            $result['total_orphaned']++;
+         }
+      }
+
+      echo json_encode([
+         'success' => true,
+         'message' => 'Preview completed for month ' . $month . '. Found ' . $result['total_orphaned'] . ' orphaned ref records out of ' . $result['total_checked'] . ' total.',
+         'data' => $result
+      ], JSON_PRETTY_PRINT);
+   }
 }

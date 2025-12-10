@@ -139,12 +139,12 @@ $mgpaket = $data['margin_paket'];
             <?php
             // Prepare grouping: separate paket items (grouped by paket_group) and non-paket items
             $order_nonpaket = [];
-            $order_paket_groups = []; // paket_group => ['paket_ref'=>..., 'items'=>[], 'harga_paket'=>...]
+            $order_paket_groups = []; // paket_group => ['paket_ref'=>..., 'items'=>[], 'harga_paket'=>..., 'paket_qty'=>...]
             foreach ($data['order'] as $keyD => $do) {
                 if (isset($do['paket_ref']) && strlen($do['paket_ref']) > 0) {
                     $pg = $do['paket_group'];
                     if (!isset($order_paket_groups[$pg])) {
-                        $order_paket_groups[$pg] = ['paket_ref' => $do['paket_ref'], 'items' => [], 'harga_paket' => $do['harga_paket']];
+                        $order_paket_groups[$pg] = ['paket_ref' => $do['paket_ref'], 'items' => [], 'harga_paket' => $do['harga_paket'], 'paket_qty' => $do['paket_qty']];
                     }
                     $order_paket_groups[$pg]['items'][] = ['key' => $keyD, 'do' => $do];
                 } else {
@@ -354,7 +354,8 @@ $mgpaket = $data['margin_paket'];
                                     if ($harga_paket_val == 0 && isset($group['harga_paket'])) {
                                         $harga_paket_val = $group['harga_paket'];
                                     }
-                                    $total_order += $harga_paket_val;
+                                    $paket_qty_display = isset($group['paket_qty']) && $group['paket_qty'] > 0 ? $group['paket_qty'] : 1;
+                                    $total_order += ($harga_paket_val * $paket_qty_display);
                                 ?>
                                     <tr>
                                         <td>
@@ -365,7 +366,7 @@ $mgpaket = $data['margin_paket'];
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                         <small>
-                                                            <span class="">x</span>
+                                                            <span class="edit_paket_qty" data-paket_group="<?= $pg ?>" data-paket_ref="<?= $paket_ref ?>"><?= $paket_qty_display ?></span>x
                                                         </small>
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
@@ -376,7 +377,7 @@ $mgpaket = $data['margin_paket'];
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                         <b>
                                                             <small>
-                                                                <?= number_format($harga_paket_val) ?>
+                                                                <?= number_format($harga_paket_val * $paket_qty_display) ?>
                                                             </small>
                                                         </b>
                                                     </td>
@@ -410,7 +411,7 @@ $mgpaket = $data['margin_paket'];
                                                         </td>
                                                         <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                             <small>
-                                                                <span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= $do['jumlah'] ?></span>x
+                                                                <span><?= $do['jumlah'] ?></span>x
                                                             </small>
                                                         </td>
                                                         <td class="text-end" style="width: 1px;white-space: nowrap;">
@@ -479,7 +480,7 @@ $mgpaket = $data['margin_paket'];
                         if (isset($db['paket_ref']) && strlen($db['paket_ref']) > 0) {
                             $pg = $db['paket_group'];
                             if (!isset($ob_paket_groups[$pg])) {
-                                $ob_paket_groups[$pg] = ['paket_ref' => $db['paket_ref'], 'items' => [], 'harga_paket' => $db['harga_paket']];
+                                $ob_paket_groups[$pg] = ['paket_ref' => $db['paket_ref'], 'items' => [], 'harga_paket' => $db['harga_paket'], 'paket_qty' => $db['paket_qty']];
                             }
                             $ob_paket_groups[$pg]['items'][] = $db;
                         } else {
@@ -633,11 +634,55 @@ $mgpaket = $data['margin_paket'];
     </div>
 </div>
 
+<!-- General Error/Info Modal -->
+<div class="modal fade" id="modalAlert" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger bg-gradient text-white" id="modalAlertHeader">
+                <h6 class="modal-title" id="modalAlertTitle">Peringatan</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalAlertText" class="text-dark"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 <script>
     $(document).ready(function() {
         $('.tize').selectize();
     });
+
+    // Helper function to show modal alert
+    function showAlert(message, type = 'danger') {
+        $('#modalAlertText').html(message);
+
+        // Change header color based on type
+        const header = $('#modalAlertHeader');
+        const title = $('#modalAlertTitle');
+
+        if (type === 'danger' || type === 'error') {
+            header.removeClass('bg-success bg-warning bg-info').addClass('bg-danger');
+            title.text('Peringatan');
+        } else if (type === 'success') {
+            header.removeClass('bg-danger bg-warning bg-info').addClass('bg-success');
+            title.text('Berhasil');
+        } else if (type === 'warning') {
+            header.removeClass('bg-danger bg-success bg-info').addClass('bg-warning');
+            title.text('Perhatian');
+        } else if (type === 'info') {
+            header.removeClass('bg-danger bg-success bg-warning').addClass('bg-info');
+            title.text('Informasi');
+        }
+
+        var modal = new bootstrap.Modal(document.getElementById('modalAlert'));
+        modal.show();
+    }
 
     $(".updateNote").click(function() {
         $("input[name=note_val]").val($(this).attr('data-note_val'));
@@ -761,7 +806,7 @@ $mgpaket = $data['margin_paket'];
                 if (res == 0) {
                     content();
                 } else {
-                    alert(res);
+                    showAlert(res, 'danger');
                 }
             }
         });
@@ -779,7 +824,7 @@ $mgpaket = $data['margin_paket'];
                 if (res == 0) {
                     content();
                 } else {
-                    alert(res);
+                    showAlert(res, 'danger');
                 }
             }
         });
@@ -795,7 +840,7 @@ $mgpaket = $data['margin_paket'];
                 if (res == 0) {
                     content();
                 } else {
-                    alert(res);
+                    showAlert(res, 'danger');
                 }
             }
         });
@@ -809,7 +854,7 @@ $mgpaket = $data['margin_paket'];
             type: $(this).attr("method"),
             success: function(res) {
                 if (isNumeric(res) == false) {
-                    alert(res);
+                    showAlert(res, 'danger');
                 } else {
                     location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + res;
                 }
@@ -878,7 +923,50 @@ $mgpaket = $data['margin_paket'];
                         if (res == 0) {
                             content();
                         } else {
-                            alert(res);
+                            showAlert(res, 'danger');
+                        }
+                    },
+                });
+            }
+        });
+    });
+
+    var click_paket = 0;
+    $("span.edit_paket_qty").on('dblclick', function() {
+        var value = $(this).html();
+
+        click_paket = click_paket + 1;
+        if (click_paket != 1) {
+            return;
+        }
+
+        var paket_group = $(this).attr('data-paket_group');
+        var paket_ref = $(this).attr('data-paket_ref');
+        var value_before = value;
+        var span = $(this);
+        span.html("<input type='number' id='value_paket_qty' style='text-align:center;width:70px' value=" + value + ">");
+
+        $("#value_paket_qty").focus();
+        $("#value_paket_qty").focusout(function() {
+            var value_after = $(this).val();
+            if (value_after === value_before) {
+                span.html(value_before);
+                click_paket = 0;
+            } else {
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>Buka_Order/update_paket_qty',
+                    data: {
+                        'paket_group': paket_group,
+                        'paket_ref': paket_ref,
+                        'paket_qty_old': value_before,
+                        'paket_qty_new': value_after,
+                    },
+                    type: 'POST',
+                    success: function(res) {
+                        if (res == 0) {
+                            content();
+                        } else {
+                            showAlert(res, 'danger');
                         }
                     },
                 });

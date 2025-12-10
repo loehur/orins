@@ -53,7 +53,8 @@
                             $dateTime = substr($do['insertTime'], 0, 10);
                             $cancel = $do['cancel'];
 
-                            $jumlah = ($do['harga'] * $do['jumlah']) + $do['harga_paket'];
+                            $paket_qty_val = isset($do['paket_qty']) && $do['paket_qty'] > 0 ? $do['paket_qty'] : 1;
+                            $jumlah = ($do['harga'] * $do['jumlah']) + ($do['harga_paket'] * $paket_qty_val);
                             if ($cancel == 0) {
                                 $bill[$ref] += $jumlah;
                                 $bill[$ref] -= $do['diskon'];
@@ -67,7 +68,8 @@
                             $dateTime = substr($do['insertTime'], 0, 10);
                             $cancel = $do['stat'];
 
-                            $jumlah = ($do['harga_jual'] * $do['qty']) + $do['harga_paket'];
+                            $paket_qty_val = isset($do['paket_qty']) && $do['paket_qty'] > 0 ? $do['paket_qty'] : 1;
+                            $jumlah = ($do['harga_jual'] * $do['qty']) + ($do['harga_paket'] * $paket_qty_val);
                             $diskon = $do['diskon'] * $do['qty'];
                             if ($cancel <> 2) {
                                 $bill[$ref] += $jumlah;
