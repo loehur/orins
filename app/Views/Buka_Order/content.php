@@ -555,8 +555,43 @@ $mgpaket = $data['margin_paket'];
                         if ($harga_paket_val == 0 && isset($group['harga_paket'])) {
                             $harga_paket_val = $group['harga_paket'];
                         }
-                        // do not render paket header or add to total in master_mutasi section
-                    ?>
+                        $paket_qty_display = isset($group['paket_qty']) && $group['paket_qty'] > 0 ? $group['paket_qty'] : 1;
+
+                        // Render header only if this paket_group doesn't exist in order_paket_groups
+                        $render_header = !isset($order_paket_groups[$pg]);
+                        if ($render_header) {
+                            $total_order += ($harga_paket_val * $paket_qty_display);
+                        ?>
+                        <tr>
+                            <td colspan="5">
+                                <table class="table table-sm w-100 mb-0">
+                                    <tr class="bg-secondary bg-gradient bg-opacity-10">
+                                        <td class="ps-2 align-middle">
+                                            <span class="text-nowrap text-dark"><small class="text-secondary">#PK<?= $pg ?></small><b><small> <?= ucwords($paket_nama) ?></small></b></span>
+                                        </td>
+                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                            <small>
+                                                <span class="edit_paket_qty" data-paket_group="<?= $pg ?>" data-paket_ref="<?= $paket_ref ?>"><?= $paket_qty_display ?></span>x
+                                            </small>
+                                        </td>
+                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                            <small>
+                                                <?= '@' . number_format($harga_paket_val) ?>
+                                            </small>
+                                        </td>
+                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                            <b>
+                                                <small>
+                                                    <?= number_format($harga_paket_val * $paket_qty_display) ?>
+                                                </small>
+                                            </b>
+                                        </td>
+                                        <td class="align-middle" style="width: 30px;"></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <?php } ?>
                         <?php foreach ($group['items'] as $db) {
                             $total_item += 1;
                             $dp = $data['barang'][$db['id_barang']];

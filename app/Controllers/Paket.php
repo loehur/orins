@@ -463,15 +463,17 @@ class Paket extends Controller
 
       $total_harga = 0;
 
-      $where = "id_toko = " . $this->userData['id_toko'] . " AND paket_ref = '" . $ref_s . "'";
-      $data['order'] = $this->db(0)->get_where('paket_order', $where);
-      $data_harga = $this->db(0)->get('produk_harga');
-
       if ($ref_s == '') {
          $ref = $this->userData['id_toko'] . date("ymdHi");
+         $ref_query = "''";  // Query untuk paket baru (paket_ref masih kosong)
       } else {
          $ref = $ref_s;
+         $ref_query = "'" . $ref . "'";  // Query untuk paket existing
       }
+
+      $where = "id_toko = " . $this->userData['id_toko'] . " AND paket_ref = " . $ref_query;
+      $data['order'] = $this->db(0)->get_where('paket_order', $where);
+      $data_harga = $this->db(0)->get('produk_harga');
 
       $detail_harga = [];
       foreach ($data['order'] as $do) {
@@ -507,7 +509,7 @@ class Paket extends Controller
          }
       }
 
-      $where = "id_sumber = " . $this->userData['id_toko'] . " AND paket_ref = '" . $ref . "'";
+      $where = "id_sumber = " . $this->userData['id_toko'] . " AND paket_ref = " . $ref_query;
       $data['mutasi'] = $this->db(0)->get_where('paket_mutasi', $where);
       $data['barang'] = $this->db(0)->get('master_barang', 'id');
 
