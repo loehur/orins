@@ -234,7 +234,7 @@ class Data_Operasi extends Controller
       }
 
       $error = 0;
-      asort($ref_multi);
+      arsort($ref_multi);
       foreach ($ref_multi as $value) {
          $count_ref -= 1;
 
