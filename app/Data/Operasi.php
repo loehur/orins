@@ -187,4 +187,32 @@ class Operasi extends Controller
         $update = $this->db(0)->update("master_input", "cek = 1", "id_target = '" . $this->userData['id_toko'] . "' AND id = '" . $ref . "'");
         return $update;
     }
+
+    function batal_ambil($ref, $reason = "")
+    {
+        $dateNow = date("Y-m-d H:i:s");
+
+        // Reset id_ambil and related fields for orders from this toko
+        $set = "id_ambil = 0, id_ambil_driver = 0, tgl_ambil = NULL";
+        $where = "ref = '" . $ref . "' AND id_toko = " . $this->userData['id_toko'] . " AND id_ambil <> 0";
+        $update = $this->db(0)->update("order_data", $set, $where);
+        if ($update['errno'] <> 0) {
+            return $update;
+        }
+
+        // Reset id_ambil_aff for afiliasi orders
+        $set_aff = "id_ambil_aff = 0, id_ambil_driver = 0, tgl_ambil_aff = NULL";
+        $where_aff = "ref = '" . $ref . "' AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_ambil_aff <> 0";
+        $update = $this->db(0)->update("order_data", $set_aff, $where_aff);
+        if ($update['errno'] <> 0) {
+            return $update;
+        }
+
+        // Reset ready_cs in ref table
+        $set_ref = "ready_cs = 0, ready_date = NULL";
+        $where_ref = "ref = '" . $ref . "'";
+        $update = $this->db(0)->update("ref", $set_ref, $where_ref);
+
+        return $update;
+    }
 }

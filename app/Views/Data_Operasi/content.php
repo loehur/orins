@@ -603,6 +603,9 @@
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $do['tuntas'] == 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalRefundCash" class="dropdown-item refundCash px-2" data-client="<?= $id_pelanggan ?>" data-ref="<?= $ref ?>" href="#"><small>Refund</small></a></li>
                                                                 <?php } ?>
+                                                                <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $ambil_all[$ref] == true && $do['tuntas'] == 0) { ?>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#modalBatalAmbil" class="dropdown-item batalAmbil px-2" data-ref="<?= $ref ?>" href="#"><small>Batal Ambil</small></a></li>
+                                                                <?php } ?>
                                                             </ul>
                                                         </td>
                                                         <td class="text-sm pe-1">
@@ -977,6 +980,11 @@
     $("span.btnAmbilSemua").click(function() {
         ref = $(this).attr("data-ref");
         $("input[name=ambil_ref]").val(ref);
+    })
+
+    $("a.batalAmbil").click(function() {
+        ref = $(this).attr("data-ref");
+        $("input[name=batal_ambil_ref]").val(ref);
     })
 
     function kembalian() {

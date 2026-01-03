@@ -570,3 +570,31 @@
         </div>
     </div>
 </form>
+
+<form action="<?= PV::BASE_URL; ?>Data_Order/batal_ambil" method="POST">
+    <div class="modal" id="modalBatalAmbil">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">Batal Ambil</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Alasan Batal Ambil</label>
+                                <input type="hidden" name="batal_ambil_ref">
+                                <input type="text" name="reason" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-warning">Batal Ambil</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

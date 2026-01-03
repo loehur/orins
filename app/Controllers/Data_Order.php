@@ -400,6 +400,20 @@ class Data_Order extends Controller
       }
    }
 
+   function batal_ambil()
+   {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+         echo "User Forbidden";
+         exit();
+      }
+
+      $ref = $_POST['batal_ambil_ref'];
+      $reason = $_POST['reason'];
+
+      $up = $this->data('Operasi')->batal_ambil($ref, $reason);
+      echo $up['errno'] <> 0 ? $up['error'] : 0;
+   }
+
    public function print($parse = "")
    {
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
