@@ -174,7 +174,7 @@
                                             $id_cancel = $do['id_cancel'];
 
                                             if ($cancel == 0) {
-                                                $bill += $jumlah + $do['margin_paket'];
+                                                $bill += $jumlah + $do['harga_paket'];
                                             }
 
                                             $bill -= $do['diskon'];
@@ -299,7 +299,7 @@
                                                 <td class="text-end"><?= number_format($do['jumlah']) ?></td>
                                                 <td class="text-end">
                                                     <?php
-                                                    if ($do['margin_paket'] == 0) {
+                                                    if ($do['harga_paket'] == 0) {
                                                         if ($do['diskon'] > 0) { ?>
                                                             <del>Rp<?= number_format($jumlah) ?></del><br><small>Disc. Rp<?= number_format($do['diskon']) ?></small><br>Rp<?= number_format($jumlah - $do['diskon']) ?>
                                                         <?php } else { ?>
@@ -307,9 +307,9 @@
                                                         <?php }
                                                     } else {
                                                         if ($do['diskon'] > 0) { ?>
-                                                            <del>Rp<?= number_format($jumlah + $do['margin_paket']) ?></del><br><small>Disc. Rp<?= number_format($do['diskon']) ?></small><br>Rp<?= number_format($jumlah - $do['diskon'] + $do['margin_paket']) ?>
+                                                            <del>Rp<?= number_format($jumlah + $do['harga_paket']) ?></del><br><small>Disc. Rp<?= number_format($do['diskon']) ?></small><br>Rp<?= number_format($jumlah - $do['diskon'] + $do['harga_paket']) ?>
                                                         <?php } else { ?>
-                                                            <?= number_format($jumlah + $do['margin_paket']) ?>
+                                                            <?= number_format($jumlah + $do['harga_paket']) ?>
                                                     <?php }
                                                     } ?>
                                                 </td>
@@ -324,7 +324,7 @@
                                             $jumlah = $do['qty'];
                                             $id_pelanggan_jenis = $do['jenis_target'];
                                             $dp = $data['barang'][$do['id_barang']];
-                                            $bill += (($jumlah * $do['harga_jual']) + $do['margin_paket']); ?>
+                                            $bill += (($jumlah * $do['harga_jual']) + $do['harga_paket']); ?>
                                             <tr>
                                                 <td>
                                                     <?= trim($dp['brand'] . " " . $dp['model']) ?>

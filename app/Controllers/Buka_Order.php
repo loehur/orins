@@ -280,14 +280,14 @@ class Buka_Order extends Controller
       $adjuster = [];
       foreach ($total_per_paket as $key => $tpp) {
          $adjuster[$key] = ($data['paket'][$key]['harga_' . $parse] * $id_margin[$key]['qty']) - $tpp;
-         $id_margin[$key]['margin_paket'] = $adjuster[$key];
+         $id_margin[$key]['harga_paket'] = $adjuster[$key];
       }
 
       $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC";
       $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan, 'id_karyawan');
       $data['harga'] = $getHarga;
 
-      $data['margin_paket'] = $id_margin;
+      $data['harga_paket'] = $id_margin;
       $this->view($this->v_content, $data);
    }
 

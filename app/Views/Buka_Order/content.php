@@ -22,7 +22,7 @@ switch ($id_pelanggan_jenis) {
 $total_order = 0;
 $total_item = 0;
 $paket = false;
-$mgpaket = $data['margin_paket'];
+$mgpaket = $data['harga_paket'];
 ?>
 
 <main class="container">
@@ -246,8 +246,8 @@ $mgpaket = $data['margin_paket'];
                                                                         $total_order += ($do['harga'] * $do['jumlah']);
                                                                     } else {
                                                                         // paket items: do not display per-item harga; keep using paket margin formula
-                                                                        echo number_format(($do['harga'] * $do['jumlah']) + $mgpaket[$do['paket_ref']]['margin_paket']);
-                                                                        $total_order += (($do['harga'] * $do['jumlah']) + $mgpaket[$do['paket_ref']]['margin_paket']);
+                                                                        echo number_format(($do['harga'] * $do['jumlah']) + $mgpaket[$do['paket_ref']]['harga_paket']);
+                                                                        $total_order += (($do['harga'] * $do['jumlah']) + $mgpaket[$do['paket_ref']]['harga_paket']);
                                                                     }
                                                                 } ?>
                                                             </small>
@@ -500,8 +500,8 @@ $mgpaket = $data['margin_paket'];
 
                         if ($db['price_locker'] == 1) {
                             $classKeyPrice = 'text-danger';
-                            $total_order += (($harga_satuan * $db['qty']) + $mgpaket[$db['paket_ref']]['margin_paket']);
-                            $totalnya = ($harga_satuan * $db['qty']) + $mgpaket[$db['paket_ref']]['margin_paket'];
+                            $total_order += (($harga_satuan * $db['qty']) + $mgpaket[$db['paket_ref']]['harga_paket']);
+                            $totalnya = ($harga_satuan * $db['qty']) + $mgpaket[$db['paket_ref']]['harga_paket'];
                         } else {
                             $total_order += ($harga_satuan * $db['qty']);
                             $totalnya = ($harga_satuan * $db['qty']);
@@ -604,7 +604,7 @@ $mgpaket = $data['margin_paket'];
 
                             if ($db['price_locker'] == 1) {
                                 $classKeyPrice = 'text-danger';
-                                $totalnya = ($harga_satuan * $db['qty']) + $mgpaket[$db['paket_ref']]['margin_paket'];
+                                $totalnya = ($harga_satuan * $db['qty']) + $mgpaket[$db['paket_ref']]['harga_paket'];
                             } else {
                                 $totalnya = ($harga_satuan * $db['qty']);
                             }
