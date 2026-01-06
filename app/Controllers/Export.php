@@ -322,7 +322,7 @@ class Export extends Controller
          }
 
          $dBarang = $this->db(0)->get('master_barang', 'id');
-         $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
+         $where = "paket_group <> '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
          $data2 = $this->db(0)->get_where("master_mutasi", $where);
 
          foreach ($data2 as $a) {
