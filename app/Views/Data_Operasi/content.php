@@ -606,6 +606,9 @@
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $ambil_all[$ref] == true && $do['tuntas'] == 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#modalBatalAmbil" class="dropdown-item batalAmbil px-2" data-ref="<?= $ref ?>" href="#"><small>Batal Ambil</small></a></li>
                                                                 <?php } ?>
+                                                                <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $do['tuntas'] == 0) { ?>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#modalUbahPelanggan" class="dropdown-item ubahPelanggan px-2" data-ref="<?= $ref ?>" data-pelanggan="<?= $id_pelanggan ?>" href="#"><small>Ubah Pelanggan</small></a></li>
+                                                                <?php } ?>
                                                             </ul>
                                                         </td>
                                                         <td class="text-sm pe-1">
@@ -985,6 +988,13 @@
     $("a.batalAmbil").click(function() {
         ref = $(this).attr("data-ref");
         $("input[name=batal_ambil_ref]").val(ref);
+    })
+
+    $("a.ubahPelanggan").click(function() {
+        ref = $(this).attr("data-ref");
+        var pelanggan = $(this).attr("data-pelanggan");
+        $("input[name=ubah_ref]").val(ref);
+        $("input[name=pelanggan_lama]").val(pelanggan);
     })
 
     function kembalian() {

@@ -598,3 +598,37 @@
         </div>
     </div>
 </form>
+
+<form action="<?= PV::BASE_URL; ?>Data_Operasi/ubahPelanggan" method="POST">
+    <div class="modal" id="modalUbahPelanggan">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h5 class="modal-title text-white">Ubah Pelanggan</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Pelanggan Baru</label>
+                                <input type="hidden" name="ubah_ref">
+                                <input type="hidden" name="pelanggan_lama">
+                                <select class="form-select tize" name="id_pelanggan_baru" required>
+                                    <option></option>
+                                    <?php foreach ($data['pelanggan'] as $p) { ?>
+                                        <option value="<?= $p['id_pelanggan'] ?>"><?= ucwords($p['nama']) ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <button type="submit" data-bs-dismiss="modal" class="btn btn-info text-white">Ubah Pelanggan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

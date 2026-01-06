@@ -506,4 +506,51 @@ class Data_Operasi extends Controller
          echo 0;
       }
    }
+
+   function ubahPelanggan()
+   {
+      $ref = $_POST['ubah_ref'];
+      $id_pelanggan_baru = $_POST['id_pelanggan_baru'];
+      $pelanggan_lama = $_POST['pelanggan_lama'];
+
+      // Validate new pelanggan exists
+      $pelanggan = $this->db(0)->get_where_row('pelanggan', "id_pelanggan = " . $id_pelanggan_baru);
+      if (!isset($pelanggan['id_pelanggan'])) {
+         echo "Pelanggan tidak ditemukan";
+         exit();
+      }
+
+      // Update order_data
+      $set = "id_pelanggan = " . $id_pelanggan_baru;
+      $where = "ref = '" . $ref . "' AND tuntas = 0";
+      $up1 = $this->db(0)->update("order_data", $set, $where);
+      if ($up1['errno'] <> 0) {
+         echo $up1['error'];
+         exit();
+      }
+
+      // Update master_mutasi
+      $set = "id_target = " . $id_pelanggan_baru;
+      $where = "ref = '" . $ref . "' AND tuntas = 0";
+      $up2 = $this->db(0)->update("master_mutasi", $set, $where);
+      if ($up2['errno'] <> 0) {
+         echo $up2['error'];
+         exit();
+      }
+
+      // Update ref table
+      $set = "id_pelanggan = " . $id_pelanggan_baru;
+      $where = "ref = '" . $ref . "'";
+      $up3 = $this->db(0)->update("ref", $set, $where);
+      if ($up3['errno'] <> 0) {
+         echo $up3['error'];
+         exit();
+      }
+
+      $this->model('Log')->write($this->userData['user'] . " Ubah Pelanggan " . $pelanggan_lama . " -> " . $id_pelanggan_baru . " untuk ref " . $ref);
+      
+      // Redirect back
+      header("Location: " . PV::BASE_URL . "Data_Operasi/index/" . $id_pelanggan_baru);
+      exit();
+   }
 }
