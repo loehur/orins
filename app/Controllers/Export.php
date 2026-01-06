@@ -728,11 +728,38 @@ class Export extends Controller
    }
 
    /**
-    * Check if value is numeric (integer or float)
+    * Check if value should be stored as numeric in Excel
+    * Handles both native numeric types and numeric strings from database
     */
    private function isNumericValue($val)
    {
-      return is_numeric($val) && !is_string($val);
+      // Native numeric types
+      if (is_int($val) || is_float($val)) {
+         return true;
+      }
+
+      // Empty or null values should not be treated as numeric
+      if ($val === null || $val === '') {
+         return false;
+      }
+
+      // String check for numeric values
+      if (is_string($val)) {
+         // Must be numeric
+         if (!is_numeric($val)) {
+            return false;
+         }
+
+         // Don't treat as number if it has leading zeros (like codes "007", "00123")
+         // Exception: "0" itself, or decimals like "0.5"
+         if (strlen($val) > 1 && $val[0] === '0' && $val[1] !== '.') {
+            return false;
+         }
+
+         return true;
+      }
+
+      return false;
    }
 
    /**
