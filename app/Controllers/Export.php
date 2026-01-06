@@ -612,7 +612,17 @@ class Export extends Controller
       foreach ($rows as $row) {
          $colNum = 1;
          foreach ($row as $val) {
-            $sheet->setCellValue([$colNum, $rowNum], $val);
+            // Check if value is a long numeric string that should be stored as text
+            // (to prevent scientific notation for codes like "255163349681168213555")
+            if ($this->isCodeValue($val)) {
+               $sheet->setCellValueExplicit(
+                  [$colNum, $rowNum],
+                  $val,
+                  \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
+               );
+            } else {
+               $sheet->setCellValue([$colNum, $rowNum], $val);
+            }
             $colNum++;
          }
          $rowNum++;
@@ -637,5 +647,31 @@ class Export extends Controller
       $writer->save('php://output');
       exit();
    }
+
+   /**
+    * Check if value should be stored as text (code-like values)
+    * Long numeric strings (7+ digits) are likely codes, not actual numbers
+    */
+   private function isCodeValue($val)
+   {
+      if (!is_string($val) && !is_numeric($val)) {
+         return false;
+      }
+
+      $str = (string)$val;
+
+      // Must be purely numeric (no decimals, no negative)
+      if (!preg_match('/^\d+$/', $str)) {
+         return false;
+      }
+
+      // If 7 or more digits, treat as code to prevent scientific notation
+      if (strlen($str) >= 7) {
+         return true;
+      }
+
+      return false;
+   }
 }
+
 
