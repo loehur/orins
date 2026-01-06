@@ -318,7 +318,7 @@ class Export extends Controller
             }
 
             // $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
-            $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $paket_ref, 'PAKET', '', $nama_paket, $paket_group, $a['paket_qty'], $harga_paket, 0, $harga_paket, $cs, $afiliasi, $order_status, $note, $tanggal);
+            $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $paket_ref, 'PAKET', '', $nama_paket, $paket_group, $a['paket_qty'], $harga_paket, 0, $harga_paket * $a['paket_qty'], $cs, $afiliasi, $order_status, $note, $tanggal);
          }
 
          $dBarang = $this->db(0)->get('master_barang', 'id');
