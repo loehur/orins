@@ -608,13 +608,30 @@ class Export extends Controller
       $sheet = $spreadsheet->getActiveSheet();
       $sheet->setTitle($sheetName);
 
+      // Identify which columns should be stored as text based on header names
+      $textColumns = [];
+      if (!empty($rows[0])) {
+         $colNum = 1;
+         foreach ($rows[0] as $header) {
+            $headerUpper = strtoupper((string)$header);
+            // Columns that contain codes should be stored as text
+            if (strpos($headerUpper, 'KODE') !== false ||
+                strpos($headerUpper, 'CODE') !== false ||
+                strpos($headerUpper, 'SERIAL') !== false ||
+                strpos($headerUpper, 'NO_REF') !== false ||
+                strpos($headerUpper, 'TRX_ID') !== false) {
+               $textColumns[$colNum] = true;
+            }
+            $colNum++;
+         }
+      }
+
       $rowNum = 1;
       foreach ($rows as $row) {
          $colNum = 1;
          foreach ($row as $val) {
-            // Check if value is a long numeric string that should be stored as text
-            // (to prevent scientific notation for codes like "255163349681168213555")
-            if ($this->isCodeValue($val)) {
+            // If this is a text column and value is numeric, store as explicit string
+            if (isset($textColumns[$colNum]) && $rowNum > 1 && is_numeric($val)) {
                $sheet->setCellValueExplicit(
                   [$colNum, $rowNum],
                   $val,
@@ -646,31 +663,6 @@ class Export extends Controller
 
       $writer->save('php://output');
       exit();
-   }
-
-   /**
-    * Check if value should be stored as text (code-like values)
-    * Long numeric strings (7+ digits) are likely codes, not actual numbers
-    */
-   private function isCodeValue($val)
-   {
-      if (!is_string($val) && !is_numeric($val)) {
-         return false;
-      }
-
-      $str = (string)$val;
-
-      // Must be purely numeric (no decimals, no negative)
-      if (!preg_match('/^\d+$/', $str)) {
-         return false;
-      }
-
-      // If 5 or more digits, treat as code to prevent scientific notation
-      if (strlen($str) >= 5) {
-         return true;
-      }
-
-      return false;
    }
 }
 
