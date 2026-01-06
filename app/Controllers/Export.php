@@ -383,7 +383,7 @@ class Export extends Controller
 
             $sumPaket[$paket_group] += ($total + $harga_paket);
             //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
-            $lineData["2" . $a['id']] = array($a['id'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'] ?? '', $db['code_myob'] ?? '', $nama_paket, $paket_group, $barang, $a['sn'] ?? '', $jumlah, $total, 0, $cs, $store, $order_status, $a['note'] ?? '', $tanggal);
+            $lineData["2" . $a['id']] = array($a['id'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'] ?? '', 'PAKET', $db['code_myob'] ?? '', $nama_paket, $paket_group, $barang, $a['sn'] ?? '', $jumlah, $total, 0, $cs, $store, $order_status, $a['note'] ?? '', $tanggal);
          }
 
          foreach ($lineData as $key => $ld) {
