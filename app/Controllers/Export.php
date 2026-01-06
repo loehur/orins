@@ -322,13 +322,12 @@ class Export extends Controller
          }
 
          $dBarang = $this->db(0)->get('master_barang', 'id');
-         $where = "paket_group <> '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
+         $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
          $data2 = $this->db(0)->get_where("master_mutasi", $where);
 
          foreach ($data2 as $a) {
             $jumlah = $a['paket_qty'];
             $ref = $a['ref'];
-            $diskon = $a['diskon'] * $jumlah;
             $jenis = isset($pj[$a['jenis_target']]['pelanggan_jenis']) ? strtoupper($pj[$a['jenis_target']]['pelanggan_jenis']) : '';
             $db = isset($dBarang[$a['id_barang']]) ? $dBarang[$a['id_barang']] : [];
             $barang = isset($db['product_name']) ? strtoupper(($db['product_name'] ?? '') . ($db['brand'] ?? '') . " " . ($db['model'] ?? '')) : '';
@@ -336,10 +335,6 @@ class Export extends Controller
             $paket_group = $a['paket_group'];
             $paket_ref = $a['paket_ref'];
             $nama_paket = isset($paket[$paket_ref]['nama']) ? $paket[$paket_ref]['nama'] : '';
-
-            if (!isset($sumPaket[$paket_group])) {
-               $sumPaket[$paket_group] = 0;
-            }
 
             if ($a['stat'] <> 2) {
                if ($a['tuntas'] == 1) {
@@ -365,9 +360,8 @@ class Export extends Controller
                $tgl_order[$ref] = substr($a['insertTime'], 0, 10);
             }
 
-            $harga = $a['harga_jual'];
-            $total = ($harga * $jumlah) - $diskon;
-            $harga_paket = $a['harga_paket'];
+            $harga = $a['harga_paket'];
+            $total = ($harga * $jumlah);
 
             if (isset($ref_data[$a['ref']]['mark'])) {
                $mark = strtoupper($ref_data[$a['ref']]['mark']);
@@ -381,18 +375,8 @@ class Export extends Controller
                }
             }
 
-            $sumPaket[$paket_group] += ($total + $harga_paket);
             //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
-            $lineData["2" . $a['id']] = array($a['id'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'] ?? '', $db['code_myob'] ?? '', $nama_paket, $paket_group, $barang, $a['sn'] ?? '', $jumlah, $total, 0, $cs, $store, $order_status, $a['note'] ?? '', $tanggal);
-         }
-
-         foreach ($lineData as $key => $ld) {
-            $paket_group = $ld[9];
-            $ld[14] = isset($sumPaket[$paket_group]) ? $sumPaket[$paket_group] : 0;
-            $rows[] = $ld;
-            if (isset($sumPaket[$paket_group])) {
-               $sumPaket[$paket_group] = 0;
-            }
+            $lineData["2" . $a['id']] = array($a['id'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'] ?? '', 'PAKET', $db['code_myob'] ?? '', $barang, $a['sn'] ?? '', $jumlah, $harga, 0, $total, $cs, $store, $order_status, $a['note'] ?? '', $tanggal);
          }
 
          // Check for any unexpected output before writing Excel
