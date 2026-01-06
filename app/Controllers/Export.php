@@ -221,14 +221,17 @@ class Export extends Controller
 
    public function export_paket()
    {
-      list($date_from, $date_to) = $this->getPeriod();
-      $periodLabel = $date_from . "_to_" . $date_to;
-      $startTime = $date_from . " 00:00:00";
-      $endTime = $date_to . " 23:59:59";
-      $lineData = [];
-      $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-BUNDLE-SALES-" . $periodLabel . ".xlsx";
+      try {
+         Log::write("export_paket started", "Export");
+         
+         list($date_from, $date_to) = $this->getPeriod();
+         $periodLabel = $date_from . "_to_" . $date_to;
+         $startTime = $date_from . " 00:00:00";
+         $endTime = $date_to . " 23:59:59";
+         $lineData = [];
+         $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-BUNDLE-SALES-" . $periodLabel . ".xlsx";
 
-      $tanggal = date("Y-m-d");
+         $tanggal = date("Y-m-d");
 
       $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
@@ -383,7 +386,15 @@ class Export extends Controller
          $rows[] = $ld;
          $sumPaket[$paket_group] = 0;
       }
+      
+      Log::write("export_paket finished, rows: " . count($rows), "Export");
       $this->output_xlsx($filename, $rows);
+      
+      } catch (Exception $e) {
+         Log::write("export_paket ERROR: " . $e->getMessage() . " at line " . $e->getLine(), "Export");
+         echo "Export Error: " . $e->getMessage();
+         exit;
+      }
    }
 
    public function export_p()
