@@ -606,32 +606,93 @@ class Export extends Controller
    {
       $tmp = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('xlsx_', true) . '.xlsx';
       $zip = new \ZipArchive();
-      $zip->open($tmp, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+      if ($zip->open($tmp, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+         echo "Failed to create xlsx file";
+         exit();
+      }
+
+      // Build shared strings table
+      $sharedStrings = [];
+      $stringIndex = 0;
+      $sharedStringsXml = '';
+
+      foreach ($rows as $row) {
+         foreach ($row as $val) {
+            $cleanVal = $this->cleanXmlString((string)$val);
+            if (!isset($sharedStrings[$cleanVal]) && !$this->isNumericValue($val)) {
+               $sharedStrings[$cleanVal] = $stringIndex++;
+            }
+         }
+      }
+
+      // Build shared strings XML
+      $ssXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+         '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="' . $stringIndex . '" uniqueCount="' . $stringIndex . '">';
+      foreach ($sharedStrings as $str => $idx) {
+         $ssXml .= '<si><t>' . htmlspecialchars($str, ENT_QUOTES | ENT_XML1) . '</t></si>';
+      }
+      $ssXml .= '</sst>';
+      $zip->addFromString('xl/sharedStrings.xml', $ssXml);
+
+      // _rels/.rels
       $rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
          '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' .
          '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' .
          '</Relationships>';
       $zip->addFromString('_rels/.rels', $rels);
+
+      // [Content_Types].xml
       $ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
          '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' .
          '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' .
          '<Default Extension="xml" ContentType="application/xml"/>' .
          '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' .
          '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' .
+         '<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>' .
+         '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' .
          '</Types>';
       $zip->addFromString('[Content_Types].xml', $ct);
+
+      // xl/_rels/workbook.xml.rels
       $wbRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
          '<Relationships xmlns="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' .
          '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' .
+         '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>' .
+         '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' .
          '</Relationships>';
       $zip->addFromString('xl/_rels/workbook.xml.rels', $wbRels);
+
+      // xl/styles.xml - minimal styles to prevent issues
+      $styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+         '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' .
+         '<fonts count="1"><font><sz val="11"/><name val="Calibri"/></font></fonts>' .
+         '<fills count="1"><fill><patternFill patternType="none"/></fill></fills>' .
+         '<borders count="1"><border><left/><right/><top/><bottom/></border></borders>' .
+         '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' .
+         '<cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs>' .
+         '</styleSheet>';
+      $zip->addFromString('xl/styles.xml', $styles);
+
+      // xl/workbook.xml
       $wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
          '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' .
          '<sheets><sheet name="' . htmlspecialchars($this->cleanXmlString($sheetName), ENT_QUOTES | ENT_XML1) . '" sheetId="1" r:id="rId1"/></sheets>' .
          '</workbook>';
       $zip->addFromString('xl/workbook.xml', $wb);
+
+      // xl/worksheets/sheet1.xml
+      $maxCol = 0;
+      foreach ($rows as $row) {
+         $maxCol = max($maxCol, count($row));
+      }
+      $maxRow = count($rows);
+      $dimension = 'A1:' . $this->xlsxCol($maxCol) . $maxRow;
+
       $sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' .
+         '<dimension ref="' . $dimension . '"/>' .
+         '<sheetData>';
+
       $rowNum = 1;
       foreach ($rows as $row) {
          $sheet .= '<row r="' . $rowNum . '">';
@@ -639,17 +700,25 @@ class Export extends Controller
          foreach ($row as $val) {
             $colNum++;
             $col = $this->xlsxCol($colNum) . $rowNum;
-            // Clean invalid XML characters before escaping
             $cleanVal = $this->cleanXmlString((string)$val);
-            $text = htmlspecialchars($cleanVal, ENT_QUOTES | ENT_XML1);
-            $sheet .= '<c r="' . $col . '" t="inlineStr"><is><t>' . $text . '</t></is></c>';
+
+            if ($this->isNumericValue($val)) {
+               // Numeric value - store as number
+               $sheet .= '<c r="' . $col . '"><v>' . $val . '</v></c>';
+            } else {
+               // String value - use shared string index
+               $ssIdx = $sharedStrings[$cleanVal];
+               $sheet .= '<c r="' . $col . '" t="s"><v>' . $ssIdx . '</v></c>';
+            }
          }
          $sheet .= '</row>';
          $rowNum++;
       }
+
       $sheet .= '</sheetData></worksheet>';
       $zip->addFromString('xl/worksheets/sheet1.xml', $sheet);
       $zip->close();
+
       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       header('Content-Disposition: attachment; filename="' . $filename . '"');
       header('Content-Length: ' . filesize($tmp));
@@ -659,13 +728,28 @@ class Export extends Controller
    }
 
    /**
+    * Check if value is numeric (integer or float)
+    */
+   private function isNumericValue($val)
+   {
+      return is_numeric($val) && !is_string($val);
+   }
+
+   /**
     * Remove invalid XML characters from string
     * XML 1.0 only allows: #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
     */
    private function cleanXmlString($string)
    {
+      if ($string === null) {
+         return '';
+      }
+      // Convert to UTF-8 if needed
+      if (!mb_check_encoding($string, 'UTF-8')) {
+         $string = mb_convert_encoding($string, 'UTF-8', 'auto');
+      }
       // Remove control characters (0x00-0x08, 0x0B, 0x0C, 0x0E-0x1F) except tab (0x09), newline (0x0A), carriage return (0x0D)
-      return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $string);
+      return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $string);
    }
 
    private function xlsxCol($i)
