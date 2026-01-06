@@ -258,8 +258,8 @@ class Export extends Controller
             $sumPaket[$paket_group] = 0;
          }
 
-         $nama_paket = $paket[$paket_ref]['nama'];
-         $jenis = strtoupper($pj[$a['id_pelanggan_jenis']]['pelanggan_jenis']);
+         $nama_paket = isset($paket[$paket_ref]['nama']) ? $paket[$paket_ref]['nama'] : '';
+         $jenis = isset($pj[$a['id_pelanggan_jenis']]['pelanggan_jenis']) ? strtoupper($pj[$a['id_pelanggan_jenis']]['pelanggan_jenis']) : '';
 
          if (isset($dKaryawan[$a['id_penerima']]['nama'])) {
             $cs = strtoupper($dKaryawan[$a['id_penerima']]['nama']);
@@ -267,14 +267,14 @@ class Export extends Controller
             $cs = $a['id_penerima'];
          }
 
-         $pelanggan = strtoupper($dPelanggan[$a['id_pelanggan']]['nama']);
+         $pelanggan = isset($dPelanggan[$a['id_pelanggan']]['nama']) ? strtoupper($dPelanggan[$a['id_pelanggan']]['nama']) : '';
 
-         if ($a['id_afiliasi'] <> 0) {
+         if ($a['id_afiliasi'] <> 0 && isset($this->dToko[$a['id_afiliasi']]['nama_toko'])) {
             $afiliasi = strtoupper($this->dToko[$a['id_afiliasi']]['nama_toko']);
          } else {
             $afiliasi = "";
          }
-         $note = strtoupper($a['cancel_reason']);
+         $note = strtoupper($a['cancel_reason'] ?? '');
 
 
          if (!isset($tgl_order[$ref])) {
@@ -320,13 +320,13 @@ class Export extends Controller
          $jumlah = $a['qty'];
          $ref = $a['ref'];
          $diskon = $a['diskon'] * $jumlah;
-         $jenis = strtoupper($pj[$a['jenis_target']]['pelanggan_jenis']);
-         $db = $dBarang[$a['id_barang']];
-         $barang = strtoupper($db['product_name'] . $db['brand'] . " " . $db['model']);
+         $jenis = isset($pj[$a['jenis_target']]['pelanggan_jenis']) ? strtoupper($pj[$a['jenis_target']]['pelanggan_jenis']) : '';
+         $db = isset($dBarang[$a['id_barang']]) ? $dBarang[$a['id_barang']] : [];
+         $barang = isset($db['product_name']) ? strtoupper(($db['product_name'] ?? '') . ($db['brand'] ?? '') . " " . ($db['model'] ?? '')) : '';
 
          $paket_group = $a['paket_group'];
          $paket_ref = $a['paket_ref'];
-         $nama_paket = $paket[$paket_ref]['nama'];
+         $nama_paket = isset($paket[$paket_ref]['nama']) ? $paket[$paket_ref]['nama'] : '';
 
          if (!isset($sumPaket[$paket_group])) {
             $sumPaket[$paket_group] = 0;
@@ -334,7 +334,7 @@ class Export extends Controller
 
          if ($a['stat'] <> 2) {
             if ($a['tuntas'] == 1) {
-               $order_status = "LUNAS " . substr($a['tuntas_date'], 0, 10);
+               $order_status = "LUNAS " . substr($a['tuntas_date'] ?? '', 0, 10);
             } else {
                $order_status = "PIUTANG";
             }
@@ -348,9 +348,9 @@ class Export extends Controller
             $cs = $a['cs_id'];
          }
 
-         $store = $a['sds'] == 1 ? "SDS" : $this->dToko[$this->userData['id_toko']]['inisial'];
+         $store = $a['sds'] == 1 ? "SDS" : (isset($this->dToko[$this->userData['id_toko']]['inisial']) ? $this->dToko[$this->userData['id_toko']]['inisial'] : '');
 
-         $pelanggan = strtoupper($dPelanggan[$a['id_target']]['nama']);
+         $pelanggan = isset($dPelanggan[$a['id_target']]['nama']) ? strtoupper($dPelanggan[$a['id_target']]['nama']) : '';
 
          if (!isset($tgl_order[$ref])) {
             $tgl_order[$ref] = substr($a['insertTime'], 0, 10);
@@ -374,7 +374,7 @@ class Export extends Controller
 
          $sumPaket[$paket_group] += ($total + $harga_paket);
          //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
-         $lineData["2" . $a['id']] = array($a['id'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'], $db['code_myob'], $nama_paket, $paket_group, $barang, $a['sn'], $jumlah, $total, 0, $cs, $store, $order_status, $a['note'], $tanggal);
+         $lineData["2" . $a['id']] = array($a['id'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'] ?? '', $db['code_myob'] ?? '', $nama_paket, $paket_group, $barang, $a['sn'] ?? '', $jumlah, $total, 0, $cs, $store, $order_status, $a['note'] ?? '', $tanggal);
       }
 
       foreach ($lineData as $key => $ld) {
