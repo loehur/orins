@@ -163,7 +163,7 @@ class Export extends Controller
       $tanggal = date("Y-m-d");
 
       $rows = [];
-      $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
+      $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
 
       foreach ($data as $a) {
          $jumlah = $a['qty'];
@@ -239,6 +239,8 @@ class Export extends Controller
       $paket = $this->db(0)->get('paket_main', "id");
 
       $rows = [];
+      $sumPaket = [];
+      $tgl_order = [];
       $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
 
       $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
@@ -372,7 +374,7 @@ class Export extends Controller
 
          $sumPaket[$paket_group] += ($total + $harga_paket);
          //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
-         $lineData["2" . $a['id']] = array($a['id'], "R" . $ref, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'], $db['code_myob'], $nama_paket, $paket_group, $barang, $a['sn'], $jumlah, $total, 0, $cs, $store, $order_status, $a['note'], $tanggal);
+         $lineData["2" . $a['id']] = array($a['id'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'], $db['code_myob'], $nama_paket, $paket_group, $barang, $a['sn'], $jumlah, $total, 0, $cs, $store, $order_status, $a['note'], $tanggal);
       }
 
       foreach ($lineData as $key => $ld) {
