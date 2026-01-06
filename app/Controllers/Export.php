@@ -222,7 +222,7 @@ class Export extends Controller
    public function export_paket()
    {
       try {
-         Log::write("export_paket started", "Export");
+         $this->model('Log')->write("export_paket started", "Export");
          
          list($date_from, $date_to) = $this->getPeriod();
          $periodLabel = $date_from . "_to_" . $date_to;
@@ -387,11 +387,11 @@ class Export extends Controller
          $sumPaket[$paket_group] = 0;
       }
       
-      Log::write("export_paket finished, rows: " . count($rows), "Export");
+      $this->model('Log')->write("export_paket finished, rows: " . count($rows), "Export");
       $this->output_xlsx($filename, $rows);
       
       } catch (Exception $e) {
-         Log::write("export_paket ERROR: " . $e->getMessage() . " at line " . $e->getLine(), "Export");
+         $this->model('Log')->write("export_paket ERROR: " . $e->getMessage() . " at line " . $e->getLine(), "Export");
          echo "Export Error: " . $e->getMessage();
          exit;
       }
