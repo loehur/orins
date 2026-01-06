@@ -638,6 +638,11 @@ class Export extends Controller
                   \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
                );
             } else {
+               // For non-text columns, convert numeric strings to actual numbers
+               if ($rowNum > 1 && is_numeric($val) && $val !== '') {
+                  // Convert to number (float or int)
+                  $val = strpos($val, '.') !== false ? (float)$val : (int)$val;
+               }
                $sheet->setCellValue([$colNum, $rowNum], $val);
             }
             $colNum++;
