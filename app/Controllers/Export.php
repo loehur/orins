@@ -388,9 +388,11 @@ class Export extends Controller
 
       foreach ($lineData as $key => $ld) {
          $paket_group = $ld[9];
-         $ld[14] = $sumPaket[$paket_group];
+         $ld[14] = isset($sumPaket[$paket_group]) ? $sumPaket[$paket_group] : 0;
          $rows[] = $ld;
-         $sumPaket[$paket_group] = 0;
+         if (isset($sumPaket[$paket_group])) {
+            $sumPaket[$paket_group] = 0;
+         }
       }
       
       // Check for any unexpected output before writing Excel
