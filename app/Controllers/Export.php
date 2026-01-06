@@ -226,10 +226,10 @@ class Export extends Controller
          ob_end_clean();
       }
       ob_start();
-      
+
       try {
          $this->model('Log')->write("export_paket started", "Export");
-         
+
          list($date_from, $date_to) = $this->getPeriod();
          $periodLabel = $date_from . "_to_" . $date_to;
          $startTime = $date_from . " 00:00:00";
@@ -239,172 +239,172 @@ class Export extends Controller
 
          $tanggal = date("Y-m-d");
 
-      $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
-      $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
+         $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
+         $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
 
-      $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
-      $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
-      $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
-      $paket = $this->db(0)->get('paket_main', "id");
+         $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
+         $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
+         $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
+         $paket = $this->db(0)->get('paket_main', "id");
 
-      $rows = [];
-      $sumPaket = [];
-      $tgl_order = [];
-      $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
+         $rows = [];
+         $sumPaket = [];
+         $tgl_order = [];
+         $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
 
-      $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
-      $data = $this->db(0)->get_where("order_data", $where);
+         $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
+         $data = $this->db(0)->get_where("order_data", $where);
 
-      foreach ($data as $a) {
-         $jumlah = $a['jumlah'];
-         $ref = $a['ref'];
-         $diskon = $a['diskon'];
-         $harga_paket = $a['harga_paket'];
-         $paket_ref = $a['paket_ref'];
-         $paket_group = $a['paket_group'];
+         foreach ($data as $a) {
+            $jumlah = $a['jumlah'];
+            $ref = $a['ref'];
+            $diskon = $a['diskon'];
+            $harga_paket = $a['harga_paket'];
+            $paket_ref = $a['paket_ref'];
+            $paket_group = $a['paket_group'];
 
-         if (!isset($sumPaket[$paket_group])) {
-            $sumPaket[$paket_group] = 0;
-         }
+            if (!isset($sumPaket[$paket_group])) {
+               $sumPaket[$paket_group] = 0;
+            }
 
-         $nama_paket = isset($paket[$paket_ref]['nama']) ? $paket[$paket_ref]['nama'] : '';
-         $jenis = isset($pj[$a['id_pelanggan_jenis']]['pelanggan_jenis']) ? strtoupper($pj[$a['id_pelanggan_jenis']]['pelanggan_jenis']) : '';
+            $nama_paket = isset($paket[$paket_ref]['nama']) ? $paket[$paket_ref]['nama'] : '';
+            $jenis = isset($pj[$a['id_pelanggan_jenis']]['pelanggan_jenis']) ? strtoupper($pj[$a['id_pelanggan_jenis']]['pelanggan_jenis']) : '';
 
-         if (isset($dKaryawan[$a['id_penerima']]['nama'])) {
-            $cs = strtoupper($dKaryawan[$a['id_penerima']]['nama']);
-         } else {
-            $cs = $a['id_penerima'];
-         }
-
-         $pelanggan = isset($dPelanggan[$a['id_pelanggan']]['nama']) ? strtoupper($dPelanggan[$a['id_pelanggan']]['nama']) : '';
-
-         if ($a['id_afiliasi'] <> 0 && isset($this->dToko[$a['id_afiliasi']]['nama_toko'])) {
-            $afiliasi = strtoupper($this->dToko[$a['id_afiliasi']]['nama_toko']);
-         } else {
-            $afiliasi = "";
-         }
-         $note = strtoupper($a['cancel_reason'] ?? '');
-
-
-         if (!isset($tgl_order[$ref])) {
-            $tgl_order[$ref] = substr($a['insertTime'], 0, 10);
-         }
-
-         if ($a['cancel'] == 0) {
-            if ($a['tuntas'] == 1) {
-               $order_status = "LUNAS " . substr($a['tuntas_date'], 0, 10);
+            if (isset($dKaryawan[$a['id_penerima']]['nama'])) {
+               $cs = strtoupper($dKaryawan[$a['id_penerima']]['nama']);
             } else {
-               if ($a['id_ambil'] == 0) {
-                  $order_status = "AKTIF";
+               $cs = $a['id_penerima'];
+            }
+
+            $pelanggan = isset($dPelanggan[$a['id_pelanggan']]['nama']) ? strtoupper($dPelanggan[$a['id_pelanggan']]['nama']) : '';
+
+            if ($a['id_afiliasi'] <> 0 && isset($this->dToko[$a['id_afiliasi']]['nama_toko'])) {
+               $afiliasi = strtoupper($this->dToko[$a['id_afiliasi']]['nama_toko']);
+            } else {
+               $afiliasi = "";
+            }
+            $note = strtoupper($a['cancel_reason'] ?? '');
+
+
+            if (!isset($tgl_order[$ref])) {
+               $tgl_order[$ref] = substr($a['insertTime'], 0, 10);
+            }
+
+            if ($a['cancel'] == 0) {
+               if ($a['tuntas'] == 1) {
+                  $order_status = "LUNAS " . substr($a['tuntas_date'], 0, 10);
+               } else {
+                  if ($a['id_ambil'] == 0) {
+                     $order_status = "AKTIF";
+                  }
+                  if ($a['id_ambil'] <> 0) {
+                     $order_status = "PIUTANG";
+                  }
                }
-               if ($a['id_ambil'] <> 0) {
+            } else {
+               $order_status = "BATAL";
+            }
+
+            if (isset($ref_data[$a['ref']]['mark'])) {
+               $mark = strtoupper($ref_data[$a['ref']]['mark']);
+            } else {
+               $where = "ref = '" . $a['ref'] . "'";
+               $get_ref = $this->db(0)->get_where_row('ref', $where);
+               if (isset($get_ref['mark'])) {
+                  $mark = $get_ref['mark'];
+               } else {
+                  $mark = "";
+               }
+            }
+
+            // $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
+            $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $paket_ref, 'PAKET', '', $nama_paket, $paket_group, $a['paket_qty'], $harga_paket, 0, $harga_paket, $cs, $afiliasi, $order_status, $note, $tanggal);
+         }
+
+         $dBarang = $this->db(0)->get('master_barang', 'id');
+         $where = "paket_group <> '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
+         $data2 = $this->db(0)->get_where("master_mutasi", $where);
+
+         foreach ($data2 as $a) {
+            $jumlah = $a['paket_qty'];
+            $ref = $a['ref'];
+            $diskon = $a['diskon'] * $jumlah;
+            $jenis = isset($pj[$a['jenis_target']]['pelanggan_jenis']) ? strtoupper($pj[$a['jenis_target']]['pelanggan_jenis']) : '';
+            $db = isset($dBarang[$a['id_barang']]) ? $dBarang[$a['id_barang']] : [];
+            $barang = isset($db['product_name']) ? strtoupper(($db['product_name'] ?? '') . ($db['brand'] ?? '') . " " . ($db['model'] ?? '')) : '';
+
+            $paket_group = $a['paket_group'];
+            $paket_ref = $a['paket_ref'];
+            $nama_paket = isset($paket[$paket_ref]['nama']) ? $paket[$paket_ref]['nama'] : '';
+
+            if (!isset($sumPaket[$paket_group])) {
+               $sumPaket[$paket_group] = 0;
+            }
+
+            if ($a['stat'] <> 2) {
+               if ($a['tuntas'] == 1) {
+                  $order_status = "LUNAS " . substr($a['tuntas_date'] ?? '', 0, 10);
+               } else {
                   $order_status = "PIUTANG";
                }
-            }
-         } else {
-            $order_status = "BATAL";
-         }
-
-         if (isset($ref_data[$a['ref']]['mark'])) {
-            $mark = strtoupper($ref_data[$a['ref']]['mark']);
-         } else {
-            $where = "ref = '" . $a['ref'] . "'";
-            $get_ref = $this->db(0)->get_where_row('ref', $where);
-            if (isset($get_ref['mark'])) {
-               $mark = $get_ref['mark'];
             } else {
-               $mark = "";
+               $order_status = "BATAL";
             }
-         }
 
-         // $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
-         $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $paket_ref, 'PAKET', '', $nama_paket, $paket_group, 1, $harga_paket, 0, $harga_paket, $cs, $afiliasi, $order_status, $note, $tanggal);
-      }
-
-      $dBarang = $this->db(0)->get('master_barang', 'id');
-      $where = "paket_group <> '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
-      $data2 = $this->db(0)->get_where("master_mutasi", $where);
-
-      foreach ($data2 as $a) {
-         $jumlah = $a['qty'];
-         $ref = $a['ref'];
-         $diskon = $a['diskon'] * $jumlah;
-         $jenis = isset($pj[$a['jenis_target']]['pelanggan_jenis']) ? strtoupper($pj[$a['jenis_target']]['pelanggan_jenis']) : '';
-         $db = isset($dBarang[$a['id_barang']]) ? $dBarang[$a['id_barang']] : [];
-         $barang = isset($db['product_name']) ? strtoupper(($db['product_name'] ?? '') . ($db['brand'] ?? '') . " " . ($db['model'] ?? '')) : '';
-
-         $paket_group = $a['paket_group'];
-         $paket_ref = $a['paket_ref'];
-         $nama_paket = isset($paket[$paket_ref]['nama']) ? $paket[$paket_ref]['nama'] : '';
-
-         if (!isset($sumPaket[$paket_group])) {
-            $sumPaket[$paket_group] = 0;
-         }
-
-         if ($a['stat'] <> 2) {
-            if ($a['tuntas'] == 1) {
-               $order_status = "LUNAS " . substr($a['tuntas_date'] ?? '', 0, 10);
+            if (isset($dKaryawan[$a['cs_id']]['nama'])) {
+               $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
             } else {
-               $order_status = "PIUTANG";
+               $cs = $a['cs_id'];
             }
-         } else {
-            $order_status = "BATAL";
-         }
 
-         if (isset($dKaryawan[$a['cs_id']]['nama'])) {
-            $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
-         } else {
-            $cs = $a['cs_id'];
-         }
+            $store = $a['sds'] == 1 ? "SDS" : (isset($this->dToko[$this->userData['id_toko']]['inisial']) ? $this->dToko[$this->userData['id_toko']]['inisial'] : '');
 
-         $store = $a['sds'] == 1 ? "SDS" : (isset($this->dToko[$this->userData['id_toko']]['inisial']) ? $this->dToko[$this->userData['id_toko']]['inisial'] : '');
+            $pelanggan = isset($dPelanggan[$a['id_target']]['nama']) ? strtoupper($dPelanggan[$a['id_target']]['nama']) : '';
 
-         $pelanggan = isset($dPelanggan[$a['id_target']]['nama']) ? strtoupper($dPelanggan[$a['id_target']]['nama']) : '';
+            if (!isset($tgl_order[$ref])) {
+               $tgl_order[$ref] = substr($a['insertTime'], 0, 10);
+            }
 
-         if (!isset($tgl_order[$ref])) {
-            $tgl_order[$ref] = substr($a['insertTime'], 0, 10);
-         }
+            $harga = $a['harga_jual'];
+            $total = ($harga * $jumlah) - $diskon;
+            $harga_paket = $a['harga_paket'];
 
-         $harga = $a['harga_jual'];
-         $total = ($harga * $jumlah) - $diskon;
-         $harga_paket = $a['harga_paket'];
-
-         if (isset($ref_data[$a['ref']]['mark'])) {
-            $mark = strtoupper($ref_data[$a['ref']]['mark']);
-         } else {
-            $where = "ref = '" . $a['ref'] . "'";
-            $get_ref = $this->db(0)->get_where_row('ref', $where);
-            if (isset($get_ref['mark'])) {
-               $mark = $get_ref['mark'];
+            if (isset($ref_data[$a['ref']]['mark'])) {
+               $mark = strtoupper($ref_data[$a['ref']]['mark']);
             } else {
-               $mark = "";
+               $where = "ref = '" . $a['ref'] . "'";
+               $get_ref = $this->db(0)->get_where_row('ref', $where);
+               if (isset($get_ref['mark'])) {
+                  $mark = $get_ref['mark'];
+               } else {
+                  $mark = "";
+               }
+            }
+
+            $sumPaket[$paket_group] += ($total + $harga_paket);
+            //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
+            $lineData["2" . $a['id']] = array($a['id'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'] ?? '', $db['code_myob'] ?? '', $nama_paket, $paket_group, $barang, $a['sn'] ?? '', $jumlah, $total, 0, $cs, $store, $order_status, $a['note'] ?? '', $tanggal);
+         }
+
+         foreach ($lineData as $key => $ld) {
+            $paket_group = $ld[9];
+            $ld[14] = isset($sumPaket[$paket_group]) ? $sumPaket[$paket_group] : 0;
+            $rows[] = $ld;
+            if (isset($sumPaket[$paket_group])) {
+               $sumPaket[$paket_group] = 0;
             }
          }
 
-         $sumPaket[$paket_group] += ($total + $harga_paket);
-         //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
-         $lineData["2" . $a['id']] = array($a['id'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'] ?? '', $db['code_myob'] ?? '', $nama_paket, $paket_group, $barang, $a['sn'] ?? '', $jumlah, $total, 0, $cs, $store, $order_status, $a['note'] ?? '', $tanggal);
-      }
-
-      foreach ($lineData as $key => $ld) {
-         $paket_group = $ld[9];
-         $ld[14] = isset($sumPaket[$paket_group]) ? $sumPaket[$paket_group] : 0;
-         $rows[] = $ld;
-         if (isset($sumPaket[$paket_group])) {
-            $sumPaket[$paket_group] = 0;
+         // Check for any unexpected output before writing Excel
+         $bufferedOutput = ob_get_contents();
+         if (!empty($bufferedOutput)) {
+            $this->model('Log')->write("UNEXPECTED OUTPUT BEFORE EXCEL: " . substr($bufferedOutput, 0, 500), "Export");
          }
-      }
-      
-      // Check for any unexpected output before writing Excel
-      $bufferedOutput = ob_get_contents();
-      if (!empty($bufferedOutput)) {
-         $this->model('Log')->write("UNEXPECTED OUTPUT BEFORE EXCEL: " . substr($bufferedOutput, 0, 500), "Export");
-      }
-      ob_end_clean();
-      
-      $this->model('Log')->write("export_paket finished, rows: " . count($rows), "Export");
-      $this->output_xlsx($filename, $rows);
-      
+         ob_end_clean();
+
+         $this->model('Log')->write("export_paket finished, rows: " . count($rows), "Export");
+         $this->output_xlsx($filename, $rows);
+
       } catch (Exception $e) {
          $this->model('Log')->write("export_paket ERROR: " . $e->getMessage() . " at line " . $e->getLine(), "Export");
          echo "Export Error: " . $e->getMessage();
@@ -644,10 +644,12 @@ class Export extends Controller
       if (!empty($rows[0])) {
          $colNum = 1;
          foreach ($rows[0] as $header) {
-            $headerUpper = strtoupper((string)$header);
+            $headerUpper = strtoupper((string) $header);
             // Code columns get 'C' prefix
-            if (strpos($headerUpper, 'KODE') !== false ||
-                strpos($headerUpper, 'CODE') !== false) {
+            if (
+               strpos($headerUpper, 'KODE') !== false ||
+               strpos($headerUpper, 'CODE') !== false
+            ) {
                $codeColumns[$colNum] = true;
             }
             // Serial columns get 'SN' prefix
@@ -655,8 +657,10 @@ class Export extends Controller
                $snColumns[$colNum] = true;
             }
             // ID columns get 'T' prefix
-            if (strpos($headerUpper, 'TRX_ID') !== false ||
-                strpos($headerUpper, 'NO_REF') !== false) {
+            if (
+               strpos($headerUpper, 'TRX_ID') !== false ||
+               strpos($headerUpper, 'NO_REF') !== false
+            ) {
                $idColumns[$colNum] = true;
             }
             // Detail columns get 'G' prefix if starts with number
@@ -684,13 +688,13 @@ class Export extends Controller
                $sheet->setCellValue([$colNum, $rowNum], 'T' . $val);
             }
             // Detail columns get 'G' prefix if value starts with a digit
-            elseif (isset($detailColumns[$colNum]) && $rowNum > 1 && $val !== '' && $val !== null && preg_match('/^\d/', (string)$val)) {
+            elseif (isset($detailColumns[$colNum]) && $rowNum > 1 && $val !== '' && $val !== null && preg_match('/^\d/', (string) $val)) {
                $sheet->setCellValue([$colNum, $rowNum], 'G' . $val);
             } else {
                // For non-text columns, convert numeric strings to actual numbers
                if ($rowNum > 1 && is_numeric($val) && $val !== '') {
                   // Convert to number (float or int)
-                  $val = strpos($val, '.') !== false ? (float)$val : (int)$val;
+                  $val = strpos($val, '.') !== false ? (float) $val : (int) $val;
                }
                $sheet->setCellValue([$colNum, $rowNum], $val);
             }
