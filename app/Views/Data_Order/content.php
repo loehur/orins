@@ -125,8 +125,8 @@
                                     $ada = true;
                                     $id_pelanggan = $do['id_pelanggan'];
                                     $dateTime = substr($do['insertTime'], 0, 10);
-                                    $pelanggan = $data['pelanggan'][$do['id_pelanggan']]['nama'];
-                                    $cs = $data['karyawan'][$do['id_penerima']]['nama']; ?>
+                                    $pelanggan = isset($data['pelanggan'][$do['id_pelanggan']]['nama']) ? $data['pelanggan'][$do['id_pelanggan']]['nama'] : '';
+                                    $cs = isset($data['karyawan'][$do['id_penerima']]['nama']) ? $data['karyawan'][$do['id_penerima']]['nama'] : ''; ?>
                                 <?php } ?>
                             <?php } ?>
 
