@@ -609,18 +609,22 @@ class Export extends Controller
       $sheet->setTitle($sheetName);
 
       // Identify which columns should be stored as text based on header names
-      $textColumns = [];
+      $codeColumns = [];  // Will get 'C' prefix
+      $idColumns = [];    // Will get 'T' prefix
       if (!empty($rows[0])) {
          $colNum = 1;
          foreach ($rows[0] as $header) {
             $headerUpper = strtoupper((string)$header);
-            // Columns that contain codes should be stored as text
+            // Code columns get 'C' prefix
             if (strpos($headerUpper, 'KODE') !== false ||
                 strpos($headerUpper, 'CODE') !== false ||
-                strpos($headerUpper, 'SERIAL') !== false ||
-                strpos($headerUpper, 'NO_REF') !== false ||
-                strpos($headerUpper, 'TRX_ID') !== false) {
-               $textColumns[$colNum] = true;
+                strpos($headerUpper, 'SERIAL') !== false) {
+               $codeColumns[$colNum] = true;
+            }
+            // ID columns get 'T' prefix
+            if (strpos($headerUpper, 'TRX_ID') !== false ||
+                strpos($headerUpper, 'NO_REF') !== false) {
+               $idColumns[$colNum] = true;
             }
             $colNum++;
          }
@@ -630,13 +634,13 @@ class Export extends Controller
       foreach ($rows as $row) {
          $colNum = 1;
          foreach ($row as $val) {
-            // If this is a text column and value is numeric, store as explicit string
-            if (isset($textColumns[$colNum]) && $rowNum > 1 && is_numeric($val)) {
-               $sheet->setCellValueExplicit(
-                  [$colNum, $rowNum],
-                  $val,
-                  \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
-               );
+            // Code columns get 'C' prefix
+            if (isset($codeColumns[$colNum]) && $rowNum > 1 && is_numeric($val) && $val !== '') {
+               $sheet->setCellValue([$colNum, $rowNum], 'C' . $val);
+            }
+            // ID columns get 'T' prefix
+            elseif (isset($idColumns[$colNum]) && $rowNum > 1 && is_numeric($val) && $val !== '') {
+               $sheet->setCellValue([$colNum, $rowNum], 'T' . $val);
             } else {
                // For non-text columns, convert numeric strings to actual numbers
                if ($rowNum > 1 && is_numeric($val) && $val !== '') {
