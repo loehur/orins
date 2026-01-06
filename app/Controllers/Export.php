@@ -665,8 +665,8 @@ class Export extends Controller
          return false;
       }
 
-      // If 7 or more digits, treat as code to prevent scientific notation
-      if (strlen($str) >= 7) {
+      // If 5 or more digits, treat as code to prevent scientific notation
+      if (strlen($str) >= 5) {
          return true;
       }
 
