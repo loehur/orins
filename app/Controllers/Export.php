@@ -627,7 +627,7 @@ class Export extends Controller
       $zip->addFromString('xl/_rels/workbook.xml.rels', $wbRels);
       $wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
          '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' .
-         '<sheets><sheet name="' . htmlspecialchars($sheetName, ENT_QUOTES | ENT_XML1) . '" sheetId="1" r:id="rId1"/></sheets>' .
+         '<sheets><sheet name="' . htmlspecialchars($this->cleanXmlString($sheetName), ENT_QUOTES | ENT_XML1) . '" sheetId="1" r:id="rId1"/></sheets>' .
          '</workbook>';
       $zip->addFromString('xl/workbook.xml', $wb);
       $sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
@@ -639,7 +639,9 @@ class Export extends Controller
          foreach ($row as $val) {
             $colNum++;
             $col = $this->xlsxCol($colNum) . $rowNum;
-            $text = htmlspecialchars((string)$val, ENT_QUOTES | ENT_XML1);
+            // Clean invalid XML characters before escaping
+            $cleanVal = $this->cleanXmlString((string)$val);
+            $text = htmlspecialchars($cleanVal, ENT_QUOTES | ENT_XML1);
             $sheet .= '<c r="' . $col . '" t="inlineStr"><is><t>' . $text . '</t></is></c>';
          }
          $sheet .= '</row>';
@@ -654,6 +656,16 @@ class Export extends Controller
       readfile($tmp);
       unlink($tmp);
       exit();
+   }
+
+   /**
+    * Remove invalid XML characters from string
+    * XML 1.0 only allows: #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
+    */
+   private function cleanXmlString($string)
+   {
+      // Remove control characters (0x00-0x08, 0x0B, 0x0C, 0x0E-0x1F) except tab (0x09), newline (0x0A), carriage return (0x0D)
+      return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $string);
    }
 
    private function xlsxCol($i)
