@@ -639,20 +639,29 @@ class Export extends Controller
       // Identify which columns should be stored as text based on header names
       $codeColumns = [];  // Will get 'C' prefix
       $idColumns = [];    // Will get 'T' prefix
+      $snColumns = [];    // Will get 'SN' prefix
+      $detailColumns = []; // Will get 'G' prefix if starts with number
       if (!empty($rows[0])) {
          $colNum = 1;
          foreach ($rows[0] as $header) {
             $headerUpper = strtoupper((string)$header);
             // Code columns get 'C' prefix
             if (strpos($headerUpper, 'KODE') !== false ||
-                strpos($headerUpper, 'CODE') !== false ||
-                strpos($headerUpper, 'SERIAL') !== false) {
+                strpos($headerUpper, 'CODE') !== false) {
                $codeColumns[$colNum] = true;
+            }
+            // Serial columns get 'SN' prefix
+            if (strpos($headerUpper, 'SERIAL') !== false) {
+               $snColumns[$colNum] = true;
             }
             // ID columns get 'T' prefix
             if (strpos($headerUpper, 'TRX_ID') !== false ||
                 strpos($headerUpper, 'NO_REF') !== false) {
                $idColumns[$colNum] = true;
+            }
+            // Detail columns get 'G' prefix if starts with number
+            if (strpos($headerUpper, 'DETAIL_BARANG') !== false) {
+               $detailColumns[$colNum] = true;
             }
             $colNum++;
          }
@@ -666,9 +675,17 @@ class Export extends Controller
             if (isset($codeColumns[$colNum]) && $rowNum > 1 && is_numeric($val) && $val !== '') {
                $sheet->setCellValue([$colNum, $rowNum], 'C' . $val);
             }
+            // Serial columns get 'SN' prefix
+            elseif (isset($snColumns[$colNum]) && $rowNum > 1 && $val !== '' && $val !== null) {
+               $sheet->setCellValue([$colNum, $rowNum], 'SN' . $val);
+            }
             // ID columns get 'T' prefix
             elseif (isset($idColumns[$colNum]) && $rowNum > 1 && is_numeric($val) && $val !== '') {
                $sheet->setCellValue([$colNum, $rowNum], 'T' . $val);
+            }
+            // Detail columns get 'G' prefix if value starts with a digit
+            elseif (isset($detailColumns[$colNum]) && $rowNum > 1 && $val !== '' && $val !== null && preg_match('/^\d/', (string)$val)) {
+               $sheet->setCellValue([$colNum, $rowNum], 'G' . $val);
             } else {
                // For non-text columns, convert numeric strings to actual numbers
                if ($rowNum > 1 && is_numeric($val) && $val !== '') {
