@@ -221,6 +221,12 @@ class Export extends Controller
 
    public function export_paket()
    {
+      // Clear any existing output buffer
+      while (ob_get_level() > 0) {
+         ob_end_clean();
+      }
+      ob_start();
+      
       try {
          $this->model('Log')->write("export_paket started", "Export");
          
@@ -386,6 +392,13 @@ class Export extends Controller
          $rows[] = $ld;
          $sumPaket[$paket_group] = 0;
       }
+      
+      // Check for any unexpected output before writing Excel
+      $bufferedOutput = ob_get_contents();
+      if (!empty($bufferedOutput)) {
+         $this->model('Log')->write("UNEXPECTED OUTPUT BEFORE EXCEL: " . substr($bufferedOutput, 0, 500), "Export");
+      }
+      ob_end_clean();
       
       $this->model('Log')->write("export_paket finished, rows: " . count($rows), "Export");
       $this->output_xlsx($filename, $rows);
