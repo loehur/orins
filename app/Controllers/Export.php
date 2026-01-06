@@ -604,152 +604,38 @@ class Export extends Controller
 
    private function output_xlsx($filename, $rows, $sheetName = 'Sheet1')
    {
-      $tmp = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('xlsx_', true) . '.xlsx';
-      $zip = new \ZipArchive();
-      if ($zip->open($tmp, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
-         echo "Failed to create xlsx file";
-         exit();
-      }
-
-      // _rels/.rels
-      $rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-         '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' .
-         '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' .
-         '</Relationships>';
-      $zip->addFromString('_rels/.rels', $rels);
-
-      // [Content_Types].xml - minimal without shared strings
-      $ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-         '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' .
-         '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' .
-         '<Default Extension="xml" ContentType="application/xml"/>' .
-         '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' .
-         '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' .
-         '</Types>';
-      $zip->addFromString('[Content_Types].xml', $ct);
-
-      // xl/_rels/workbook.xml.rels - minimal
-      $wbRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-         '<Relationships xmlns="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' .
-         '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' .
-         '</Relationships>';
-      $zip->addFromString('xl/_rels/workbook.xml.rels', $wbRels);
-
-      // xl/workbook.xml
-      $cleanSheetName = $this->cleanXmlString($sheetName);
-      $wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-         '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' .
-         '<sheets><sheet name="' . htmlspecialchars($cleanSheetName, ENT_QUOTES | ENT_XML1, 'UTF-8') . '" sheetId="1" r:id="rId1"/></sheets>' .
-         '</workbook>';
-      $zip->addFromString('xl/workbook.xml', $wb);
-
-      // xl/worksheets/sheet1.xml with inline strings
-      $maxCol = 0;
-      foreach ($rows as $row) {
-         $maxCol = max($maxCol, count($row));
-      }
-      $maxRow = count($rows);
-
-      $sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' .
-         '<sheetData>';
+      $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+      $sheet = $spreadsheet->getActiveSheet();
+      $sheet->setTitle($sheetName);
 
       $rowNum = 1;
       foreach ($rows as $row) {
-         $sheet .= '<row r="' . $rowNum . '">';
-         $colNum = 0;
+         $colNum = 1;
          foreach ($row as $val) {
+            $sheet->setCellValue([$colNum, $rowNum], $val);
             $colNum++;
-            $col = $this->xlsxCol($colNum) . $rowNum;
-
-            // Clean the value
-            $cleanVal = $this->cleanXmlString((string)$val);
-
-            // Check if numeric
-            if ($this->isNumericValue($val)) {
-               $sheet .= '<c r="' . $col . '"><v>' . $cleanVal . '</v></c>';
-            } else {
-               // Inline string - escape for XML
-               $escapedVal = htmlspecialchars($cleanVal, ENT_QUOTES | ENT_XML1, 'UTF-8');
-               $sheet .= '<c r="' . $col . '" t="inlineStr"><is><t>' . $escapedVal . '</t></is></c>';
-            }
          }
-         $sheet .= '</row>';
          $rowNum++;
       }
 
-      $sheet .= '</sheetData></worksheet>';
-      $zip->addFromString('xl/worksheets/sheet1.xml', $sheet);
-      $zip->close();
+      // Auto-size columns for header row
+      foreach (range('A', $sheet->getHighestColumn()) as $col) {
+         $sheet->getColumnDimension($col)->setAutoSize(true);
+      }
+
+      // Style header row (bold)
+      $headerRange = 'A1:' . $sheet->getHighestColumn() . '1';
+      $sheet->getStyle($headerRange)->getFont()->setBold(true);
+
+      // Create xlsx file
+      $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
 
       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       header('Content-Disposition: attachment; filename="' . $filename . '"');
-      header('Content-Length: ' . filesize($tmp));
-      readfile($tmp);
-      unlink($tmp);
+      header('Cache-Control: max-age=0');
+
+      $writer->save('php://output');
       exit();
    }
-
-   /**
-    * Check if value should be stored as numeric in Excel
-    * Handles both native numeric types and numeric strings from database
-    */
-   private function isNumericValue($val)
-   {
-      // Native numeric types
-      if (is_int($val) || is_float($val)) {
-         return true;
-      }
-
-      // Empty or null values should not be treated as numeric
-      if ($val === null || $val === '') {
-         return false;
-      }
-
-      // String check for numeric values
-      if (is_string($val)) {
-         // Must be numeric
-         if (!is_numeric($val)) {
-            return false;
-         }
-
-         // Don't treat as number if it has leading zeros (like codes "007", "00123")
-         // Exception: "0" itself, or decimals like "0.5"
-         if (strlen($val) > 1 && $val[0] === '0' && $val[1] !== '.') {
-            return false;
-         }
-
-         return true;
-      }
-
-      return false;
-   }
-
-   /**
-    * Remove invalid XML characters from string
-    * XML 1.0 only allows: #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
-    */
-   private function cleanXmlString($string)
-   {
-      if ($string === null) {
-         return '';
-      }
-      // Convert to UTF-8 if needed
-      if (!mb_check_encoding($string, 'UTF-8')) {
-         $string = mb_convert_encoding($string, 'UTF-8', 'auto');
-      }
-      // Remove control characters (0x00-0x08, 0x0B, 0x0C, 0x0E-0x1F) except tab (0x09), newline (0x0A), carriage return (0x0D)
-      return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $string);
-   }
-
-   private function xlsxCol($i)
-   {
-      $s = '';
-      while ($i > 0) {
-         $i--;
-         $s = chr(65 + ($i % 26)) . $s;
-         $i = intdiv($i, 26);
-      }
-      return $s;
-   }
 }
+
