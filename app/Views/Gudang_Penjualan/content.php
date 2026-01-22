@@ -41,9 +41,6 @@
                     <td class="align-middle">
                         <?php if ($a['cek'] == 0) { ?>
                             <span class="text-warning"><i class="fa-regular fa-circle"></i> Checking</span>
-                            <button type="button" class="btn btn-sm btn-outline-primary ms-2 btn-sinkron" data-ref="<?= $a['id'] ?>">
-                                <i class="fa-solid fa-sync"></i> Sinkron
-                            </button>
                         <?php } else { ?>
                             <span class="text-success"><i class="fa-solid fa-check"></i></span>
                         <?php } ?>
@@ -74,30 +71,6 @@
                     alert(result)
                 }
             },
-        });
-    });
-
-    $(document).on("click", ".btn-sinkron", function() {
-        var ref = $(this).data('ref');
-        var btn = $(this);
-        btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i>');
-        
-        $.ajax({
-            url: "<?= PV::BASE_URL ?>Audit_BMasuk/reject",
-            data: { ref: ref },
-            type: "POST",
-            success: function(result) {
-                if (result == 0) {
-                    content();
-                } else {
-                    alert(result);
-                    btn.prop('disabled', false).html('<i class="fa-solid fa-sync"></i> Sinkron');
-                }
-            },
-            error: function() {
-                alert('Terjadi kesalahan');
-                btn.prop('disabled', false).html('<i class="fa-solid fa-sync"></i> Sinkron');
-            }
         });
     });
 </script>
