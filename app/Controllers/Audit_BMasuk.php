@@ -116,14 +116,7 @@ class Audit_BMasuk extends Controller
    {
       $ref = $_POST['ref'];
 
-      $reset_keep = $this->db(0)->update("master_mutasi", "keep = 0", "ref = '" . $ref . "'");
-      if ($reset_keep['errno'] <> 0) {
-         echo $reset_keep['error'];
-         exit();
-      }
-
       $get = $this->db(0)->get_where("master_mutasi", "ref = '" . $ref . "'");
-
 
       $boleh_reject = true;
       $message = "";
@@ -135,24 +128,12 @@ class Audit_BMasuk extends Controller
          }
 
          if ($g['sn'] <> '') {
-            $cek = $this->db(0)->get_where_row("master_mutasi", "sn = '" . $g['sn'] . "' AND id_barang = " . $g['id_barang'] . " AND jenis = 2 AND stat <> 2");
-            if (isset($cek['stat'])) {
-               $up_s = $this->db(0)->update("master_mutasi", "keep = 1", "sn = '" . $g['sn'] . "' AND id_barang = " . $g['id_barang']);
-               if ($up_s['errno'] <> 0) {
-                  $message = "Reject Gagal. terjadi kesalahan pada sistem";
-                  $boleh_reject = false;
-                  break;
-               }
-            }
-
-            $cek = $this->db(0)->get_where_row("master_mutasi", "sn = '" . $g['sn'] . "' AND id_barang = " . $g['id_barang'] . " AND jenis = 1 AND stat <> 2");
-            if (isset($cek['stat'])) {
-               $up_s = $this->db(0)->update("master_mutasi", "keep = 1", "sn = '" . $g['sn'] . "' AND id_barang = " . $g['id_barang']);
-               if ($up_s['errno'] <> 0) {
-                  $message = "Reject Gagal. terjadi kesalahan pada sistem";
-                  $boleh_reject = false;
-                  break;
-               }
+            $m_mutasi = new M_Mutasi($this->db(0));
+            $result = $m_mutasi->markMutasiKeepBySn($g['sn'], $g['id_barang']);
+            if (!$result['success']) {
+               $message = $result['message'];
+               $boleh_reject = false;
+               break;
             }
          }
       }
