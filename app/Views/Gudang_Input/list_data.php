@@ -14,9 +14,9 @@
                     <td class="text-end">
                         <?php if ($d['cek'] == 0) { ?>
                             <span class="badge bg-warning">Checking</span>
-                            <button type="button" class="btn btn-sm btn-outline-primary btn-sinkron" data-ref="<?= $d['id'] ?>">
+                            <span class="text-primary btn-sinkron ms-2" style="cursor: pointer;" data-ref="<?= $d['id'] ?>">
                                 <i class="fa-solid fa-sync"></i> Sinkron
-                            </button>
+                            </span>
                         <?php } else { ?>
                             <?php if ($d['cek'] == 1) { ?>
                                 <span class="badge bg-success">CONFIRMED</span>

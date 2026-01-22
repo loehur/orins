@@ -1367,12 +1367,12 @@ class Buka_Order extends Controller
       
       // Update master_mutasi with the correct values
       $where_mm_ref = "ref = '" . $ref . "'";
-      $set_mm_ref = "id_target = " . $final_id_target . ", jenis_target = " . $id_pelanggan_jenis . ", cs_id = " . $final_cs_id;
+      $set_mm_ref = "stat = 1, id_target = " . $final_id_target . ", jenis_target = " . $id_pelanggan_jenis . ", cs_id = " . $final_cs_id;
       $this->db(0)->update("master_mutasi", $set_mm_ref, $where_mm_ref);
 
       // Also update temporary mutasi rows (no ref yet) belonging to current user
       $where_mm_tmp = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND ref = ''";
-      $set_mm_tmp = "id_target = " . $final_id_target . ", jenis_target = " . $id_pelanggan_jenis . ", cs_id = " . $final_cs_id . ", ref = '" . $ref . "'";
+      $set_mm_tmp = "stat = 1, id_target = " . $final_id_target . ", jenis_target = " . $id_pelanggan_jenis . ", cs_id = " . $final_cs_id . ", ref = '" . $ref . "'";
       $this->db(0)->update("master_mutasi", $set_mm_tmp, $where_mm_tmp);
 
       if (isset($_SESSION['edit'])) {
