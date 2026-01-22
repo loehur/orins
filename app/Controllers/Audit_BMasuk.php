@@ -128,8 +128,7 @@ class Audit_BMasuk extends Controller
          }
 
          if ($g['sn'] <> '') {
-            $m_mutasi = new M_Mutasi($this->db(0));
-            $result = $m_mutasi->markMutasiKeepBySn($g['sn'], $g['id_barang']);
+            $result = $this->data('M_Mutasi')->markMutasiKeepBySn($g['sn'], $g['id_barang']);
             if (!$result['success']) {
                $message = $result['message'];
                $boleh_reject = false;

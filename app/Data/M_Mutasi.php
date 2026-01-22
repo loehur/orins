@@ -1,14 +1,7 @@
 <?php
 
-class M_Mutasi
+class M_Mutasi extends Controller
 {
-   private $db;
-
-   public function __construct($db)
-   {
-      $this->db = $db;
-   }
-
    /**
     * Mark mutasi as keep when SN exists in other mutasi records
     * Used to prevent reject when SN is already used elsewhere
@@ -20,9 +13,9 @@ class M_Mutasi
    public function markMutasiKeepBySn($sn, $id_barang)
    {
       // Check for jenis masuk (1) atau keluar (2)
-      $cek = $this->db->get_where_row("master_mutasi", "sn = '" . $sn . "' AND id_barang = " . $id_barang . " AND jenis IN (1,2) AND stat <> 2");
+      $cek = $this->db(0)->get_where_row("master_mutasi", "sn = '" . $sn . "' AND id_barang = " . $id_barang . " AND jenis IN (1,2) AND stat <> 2");
       if (isset($cek['stat'])) {
-         $up_s = $this->db->update("master_mutasi", "keep = 1", "sn = '" . $sn . "' AND id_barang = " . $id_barang);
+         $up_s = $this->db(0)->update("master_mutasi", "keep = 1", "sn = '" . $sn . "' AND id_barang = " . $id_barang);
          if ($up_s['errno'] <> 0) {
             return [
                'success' => false,
@@ -30,7 +23,7 @@ class M_Mutasi
             ];
          }
       } else {
-         $up_s = $this->db->update("master_mutasi", "keep = 0", "sn = '" . $sn . "' AND id_barang = " . $id_barang);
+         $up_s = $this->db(0)->update("master_mutasi", "keep = 0", "sn = '" . $sn . "' AND id_barang = " . $id_barang);
          if ($up_s['errno'] <> 0) {
             return [
                'success' => false,

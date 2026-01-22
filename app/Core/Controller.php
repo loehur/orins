@@ -139,9 +139,7 @@ class Controller extends PV
 
     public function db($db = 0)
     {
-        $file = "M_DB";
-        require_once "app/Models/" . $file . ".php";
-        return new $file($db);
+        return DB::getInstance($db);
     }
 
     public function data($file)

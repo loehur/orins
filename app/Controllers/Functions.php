@@ -44,14 +44,14 @@ class Functions extends Controller
          if ($tb == 'master_mutasi') {
             $row = $this->db(0)->get_where_row($tb, $where);
             if (isset($row['sn']) && $row['sn'] <> '' && isset($row['id_barang'])) {
-               $m_mutasi = new M_Mutasi($this->db(0));
-               $result = $m_mutasi->markMutasiKeepBySn($row['sn'], $row['id_barang']);
+               $result = $this->data('M_Mutasi')->markMutasiKeepBySn($row['sn'], $row['id_barang']);
                if (!$result['success']) {
                   echo $result['message'];
                   exit();
                }
             }
          }
+
          echo 0;
       }      
    }
