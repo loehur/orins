@@ -3,10 +3,9 @@
             $dp = $data['barang'];
             $target_link = "Home";
 
+            if ($d['jenis'] == 0) continue;
+
             switch ($d['jenis']) {
-                case 0:
-                    $href = PV::BASE_URL . "Gudang_Input/list/" . $d['ref'];
-                    break;
                 case 1:
                     $href = PV::BASE_URL . "Stok_Transfer/list/" . $d['ref'];
                     break;
@@ -39,11 +38,8 @@
                 <td class="align-middle">
                     <?php
                     switch ($d['jenis']) {
-                        case 0:
-                            echo '<i class="fa-solid fa-arrow-down text-success"></i>';
-                            break;
                         case 1:
-                            echo '<i class="fa-solid fa-arrow-right text-warning"></i>';
+                            echo '<i class="fa-solid fa-arrow-down text-success"></i>';
                             break;
                         case 2:
                             if ($d['id_target'] == 0) {
@@ -67,11 +63,8 @@
                 <td>
                     <?php
                     switch ($d['jenis']) {
-                        case 0:
-                            echo 'Masuk';
-                            break;
                         case 1:
-                            echo 'Transfer';
+                            echo 'Masuk';
                             break;
                         case 2:
                             if ($d['id_sumber'] == 0) {
@@ -94,15 +87,8 @@
                 </td>
                 <td class="">
                     <?php switch ($d['jenis']) {
-                        case 0: //masuk
-                            if ($d['id_target'] == 0) {
-                                $target = isset($data['supplier'][$d['id_sumber']]['nama']) ? $data['supplier'][$d['id_sumber']]['nama'] : "UNDEFINED " . $d['id_sumber'];
-                            }
-                            break;
                         case 1: //transfer
-                            if ($d['id_sumber'] == 0) {
-                                $target = $this->dToko[$d['id_target']]['inisial'];
-                            }
+                            $target = "Gudang";
                             break;
                         case 2: //jual
                             $target = $data['pelanggan'][$d['id_target']]['nama'];
