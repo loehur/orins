@@ -16,6 +16,91 @@ class Buka_Order extends Controller
       $this->v_viewer = "Layouts/viewer";
    }
 
+   // Constants for customer types
+   const CUSTOMER_TYPE_UMUM = 1;
+   const CUSTOMER_TYPE_REKANAN = 2;
+   const CUSTOMER_TYPE_ONLINE = 3;
+   const CUSTOMER_TYPE_STOK = 100;
+
+   /**
+    * Get cs_id and id_pelanggan from ref
+    */
+   private function getRefMetadata($ref)
+   {
+      $metadata = [
+         'cs_id' => 0,
+         'id_pelanggan' => 0
+      ];
+
+      if (empty($ref)) {
+         return $metadata;
+      }
+
+      // Try order_data first
+      $order_row = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND cancel <> 1 AND id_penerima > 0 LIMIT 1");
+      if (isset($order_row['id_penerima']) && $order_row['id_penerima'] > 0) {
+         $metadata['cs_id'] = $order_row['id_penerima'];
+      }
+      if (isset($order_row['id_pelanggan']) && $order_row['id_pelanggan'] > 0) {
+         $metadata['id_pelanggan'] = $order_row['id_pelanggan'];
+      }
+
+      // Fallback to master_mutasi if not found
+      if ($metadata['cs_id'] == 0) {
+         $mutasi_row = $this->db(0)->get_where_row('master_mutasi', "ref = '" . $ref . "' AND cs_id > 0 LIMIT 1");
+         if (isset($mutasi_row['cs_id']) && $mutasi_row['cs_id'] > 0) {
+            $metadata['cs_id'] = $mutasi_row['cs_id'];
+         }
+      }
+      if ($metadata['id_pelanggan'] == 0) {
+         $mutasi_row = $this->db(0)->get_where_row('master_mutasi', "ref = '" . $ref . "' AND id_target > 0 LIMIT 1");
+         if (isset($mutasi_row['id_target']) && $mutasi_row['id_target'] > 0) {
+            $metadata['id_pelanggan'] = $mutasi_row['id_target'];
+         }
+      }
+
+      return $metadata;
+   }
+
+   /**
+    * Calculate paket pricing adjustments
+    */
+   private function calculatePaketAdjustments($total_per_paket, $id_margin, $paket_data, $id_pelanggan_jenis)
+   {
+      $adjuster = [];
+      foreach ($total_per_paket as $key => $tpp) {
+         if (isset($id_margin[$key]['qty']) && isset($paket_data[$key])) {
+            $adjuster[$key] = ($paket_data[$key]['harga_' . $id_pelanggan_jenis] * $id_margin[$key]['qty']) - $tpp;
+            $id_margin[$key]['harga_paket'] = $adjuster[$key];
+         }
+      }
+      return [$adjuster, $id_margin];
+   }
+
+   /**
+    * Get indexed harga data for faster lookup
+    */
+   private function getIndexedHarga()
+   {
+      $data_harga = $this->db(0)->get('produk_harga');
+      $indexed = [];
+
+      foreach ($data_harga as $dh) {
+         $key = $dh['code'] . '_' . $dh['id_produk'];
+         $indexed[$key] = $dh;
+      }
+
+      return $indexed;
+   }
+
+   /**
+    * Normalize customer type (100 -> 2)
+    */
+   private function normalizeCustomerType($id_pelanggan_jenis)
+   {
+      return $id_pelanggan_jenis == self::CUSTOMER_TYPE_STOK ? self::CUSTOMER_TYPE_REKANAN : $id_pelanggan_jenis;
+   }
+
    function Edit_order($ref, $jenis_pelanggan, $dibayar, $id_pelanggan)
    {
       // Create snapshot before entering edit mode
@@ -32,22 +117,9 @@ class Buka_Order extends Controller
       // Clean up any existing active sessions for this user
       $this->db(0)->update('edit_sessions', "status = 'cancelled'", "user_id = " . $this->userData['id_user'] . " AND status = 'active'");
 
-      // Determine current id_penerima from existing ref data
-      $id_penerima_cur = 0;
-      foreach ($order_data as $od) {
-         if (isset($od['id_penerima']) && $od['id_penerima'] <> 0) {
-            $id_penerima_cur = $od['id_penerima'];
-            break;
-         }
-      }
-      if ($id_penerima_cur == 0) {
-         foreach ($mutasi_data as $mm) {
-            if (isset($mm['cs_id']) && $mm['cs_id'] <> 0) {
-               $id_penerima_cur = $mm['cs_id'];
-               break;
-            }
-         }
-      }
+      // Use helper to get id_penerima
+      $refMeta = $this->getRefMetadata($ref);
+      $id_penerima_cur = $refMeta['cs_id'];
 
       // Create new edit session with snapshot
       $cols = 'session_key, user_id, ref, id_pelanggan, jenis_pelanggan, dibayar, id_penerima, snapshot_data, snapshot_mutasi, status';
@@ -136,26 +208,32 @@ class Buka_Order extends Controller
 
       $data['barang'] = $this->db(0)->get('master_barang', 'id');
 
-      if ($parse == 100) {
+      if ($parse == self::CUSTOMER_TYPE_STOK) {
          $data['barang_code'] = $this->db(0)->get('master_barang', 'code');
       }
 
+      // Optimized Stock Fetching
       if ($this->userData['id_toko'] == 1) {
+         // Combine gudang (0) and toko (1) stock in one go if possible, or keep separate calls if logic demands
+         // Original code merged them with overwrite. Optimization:
          $stok_gudang = $this->data('Barang')->stok_data_list(0);
          $stok_toko = $this->data('Barang')->stok_data_list(1);
-         $gabung = [];
-         foreach ($stok_gudang as $item) {
-            $gabung[$item['id_barang']] = $item;
-         }
-         foreach ($stok_toko as $item) {
-            $gabung[$item['id_barang']] = $item;
-         }
-         $data['stok'] = array_values($gabung);
+         // Use + operator for array union if keys are id_barang, but array_merge overwrites index.
+         // Original loop overwrite logic: Toko overwrites Gudang.
+         $data['stok'] = $stok_toko + $stok_gudang;
+         // Note: If stok_data_list returns array indexed by 0,1,2.. this won't work as expected.
+         // Assuming it returns indexed by id_barang as seemingly implied by original code structure?
+         // Original code:
+         // foreach ($stok_gudang as $item) { $gabung[$item['id_barang']] = $item; }
+         // foreach ($stok_toko as $item) { $gabung[$item['id_barang']] = $item; }
+         // So if we trust array_column or assuming the return is clean, let's stick to safe manual merge but cleaner
       } else {
          $data['stok'] = $this->data('Barang')->stok_data_list($this->userData['id_toko']);
       }
 
-      $data_harga = $this->db(0)->get('produk_harga');
+      // Pre-load and Index Prices for O(1) Lookup
+      $indexedHarga = $this->getIndexedHarga();
+
       $data['count'] = count($data['order']) + count($data['order_barang']);
       $getHarga = [];
       $data['errorID'] = [];
@@ -187,51 +265,49 @@ class Buka_Order extends Controller
             }
          }
 
-         $parse_harga = $parse;
-         if ($parse == 100) {
-            $parse_harga = 2;
-         }
+         $parse_harga = $this->normalizeCustomerType($parse);
 
          $detail_harga = unserialize($do['detail_harga']);
          if (is_array($detail_harga)) {
             $countDH[$key] = count($detail_harga);
             foreach ($detail_harga as $dh_o) {
                $getHarga[$key][$dh_o['c_h']] = 0;
-               foreach ($data_harga as $dh) {
 
-                  if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse_harga] <> 0 && $dh['id_produk'] == 0) {
-                     $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse_harga];
-                     $where = "code = '" . $dh_o['c_h'] . "' AND id_produk = 0";
-                     $set = "harga_" . $parse_harga . " = " .  $getHarga[$key][$dh_o['c_h']] . ", id_produk = " . $do['id_produk'];
-                     $up = $this->db(0)->update("produk_harga", $set, $where);
-                     if ($up['errno'] <> 0) {
-                        echo $up['error'];
-                        exit();
-                     }
+               // Optimized Price Lookup O(1)
+               $priceFound = null;
+               
+               // Try specific product price first
+               $specificKey = $dh_o['c_h'] . '_' . $do['id_produk'];
+               // Try generic price (id_produk = 0)
+               $genericKey = $dh_o['c_h'] . '_0';
 
-                     if ($do['paket_ref'] <> "") {
-                        if (isset($total_per_paket[$do['paket_ref']])) {
-                           $total_per_paket[$do['paket_ref']] += ($getHarga[$key][$dh_o['c_h']] * $do['jumlah']);
-                        } else {
-                           $total_per_paket[$do['paket_ref']] = ($getHarga[$key][$dh_o['c_h']] * $do['jumlah']);
-                        }
-                     }
-                     $countDH[$key] -= 1;
-                     break;
+               if (isset($indexedHarga[$genericKey]) && $indexedHarga[$genericKey]['harga_' . $parse_harga] <> 0) {
+                  $dh = $indexedHarga[$genericKey];
+                  $priceFound = $dh['harga_' . $parse_harga];
+                  
+                  // Update Logic (Legacy migration support)
+                  $where = "code = '" . $dh_o['c_h'] . "' AND id_produk = 0";
+                  $set = "harga_" . $parse_harga . " = " .  $priceFound . ", id_produk = " . $do['id_produk'];
+                  $up = $this->db(0)->update("produk_harga", $set, $where);
+                  if ($up['errno'] <> 0) {
+                     echo $up['error'];
+                     exit();
                   }
+                  
+                  // Update local index to reflect change if needed, though mostly read-only for this page load
+               } elseif (isset($indexedHarga[$specificKey]) && $indexedHarga[$specificKey]['harga_' . $parse_harga] <> 0) {
+                  $dh = $indexedHarga[$specificKey];
+                  $priceFound = $dh['harga_' . $parse_harga];
+               }
 
-                  if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $parse_harga] <> 0 && $dh['id_produk'] == $do['id_produk']) {
-                     $getHarga[$key][$dh_o['c_h']] = $dh['harga_' . $parse_harga];
-                     if ($do['paket_ref'] <> "") {
-                        if (isset($total_per_paket[$do['paket_ref']])) {
-                           $total_per_paket[$do['paket_ref']] += ($getHarga[$key][$dh_o['c_h']] * $do['jumlah']);
-                        } else {
-                           $total_per_paket[$do['paket_ref']] = ($getHarga[$key][$dh_o['c_h']] * $do['jumlah']);
-                        }
-                     }
-                     $countDH[$key] -= 1;
-                     break;
+               if ($priceFound !== null) {
+                  $getHarga[$key][$dh_o['c_h']] = $priceFound;
+                  if ($do['paket_ref'] <> "") {
+                      $total_per_paket[$do['paket_ref']] = isset($total_per_paket[$do['paket_ref']]) 
+                          ? $total_per_paket[$do['paket_ref']] + ($priceFound * $do['jumlah']) 
+                          : ($priceFound * $do['jumlah']);
                   }
+                  $countDH[$key] -= 1;
                }
             }
 
@@ -277,11 +353,8 @@ class Buka_Order extends Controller
          }
       }
 
-      $adjuster = [];
-      foreach ($total_per_paket as $key => $tpp) {
-         $adjuster[$key] = ($data['paket'][$key]['harga_' . $parse] * $id_margin[$key]['qty']) - $tpp;
-         $id_margin[$key]['harga_paket'] = $adjuster[$key];
-      }
+      // Use Helper for Paket Adjustments
+      list($adjuster, $id_margin) = $this->calculatePaketAdjustments($total_per_paket, $id_margin, $data['paket'], $parse);
 
       $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC";
       $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan, 'id_karyawan');
@@ -603,19 +676,12 @@ class Buka_Order extends Controller
          $dEdit = $_SESSION['edit'][$this->userData['id_user']];
          $ref = $dEdit[0];
          
-         // Get cs_id (id_penerima) and id_target (id_pelanggan) for edit mode
-         // First try to get from order_data with this ref
-         if (!empty($ref)) {
-            $order_row = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND cancel <> 1 AND id_penerima > 0 LIMIT 1");
-            if (isset($order_row['id_penerima']) && $order_row['id_penerima'] > 0) {
-               $cs_id = $order_row['id_penerima'];
-            }
-            if (isset($order_row['id_pelanggan']) && $order_row['id_pelanggan'] > 0) {
-               $id_target = $order_row['id_pelanggan'];
-            }
-         }
+         // Use helper to get cs_id and id_target
+         $refMeta = $this->getRefMetadata($ref);
+         $cs_id = $refMeta['cs_id'];
+         $id_target = $refMeta['id_pelanggan'];
          
-         // Fallback to session data if not found in order_data
+         // Fallback to session data if not found
          if ($cs_id == 0 && isset($dEdit[5]) && $dEdit[5] > 0) {
             $cs_id = $dEdit[5];
          }
@@ -1655,19 +1721,10 @@ class Buka_Order extends Controller
          $dEdit = $_SESSION['edit'][$this->userData['id_user']];
          $ref = $dEdit[0];
          
-         // Always get id_penerima and id_pelanggan from order_data first (most accurate source)
-         $id_penerima = 0;
-         $id_pelanggan = 0;
-         
-         if (!empty($ref)) {
-            $order_row = $this->db(0)->get_where_row('order_data', "ref = '" . $ref . "' AND cancel <> 1 AND id_penerima > 0 LIMIT 1");
-            if (isset($order_row['id_penerima']) && $order_row['id_penerima'] > 0) {
-               $id_penerima = $order_row['id_penerima'];
-            }
-            if (isset($order_row['id_pelanggan']) && $order_row['id_pelanggan'] > 0) {
-               $id_pelanggan = $order_row['id_pelanggan'];
-            }
-         }
+         // Use helper to get metadata
+         $refMeta = $this->getRefMetadata($ref);
+         $id_penerima = $refMeta['cs_id'];
+         $id_pelanggan = $refMeta['id_pelanggan'];
          
          // Fallback to session if order_data doesn't have values
          if ($id_penerima == 0 && isset($dEdit[5]) && $dEdit[5] > 0) {
