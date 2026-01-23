@@ -3,27 +3,27 @@
 <main>
     <!-- Main page content-->
     <div class="container">
-
         <div class="row mb-2 mx-0">
-            <div class="col-auto px-1 mb-2">
-                <div class="input-group">
-                    <span class="input-group-text text-primary">Bulan</span>
-                    <input name="month" id="month" type="month" min="2024-12" max="<?= date("Y-m-d") ?>" value="<?= date("Y-m") ?>" placeholder="YYYY-MM" class="form-control" required>
-                    <button onclick="cek()" class="btn btn-primary">Cek</button>
-                </div>
-            </div>
-            <div class="col">
+            <div class="col px-1 mb-2">
+                <label>Barang</label><br>
                 <select name="barang" class="tize border-0" id="barang">
-                    <option value="">Pilih Barang</option>
+                    <option></option>
                     <?php foreach ($data['barang'] as $key => $br) {
-                        $code_split = str_split($br['code'], 2); ?> ?>
-                        <option value="<?= $key ?>"><?= $code_split[0] ?> <?= trim($br['brand'] . " " . $br['model']) ?></option>
+                        $code_split = str_split($br['code'], 2); ?>
+                        <option value="<?= $key ?>"><?= $br['code'] ?> <?= trim($br['brand'] . " " . $br['model']) ?></span></option>
                     <?php } ?>
                 </select>
             </div>
+            <div class="col-auto px-1 mb-2">
+                <label>Serial Number</label><br>
+                <input name="sn" id="sn" class="form-control form-control-sm">
+            </div>
+            <div class="col-auto px-1 mb-2">
+                <label>&nbsp;</label><br>
+                <span id="cek" class="btn btn-sm btn-success">Cek</span>
+            </div>
         </div>
-        <div id="data" class="bg-light mx-1 px-2">
-        </div>
+        <div id="data" class="bg-light mx-1 px-2"></div>
     </div>
 </main>
 
@@ -34,17 +34,11 @@
         $('select.tize').selectize();
     });
 
-    function cek() {
-        var get = $("#month").val();
+    $("#cek").click(function() {
+        var get = $("#barang").val();
+        var sn = $("#sn").val();
         if (get != "") {
-            $('#data').load('<?= PV::BASE_URL ?>Barang_Riwayat_B/riwayat_data/0/' + get);
-        }
-    }
-
-    $("#barang").change(function() {
-        var get = $(this).val();
-        if (get != "") {
-            $('#data').load('<?= PV::BASE_URL ?>Barang_Riwayat_B/riwayat_data/1/' + get);
+            $('#data').load('<?= PV::BASE_URL ?>Barang_Riwayat_B/data/' + get + '/' + sn);
         }
     })
 </script>

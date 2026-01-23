@@ -35,15 +35,17 @@ class Barang_Riwayat_B extends Controller
       $this->view(__CLASS__ . '/content', $data);
    }
 
-   function riwayat_data($mode, $val)
+   function data($kode, $sn = "")
    {
-      $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
-      $data['barang'] = $this->db(0)->get_where('master_barang', "en = 1", "id");
-      if ($mode == 0) {
-         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "stat = 1 AND insertTime LIKE '" . $val . "%' AND (id_sumber = " . $this->userData['id_toko'] . " OR id_target = " . $this->userData['id_toko'] . ") AND jenis <> 0");
+      $data['barang'] = $this->db(0)->get_where_row('master_barang', "sp = 0 AND id = '" . $kode . "'");
+      $data['supplier'] = $this->db(0)->get('master_supplier', "id");
+      $data['akun_pakai'] = $this->db(0)->get('akun_pakai', "id");
+      if ($sn == "") {
+         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND stat <> 0");
       } else {
-         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "stat = 1 AND id_barang = '" . $val . "' AND (id_sumber = " . $this->userData['id_toko'] . " OR id_target = " . $this->userData['id_toko'] . ") AND jenis <> 0 ORDER BY id DESC");
+         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND sn = '" . $sn . "' AND stat <> 0");
       }
+      $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $this->view(__CLASS__ . '/data', $data);
    }
 }
