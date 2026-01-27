@@ -135,10 +135,18 @@ class Data_Order extends Controller
       $reason = $_POST['reason'];
       $karyawan = $_POST['id_karyawan'];
 
+      $this->db(0)->query("START TRANSACTION");
+
       if ($mode == 0) {
          $cek = $this->db(0)->get_where_row("order_data", "id_order_data = " . $id);
       } else {
          $cek = $this->db(0)->get_where_row("master_mutasi", "id = " . $id);
+      }
+
+      if (!isset($cek) || empty($cek)) {
+          $this->db(0)->query("ROLLBACK");
+          echo "Cancel Failed: Data with ID $id not found.";
+          exit();
       }
 
       $plock = $cek['price_locker'];
@@ -148,66 +156,77 @@ class Data_Order extends Controller
 
       $dateNow = date("Y-m-d H:i:s");
 
+      // Shared Where for Package
+      $where_paket = "";
       if ($plock == 1) {
-         $where = "ref = '" . $ref . "' AND paket_ref = '" . $pref . "' AND paket_group = '" . $pgrup . "'";
+         $where_paket = "ref = '" . $ref . "' AND paket_ref = '" . $pref . "' AND paket_group = '" . $pgrup . "'";
       }
 
       if ($mode == 0) {
+         // Cancel Order Data
          if ($plock == 1) {
             $set = "stat = 2, diskon = 0";
-            $update = $this->db(0)->update("master_mutasi", $set, $where);
+            $update = $this->db(0)->update("master_mutasi", $set, $where_paket);
             if ($update['errno'] <> 0) {
-               echo $update['error'];
+               $this->db(0)->query("ROLLBACK");
+               echo "Cancel Failed (MM-Paket): " . $update['error'];
                exit();
             }
+            $target_where = $where_paket;
          } else {
-            $where = "id_order_data = " . $id;
+            $target_where = "id_order_data = " . $id;
          }
 
          $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "', diskon = 0";
-         $update = $this->db(0)->update("order_data", $set, $where);
-         if ($update['errno'] == 0) {
-            //BATALKAN MUTASI PRODUKSI
-            $where2 = "pid = " . $id;
-            $set2 = "stat = 2, note = '" . $reason . "', diskon = 0";
-            $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
-            if ($update2 <> 0) {
-               echo $update['error'];
-               exit();
-            }
-         } else {
-            echo $update['error'];
+         $update = $this->db(0)->update("order_data", $set, $target_where);
+         
+         if ($update['errno'] <> 0) {
+            $this->db(0)->query("ROLLBACK");
+            echo "Cancel Failed (Order): " . $update['error'];
             exit();
-         }
-      } else {
-         if ($plock == 1) {
-            $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "', diskon = 0";
-            $update = $this->db(0)->update("order_data", $set, $where);
-            if ($update['errno'] == 0) {
-               //BATALKAN MUTASI PRODUKSI
-               $where2 = "pid = " . $id;
-               $set2 = "stat = 2, note = '" . $reason . "', diskon = 0";
-               $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
-               if ($update2 <> 0) {
-                  echo $update['error'];
-                  exit();
-               }
-            } else {
-               echo $update['error'];
-               exit();
-            }
-         } else {
-            $where = "id = " . $id;
          }
 
-         $set = "stat = 2, note = '" . $reason . "', diskon = 0";
-         $update = $this->db(0)->update("master_mutasi", $set, $where);
-         if ($update['errno'] <> 0) {
-            echo $update['error'];
-            exit();
+         // Cancel related mutasi (pid)
+         $where2 = "pid = " . $id;
+         $set2 = "stat = 2, note = '" . $reason . "', diskon = 0";
+         $update2 = $this->db(0)->update("master_mutasi", $set2, $where2);
+         if ($update2['errno'] <> 0) {
+             $this->db(0)->query("ROLLBACK");
+             echo "Cancel Failed (MM-Rel): " . $update2['error'];
+             exit();
+         }
+         
+      } else {
+         // Cancel Mutasi directly
+         if ($plock == 1) {
+             $set = "id_cancel = " . $karyawan . ", cancel = 1, cancel_reason = '" . $reason . "', tgl_cancel = '" . $dateNow . "', diskon = 0";
+             $update = $this->db(0)->update("order_data", $set, $where_paket);
+             if ($update['errno'] <> 0) {
+                 $this->db(0)->query("ROLLBACK");
+                 echo "Cancel Failed (Order-Paket): " . $update['error'];
+                 exit();
+             }
+             
+             $set2 = "stat = 2, note = '" . $reason . "', diskon = 0";
+             $update2 = $this->db(0)->update("master_mutasi", $set2, $where_paket);
+              if ($update2['errno'] <> 0) {
+                 $this->db(0)->query("ROLLBACK");
+                 echo "Cancel Failed (MM-Paket): " . $update2['error'];
+                 exit();
+             }
+         } else {
+             $where = "id = " . $id;
+             $set = "stat = 2, note = '" . $reason . "', diskon = 0";
+             $update = $this->db(0)->update("master_mutasi", $set, $where);
+             if ($update['errno'] <> 0) {
+                 $this->db(0)->query("ROLLBACK");
+                 echo "Cancel Failed (MM): " . $update['error'];
+                 exit();
+             }
          }
       }
 
+      $this->db(0)->query("COMMIT");
       echo 0;
    }
 
