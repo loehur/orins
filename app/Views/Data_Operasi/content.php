@@ -866,21 +866,24 @@
 
 <script>
     var totalBill = 0;
-    $(document).ready(function() {
-        $('select.tize').selectize();
+    var json_rekap = [];
 
-        var parse_2 = <?= $data['parse_2'] ?>;
+    $(document).ready(function() {
         //MULTI
-        totalBill = $("span#totalBill").attr("data-total");
+        totalBill = $("span#totalBill").attr("data-total") || 0;
         json_rekap = [<?= json_encode($loadRekap) ?>];
 
-        totalBill = $("span#totalBill").attr("data-total");
         if (totalBill == 0) {
             $("div#loadMulti").fadeOut('fast');
         }
+        
+        // Asynchronous initialization of Selectize to keep UI responsive
+        setTimeout(function() {
+            $('select.tize').selectize();
+        }, 300);
     });
 
-    $("a.ajax").click(function(e) {
+    $(document).on("click", "a.ajax", function(e) {
         e.preventDefault();
         var href = $(this).attr('href');
         $.ajax({
@@ -895,177 +898,159 @@
                 }
             }
         });
-    })
+    });
 
-    $("span.btnReady").click(function() {
-        ref = $(this).attr("data-ref");
-        cs = $(this).attr("data-cs");
+    $(document).on("click", "span.btnReady", function() {
+        var ref = $(this).attr("data-ref");
+        var cs = $(this).attr("data-cs");
         $("input#ref").val(ref);
-    })
+    });
 
-    $('button.cek').click(function() {
+    $(document).on("click", 'button.cek', function() {
         var parse = $("select[name=id_pelanggan]").val();
         var parse_2 = $("select[name=y]").val() || 0;
         location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + parse + "/" + parse_2;
     });
 
-    $("a.xtraDiskon").click(function() {
+    $(document).on("click", "a.xtraDiskon", function() {
         var ref = $(this).attr("data-ref");
         var max_diskon = $(this).attr("data-sisa");
         $("input[name=ref_diskon]").val(ref);
         $("input[name=max_diskon]").val(max_diskon);
-    })
+    });
 
-    $("a.refundCash").click(function() {
+    $(document).on("click", "a.refundCash", function() {
         var ref = $(this).attr("data-ref");
         var client = $(this).attr("data-client");
         $("input[name=ref_refund]").val(ref);
         $("input[name=id_client]").val(client);
-    })
+    });
 
-    $("a.tambahCharge").click(function() {
+    $(document).on("click", "a.tambahCharge", function() {
         var ref = $(this).attr("data-ref");
         $("input[name=ref_charge]").val(ref);
-    })
+    });
 
-    $("a.markRef").click(function() {
+    $(document).on("click", "a.markRef", function() {
         var ref_ = $(this).attr("data-ref");
         $("input[name=ref_mark]").val(ref_);
-    })
+    });
 
-    var bill = 0;
-    $("span.btnBayar").click(function() {
-        bill = $(this).attr("data-bill");
-        client = $(this).attr("data-client");
-        $("input.bill").val(bill);
+    $(document).on("click", "span.btnBayar", function() {
+        var bill_val = $(this).attr("data-bill");
+        var client_val = $(this).attr("data-client");
+        $("input.bill").val(bill_val);
         var ref = $(this).attr("data-ref");
         $("input#refBayar").val(ref);
-        $("input#client").val(client);
-    })
+        $("input#client").val(client_val);
+    });
 
-    $("span.bayarPas").click(function() {
-        bill = $("input[name=bill]").val();
-        $("input.dibayar").val(bill);
+    $(document).on("click", "span.bayarPas", function() {
+        var bill_input = $("input[name=bill]").val();
+        $("input.dibayar").val(bill_input);
         kembalian();
-    })
+    });
 
-
-    $("span.btnAmbil").click(function() {
-        id = $(this).attr("data-id");
+    $(document).on("click", "span.btnAmbil", function() {
+        var id = $(this).attr("data-id");
         $("input[name=ambil_id]").val(id);
-    })
+    });
 
-    $("a.cancel").click(function() {
-        id = $(this).attr("data-id");
+    $(document).on("click", "a.cancel", function() {
+        var id = $(this).attr("data-id");
         $("input[name=cancel_id]").val(id);
         $("input[name=tb]").val(0);
-    })
+    });
 
-    $("a.cancelBarang").click(function() {
-        id = $(this).attr("data-id");
+    $(document).on("click", "a.cancelBarang", function() {
+        var id = $(this).attr("data-id");
         $("input[name=cancel_id]").val(id);
         $("input[name=tb]").val(1);
-    })
+    });
 
-    $("a.tukarSN").click(function() {
-        id = $(this).attr("data-id");
+    $(document).on("click", "a.tukarSN", function() {
+        var id = $(this).attr("data-id");
         $("input[name=tukarSN_id]").val(id);
-    })
+    });
 
-    $("a.tukarBarang").click(function() {
-        id = $(this).attr("data-id");
+    $(document).on("click", "a.tukarBarang", function() {
+        var id = $(this).attr("data-id");
         $("input[name=tukarBarang_id]").val(id);
-    })
+    });
 
-    $("a.refund").click(function() {
-        id = $(this).attr("data-id");
+    $(document).on("click", "a.refund", function() {
+        var id = $(this).attr("data-id");
         $("input[name=refund_id]").val(id);
-    })
+    });
 
-    $(".cancel_diskon").click(function() {
+    $(document).on("click", ".cancel_diskon", function() {
         var id = $(this).attr("data-id");
         $("input[name=cancel_id_diskon]").val(id);
-    })
+    });
 
-    $(".cancel_charge").click(function() {
+    $(document).on("click", ".cancel_charge", function() {
         var id = $(this).attr("data-id");
         $("input[name=cancel_id_charge]").val(id);
-    })
+    });
 
-    $("span.btnAmbilSemua").click(function() {
-        ref = $(this).attr("data-ref");
+    $(document).on("click", "span.btnAmbilSemua", function() {
+        var ref = $(this).attr("data-ref");
         $("input[name=ambil_ref]").val(ref);
-    })
+    });
 
-    $("a.batalAmbil").click(function() {
-        ref = $(this).attr("data-ref");
+    $(document).on("click", "a.batalAmbil", function() {
+        var ref = $(this).attr("data-ref");
         $("input[name=batal_ambil_ref]").val(ref);
-    })
+    });
 
-    $("a.ubahPelanggan").click(function() {
-        ref = $(this).attr("data-ref");
+    $(document).on("click", "a.ubahPelanggan", function() {
+        var ref = $(this).attr("data-ref");
         var pelanggan = $(this).attr("data-pelanggan");
         $("input[name=ubah_ref]").val(ref);
         $("input[name=pelanggan_lama]").val(pelanggan);
-    })
+    });
 
-    function kembalian() {
-        var kembalian = 0;
-        var dibayar = $("input.dibayar").val();
-        kembalian = dibayar - bill;
-        if (kembalian < 0) {
-            kembalian = 0;
+    $(document).on("click", "td#clearCheck", function() {
+        $("input.cek_multi").prop('checked', false);
+        totalBill = 0;
+        $("span#totalBill").html(totalBill.toLocaleString('en-US')).attr("data-total", totalBill);
+        bayarBill();
+    });
+
+    $(document).on("click", "span.bayarPasMulti", function() {
+        $("input#bayarBill").val(totalBill);
+        bayarBill();
+    });
+
+    $(document).on("change", "input.cek_multi", function() {
+        var jumlah = $(this).attr("data-jumlah");
+        let refRekap = $(this).attr("data-ref");
+
+        if ($(this).is(':checked')) {
+            totalBill = parseInt(totalBill) + parseInt(jumlah);
+            json_rekap[0][refRekap] = jumlah;
+        } else {
+            delete json_rekap[0][refRekap];
+            totalBill = parseInt(totalBill) - parseInt(jumlah);
         }
-        $("input.kembalian").val(kembalian);
-    }
 
-    $("input.dibayar").on("keyup change", function() {
+        $("span#totalBill").html(totalBill.toLocaleString('en-US')).attr("data-total", totalBill);
+        bayarBill();
+    });
+
+    $(document).on("keyup change", "input#bayarBill", function() {
+        bayarBill();
+    });
+
+    $(document).on("keyup change", "input[name=charge]", function() {
+        total_aftercas();
+    });
+
+    $(document).on("keyup change", "input.dibayar", function() {
         kembalian();
     });
 
-    // Specific handler for transfer modal to clean up backdrop
-    $("#modalTransfer form").on("submit", function(e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        var form = $(this);
-        $.ajax({
-            url: form.attr('action'),
-            data: form.serialize(),
-            type: form.attr("method"),
-            success: function(res) {
-                if (res == 0) {
-                    var modalEl = document.getElementById('modalTransfer');
-                    var m = bootstrap.Modal.getOrCreateInstance(modalEl);
-                    m.hide();
-                    $(".modal-backdrop").remove();
-                    $("body").removeClass("modal-open").css({
-                        "padding-right": ""
-                    });
-                    location.reload();
-                } else {
-                    alert(res);
-                }
-            }
-        });
-    });
-
-    $("form").on("submit", function(e) {
-        e.preventDefault();
-        $.ajax({
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            type: $(this).attr("method"),
-            success: function(res) {
-                if (res == 0) {
-                    content();
-                } else {
-                    alert(res);
-                }
-            }
-        });
-    });
-
-    $("select.metodeBayar_multi").on("keyup change", function() {
+    $(document).on("keyup change", "select.metodeBayar_multi", function() {
         if ($(this).val() == 1 || $(this).val() == 2 || $(this).val() == 3) {
             $("tr#noteBayar_multi").show();
         } else {
@@ -1081,62 +1066,54 @@
         }
     });
 
-    //MULTI
-    $("input.cek_multi").change(function() {
-        var jumlah = $(this).attr("data-jumlah");
-        let refRekap = $(this).attr("data-ref");
+    $(document).on("submit", "form", function(e) {
+        // Special handling for transfer modal already handled or should we unify?
+        // Let's unify or keep special one if it has specific logic.
+        if ($(this).closest('#modalTransfer').length) return; 
 
-        if ($(this).is(':checked')) {
-            totalBill = parseInt(totalBill) + parseInt(jumlah);
-            json_rekap[0][refRekap] = jumlah;
-        } else {
-            delete json_rekap[0][refRekap];
-            totalBill = parseInt(totalBill) - parseInt(jumlah);
-        }
-
-        $("span#totalBill").html(totalBill.toLocaleString('en-US')).attr("data-total", totalBill);
-
-        bayarBill();
-    })
-
-    $("span.bayarPasMulti").on('click', function() {
-        $("input#bayarBill").val(totalBill);
-        bayarBill();
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            type: $(this).attr("method"),
+            success: function(res) {
+                if (res == 0) {
+                    content();
+                } else {
+                    alert(res);
+                }
+            }
+        });
     });
 
+    function kembalian() {
+        var kembalian = 0;
+        var dibayar = $("input.dibayar").val();
+        var bill_val = $("input.bill").val() || 0;
+        kembalian = dibayar - bill_val;
+        if (kembalian < 0) {
+            kembalian = 0;
+        }
+        $("input.kembalian").val(kembalian);
+    }
+
     function bayarBill() {
-        var dibayar = parseInt($('input#bayarBill').val());
+        var dibayar = parseInt($('input#bayarBill').val()) || 0;
         var kembalian = parseInt(dibayar) - parseInt(totalBill);
         if (kembalian > 0) {
             $('input#kembalianBill').val(kembalian);
         } else {
             $('input#kembalianBill').val(0);
         }
-
         total_aftercas();
     }
 
-    $("input[name=charge]").on("keyup change", function() {
-        total_aftercas();
-    })
-
     function total_aftercas() {
-        var dibayar = parseInt($('input#bayarBill').val());
-        var charge = $("input[name=charge]").val();
+        var dibayar = parseInt($('input#bayarBill').val()) || 0;
+        var charge = $("input[name=charge]").val() || 0;
         $("input#total_aftercas").val(parseInt(dibayar) + (parseInt(dibayar) * (parseFloat(charge) / 100)));
         $("input#total_charge").val((parseInt(dibayar) * (parseFloat(charge) / 100)));
     }
-
-    $("input#bayarBill").on("keyup change", function() {
-        bayarBill();
-    });
-
-    $("td#clearCheck").click(function() {
-        $("input.cek_multi").prop('checked', false);
-        totalBill = 0;
-        $("span#totalBill").html(totalBill.toLocaleString('en-US')).attr("data-total", totalBill);
-        bayarBill();
-    })
 
     function copy(text, ref) {
         var temp = $("<input id=temp />");
