@@ -262,65 +262,67 @@ class Cron extends Controller
       $where_ref = "ref = '" . $ref . "'";
       $cek = $this->db(0)->get_where_row('ref', $where_ref, 'ref');
 
-      echo "TUNTAS INDUK " . $cek['tuntas'] . "<br>";
-
-      if (isset($cek['ref'])) {
-         $ref = $cek['ref'];
-      } else {
+      if (!isset($cek['ref'])) {
+         if ($print) echo "Ref not found in DB.<br>";
          exit();
       }
 
-      $cancel_count = 0;
+      $ref = $cek['ref'];
       $tuntas_date = date("Y-m-d");
+      
+      // Data Gathering
       $where = "ref = '" . $ref . "'";
       $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where);
+      
       $where_kas = "jenis_transaksi = 1 AND ref_transaksi = '" . $ref . "' AND status_mutasi = 1";
       $data['kas'] = $this->db(0)->get_where('kas', $where_kas);
 
       $where_kasKecil = "ref = '" . $ref . "' AND tipe = 0";
       $data['kas_kecil'] = $this->db(0)->get_where('kas_kecil', $where_kasKecil);
-      $where = "ref_transaksi = '" . $ref . "' AND cancel = 0";
-      $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where);
+      
+      $where_diskon = "ref_transaksi = '" . $ref . "' AND cancel = 0";
+      $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where_diskon);
 
-      $where = "ref_transaksi = '" . $ref . "' AND cancel = 0";
-      $data['charge'] = $this->db(0)->get_where_row('charge', $where);
+      $where_charge = "ref_transaksi = '" . $ref . "' AND cancel = 0";
+      $data['charge'] = $this->db(0)->get_where_row('charge', $where_charge);
 
-      $charge = 0;
-      if (isset($data['charge']['jumlah'])) {
-         $charge = $data['charge']['jumlah'];
-      }
+      // Calculations
+      $charge = isset($data['charge']['jumlah']) ? $data['charge']['jumlah'] : 0;
+      $bill = $charge;
+      $verify_payment = 0;
+      
+      $tuntas_status_db = false;
+      $db_tuntas_date = "";
 
       $stok = false;
       $ada_diskon = false;
-      //MULAI
+      $ambil_all = true;
       $verify_kas_kecil = true;
+      $cancel_count = 0;
+
+      // Verify Kas Kecil
       if (count($data['kas_kecil']) > 0) {
          foreach ($data['kas_kecil'] as $kk) {
-            if ($kk['kas_kecil']['st'] <> 1) {
+            if ($kk['st'] <> 1) {
                $verify_kas_kecil = false;
-               break;
             }
          }
       }
 
-      $bill = $charge;
-      $ambil_all = true;
-      $verify_payment = 0;
-      $tuntas = false;
-
+      // Verify Payment (Kas)
       if (count($data['kas']) > 0) {
          foreach ($data['kas'] as $dk) {
             if ($dk['metode_mutasi'] == 1 && $dk['status_mutasi'] == 1 && $dk['status_setoran'] == 1) {
                $verify_payment += $dk['jumlah'];
             }
-
             if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3 || $dk['metode_mutasi'] == 4) && $dk['status_mutasi'] == 1) {
                $verify_payment += $dk['jumlah'];
             }
          }
       }
 
+      // Verify Payment (Diskon)
       if (count($data['diskon']) > 0) {
          foreach ($data['diskon'] as $ds) {
             if ($ds['cancel'] == 0) {
@@ -329,125 +331,138 @@ class Cron extends Controller
          }
       }
 
+      // Process Orders
       if (count($data['order']) > 0) {
          foreach ($data['order'] as $do) {
-            if ($do['tuntas'] == 1 && $print == false) {
-               $tuntas = true;
-               $tuntas_date = $do['tuntas_date'];
-               break;
+            if ($do['tuntas'] == 1) {
+               $tuntas_status_db = true;
+               $db_tuntas_date = $do['tuntas_date'];
             }
 
-            if ($do['stok'] == 1) {
-               $stok = true;
-            }
+            if ($do['stok'] == 1) $stok = true;
+            if ($do['diskon'] > 0) $ada_diskon = true;
 
             $jumlah = $do['harga'] * $do['jumlah'];
             $cancel = $do['cancel'];
 
             if ($cancel == 0 && $do['stok'] == 0) {
                $bill += ($jumlah + $do['harga_paket']);
+               $bill -= $do['diskon'];
             }
 
             if ($cancel == 1) {
                $cancel_count += 1;
             }
 
-            if ($do['diskon'] > 0) {
-               $ada_diskon = true;
-            }
-
-            $bill -= $do['diskon'];
             $id_ambil = $do['id_ambil'];
             $divisi_arr = unserialize($do['spk_dvs']);
             $countSPK = count($divisi_arr);
-            if ($id_ambil == 0 && $cancel == 0) {
-               if ($countSPK > 0 && $cancel == 0) {
-                  $ambil_all = false;
-               }
+            if ($id_ambil == 0 && $cancel == 0 && $countSPK > 0) {
+               $ambil_all = false;
             }
          }
       }
 
+      // Process Mutasi
       if (count($data['mutasi']) > 0) {
-         foreach ($data['mutasi'] as $do) {
-            if ($do['tuntas'] == 1 && $print == false) {
-               $tuntas = true;
-               $tuntas_date = $do['tuntas_date'];
-               break;
+         foreach ($data['mutasi'] as $dm) {
+            if ($dm['tuntas'] == 1) {
+               $tuntas_status_db = true;
+               $db_tuntas_date = $dm['tuntas_date'];
             }
 
-            if ($do['diskon'] > 0) {
-               $ada_diskon = true;
-            }
+            if ($dm['diskon'] > 0) $ada_diskon = true;
 
-            $cancel_barang = $do['stat'];
-            $jumlah = $do['qty'];
+            $cancel_barang = $dm['stat'];
+            $jumlah = $dm['qty'];
+
             if ($cancel_barang <> 2) {
-               $bill += (($jumlah * $do['harga_jual']) + $do['harga_paket']);
-               $bill -= ($do['diskon'] * $jumlah);
-            }
-
-            if ($cancel_barang == 2) {
+               $bill += (($jumlah * $dm['harga_jual']) + $dm['harga_paket']);
+               $bill -= ($dm['diskon'] * $jumlah);
+            } else {
                $cancel_count += 1;
             }
          }
       }
 
       $order_count = count($data['mutasi']) + count($data['order']);
+      
+      // Determine Output Status
+      $ready_to_tuntas = false;
+      $reason = "";
 
-      if ($print == false) {
-         if ($tuntas == true) {
-            $this->update_ref($ref, $tuntas_date);
-            exit();
-         }
-
-         if ($verify_payment == $bill && $ambil_all == true && $verify_kas_kecil == true) {
-            if ($bill > 0 && $verify_payment > 0) {
-               $this->clearTuntas($ref);
+      if ($verify_payment == $bill && $ambil_all == true && $verify_kas_kecil == true) {
+         if ($bill > 0 && $verify_payment > 0) {
+            $ready_to_tuntas = true;
+            $reason = "Normal Payment Matched";
+         } else {
+            if ($stok == true || $ada_diskon == true) {
+               $ready_to_tuntas = true;
+               $reason = "Zero Bill (Stok/Diskon)";
+            } elseif ($order_count == $cancel_count) {
+               $ready_to_tuntas = true;
+               $reason = "All Cancelled";
             } else {
-               if ($stok == true || $ada_diskon == true) {
-                  $this->clearTuntas($ref);
-               } else {
-                  if ($order_count == $cancel_count) {
-                     $this->clearTuntas($ref);
-                  }
-               }
+               $reason = "Zero Bill but not qualified";
             }
          }
       } else {
-         if ($verify_payment == $bill && $ambil_all == true && $verify_kas_kecil == true) {
-            echo "Ready to Tuntas<br>";
-            if ($bill > 0 && $verify_payment > 0) {
-               echo "Ready to Tuntas Normal<br>";
-               $this->clearTuntas($ref);
-            } else {
-               echo "Ready to Tuntas UpNormal<br>";
-               if ($stok == true || $ada_diskon == true) {
-                  echo "Ready to Tuntas UpNormal BY STOK or DISKON<br>";
-                  $this->clearTuntas($ref);
-               } else {
-                  if ($order_count == $cancel_count) {
-                     echo "Ready to Tuntas UpNormal BY CANCEL<br>";
-                     $this->clearTuntas($ref);
-                  }
-               }
-            }
+         $reason = "Criteria Not Met (Payment: " . ($verify_payment == $bill ? 'OK' : 'Diff') . ", Ambil: " . ($ambil_all ? 'OK' : 'No') . ", KasKecil: " . ($verify_kas_kecil ? 'OK' : 'No') . ")";
+      }
+
+      // Actions
+      if (!$print) {
+         if ($tuntas_status_db) {
+            $this->update_ref($ref, $db_tuntas_date);
+            exit();
          }
+         if ($ready_to_tuntas) {
+            $this->clearTuntas($ref);
+         }
+      } else {
+         // Echo Robust Info
+         echo "<h3>Cek Tuntas Debug Info</h3>";
+         echo "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 50%;'>";
+         echo "<tr><th colspan='2'>Main Status</th></tr>";
+         echo "<tr><td>REF ID</td><td>" . $ref . "</td></tr>";
+         echo "<tr><td>Tuntas Induk DB</td><td>" . $cek['tuntas'] . "</td></tr>";
+         echo "<tr><td>Tuntas Items DB</td><td>" . ($tuntas_status_db ? 'Yes (' . $db_tuntas_date . ')' : 'No') . "</td></tr>";
+         echo "<tr><td><strong>Decision</strong></td><td><strong>" . ($ready_to_tuntas ? "READY TO TUNTAS" : "NOT READY") . "</strong></td></tr>";
+         echo "<tr><td>Reason</td><td>" . $reason . "</td></tr>";
 
-         echo "Bill " . $bill . "<br>";
-         echo "Verify Payment " . $verify_payment . "<br>";
-         echo "Ambil All " . $ambil_all . "<br>";
-         echo "Verify Kas Kecil " . $verify_kas_kecil . "<br>";
-         echo "Ada Diskon " . $ada_diskon . "<br>";
-         echo "Stok Produksi " . $stok . "<br>";
-         echo "Order Count " . $order_count . "<br>";
-         echo "Cancel Count " . $cancel_count . "<br>";
+         echo "<tr><th colspan='2'>Financials</th></tr>";
+         // format as currency/number
+         echo "<tr><td>Bill Amount</td><td>" . number_format($bill) . "</td></tr>";
+         echo "<tr><td>Verify Payment</td><td>" . number_format($verify_payment) . "</td></tr>";
+         echo "<tr><td>Charge</td><td>" . number_format($charge) . "</td></tr>";
+         echo "<tr><td>Has Discount</td><td>" . ($ada_diskon ? 'Yes' : 'No') . "</td></tr>";
 
+         echo "<tr><th colspan='2'>Logistics & Validation</th></tr>";
+         echo "<tr><td>Ambil All Status</td><td>" . ($ambil_all ? 'Yes' : 'No (Pending)') . "</td></tr>";
+         echo "<tr><td>Verify Kas Kecil</td><td>" . ($verify_kas_kecil ? 'Yes' : 'No (Invalid)') . "</td></tr>";
+         echo "<tr><td>Stok Mode</td><td>" . ($stok ? 'Yes' : 'No') . "</td></tr>";
+         
+         echo "<tr><th colspan='2'>Counters</th></tr>";
+         echo "<tr><td>Total Orders</td><td>" . $order_count . "</td></tr>";
+         echo "<tr><td>Cancelled Count</td><td>" . $cancel_count . "</td></tr>";
+         echo "</table>";
+
+         echo "<h4>Data Dump</h4>";
          echo "<pre>";
+         echo "--- Kas ---\n";
          print_r($data['kas']);
+         echo "\n--- Diskon ---\n";
          print_r($data['diskon']);
+         echo "\n--- Order ---\n";
          print_r($data['order']);
+         echo "\n--- Mutasi ---\n";
+         print_r($data['mutasi']);
          echo "</pre>";
+
+         if ($ready_to_tuntas) {
+             echo "<br><strong>Executing ClearTuntas...</strong>";
+             $this->clearTuntas($ref);
+         }
       }
    }
 
