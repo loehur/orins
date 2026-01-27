@@ -529,6 +529,26 @@ class Cron extends Controller
       }
       echo "[OK] Deleted from 'master_mutasi'<br>";
 
+      $where_trx = "ref_transaksi = '" . $ref . "'";
+
+      // 4. Delete from KAS
+      $del4 = $this->db(0)->delete_where("kas", $where_trx);
+      if ($del4['errno'] <> 0) {
+         $this->db(0)->query("ROLLBACK");
+         echo "[FAILED] Delete 'kas' Error: " . $del4['error'] . "<br>";
+         return;
+      }
+      echo "[OK] Deleted from 'kas'<br>";
+
+      // 5. Delete from XTRA_DISKON
+      $del5 = $this->db(0)->delete_where("xtra_diskon", $where_trx);
+      if ($del5['errno'] <> 0) {
+         $this->db(0)->query("ROLLBACK");
+         echo "[FAILED] Delete 'xtra_diskon' Error: " . $del5['error'] . "<br>";
+         return;
+      }
+      echo "[OK] Deleted from 'xtra_diskon'<br>";
+      
       $this->db(0)->query("COMMIT");
       echo "<strong>Transaction Completed Successfully.</strong><br>";
    }
