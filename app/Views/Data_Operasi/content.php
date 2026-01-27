@@ -1,6 +1,6 @@
 <main>
     <div class="row mx-2" style="max-width:600px">
-        <div class="col px-1">
+        <div class="col px-0">
             <select class="border rounded tize ajax-pelanggan" name="id_pelanggan" required>
                 <option></option>
                 <?php foreach ($data['pelanggan'] as $p) { ?>
