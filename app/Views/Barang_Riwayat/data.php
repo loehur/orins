@@ -1,4 +1,4 @@
-    <div class="mb-2 mt-2">
+    <div class="mb-2 pt-2">
         <button class="btn btn-sm btn-outline-secondary filter-btn active" data-filter="all">Semua</button>
         <button class="btn btn-sm btn-outline-success filter-btn" data-filter="Masuk">Masuk</button>
         <button class="btn btn-sm btn-outline-dark filter-btn" data-filter="Toko Jual">Toko Jual</button>
