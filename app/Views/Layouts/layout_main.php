@@ -47,7 +47,7 @@
 
 		.selectize-input {
 			border: none;
-			padding-top: 12px;
+			padding: 12px 15px !important;
 		}
 
 		.selectize-input::after {
@@ -64,7 +64,7 @@
 
 		.selectize-dropdown .option,
 		.selectize-dropdown .optgroup-header {
-			padding: 8px 12px !important;
+			padding: 10px 20px !important;
 		}
 
 		input:focus,
