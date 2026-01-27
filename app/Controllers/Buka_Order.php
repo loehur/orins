@@ -898,7 +898,11 @@ class Buka_Order extends Controller
          exit();
       }
 
-      $where = "id_barang = '" . $code . "' AND stat = 0 AND ref = ''";
+      $where_ref = "''";
+      if (isset($_SESSION['edit'][$this->userData['id_user']])) {
+         $where_ref = "'" . $_SESSION['edit'][$this->userData['id_user']][0] . "', ''";
+      }
+      $where = "id_barang = '" . $code . "' AND stat <> 2 AND ref IN (" . $where_ref . ")";
       $set = "harga_jual = " . $harga;
       $update = $this->db(0)->update("master_mutasi", $set, $where);
 
@@ -1294,7 +1298,7 @@ class Buka_Order extends Controller
                $sn_c = 1;
             }
 
-            $where = "id = " . $dbr['id'] . " AND ref = ''";
+            $where = "id = " . $dbr['id'];
             // If this mutasi item belongs to a paket (paket_ref or paket_group), keep harga_jual = 0
             $harga_to_set = $harga;
             if ((isset($dbr['paket_ref']) && strlen($dbr['paket_ref']) > 0) || (isset($dbr['paket_group']) && strlen($dbr['paket_group']) > 0)) {
@@ -1323,6 +1327,7 @@ class Buka_Order extends Controller
 
          foreach ($detail_harga as $key => $dh_o) {
             $diskon += ($dh_o['d'] * $jumlah);
+            $found_price = false;
             foreach ($data_harga as $dh) {
                if ($dh['code'] == $dh_o['c_h'] && $dh['harga_' . $harga_code] <> 0 && $dh['id_produk'] == $do['id_produk']) {
                   $harga +=  $dh['harga_' . $harga_code];
@@ -1334,8 +1339,12 @@ class Buka_Order extends Controller
                         $total_per_paket[$do['paket_ref']] = ($detail_harga[$key]['h'] * $do['jumlah']);
                      }
                   }
+                  $found_price = true;
                   break;
                }
+            }
+            if (!$found_price) {
+               $harga += $do['harga']; // Fallback to existing price if no match in master list
             }
          }
 
@@ -1457,8 +1466,8 @@ class Buka_Order extends Controller
       $set_mm_tmp = "stat = 1, id_target = " . $final_id_target . ", jenis_target = " . $id_pelanggan_jenis . ", cs_id = " . $final_cs_id . ", ref = '" . $ref . "'";
       $this->db(0)->update("master_mutasi", $set_mm_tmp, $where_mm_tmp);
 
-      if (isset($_SESSION['edit'])) {
-         unset($_SESSION['edit']);
+      if (isset($_SESSION['edit'][$this->userData['id_user']])) {
+         unset($_SESSION['edit'][$this->userData['id_user']]);
       }
 
       if (isset($_COOKIE['new_user'])) {
@@ -1933,8 +1942,8 @@ class Buka_Order extends Controller
          $this->db(0)->update('edit_sessions', "status = 'committed'", "session_key = '" . $session_key . "' AND status = 'active'");
       }
 
-      // Clear edit session
-      unset($_SESSION['edit'][$this->userData['id_user']]);
+      // Clear edit session - REMOVED: proses still needs it
+      // unset($_SESSION['edit'][$this->userData['id_user']]);
 
       echo 0;
    }
