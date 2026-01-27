@@ -494,9 +494,9 @@
                                             <td colspan="10">
                                                 <?php
                                                 if ($dh['tuntas'] == 1) { ?>
-                                                    <span class="badge bg-success">TUNTAS</span>
+                                                    <span class="badge bg-success" style="font-size: 11px; vertical-align: middle;">TUNTAS</span>
                                                     <?php if (in_array($this->userData['user_tipe'], PV::PRIV[107])) { ?>
-                                                        <button class="btn btn-sm btn-outline-danger un_tuntas py-0 px-2" data-ref="<?= $ref ?>"><small>Un-Tuntas</small></button>
+                                                        <button class="btn btn-outline-danger un_tuntas py-0 px-1 ms-1 fw-bold" style="font-size: 11px; vertical-align: middle;" data-ref="<?= $ref ?>">UN-TUNTAS</button>
                                                     <?php } ?>
                                                 <?php } ?>
                                             </td>
@@ -530,7 +530,7 @@
                 type: "POST",
                 success: function(res) {
                     if (res == 0) {
-                        location.reload();
+                        $("form").submit();
                     } else {
                         alert(res);
                     }
