@@ -79,10 +79,12 @@ class Non_Tunai extends Controller
       $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
 
       if ($val == 2) {
-         $set_ = "tuntas = 0";
          $ref = $this->db(0)->get_where_row("kas", $where_kas)['ref_transaksi'];
-         $where = "ref = '" . $ref . "'";
-         $this->db(0)->update("order_data", $set_, $where);
+         $undo = $this->data('Operasi')->un_tuntas($ref);
+         if ($undo['status'] == 'failed') {
+            echo $undo['error'];
+            exit();
+         }
 
          $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
       }
@@ -98,6 +100,24 @@ class Non_Tunai extends Controller
       $ref_bayar = $_POST['id'];
       $val = $_POST['val'];
       $note = $_POST['note'];
+      $where_kas = "ref_bayar = '" . $ref_bayar . "'";
+
+      if($val == 2){
+         $kas_data = $this->db(0)->get_where("kas", $where_kas);
+         $processed_refs = [];
+         
+         foreach($kas_data as $kd){
+            $ref = $kd['ref_transaksi'];
+            if(!in_array($ref, $processed_refs) && $ref != ""){
+                $undo = $this->data('Operasi')->un_tuntas($ref);
+                if ($undo['status'] == 'failed') {
+                    echo "Ref " . $ref . ": " . $undo['error'];
+                    exit();
+                }
+                $processed_refs[] = $ref;
+            }
+         }
+      }
 
       $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
 
