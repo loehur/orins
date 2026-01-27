@@ -37,6 +37,26 @@
             </div>
         </div>
 
+        <?php
+        $stok_minus = array_filter($data['stok'], function ($s) {
+            return $s['qty'] < 0;
+        });
+        if (count($stok_minus) > 0 && $d['cek'] == 0) { ?>
+            <label class="badge bg-danger ms-1 mb-0 rounded-0 mt-1">Stok Minus</label>
+            <div class="border pt-2 px-1 mx-1 mb-2">
+                <table class="text-sm table table-sm mx-0 mt-0 mb-2">
+                    <?php foreach ($stok_minus as $ds) {
+                        $db = $data['barang'][$ds['id_barang']]; ?>
+                        <tr>
+                            <td><?= $db['code'] ?></td>
+                            <td><?= $db['nama'] ?><?= $db['product_name'] ?></td>
+                            <td class="text-end"><?= $ds['qty'] ?></td>
+                        </tr>
+                    <?php } ?>
+                </table>
+            </div>
+        <?php } ?>
+
         <table class="table table-sm text-sm mx-1">
             <?php
             $no = 0;

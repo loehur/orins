@@ -55,6 +55,7 @@ class Barang_Masuk extends Controller
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
 
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "ref = '" . $id . "'");
+      $data['stok'] = $this->data('Barang')->stok_data_list_all($this->userData['id_toko']);
       $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'], 'id_karyawan');
       $this->view(__CLASS__ . '/list_data', $data);
    }
