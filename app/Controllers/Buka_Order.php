@@ -1981,7 +1981,7 @@ class Buka_Order extends Controller
          exit();
       }
 
-      $where = "en = 1 AND id_pelanggan_jenis = " . $id_pelanggan_jenis . " AND (nama LIKE '%" . $q . "%' OR no_hp LIKE '%" . $q . "%' OR id_pelanggan LIKE '%" . $q . "%')";
+      $where = "en = 1 AND id_toko = " . $this->userData['id_toko'] . " AND id_pelanggan_jenis = " . $id_pelanggan_jenis . " AND (nama LIKE '%" . $q . "%' OR no_hp LIKE '%" . $q . "%' OR id_pelanggan LIKE '%" . $q . "%')";
       $res = $this->db(0)->get_where('pelanggan', $where);
       $data = [];
       foreach ($res as $p) {

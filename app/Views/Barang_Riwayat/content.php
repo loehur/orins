@@ -19,18 +19,6 @@
                 <input name="sn" id="sn" class="form-control form-control-sm">
             </div>
             <div class="col-auto px-1 mb-2">
-                <label>Filter</label><br>
-                <select name="filter" id="filter" class="form-select form-select-sm">
-                    <option value="">Semua</option>
-                    <option value="Masuk">Masuk</option>
-                    <option value="Toko Jual">Toko Jual</option>
-                    <option value="Gudang Jual">Gudang Jual</option>
-                    <option value="Transfer">Transfer</option>
-                    <option value="Retur">Retur</option>
-                    <option value="Pakai">Pakai</option>
-                </select>
-            </div>
-            <div class="col-auto px-1 mb-2">
                 <label>&nbsp;</label><br>
                 <span id="cek" class="btn btn-sm btn-success">Cek</span>
             </div>
@@ -49,9 +37,8 @@
     $("#cek").click(function() {
         var get = $("#barang").val();
         var sn = $("#sn").val();
-        var filter = $("#filter").val();
         if (get != "") {
-            $('#data').load('<?= PV::BASE_URL ?>Barang_Riwayat/data/' + get + '/' + sn + '/' + filter);
+            $('#data').load('<?= PV::BASE_URL ?>Barang_Riwayat/data/' + get + '/' + sn);
         }
     })
 </script>

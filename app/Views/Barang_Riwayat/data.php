@@ -1,20 +1,38 @@
-    <table class="table table-sm text-sm">
+    <div class="mb-2">
+        <button class="btn btn-sm btn-outline-secondary filter-btn active" data-filter="all">Semua</button>
+        <button class="btn btn-sm btn-outline-success filter-btn" data-filter="Masuk">Masuk</button>
+        <button class="btn btn-sm btn-outline-purple filter-btn" data-filter="Toko Jual">Toko Jual</button>
+        <button class="btn btn-sm btn-outline-danger filter-btn" data-filter="Gudang Jual">Gudang Jual</button>
+        <button class="btn btn-sm btn-outline-warning filter-btn" data-filter="Transfer">Transfer</button>
+        <button class="btn btn-sm btn-outline-primary filter-btn" data-filter="Retur">Retur</button>
+        <button class="btn btn-sm btn-outline-info filter-btn" data-filter="Pakai">Pakai</button>
+    </div>
+
+    <table class="table table-sm text-sm" id="table-riwayat">
         <?php foreach ($data['mutasi'] as $d) {
             $dp = $data['barang'];
             $target_link = "Home";
-
+            
+            $filter_type = "";
             switch ($d['jenis']) {
                 case 0:
                     $href = PV::BASE_URL . "Gudang_Input/list/" . $d['ref'];
+                    $filter_type = "Masuk";
                     break;
                 case 1:
                     $href = PV::BASE_URL . "Stok_Transfer/list/" . $d['ref'];
+                    $filter_type = "Transfer";
                     break;
                 case 2:
                     if ($d['id_sumber'] == $this->userData['id_toko']) {
                         $href = PV::BASE_URL . "Cek/order/" . $d['ref'] . "/" . $d['id_target'];
                     } else {
                         $href = PV::BASE_URL . "Gudang_Penjualan/list/" . $d['ref'];
+                    }
+                    if ($d['id_sumber'] == 0) {
+                        $filter_type = "Gudang Jual";
+                    } else {
+                        $filter_type = "Toko Jual";
                     }
                     break;
                 case 3:
@@ -23,6 +41,11 @@
                     } else {
                         $href = PV::BASE_URL . "Gudang_BMasuk/list/" . $d['ref'];
                     }
+                    $filter_type = "Retur";
+                    break;
+                case 4:
+                    $filter_type = "Pakai"; // Assuming logic for Pakai
+                    $href = "#";
                     break;
                 default:
                     $href = "#";
@@ -31,7 +54,7 @@
 
             $target = "UNDEFINED"; ?>
 
-            <tr class="<?= $d['stat'] == 2 ? 'table-danger text-secondary' : '' ?>">
+            <tr class="data-row <?= $d['stat'] == 2 ? 'table-danger text-secondary' : '' ?>" data-filter="<?= $filter_type ?>">
                 <td>#<?= $d['id'] ?></td>
                 <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
                 <td><a target="_blank" href="<?= $href ?>"><?= $d['ref'] ?></a></td>
@@ -66,31 +89,8 @@
                 </td>
                 <td>
                     <?php
-                    switch ($d['jenis']) {
-                        case 0:
-                            echo 'Masuk';
-                            break;
-                        case 1:
-                            echo 'Transfer';
-                            break;
-                        case 2:
-                            if ($d['id_sumber'] == 0) {
-                                echo 'Gudang Jual';
-                            } else {
-                                echo 'Toko Jual';
-                            }
-                            break;
-                        case 3:
-                            echo 'Retur';
-                            break;
-                        case 4:
-                            if ($d['id_sumber'] == 0) {
-                                echo 'Gudang Pakai';
-                            } else {
-                                echo 'Toko Pakai';
-                            }
-                            break;
-                    } ?>
+                    echo $filter_type;
+                     ?>
                 </td>
                 <td class="">
                     <?php switch ($d['jenis']) {
@@ -136,6 +136,18 @@
     <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
     <script>
+        $(".filter-btn").click(function() {
+            $(".filter-btn").removeClass("active");
+            $(this).addClass("active");
+            var filter = $(this).attr("data-filter");
+            
+            if (filter == "all") {
+                $(".data-row").show();
+            } else {
+                $(".data-row").hide();
+                $(".data-row[data-filter='" + filter + "']").show();
+            }
+        });
         var click = 0;
         $(".cell_edit").on('click', function() {
             click = click + 1;
