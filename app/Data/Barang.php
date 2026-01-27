@@ -27,6 +27,8 @@ class Barang extends Controller
                     $cart_list_cache = $this->db(0)->get_cols_where('master_mutasi', $cols_cart, $where_cart_list);
                 }
                 $masuk[$key]['cart_list'] = $cart_list_cache;
+            } else {
+                unset($masuk[$key]['cart']);
             }
         }
 
@@ -48,6 +50,12 @@ class Barang extends Controller
 
         $masuk = $this->db(0)->get_cols_where('master_mutasi', $cols, $where, 1, "id_barang");
 
+        foreach ($masuk as $key => $ms) {
+            if ($masuk[$key]['cart'] == 0) {
+                unset($masuk[$key]['cart']);
+            }
+        }
+
         return $masuk;
     }
 
@@ -65,6 +73,12 @@ class Barang extends Controller
 
         $masuk = $this->db(0)->get_cols_where('master_mutasi', $cols, $where, 1, "unic");
 
+        foreach ($masuk as $key => $ms) {
+            if ($masuk[$key]['cart'] == 0) {
+                unset($masuk[$key]['cart']);
+            }
+        }
+
         return $masuk;
     }
 
@@ -81,6 +95,12 @@ class Barang extends Controller
                   GROUP BY id_barang";
 
         $masuk = $this->db(0)->get_cols_where('master_mutasi', $cols, $where, 1, "id_barang");
+
+        foreach ($masuk as $key => $ms) {
+            if ($masuk[$key]['cart'] == 0) {
+                unset($masuk[$key]['cart']);
+            }
+        }
 
         return $masuk;
     }
@@ -113,6 +133,12 @@ class Barang extends Controller
                   GROUP BY id_barang, sds";
 
         $masuk = $this->db(0)->get_cols_where('master_mutasi', $cols, $where, 1, "unic");
+
+        foreach ($masuk as $key => $ms) {
+            if ($masuk[$key]['cart'] == 0) {
+                unset($masuk[$key]['cart']);
+            }
+        }
 
         return $masuk;
     }
