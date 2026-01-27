@@ -1647,6 +1647,19 @@ class Buka_Order extends Controller
          }
       }
 
+      // Process discount updates for order_data
+      if (!empty($changes['updatedDiskon'])) {
+         foreach ($changes['updatedDiskon'] as $id => $val) {
+            $set = "diskon = " . intval($val);
+            $where = "id_order_data = " . intval($id);
+            $update_result = $this->db(0)->update('order_data', $set, $where);
+            if ($update_result['errno'] != 0) {
+               echo "Error updating diskon for order " . $id . ": " . $update_result['error'];
+               exit();
+            }
+         }
+      }
+
       // Process paket quantity updates
       if (!empty($changes['updatedPaketQty'])) {
          foreach ($changes['updatedPaketQty'] as $key => $paket_qty_new) {
