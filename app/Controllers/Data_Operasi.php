@@ -54,10 +54,18 @@ class Data_Operasi extends Controller
       $data['r_kas'] = [];
       $data['divisi'] = $this->db(0)->get('divisi', 'id_divisi');
 
-      if ($this->dToko[$this->userData['id_toko']]['produksi'] == 1) {
-         $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
+      if ($parse > 0) {
+         $data['pelanggan'] = $this->db(0)->get_where('pelanggan', 'id_pelanggan = ' . $parse, 'id_pelanggan');
+         $p = $data['pelanggan'][$parse];
+         $data['pelanggan_init'] = json_encode([[
+            'id' => $p['id_pelanggan'],
+            'nama' => strtoupper($p['nama']),
+            'no_hp' => $p['no_hp'],
+            'inisial' => $this->dToko[$p['id_toko']]['inisial']
+         ]]);
       } else {
-         $data['pelanggan'] = $this->db(0)->get_where('pelanggan', 'id_toko = ' . $this->userData['id_toko'], 'id_pelanggan');
+         $data['pelanggan'] = [];
+         $data['pelanggan_init'] = "[]";
       }
 
       $data['saldo'] = $this->data("Saldo")->deposit($parse);
@@ -552,5 +560,26 @@ class Data_Operasi extends Controller
       // Redirect back
       header("Location: " . PV::BASE_URL . "Data_Operasi/index/" . $id_pelanggan_baru);
       exit();
+   }
+   function search_pelanggan()
+   {
+      $q = $_GET['q'];
+      if (strlen($q) < 3) {
+         echo json_encode([]);
+         exit();
+      }
+
+      $where = "en = 1 AND (nama LIKE '%" . $q . "%' OR no_hp LIKE '%" . $q . "%' OR id_pelanggan LIKE '%" . $q . "%')";
+      $res = $this->db(0)->get_where('pelanggan', $where);
+      $data = [];
+      foreach ($res as $p) {
+         $data[] = [
+            'id' => $p['id_pelanggan'],
+            'nama' => strtoupper($p['nama']),
+            'no_hp' => $p['no_hp'],
+            'inisial' => $this->dToko[$p['id_toko']]['inisial']
+         ];
+      }
+      echo json_encode($data);
    }
 }

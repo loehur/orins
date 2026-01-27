@@ -1,7 +1,7 @@
 <main>
     <div class="row mx-2" style="max-width:600px">
         <div class="col px-1">
-            <select class="border rounded tize" name="id_pelanggan" required>
+            <select class="border rounded tize ajax-pelanggan" name="id_pelanggan" required>
                 <option></option>
                 <?php foreach ($data['pelanggan'] as $p) { ?>
                     <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= $this->dToko[$p['id_toko']]['inisial'] ?> <?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], -2) ?></option>
@@ -880,7 +880,45 @@
         
         // Asynchronous initialization of Selectize to keep UI responsive
         setTimeout(function() {
-            $('select.tize').selectize();
+            $('select.tize:not(.ajax-pelanggan)').selectize();
+
+            $('select.ajax-pelanggan').selectize({
+                valueField: 'id',
+                labelField: 'nama',
+                searchField: ['nama', 'no_hp'],
+                options: <?= $data['pelanggan_init'] ?>,
+                create: false,
+                render: {
+                    option: function(item, escape) {
+                        return '<div>' +
+                            '<span>' + escape(item.inisial) + ' ' + escape(item.nama) + '</span>' +
+                            ' #<small>' + escape(item.id).substring(escape(item.id).length - 2) + '</small>' +
+                            ' <br><small>' + escape(item.no_hp) + '</small>' +
+                            '</div>';
+                    },
+                    item: function(item, escape) {
+                        return '<div>' + escape(item.inisial) + ' ' + escape(item.nama) + '</div>';
+                    }
+                },
+                load: function(query, callback) {
+                    if (query.length < 3) return callback();
+                    $.ajax({
+                        url: '<?= PV::BASE_URL ?>Data_Operasi/search_pelanggan',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {
+                            q: query
+                        },
+                        error: function() {
+                            callback();
+                        },
+                        success: function(res) {
+                            callback(res);
+                        }
+                    });
+                }
+            });
+
             // Hide the loader only after everything is ready
             $('div.loaderDiv').addClass('d-none');
         }, 500);
