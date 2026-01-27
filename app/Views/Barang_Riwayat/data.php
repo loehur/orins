@@ -68,7 +68,8 @@
             <tr class="data-row <?= $d['stat'] == 2 ? 'table-danger text-secondary' : '' ?>" data-filter="<?= $filter_type ?>">
                 <td>#<?= $d['id'] ?></td>
                 <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
-                <td><small><?= $ref_counter ?></small>. <a target="_blank" href="<?= $href ?>"><?= $d['ref'] ?></a></td>
+                <td class="text-end" style="width: 10px;"><small><?= $ref_counter ?></small></td>
+                <td><a target="_blank" href="<?= $href ?>"><?= $d['ref'] ?></a></td>
                 <td><span data-id="<?= $d['id'] ?>" class="<?= strlen($d['sn']) > 0 ? 'cell_edit' : "" ?>"><?= $d['sn'] ?></span></td>
                 <td class="align-middle">
                     <?php
