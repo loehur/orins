@@ -890,14 +890,14 @@
                 create: false,
                 render: {
                     option: function(item, escape) {
-                        return '<div style="padding: 10px 20px;">' +
+                        return '<div style="padding: 6px 15px;">' +
                             '<span>' + escape(item.inisial) + ' ' + escape(item.nama) + '</span>' +
                             ' #<small>' + escape(item.id).substring(escape(item.id).length - 2) + '</small>' +
                             ' <br><small>' + escape(item.no_hp) + '</small>' +
                             '</div>';
                     },
                     item: function(item, escape) {
-                        return '<div style="padding: 2px 5px;">' + escape(item.inisial) + ' ' + escape(item.nama) + '</div>';
+                        return '<div style="padding: 2px 10px;">' + escape(item.inisial) + ' ' + escape(item.nama) + '</div>';
                     }
                 },
                 load: function(query, callback) {

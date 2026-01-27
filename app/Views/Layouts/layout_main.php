@@ -67,7 +67,7 @@
 		.selectize-dropdown .optgroup-header,
 		.selectize-input [data-value],
 		.selectize-input > div {
-			padding: 12px 30px !important;
+			padding: 6px 15px !important;
 		}
 
 		input:focus,
