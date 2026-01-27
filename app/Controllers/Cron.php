@@ -458,16 +458,33 @@ class Cron extends Controller
          exit();
       }
 
+      $this->db(0)->query("START TRANSACTION");
+
       $where = "ref = '" . $ref . "' AND tuntas = 1";
       $set = "tuntas = 0, tuntas_date = ''";
-      $up = $this->db(0)->update("ref", $set, $where);
-      if ($up['errno'] <> 0) {
-         echo $up['error'] . "\n";
-      } else {
-         $set = "tuntas = 0, tuntas_date = ''";
-         $up = $this->db(0)->update("order_data", $set, $where);
-         $up = $this->db(0)->update("master_mutasi", $set, $where);
+
+      $up1 = $this->db(0)->update("ref", $set, $where);
+      if ($up1['errno'] <> 0) {
+         $this->db(0)->query("ROLLBACK");
+         echo $up1['error'] . "\n";
+         exit();
       }
+
+      $up2 = $this->db(0)->update("order_data", $set, $where);
+      if ($up2['errno'] <> 0) {
+         $this->db(0)->query("ROLLBACK");
+         echo $up2['error'] . "\n";
+         exit();
+      }
+
+      $up3 = $this->db(0)->update("master_mutasi", $set, $where);
+      if ($up3['errno'] <> 0) {
+         $this->db(0)->query("ROLLBACK");
+         echo $up3['error'] . "\n";
+         exit();
+      }
+
+      $this->db(0)->query("COMMIT");
    }
 
    public function clearTuntas($ref)
