@@ -490,8 +490,13 @@ class Cron extends Controller
       $this->db(0)->update("ref", $set, $where);
    }
 
-   function delete_ref($ref)
+   function delete_ref($ref = null)
    {
+      if ($ref == null) {
+         echo "No Ref Found";
+         return;
+      }
+
       echo "<h3>Deleting Ref: " . $ref . "</h3>";
       $this->db(0)->query("START TRANSACTION");
 
