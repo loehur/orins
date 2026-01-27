@@ -278,7 +278,19 @@
                                                 $bill += $jumlah + ($do['harga_paket'] * $paket_qty_val);
                                             }
 
-                                            $bill -= $do['diskon'];
+                                            $listDetail = unserialize($do['detail_harga']);
+                                            $akum_diskon_unit = 0;
+                                            if (is_array($listDetail)) {
+                                                foreach ($listDetail as $ld_o) {
+                                                    $disk = isset($ld_o['d']) ? $ld_o['d'] : 0;
+                                                    $akum_diskon_unit += $disk;
+                                                }
+                                            }
+                                            $total_diskon_row = $akum_diskon_unit * $do['jumlah'];
+                                            
+                                            // Override diskon column logic with calculated value
+                                            $do['diskon'] = $total_diskon_row;
+                                            $bill -= $total_diskon_row;
 
                                             $id_order_data = $do['id_order_data'];
                                             $id_produk = $do['id_produk'];
