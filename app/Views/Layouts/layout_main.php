@@ -63,9 +63,7 @@
 
 		.selectize-dropdown .option,
 		.selectize-dropdown [data-selectable],
-		.selectize-dropdown .optgroup-header,
-		.selectize-input [data-value],
-		.selectize-input > div {
+		.selectize-dropdown .optgroup-header {
 			padding: 6px 15px !important;
 		}
 
