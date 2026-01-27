@@ -489,4 +489,42 @@ class Cron extends Controller
       $where = "ref = '" . $ref . "'";
       $this->db(0)->update("ref", $set, $where);
    }
+
+   function delete_ref($ref)
+   {
+      echo "<h3>Deleting Ref: " . $ref . "</h3>";
+      $this->db(0)->query("START TRANSACTION");
+
+      $where = "ref = '" . $ref . "'";
+
+      // 1. Delete from REF
+      $del1 = $this->db(0)->delete_where("ref", $where);
+      if ($del1['errno'] <> 0) {
+         $this->db(0)->query("ROLLBACK");
+         echo "[FAILED] Delete 'ref' Error: " . $del1['error'] . "<br>";
+         return;
+      }
+      echo "[OK] Deleted from 'ref'<br>";
+
+      // 2. Delete from ORDER_DATA
+      $del2 = $this->db(0)->delete_where("order_data", $where);
+      if ($del2['errno'] <> 0) {
+         $this->db(0)->query("ROLLBACK");
+         echo "[FAILED] Delete 'order_data' Error: " . $del2['error'] . "<br>";
+         return;
+      }
+      echo "[OK] Deleted from 'order_data'<br>";
+
+      // 3. Delete from MASTER_MUTASI
+      $del3 = $this->db(0)->delete_where("master_mutasi", $where);
+      if ($del3['errno'] <> 0) {
+         $this->db(0)->query("ROLLBACK");
+         echo "[FAILED] Delete 'master_mutasi' Error: " . $del3['error'] . "<br>";
+         return;
+      }
+      echo "[OK] Deleted from 'master_mutasi'<br>";
+
+      $this->db(0)->query("COMMIT");
+      echo "<strong>Transaction Completed Successfully.</strong><br>";
+   }
 }
