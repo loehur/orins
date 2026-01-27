@@ -62,6 +62,11 @@
 			line-height: 100%;
 		}
 
+		.selectize-dropdown .option,
+		.selectize-dropdown .optgroup-header {
+			padding: 8px 12px !important;
+		}
+
 		input:focus,
 		.form-select:focus,
 		.btn:focus,
