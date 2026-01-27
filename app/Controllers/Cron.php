@@ -447,18 +447,6 @@ class Cron extends Controller
          echo "<tr><td>Cancelled Count</td><td>" . $cancel_count . "</td></tr>";
          echo "</table>";
 
-         echo "<h4>Data Dump</h4>";
-         echo "<pre>";
-         echo "--- Kas ---\n";
-         print_r($data['kas']);
-         echo "\n--- Diskon ---\n";
-         print_r($data['diskon']);
-         echo "\n--- Order ---\n";
-         print_r($data['order']);
-         echo "\n--- Mutasi ---\n";
-         print_r($data['mutasi']);
-         echo "</pre>";
-
          if ($ready_to_tuntas) {
              echo "<br><strong>Executing ClearTuntas...</strong>";
              $this->clearTuntas($ref);
