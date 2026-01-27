@@ -455,7 +455,7 @@ class Cron extends Controller
    {
       if ($ref == "") {
          echo "No Ref Found";
-         exit();
+         return;
       }
 
       $this->db(0)->query("START TRANSACTION");
@@ -466,22 +466,22 @@ class Cron extends Controller
       $up1 = $this->db(0)->update("ref", $set, $where);
       if ($up1['errno'] <> 0) {
          $this->db(0)->query("ROLLBACK");
-         echo $up1['error'] . "\n";
-         exit();
+         echo "Error Step 1: " . $up1['error'] . "\n";
+         return;
       }
 
       $up2 = $this->db(0)->update("order_data", $set, $where);
       if ($up2['errno'] <> 0) {
          $this->db(0)->query("ROLLBACK");
-         echo $up2['error'] . "\n";
-         exit();
+         echo "Error Step 2: " . $up2['error'] . "\n";
+         return;
       }
 
       $up3 = $this->db(0)->update("master_mutasi", $set, $where);
       if ($up3['errno'] <> 0) {
          $this->db(0)->query("ROLLBACK");
-         echo $up3['error'] . "\n";
-         exit();
+         echo "Error Step 3: " . $up3['error'] . "\n";
+         return;
       }
 
       $this->db(0)->query("COMMIT");
