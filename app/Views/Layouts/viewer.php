@@ -54,7 +54,6 @@
     <div class="loader"></div>
 </div>
 
-<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script>
     $(document).ready(function() {
         content();
@@ -62,7 +61,6 @@
 
     function content(new_parse = "", new_parse_2 = "") {
         $('div.loaderDiv').removeClass('d-none');
-        $('body').addClass('disabled_all');
 
         if (new_parse != "") {
             parse = new_parse
@@ -79,12 +77,10 @@
         if (parse_2 != "") {
             $("div#content").load('<?= PV::BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse + '/' + parse_2, function() {
                 $('div.loaderDiv').addClass('d-none');
-                $('body').removeClass('disabled_all');
             });
         } else {
             $("div#content").load('<?= PV::BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse, function() {
                 $('div.loaderDiv').addClass('d-none');
-                $('body').removeClass('disabled_all');
             });
         }
     }

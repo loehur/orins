@@ -86,7 +86,7 @@
 $t = $data['title'];
 ?>
 
-<body class="nav-fixed disabled_all">
+<body class="nav-fixed">
 	<?php include_once('topnav.php'); ?>
 	<?php include_once('menu.php'); ?>
 	<script src="<?= PV::ASSETS_URL ?>plugins/bootstrap-5.1/bootstrap.bundle.min.js"></script>
@@ -96,6 +96,7 @@ $t = $data['title'];
 </html>
 
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 
 <script>
 	$("a#sync").click(function(e) {

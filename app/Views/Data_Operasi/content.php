@@ -860,9 +860,9 @@
     </div>
 </main>
 
+
 <?php require_once('form.php') ?>
-<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
+
 
 <script>
     var totalBill = 0;
