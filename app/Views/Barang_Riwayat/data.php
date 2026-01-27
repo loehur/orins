@@ -1,7 +1,7 @@
     <div class="mb-2">
         <button class="btn btn-sm btn-outline-secondary filter-btn active" data-filter="all">Semua</button>
         <button class="btn btn-sm btn-outline-success filter-btn" data-filter="Masuk">Masuk</button>
-        <button class="btn btn-sm btn-outline-light filter-btn" data-filter="Toko Jual">Toko Jual</button>
+        <button class="btn btn-sm btn-outline-dark filter-btn" data-filter="Toko Jual">Toko Jual</button>
         <button class="btn btn-sm btn-outline-danger filter-btn" data-filter="Gudang Jual">Gudang Jual</button>
         <button class="btn btn-sm btn-outline-warning filter-btn" data-filter="Transfer">Transfer</button>
         <button class="btn btn-sm btn-outline-primary filter-btn" data-filter="Retur">Retur</button>
