@@ -47,7 +47,6 @@
 
 		.selectize-input {
 			border: none;
-			padding: 12px 15px !important;
 		}
 
 		.selectize-input::after {
