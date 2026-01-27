@@ -50,7 +50,7 @@ $mgpaket = $data['harga_paket'];
                         <?php } ?>
                         <div class="row pb-2">
                             <div class="col px-1" style="max-width: 300px;">
-                                <select class="tize shadow-none" id="pelanggan" name="id_pelanggan">
+                                <select class="tize shadow-none ajax-pelanggan" id="pelanggan" name="id_pelanggan">
                                     <option value="">Customer Name (<?= $pelanggan_jenis ?>)</option>
                                     <?php foreach ($data['pelanggan'] as $p) { ?>
                                         <option value="<?= $p['id_pelanggan'] ?>"><?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], 2) ?> | <?= $p['no_hp'] ?></option>
@@ -710,7 +710,44 @@ $mgpaket = $data['harga_paket'];
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('.tize').selectize();
+        $('.tize:not(.ajax-pelanggan)').selectize();
+
+        $('select.ajax-pelanggan').selectize({
+            valueField: 'id',
+            labelField: 'nama',
+            searchField: ['nama', 'no_hp'],
+            options: <?= $data['pelanggan_init'] ?>,
+            create: false,
+            render: {
+                option: function(item, escape) {
+                    return '<div style="padding: 6px 15px;">' +
+                        '<span>' + escape(item.inisial) + ' ' + escape(item.nama) + '</span>' +
+                        ' #<small>' + escape(item.id).substring(escape(item.id).length - 2) + '</small>' +
+                        ' <br><small>' + escape(item.no_hp) + '</small>' +
+                        '</div>';
+                },
+                item: function(item, escape) {
+                    return '<div style="padding: 2px 10px;">' + escape(item.inisial) + ' ' + escape(item.nama) + '</div>';
+                }
+            },
+            load: function(query, callback) {
+                if (query.length < 3) return callback();
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>Buka_Order/search_pelanggan/<?= $id_pelanggan_jenis ?>',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        q: query
+                    },
+                    error: function() {
+                        callback();
+                    },
+                    success: function(res) {
+                        callback(res);
+                    }
+                });
+            }
+        });
     });
 
     // Helper function to show modal alert

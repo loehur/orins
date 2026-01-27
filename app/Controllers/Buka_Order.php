@@ -190,8 +190,24 @@ class Buka_Order extends Controller
       $data['produk_jasa'] = $this->db(0)->get_where('produk', "pj = " . $this->userData['id_toko'] . " ORDER BY freq DESC, id_produk");
       $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
 
-      $wherePelanggan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 AND id_pelanggan_jenis = " . $parse . " ORDER BY freq DESC";
-      $data['pelanggan'] = $this->db(0)->get_where('pelanggan', $wherePelanggan, 'id_pelanggan');
+      $id_pelanggan_selected = 0;
+      if (isset($_SESSION['edit'][$this->userData['id_user']])) {
+         $id_pelanggan_selected = $_SESSION['edit'][$this->userData['id_user']][3];
+      }
+
+      if ($id_pelanggan_selected > 0) {
+         $data['pelanggan'] = $this->db(0)->get_where('pelanggan', 'id_pelanggan = ' . $id_pelanggan_selected, 'id_pelanggan');
+         $p = $data['pelanggan'][$id_pelanggan_selected];
+         $data['pelanggan_init'] = json_encode([[
+            'id' => $p['id_pelanggan'],
+            'nama' => strtoupper($p['nama']),
+            'no_hp' => $p['no_hp'],
+            'inisial' => $this->dToko[$p['id_toko']]['inisial']
+         ]]);
+      } else {
+         $data['pelanggan'] = [];
+         $data['pelanggan_init'] = "[]";
+      }
 
       $data['id_jenis_pelanggan'] = $parse;
       if (isset($_SESSION['edit'][$this->userData['id_user']])) {
@@ -1947,5 +1963,26 @@ class Buka_Order extends Controller
       }
 
       echo 0;
+   }
+   function search_pelanggan($id_pelanggan_jenis)
+   {
+      $q = $_GET['q'];
+      if (strlen($q) < 3) {
+         echo json_encode([]);
+         exit();
+      }
+
+      $where = "en = 1 AND id_pelanggan_jenis = " . $id_pelanggan_jenis . " AND (nama LIKE '%" . $q . "%' OR no_hp LIKE '%" . $q . "%' OR id_pelanggan LIKE '%" . $q . "%')";
+      $res = $this->db(0)->get_where('pelanggan', $where);
+      $data = [];
+      foreach ($res as $p) {
+         $data[] = [
+            'id' => $p['id_pelanggan'],
+            'nama' => strtoupper($p['nama']),
+            'no_hp' => $p['no_hp'],
+            'inisial' => $this->dToko[$p['id_toko']]['inisial']
+         ];
+      }
+      echo json_encode($data);
    }
 }
