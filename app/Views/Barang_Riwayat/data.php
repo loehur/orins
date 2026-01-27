@@ -9,8 +9,19 @@
     </div>
 
     <table class="table table-sm text-sm" id="table-riwayat">
-        <?php foreach ($data['mutasi'] as $d) {
+        <?php 
+        $prev_ref = "";
+        $ref_counter = 0;
+        foreach ($data['mutasi'] as $d) {
             $dp = $data['barang'];
+
+            if ($d['ref'] != $prev_ref) {
+               $prev_ref = $d['ref'];
+               $ref_counter = 1;
+            } else {
+               $ref_counter++;
+            }
+
             $target_link = "Home";
             
             $filter_type = "";
@@ -57,7 +68,7 @@
             <tr class="data-row <?= $d['stat'] == 2 ? 'table-danger text-secondary' : '' ?>" data-filter="<?= $filter_type ?>">
                 <td>#<?= $d['id'] ?></td>
                 <td class=""><?= date('d/m/y H:i', strtotime($d['insertTime'])) ?></td>
-                <td><a target="_blank" href="<?= $href ?>"><?= $d['ref'] ?></a></td>
+                <td><small><?= $ref_counter ?></small>. <a target="_blank" href="<?= $href ?>"><?= $d['ref'] ?></a></td>
                 <td><span data-id="<?= $d['id'] ?>" class="<?= strlen($d['sn']) > 0 ? 'cell_edit' : "" ?>"><?= $d['sn'] ?></span></td>
                 <td class="align-middle">
                     <?php
