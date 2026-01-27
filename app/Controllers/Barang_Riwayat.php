@@ -35,16 +35,39 @@ class Barang_Riwayat extends Controller
       $this->view(__CLASS__ . '/content', $data);
    }
 
-   function data($kode, $sn = "")
+   function data($kode, $sn = "", $filter = "")
    {
       $data['barang'] = $this->db(0)->get_where_row('master_barang', "sp = 0 AND id = '" . $kode . "'");
       $data['supplier'] = $this->db(0)->get('master_supplier', "id");
       $data['akun_pakai'] = $this->db(0)->get('akun_pakai', "id");
-      if ($sn == "") {
-         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND stat <> 0");
-      } else {
-         $data['mutasi'] = $this->db(0)->get_where('master_mutasi', "id_barang = '" . $kode . "' AND sn = '" . $sn . "' AND stat <> 0");
+
+      $where = "id_barang = '" . $kode . "' AND stat <> 0";
+      if ($sn <> "") {
+         $where .= " AND sn = '" . $sn . "'";
       }
+
+      switch ($filter) {
+         case 'Masuk':
+            $where .= " AND jenis = 0";
+            break;
+         case 'Toko Jual':
+            $where .= " AND jenis = 2 AND id_sumber <> 0";
+            break;
+         case 'Gudang Jual':
+            $where .= " AND jenis = 2 AND id_sumber = 0";
+            break;
+         case 'Transfer':
+            $where .= " AND jenis = 1";
+            break;
+         case 'Retur':
+            $where .= " AND jenis = 3";
+            break;
+         case 'Pakai':
+            $where .= " AND jenis = 4";
+            break;
+      }
+
+      $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where);
       $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $this->view(__CLASS__ . '/data', $data);
    }
