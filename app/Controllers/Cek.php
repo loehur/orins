@@ -107,4 +107,19 @@ class Cek extends Controller
 
       $this->view(__CLASS__ . "/order", $data);
    }
+
+   function un_tuntas()
+   {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[107])) {
+         echo "Anda tidak memiliki akses untuk aksi ini!";
+         exit();
+      }
+      $ref = $_POST['ref'];
+      $res = $this->data("Operasi")->un_tuntas($ref);
+      if ($res['status'] == 'success') {
+         echo 0;
+      } else {
+         echo $res['error'];
+      }
+   }
 }

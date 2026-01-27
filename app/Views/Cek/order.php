@@ -493,8 +493,11 @@
                                         <tr>
                                             <td colspan="10">
                                                 <?php
-                                                if ($do['tuntas'] == 1) { ?>
+                                                if ($dh['tuntas'] == 1) { ?>
                                                     <span class="badge bg-success">TUNTAS</span>
+                                                    <?php if (in_array($this->userData['user_tipe'], PV::PRIV[107])) { ?>
+                                                        <button class="btn btn-sm btn-outline-danger un_tuntas py-0 px-2" data-ref="<?= $ref ?>"><small>Un-Tuntas</small></button>
+                                                    <?php } ?>
                                                 <?php } ?>
                                             </td>
                                         </tr>
@@ -513,3 +516,26 @@
         <?php } ?>
     </div>
 </main>
+
+<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
+<script>
+    $(".un_tuntas").click(function() {
+        var ref = $(this).attr("data-ref");
+        if (confirm("Apakah anda yakin ingin mengembalikan status Ref #" + ref + " menjadi BELUM TUNTAS?")) {
+            $.ajax({
+                url: "<?= PV::BASE_URL ?>Cek/un_tuntas",
+                data: {
+                    ref: ref
+                },
+                type: "POST",
+                success: function(res) {
+                    if (res == 0) {
+                        location.reload();
+                    } else {
+                        alert(res);
+                    }
+                },
+            });
+        }
+    });
+</script>
