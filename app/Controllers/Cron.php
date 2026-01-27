@@ -42,8 +42,6 @@ class Cron extends Controller
       }
    }
 
-
-
    function update_idproduk($year)
    {
       $data_harga = $this->db(0)->get('produk_harga');
@@ -548,6 +546,15 @@ class Cron extends Controller
          return;
       }
       echo "[OK] Deleted from 'xtra_diskon'<br>";
+
+      // 6. Delete from CHARGE
+      $del6 = $this->db(0)->delete_where("charge", $where_trx);
+      if ($del6['errno'] <> 0) {
+         $this->db(0)->query("ROLLBACK");
+         echo "[FAILED] Delete 'charge' Error: " . $del6['error'] . "<br>";
+         return;
+      }
+      echo "[OK] Deleted from 'charge'<br>";
       
       $this->db(0)->query("COMMIT");
       echo "<strong>Transaction Completed Successfully.</strong><br>";
