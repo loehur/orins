@@ -20,12 +20,15 @@
 
     .loaderDiv {
         position: fixed;
-        z-index: 1;
-        left: 40%;
-        top: 30%;
+        z-index: 9999;
+        left: 0;
+        top: 0;
         width: 100%;
         height: 100%;
-        pointer-events: none;
+        background-color: rgba(255, 255, 255, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     /* Safari */
@@ -76,11 +79,16 @@
         page = "<?= isset($data['page']) && $data['page'] != "" ? $data['page'] : 'content' ?>";
         if (parse_2 != "") {
             $("div#content").load('<?= PV::BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse + '/' + parse_2, function() {
-                $('div.loaderDiv').addClass('d-none');
+                // If the loaded content doesn't have its own loader-hiding logic, hide it here.
+                if ($("#content").find("[data-custom-loader]").length == 0) {
+                    $('div.loaderDiv').addClass('d-none');
+                }
             });
         } else {
             $("div#content").load('<?= PV::BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse, function() {
-                $('div.loaderDiv').addClass('d-none');
+                if ($("#content").find("[data-custom-loader]").length == 0) {
+                    $('div.loaderDiv').addClass('d-none');
+                }
             });
         }
     }

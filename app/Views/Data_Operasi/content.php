@@ -864,12 +864,13 @@
 <?php require_once('form.php') ?>
 
 
+<span data-custom-loader="true" class="d-none"></span>
 <script>
     var totalBill = 0;
     var json_rekap = [];
 
     $(document).ready(function() {
-        //MULTI
+        // MULTI
         totalBill = $("span#totalBill").attr("data-total") || 0;
         json_rekap = [<?= json_encode($loadRekap) ?>];
 
@@ -880,7 +881,9 @@
         // Asynchronous initialization of Selectize to keep UI responsive
         setTimeout(function() {
             $('select.tize').selectize();
-        }, 300);
+            // Hide the loader only after everything is ready
+            $('div.loaderDiv').addClass('d-none');
+        }, 500);
     });
 
     $(document).on("click", "a.ajax", function(e) {
