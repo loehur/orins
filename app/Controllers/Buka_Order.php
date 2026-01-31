@@ -451,9 +451,16 @@ class Buka_Order extends Controller
       $this->data_order();
 
       $ref = "";
+      $id_pelanggan = 0;
+      $id_pelanggan_jenis = 0;
+      $id_penerima = 0;
+      
       if (isset($_SESSION['edit'][$this->userData['id_user']])) {
          $dEdit = $_SESSION['edit'][$this->userData['id_user']];
          $ref = $dEdit[0];
+         $id_pelanggan_jenis = isset($dEdit[1]) ? $dEdit[1] : 0;  // jenis_pelanggan
+         $id_pelanggan = isset($dEdit[3]) ? $dEdit[3] : 0;         // id_pelanggan
+         $id_penerima = isset($dEdit[5]) ? $dEdit[5] : 0;          // id_penerima (cs_id)
       }
 
       if ($afiliasi == 0 && isset($_POST['aff_target'])) {
@@ -665,11 +672,11 @@ class Buka_Order extends Controller
       // If this is part of a paket, ensure harga field is set to 0 at insert time
       $harga_insert = 0;
       if ($afiliasi == 0) {
-         $cols = 'ref, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
-         $vals = "'" . $ref . "','" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
+         $cols = 'ref, id_pelanggan, id_pelanggan_jenis, id_penerima, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
+         $vals = "'" . $ref . "'," . $id_pelanggan . "," . $id_pelanggan_jenis . "," . $id_penerima . ",'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
       } else {
-         $cols = 'ref, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
-         $vals = "'" . $ref . "','" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
+         $cols = 'ref, id_pelanggan, id_pelanggan_jenis, id_penerima, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
+         $vals = "'" . $ref . "'," . $id_pelanggan . "," . $id_pelanggan_jenis . "," . $id_penerima . ",'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
       }
 
       $do = $this->db(0)->insertCols('order_data', $cols, $vals);
@@ -691,6 +698,11 @@ class Buka_Order extends Controller
       if (isset($_SESSION['edit'][$this->userData['id_user']])) {
          $dEdit = $_SESSION['edit'][$this->userData['id_user']];
          $ref = $dEdit[0];
+         
+         // If id_jenis_pelanggan not provided (0), get from session
+         if ($id_jenis_pelanggan == 0 && isset($dEdit[1])) {
+            $id_jenis_pelanggan = $dEdit[1];
+         }
          
          // Use helper to get cs_id and id_target
          $refMeta = $this->getRefMetadata($ref);
@@ -1488,6 +1500,38 @@ class Buka_Order extends Controller
       $id_order = $_POST['id_order'];
 
       $cek_price_lock = $this->db(0)->get_where_row('order_data', 'id_order_data = ' . $id_order);
+      
+      // Check if in edit mode
+      $in_edit_mode = false;
+      if (isset($_SESSION['edit'][$this->userData['id_user']])) {
+         $dEdit = $_SESSION['edit'][$this->userData['id_user']];
+         $session_key = isset($dEdit[4]) ? $dEdit[4] : '';
+         
+         if (!empty($session_key)) {
+            $in_edit_mode = true;
+            // Get edit session snapshot
+            $session = $this->db(0)->get_where_row('edit_sessions', "session_key = '" . $session_key . "' AND status = 'active'");
+            
+            if ($session && !empty($session['snapshot_data'])) {
+               $snapshot_order = json_decode($session['snapshot_data'], true);
+               
+               // Check if this item exists in snapshot (old item)
+               foreach ($snapshot_order as $item) {
+                  if (isset($item['id_order_data']) && $item['id_order_data'] == $id_order) {
+                     echo "Item ini tidak dapat dihapus karena sudah ada sebelum edit. Silahkan gunakan cancel jika ingin membatalkan.";
+                     exit();
+                  }
+               }
+            }
+         }
+      } else {
+         // If NOT in edit mode, check if item has ref (already processed)
+         if ($cek_price_lock['ref'] <> "") {
+            echo "Tidak dapat dihapus, silahkan lakukan cancel";
+            exit();
+         }
+      }
+      
       if ($cek_price_lock['price_locker'] == 1) {
          $where = "paket_group = '" . $cek_price_lock['paket_group'] . "' AND paket_ref = '" . $cek_price_lock['paket_ref'] . "'";
          $do = $this->db(0)->delete_where('master_mutasi', $where);
@@ -1499,11 +1543,7 @@ class Buka_Order extends Controller
          $where = "id_order_data =" . $id_order;
       }
 
-      if ($cek_price_lock['ref'] <> "") {
-         echo "Tidak dapat dihapus, silahkan lakukan cancel";
-         exit();
-      }
-
+      
       $do = $this->db(0)->delete_where('order_data', $where);
       if ($do['errno'] == 0) {
          $this->model('Log')->write($this->userData['user'] . " Delete Order Produksi Success!");
@@ -1517,6 +1557,38 @@ class Buka_Order extends Controller
    {
       $id = $_POST['id'];
       $cek_price_lock = $this->db(0)->get_where_row('master_mutasi', 'id = ' . $id);
+      
+      // Check if in edit mode
+      $in_edit_mode = false;
+      if (isset($_SESSION['edit'][$this->userData['id_user']])) {
+         $dEdit = $_SESSION['edit'][$this->userData['id_user']];
+         $session_key = isset($dEdit[4]) ? $dEdit[4] : '';
+         
+         if (!empty($session_key)) {
+            $in_edit_mode = true;
+            // Get edit session snapshot
+            $session = $this->db(0)->get_where_row('edit_sessions', "session_key = '" . $session_key . "' AND status = 'active'");
+            
+            if ($session && !empty($session['snapshot_mutasi'])) {
+               $snapshot_mutasi = json_decode($session['snapshot_mutasi'], true);
+               
+               // Check if this item exists in snapshot (old item)
+               foreach ($snapshot_mutasi as $item) {
+                  if (isset($item['id']) && $item['id'] == $id) {
+                     echo "Item ini tidak dapat dihapus karena sudah ada sebelum edit. Silahkan gunakan cancel jika ingin membatalkan.";
+                     exit();
+                  }
+               }
+            }
+         }
+      } else {
+         // If NOT in edit mode, check if item has ref (already processed)
+         if ($cek_price_lock['ref'] <> "") {
+            echo "Tidak dapat dihapus, silahkan lakukan cancel";
+            exit();
+         }
+      }
+      
       if ($cek_price_lock['price_locker'] == 1) {
          $where = "paket_group = '" . $cek_price_lock['paket_group'] . "' AND paket_ref = '" . $cek_price_lock['paket_ref'] . "'";
          $do = $this->db(0)->delete_where('order_data', $where);
@@ -1528,11 +1600,7 @@ class Buka_Order extends Controller
          $where = "id =" . $id;
       }
 
-      if ($cek_price_lock['ref'] <> "") {
-         echo "Tidak dapat dihapus, silahkan lakukan cancel";
-         exit();
-      }
-
+      
       $do = $this->db(0)->delete_where('master_mutasi', $where);
       if ($do['errno'] == 0) {
          $this->model('Log')->write($this->userData['user'] . " Delete Order Barang Success!");
