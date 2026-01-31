@@ -672,8 +672,8 @@ class Buka_Order extends Controller
       // If this is part of a paket, ensure harga field is set to 0 at insert time
       $harga_insert = 0;
       if ($afiliasi == 0) {
-         $cols = 'ref, id_pelanggan, id_pelanggan_jenis, id_penerima, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
-         $vals = "'" . $ref . "'," . $id_pelanggan . "," . $id_pelanggan_jenis . "," . $id_penerima . ",'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
+         $cols = 'ref, id_pelanggan, id_pelanggan_jenis, id_penerima, status_order, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
+         $vals = "'" . $ref . "'," . $id_pelanggan . "," . $id_pelanggan_jenis . "," . $id_penerima . ",0,'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
       } else {
          $cols = 'ref, id_pelanggan, id_pelanggan_jenis, id_penerima, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
          $vals = "'" . $ref . "'," . $id_pelanggan . "," . $id_pelanggan_jenis . "," . $id_penerima . ",'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
@@ -1383,10 +1383,10 @@ class Buka_Order extends Controller
                }
             }
 
-            $st_order = ", status_order = 0, id_user_afiliasi = " . $id_user_afiliasi . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
+            $st_order = ", status_order = 1, id_user_afiliasi = " . $id_user_afiliasi . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
             $where = "id_order_data = " . $do['id_order_data'] . " AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_user_afiliasi = 0";
          } else {
-            $st_order = "";
+            $st_order = ", status_order = 0";
             $where = "id_order_data = " . $do['id_order_data'];
          }
 

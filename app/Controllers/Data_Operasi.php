@@ -90,13 +90,9 @@ class Data_Operasi extends Controller
          $data['order'] = $this->db(0)->get_where('order_data', $where, 'ref', 1);
          $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_mutasi, 'ref', 1);
          
-         // AUTO-FIX: Paksa status_order = 1 jika masih 0 dengan kondisi cancel = 0 dan ref ada
+         // AUTO-FIX: Paksa stat = 1 jika masih 0 dengan kondisi ref ada
          // Ini mengatasi masalah orphan items dari edit session yang tidak selesai
          if ($parse_2 < 2023) { // Only for non-tuntas (active) data
-            $fix_where = "id_toko = " . $this->userData['id_toko'] . " AND id_pelanggan = " . $parse . " AND tuntas = 0 AND cancel = 0 AND ref <> '' AND (status_order = 0 OR status_order IS NULL)";
-            $this->db(0)->update("order_data", "status_order = 1", $fix_where);
-            
-            // AUTO-FIX: Paksa stat = 1 jika masih 0 dengan kondisi ref ada
             $fix_where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND id_target = " . $parse . " AND tuntas = 0 AND ref <> '' AND stat = 0";
             $this->db(0)->update("master_mutasi", "stat = 1", $fix_where_mutasi);
          }
