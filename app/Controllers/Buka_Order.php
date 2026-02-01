@@ -1360,7 +1360,12 @@ class Buka_Order extends Controller
             }
          }
 
-         if ($id_user_afiliasi <> 0) {
+         // Dari Buka_Order_Aff: selalu status_order = 1 (meskipun CS tidak dipilih). Order afiliasi = id_afiliasi = id_toko user.
+         $is_from_buka_order_aff = isset($_POST['id_karyawan_aff']);
+         $is_affiliate_order = isset($do['id_afiliasi']) && (int)$do['id_afiliasi'] === (int)$this->userData['id_toko'];
+         $use_status_order_1 = ($id_user_afiliasi <> 0) || ($is_from_buka_order_aff && $is_affiliate_order);
+
+         if ($use_status_order_1) {
 
             $new_data_pending = "";
             if (strlen($do['pending_spk']) > 1) {
@@ -1383,7 +1388,7 @@ class Buka_Order extends Controller
                }
             }
 
-            $st_order = ", status_order = 1, id_user_afiliasi = " . $id_user_afiliasi . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
+            $st_order = ", status_order = 1, id_user_afiliasi = " . intval($id_user_afiliasi) . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
             $where = "id_order_data = " . $do['id_order_data'] . " AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_user_afiliasi = 0";
          } else {
             $st_order = ", status_order = 0";
