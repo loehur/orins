@@ -671,7 +671,7 @@ class Buka_Order extends Controller
 
       // If this is part of a paket, ensure harga field is set to 0 at insert time
       $harga_insert = 0;
-      if ($afiliasi == 0) {
+      if ((int)$afiliasi === 0) {
          $cols = 'ref, id_pelanggan, id_pelanggan_jenis, id_penerima, status_order, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
          $vals = "'" . $ref . "'," . $id_pelanggan . "," . $id_pelanggan_jenis . "," . $id_penerima . ",0,'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
       } else {
@@ -1363,7 +1363,8 @@ class Buka_Order extends Controller
          // Dari Buka_Order_Aff: selalu status_order = 1 (meskipun CS tidak dipilih). Order afiliasi = id_afiliasi = id_toko user.
          $is_from_buka_order_aff = isset($_POST['id_karyawan_aff']);
          $is_affiliate_order = isset($do['id_afiliasi']) && (int)$do['id_afiliasi'] === (int)$this->userData['id_toko'];
-         $use_status_order_1 = ($id_user_afiliasi <> 0) || ($is_from_buka_order_aff && $is_affiliate_order);
+         $has_afiliasi = isset($do['id_afiliasi']) && (int)$do['id_afiliasi'] <> 0;
+         $use_status_order_1 = ($id_user_afiliasi <> 0) || ($is_from_buka_order_aff && $is_affiliate_order) || $has_afiliasi;
 
          if ($use_status_order_1) {
 
@@ -1389,7 +1390,11 @@ class Buka_Order extends Controller
             }
 
             $st_order = ", status_order = 1, id_user_afiliasi = " . intval($id_user_afiliasi) . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
-            $where = "id_order_data = " . $do['id_order_data'] . " AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_user_afiliasi = 0";
+            $where = "id_order_data = " . $do['id_order_data'];
+            // If processing specifically from Buka_Order_Aff view, ensure it matches target shop and hasn't been assigned
+            if ($is_from_buka_order_aff) {
+               $where .= " AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_user_afiliasi = 0";
+            }
          } else {
             $st_order = ", status_order = 0";
             $where = "id_order_data = " . $do['id_order_data'];
