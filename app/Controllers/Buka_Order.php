@@ -1360,16 +1360,12 @@ class Buka_Order extends Controller
             }
          }
 
-         // Dari Buka_Order_Aff: proses mengubah status_order menjadi 0 (order selesai diproses afiliasi).
-         $is_from_buka_order_aff = isset($_POST['id_karyawan_aff']);
-         $is_affiliate_order = isset($do['id_afiliasi']) && (int)$do['id_afiliasi'] === (int)$this->userData['id_toko'];
+         // Order dengan id_afiliasi (dari Buka_Order atau Buka_Order_Aff) → status_order = 1
+         $has_affiliasi = isset($do['id_afiliasi']) && (int)$do['id_afiliasi'] <> 0;
+         $is_our_affiliate = isset($do['id_afiliasi']) && (int)$do['id_afiliasi'] === (int)$this->userData['id_toko'];
 
-         if ($is_from_buka_order_aff && $is_affiliate_order) {
-            // Proses dari Buka_Order_Aff → status_order = 0, set id_user_afiliasi (CS yang dipilih atau 0)
-            $st_order = ", status_order = 0, id_user_afiliasi = " . intval($id_user_afiliasi);
-            $where = "id_order_data = " . $do['id_order_data'] . " AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_user_afiliasi = 0";
-         } elseif ($id_user_afiliasi <> 0) {
-
+         if ($has_affiliasi && $is_our_affiliate && (int)$do['id_user_afiliasi'] === 0) {
+            // Order afiliasi milik toko kita, belum di-assign → full update: status_order = 1, id_user_afiliasi, pending_spk, spk_lanjutan
             $new_data_pending = "";
             if (strlen($do['pending_spk']) > 1) {
                $data_pending = unserialize($do['pending_spk']);
@@ -1391,8 +1387,12 @@ class Buka_Order extends Controller
                }
             }
 
-            $st_order = ", status_order = 1, id_user_afiliasi = " . $id_user_afiliasi . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
+            $st_order = ", status_order = 1, id_user_afiliasi = " . intval($id_user_afiliasi) . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
             $where = "id_order_data = " . $do['id_order_data'] . " AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_user_afiliasi = 0";
+         } elseif ($has_affiliasi) {
+            // Order afiliasi (milik toko lain atau sudah di-assign) → status_order = 1 saja
+            $st_order = ", status_order = 1";
+            $where = "id_order_data = " . $do['id_order_data'];
          } else {
             $st_order = ", status_order = 0";
             $where = "id_order_data = " . $do['id_order_data'];
