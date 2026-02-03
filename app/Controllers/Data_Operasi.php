@@ -146,14 +146,8 @@ class Data_Operasi extends Controller
       }
 
       $data['refs'] = $refs;
-      $this->dKaryawanAll = $this->db(0)->get_where('karyawan', "en >= 0 ORDER BY freq_cs DESC", 'id_karyawan');
-      $this->dKaryawanAll_cs = $this->db(0)->get_where('karyawan', "en = 1 ORDER BY freq_cs DESC", 'id_karyawan');
-      $this->dKaryawanAll_driver = $this->db(0)->get_where('karyawan', "en = 1 ORDER BY freq_driver DESC", 'id_karyawan');
-      $this->dKaryawan_cs = $this->dKaryawanAll_cs;
-      $this->dKaryawan_driver = $this->dKaryawanAll_driver;
-
-      $data['karyawan'] = $this->dKaryawanAll;
-      $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC", 'id_karyawan');
+      $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
+      $data['karyawan_toko'] = $this->db(0)->get_where('karyawan', "id_toko = " . $this->userData['id_toko'], 'id_karyawan');
 
       foreach ($refs as $r) {
          $data['head'][$r]['cs_to'] = 0;

@@ -1360,13 +1360,15 @@ class Buka_Order extends Controller
             }
          }
 
-         // Dari Buka_Order_Aff: selalu status_order = 1 (meskipun CS tidak dipilih). Order afiliasi = id_afiliasi = id_toko user.
+         // Dari Buka_Order_Aff: proses mengubah status_order menjadi 0 (order selesai diproses afiliasi).
          $is_from_buka_order_aff = isset($_POST['id_karyawan_aff']);
          $is_affiliate_order = isset($do['id_afiliasi']) && (int)$do['id_afiliasi'] === (int)$this->userData['id_toko'];
-         $has_afiliasi = isset($do['id_afiliasi']) && (int)$do['id_afiliasi'] <> 0;
-         $use_status_order_1 = ($id_user_afiliasi <> 0) || ($is_from_buka_order_aff && $is_affiliate_order) || $has_afiliasi;
 
-         if ($use_status_order_1) {
+         if ($is_from_buka_order_aff && $is_affiliate_order) {
+            // Proses dari Buka_Order_Aff → status_order = 0, set id_user_afiliasi (CS yang dipilih atau 0)
+            $st_order = ", status_order = 0, id_user_afiliasi = " . intval($id_user_afiliasi);
+            $where = "id_order_data = " . $do['id_order_data'] . " AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_user_afiliasi = 0";
+         } elseif ($id_user_afiliasi <> 0) {
 
             $new_data_pending = "";
             if (strlen($do['pending_spk']) > 1) {
@@ -1389,12 +1391,8 @@ class Buka_Order extends Controller
                }
             }
 
-            $st_order = ", status_order = 1, id_user_afiliasi = " . intval($id_user_afiliasi) . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
-            $where = "id_order_data = " . $do['id_order_data'];
-            // If processing specifically from Buka_Order_Aff view, ensure it matches target shop and hasn't been assigned
-            if ($is_from_buka_order_aff) {
-               $where .= " AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_user_afiliasi = 0";
-            }
+            $st_order = ", status_order = 1, id_user_afiliasi = " . $id_user_afiliasi . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
+            $where = "id_order_data = " . $do['id_order_data'] . " AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_user_afiliasi = 0";
          } else {
             $st_order = ", status_order = 0";
             $where = "id_order_data = " . $do['id_order_data'];
