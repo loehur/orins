@@ -901,7 +901,7 @@
                     }
                 },
                 load: function(query, callback) {
-                    if (query.length < 3) return callback();
+                    if (query.length < 2) return callback();
                     $.ajax({
                         url: '<?= PV::BASE_URL ?>Data_Operasi/search_pelanggan',
                         type: 'GET',

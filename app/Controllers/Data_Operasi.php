@@ -571,7 +571,7 @@ class Data_Operasi extends Controller
    function search_pelanggan()
    {
       $q = $_GET['q'];
-      if (strlen($q) < 3) {
+      if (strlen($q) < 2) {
          echo json_encode([]);
          exit();
       }
