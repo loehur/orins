@@ -1,6 +1,6 @@
 <?php
 $cols = "id_toko, id_pelanggan, ref";
-$where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_penerima <> 0 AND id_user_afiliasi = 0 AND cancel = 0 GROUP BY id_toko, id_pelanggan, ref";
+$where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_penerima <> 0 AND (id_user_afiliasi = 0 OR status_order = 1) AND cancel = 0 GROUP BY id_toko, id_pelanggan, ref";
 $aff_ = $this->db(0)->get_cols_where('order_data', $cols, $where, 1);
 $aff_c = count($aff_);
 
