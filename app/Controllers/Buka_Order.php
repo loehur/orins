@@ -1389,7 +1389,7 @@ class Buka_Order extends Controller
             }
 
             $st_order = ", status_order = 0, id_user_afiliasi = " . intval($id_user_afiliasi) . ", pending_spk = '" . $new_data_pending . "', spk_lanjutan = '" . $spkL . "'";
-            $where = "id_order_data = " . $do['id_order_data'] . " AND id_afiliasi = " . $this->userData['id_toko'] . " AND id_user_afiliasi = 0";
+            $where = "id_order_data = " . $do['id_order_data'] . " AND id_afiliasi = " . $this->userData['id_toko'];
          } elseif ($has_affiliasi) {
             // Order punya id_afiliasi, kita tidak mengisi id_user_afiliasi → status_order = 1
             $st_order = ", status_order = 1";
