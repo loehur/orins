@@ -1363,7 +1363,8 @@ class Buka_Order extends Controller
          // Logic: id_afiliasi → status_order=1. Saat proses mengisi id_user_afiliasi → status_order=0 (afiliasi terkonfirmasi)
          $has_affiliasi = isset($do['id_afiliasi']) && (int)$do['id_afiliasi'] <> 0;
          $is_our_affiliate = isset($do['id_afiliasi']) && (int)$do['id_afiliasi'] === (int)$this->userData['id_toko'];
-         $we_fill_id_user_afiliasi = $has_affiliasi && $is_our_affiliate && (int)$do['id_user_afiliasi'] === 0;
+         // Check if we're currently filling id_user_afiliasi (from Buka_Order_Aff POST), not the database value
+         $we_fill_id_user_afiliasi = $has_affiliasi && $is_our_affiliate && (int)$id_user_afiliasi !== 0;
 
          if ($we_fill_id_user_afiliasi) {
             // Proses dari Buka_Order_Aff: mengisi id_user_afiliasi → status_order = 0
