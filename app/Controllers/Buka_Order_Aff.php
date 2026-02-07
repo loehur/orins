@@ -35,7 +35,7 @@ class Buka_Order_Aff extends Controller
    {
       $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
 
-      $where = "ref = '" . $parse . "' AND cancel = 0 AND id_penerima <> 0 AND id_user_afiliasi = 0 AND id_afiliasi = " . $this->userData['id_toko'];
+      $where = "ref = '" . $parse . "' AND cancel = 0 AND id_penerima <> 0 AND (id_user_afiliasi = 0 OR status_order = 1) AND id_afiliasi = " . $this->userData['id_toko'];
       $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data_harga = $this->db(0)->get('produk_harga');
       $data['count'] = count($data['order']);
