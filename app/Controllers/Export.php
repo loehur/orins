@@ -36,10 +36,7 @@ class Export extends Controller
 
    public function export()
    {
-      list($date_from, $date_to) = $this->getPeriod();
-      $periodLabel = $date_from . "_to_" . $date_to;
-      $startTime = $date_from . " 00:00:00";
-      $endTime = $date_to . " 23:59:59";
+      list($date_from, $date_to, $periodLabel, $startTime, $endTime) = $this->getPeriodParams();
       $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-PRODUCTION-SALES-" . $periodLabel . ".xlsx";
 
       $where = "paket_group = '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
@@ -48,6 +45,7 @@ class Export extends Controller
 
       $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
+      $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data, 'ref'));
 
       $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
@@ -97,21 +95,10 @@ class Export extends Controller
             $order_status = "BATAL";
          }
 
-         if (isset($ref_data[$a['ref']]['mark'])) {
-            $mark = strtoupper($ref_data[$a['ref']]['mark']);
-         } else {
-            $where = "ref = '" . $a['ref'] . "'";
-            $get_ref = $this->db(0)->get_where_row('ref', $where);
-            if (isset($get_ref['mark'])) {
-               $mark = $get_ref['mark'];
-            } else {
-               $mark = "";
-            }
-         }
+         $mark = $this->getMark($a['ref'], $ref_data);
 
          $detail_harga = @unserialize($a['detail_harga']);
          if ($detail_harga !== false) {
-            $detail_harga = unserialize($a['detail_harga']);
             $harga = 0;
             foreach ($detail_harga as $dh) {
                $cb = $dh['c_b'];
@@ -142,10 +129,7 @@ class Export extends Controller
 
    public function export_pbarang()
    {
-      list($date_from, $date_to) = $this->getPeriod();
-      $periodLabel = $date_from . "_to_" . $date_to;
-      $startTime = $date_from . " 00:00:00";
-      $endTime = $date_to . " 23:59:59";
+      list($date_from, $date_to, $periodLabel, $startTime, $endTime) = $this->getPeriodParams();
       $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-ITEM-SALES-" . $periodLabel . ".xlsx";
 
       $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
@@ -156,6 +140,7 @@ class Export extends Controller
 
       $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
+      $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data, 'ref'));
 
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
       $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
@@ -201,18 +186,7 @@ class Export extends Controller
 
          $harga = $a['harga_jual'];
          $total = ($harga * $jumlah) - $diskon;
-
-         if (isset($ref_data[$a['ref']]['mark'])) {
-            $mark = strtoupper($ref_data[$a['ref']]['mark']);
-         } else {
-            $where = "ref = '" . $a['ref'] . "'";
-            $get_ref = $this->db(0)->get_where_row('ref', $where);
-            if (isset($get_ref['mark'])) {
-               $mark = $get_ref['mark'];
-            } else {
-               $mark = "";
-            }
-         }
+         $mark = $this->getMark($a['ref'], $ref_data);
 
          $rows[] = array($a['id'], "R" . $ref, $fp, $tgl_order[$ref], $jenis, $pelanggan, $mark, $db['code'], '', $db['code_myob'], $barang, $a['sn'], $jumlah, $harga, $diskon, $total, $cs, $store, $order_status, '', $tanggal);
       }
@@ -230,10 +204,7 @@ class Export extends Controller
       try {
          $this->model('Log')->write("export_paket started", "Export");
 
-         list($date_from, $date_to) = $this->getPeriod();
-         $periodLabel = $date_from . "_to_" . $date_to;
-         $startTime = $date_from . " 00:00:00";
-         $endTime = $date_to . " 23:59:59";
+         list($date_from, $date_to, $periodLabel, $startTime, $endTime) = $this->getPeriodParams();
          $lineData = [];
          $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-BUNDLE-SALES-" . $periodLabel . ".xlsx";
 
@@ -254,6 +225,7 @@ class Export extends Controller
 
          $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
          $data = $this->db(0)->get_where("order_data", $where);
+         $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data, 'ref'));
 
          foreach ($data as $a) {
             $jumlah = $a['jumlah'];
@@ -305,25 +277,15 @@ class Export extends Controller
                $order_status = "BATAL";
             }
 
-            if (isset($ref_data[$a['ref']]['mark'])) {
-               $mark = strtoupper($ref_data[$a['ref']]['mark']);
-            } else {
-               $where = "ref = '" . $a['ref'] . "'";
-               $get_ref = $this->db(0)->get_where_row('ref', $where);
-               if (isset($get_ref['mark'])) {
-                  $mark = $get_ref['mark'];
-               } else {
-                  $mark = "";
-               }
-            }
+            $mark = $this->getMark($a['ref'], $ref_data);
 
-            // $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'STORE', 'STATUS', 'NOTE', 'EXPORTED');
             $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $paket_ref, 'PAKET', '', $nama_paket, $paket_group, $a['paket_qty'], $harga_paket, 0, $harga_paket * $a['paket_qty'], $cs, $afiliasi, $order_status, $note, $tanggal);
          }
 
          $dBarang = $this->db(0)->get('master_barang', 'id');
          $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
          $data2 = $this->db(0)->get_where("master_mutasi", $where);
+         $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data2, 'ref'));
 
          foreach ($data2 as $a) {
             $jumlah = $a['paket_qty'];
@@ -368,18 +330,7 @@ class Export extends Controller
             $harga = $a['harga_paket'];
             $total = ($harga * $jumlah) - $diskon;
             $harga_paket = $a['harga_paket'];
-
-            if (isset($ref_data[$a['ref']]['mark'])) {
-               $mark = strtoupper($ref_data[$a['ref']]['mark']);
-            } else {
-               $where = "ref = '" . $a['ref'] . "'";
-               $get_ref = $this->db(0)->get_where_row('ref', $where);
-               if (isset($get_ref['mark'])) {
-                  $mark = $get_ref['mark'];
-               } else {
-                  $mark = "";
-               }
-            }
+            $mark = $this->getMark($a['ref'], $ref_data);
 
             $sumPaket[$paket_group] += ($total + $harga_paket);
             //'TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'PAKET', 'PAKET_REF', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'SUBTOTAL', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED'
@@ -412,12 +363,14 @@ class Export extends Controller
       }
    }
 
+   private static $METODE_MUTASI = [1 => 'TUNAI', 2 => 'NON TUNAI', 3 => 'AFILIASI'];
+   private static $STATUS_MUTASI = [0 => 'PENGECEKAN', 1 => 'SUKSES', 2 => 'GAGAL'];
+   private static $CANCEL_STATUS = [0 => 'SUKSES', 1 => 'CANCEL'];
+   private static $PETYCASH_STATUS = [0 => 'CHECKING', 1 => 'CONFIRMED', 2 => 'REJECTED'];
+
    public function export_p()
    {
-      list($date_from, $date_to) = $this->getPeriod();
-      $periodLabel = $date_from . "_to_" . $date_to;
-      $startTime = $date_from . " 00:00:00";
-      $endTime = $date_to . " 23:59:59";
+      list($date_from, $date_to, $periodLabel, $startTime, $endTime) = $this->getPeriodParams();
       $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-PAYMENT-" . $periodLabel . ".xlsx";
 
       $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND jenis_transaksi = 1 AND id_toko = " . $this->userData['id_toko'];
@@ -426,72 +379,27 @@ class Export extends Controller
 
       $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
       $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
+      $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data, 'ref_transaksi'));
 
       $pacc = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
       $rows = [];
       $rows[] = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'PELANGGAN', 'MARK', 'JUMLAH', 'METODE', 'PAYMENT_ACCOUNT', 'NOTE', 'STATUS', 'EXPORTED');
       foreach ($data as $a) {
-         if (isset($pacc[$a['pa']]['payment_account'])) {
-            $payment_account = strtoupper($pacc[$a['pa']]['payment_account']) . " ";
-         } else {
-            $payment_account = "";
-         }
-
-         $jumlah = $a['jumlah'];
-         $pelanggan = "";
+         $payment_account = isset($pacc[$a['pa']]['payment_account']) ? strtoupper($pacc[$a['pa']]['payment_account']) . " " : "";
          $pelanggan = strtoupper($this->model('Arr')->get($this->dPelanggan, "id_pelanggan", "nama", $a['id_client']));
-         $note = strtoupper($a['note']);
-         $tgl_kas = substr($a['insertTime'], 0, 10);
-         $method = "";
-         $st = "";
-         switch ($a['metode_mutasi']) {
-            case 1:
-               $method = "TUNAI";
-               break;
-            case 2:
-               $method = "NON TUNAI";
-               break;
-            case 3:
-               $method = "AFILIASI";
-               break;
-         }
+         $method = self::$METODE_MUTASI[$a['metode_mutasi']] ?? "";
+         $st = self::$STATUS_MUTASI[$a['status_mutasi']] ?? "";
+         $mark = $this->getMark($a['ref_transaksi'], $ref_data);
 
-         switch ($a['status_mutasi']) {
-            case 0:
-               $st = "PENGECEKAN";
-               break;
-            case 1:
-               $st = "SUKSES";
-               break;
-            case 2:
-               $st = "GAGAL";
-               break;
-         }
-
-         if (isset($ref_data[$a['ref_transaksi']]['mark'])) {
-            $mark = strtoupper($ref_data[$a['ref_transaksi']]['mark']);
-         } else {
-            $where = "ref = '" . $a['ref_transaksi'] . "'";
-            $get_ref = $this->db(0)->get_where_row('ref', $where);
-            if (isset($get_ref['mark'])) {
-               $mark = $get_ref['mark'];
-            } else {
-               $mark = "";
-            }
-         }
-
-         $rows[] = array($a['id_kas'], "R" . $a['ref_transaksi'], $tgl_kas, $pelanggan, $mark, $jumlah, $method, $payment_account, $note, $st, $tanggal);
+         $rows[] = array($a['id_kas'], "R" . $a['ref_transaksi'], substr($a['insertTime'], 0, 10), $pelanggan, $mark, $a['jumlah'], $method, $payment_account, strtoupper($a['note']), $st, $tanggal);
       }
       $this->output_xlsx($filename, $rows);
    }
 
    public function export_ed() //EXTRA DISKON
    {
-      list($date_from, $date_to) = $this->getPeriod();
-      $periodLabel = $date_from . "_to_" . $date_to;
-      $startTime = $date_from . " 00:00:00";
-      $endTime = $date_to . " 23:59:59";
+      list($date_from, $date_to, $periodLabel, $startTime, $endTime) = $this->getPeriodParams();
       $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-EXTRADISKON-" . $periodLabel . ".xlsx";
 
       $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND id_toko = " . $this->userData['id_toko'];
@@ -501,33 +409,15 @@ class Export extends Controller
       $rows = [];
       $rows[] = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JUMLAH', 'DISKON_NOTE', 'STATUS', 'STATUS_NOTE', 'EXPORTED');
       foreach ($data as $a) {
-         $jumlah = $a['jumlah'];
-         $note = strtoupper($a['note']);
-         $note_S = strtoupper($a['cancel_reason']);
-         $tgl_kas = substr($a['insertTime'], 0, 10);
-
-         switch ($a['cancel']) {
-            case 0:
-               $st = "SUKSES";
-               break;
-            case 1:
-               $st = "CANCEL";
-               break;
-         }
-
-
-
-         $rows[] = array($a['id_diskon'], "R" . $a['ref_transaksi'], $tgl_kas, $jumlah, $note, $jumlah, $st, $note_S, $tanggal);
+         $st = self::$CANCEL_STATUS[$a['cancel']] ?? 'UNDEFINED';
+         $rows[] = array($a['id_diskon'], "R" . $a['ref_transaksi'], substr($a['insertTime'], 0, 10), $a['jumlah'], strtoupper($a['note']), $st, strtoupper($a['cancel_reason']), $tanggal);
       }
       $this->output_xlsx($filename, $rows);
    }
 
    public function export_sc() //surcharge
    {
-      list($date_from, $date_to) = $this->getPeriod();
-      $periodLabel = $date_from . "_to_" . $date_to;
-      $startTime = $date_from . " 00:00:00";
-      $endTime = $date_to . " 23:59:59";
+      list($date_from, $date_to, $periodLabel, $startTime, $endTime) = $this->getPeriodParams();
       $filename = strtoupper($this->model('Arr')->get($this->dToko, "id_toko", "nama_toko", $this->userData['id_toko'])) . "-SURCHARGE-" . $periodLabel . ".xlsx";
 
       $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND id_toko = " . $this->userData['id_toko'];
@@ -537,69 +427,28 @@ class Export extends Controller
       $rows = [];
       $rows[] = array('TRX_ID', 'NO_REFERENSI', 'TANGGAL', 'JUMLAH', 'CHARGE_NOTE', 'STATUS', 'STATUS_NOTE', 'EXPORTED');
       foreach ($data as $a) {
-         $jumlah = $a['jumlah'];
-         $note = strtoupper($a['note']);
-         $note_S = strtoupper($a['cancel_reason']);
-         $tgl_kas = substr($a['insertTime'], 0, 10);
-
-         switch ($a['cancel']) {
-            case 0:
-               $st = "SUKSES";
-               break;
-            case 1:
-               $st = "CANCEL";
-               break;
-         }
-
-
-
-         $rows[] = array($a['id_diskon'], "R" . $a['ref_transaksi'], $tgl_kas, $jumlah, $note, $jumlah, $st, $note_S, $tanggal);
+         $st = self::$CANCEL_STATUS[$a['cancel']] ?? 'UNDEFINED';
+         $rows[] = array($a['id_diskon'], "R" . $a['ref_transaksi'], substr($a['insertTime'], 0, 10), $a['jumlah'], strtoupper($a['note']), $st, strtoupper($a['cancel_reason']), $tanggal);
       }
       $this->output_xlsx($filename, $rows);
    }
 
    public function export_pc() //PETYCASH
    {
-      list($date_from, $date_to) = $this->getPeriod();
-      $periodLabel = $date_from . "_to_" . $date_to;
-      $startTime = $date_from . " 00:00:00";
-      $endTime = $date_to . " 23:59:59";
+      list($date_from, $date_to, $periodLabel, $startTime, $endTime) = $this->getPeriodParams();
       $filename = strtoupper($this->dToko[$this->userData['id_toko']]["nama_toko"]) . "-PETTYCASH-" . $periodLabel . ".xlsx";
 
       $pj = $this->db(0)->get('pengeluaran_jenis', 'id');
-
       $where = "id_sumber = " . $this->userData['id_toko'] . " AND tipe = 2 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
       $data = $this->db(0)->get_where("kas_kecil", $where);
-
       $tanggal = date("Y-m-d");
+
       $rows = [];
       $rows[] = array('TRX_ID', 'INSERT_DATE', 'TRX_DATE', 'JENIS', 'KETERANGAN', 'JUMLAH', 'STATUS', 'EXPORTED');
       foreach ($data as $a) {
-         if (isset($pj[$a['id_target']]['nama'])) {
-            $jenis = $pj[$a['id_target']]['nama'];
-         } else {
-            $jenis = $a['id_target'];
-         }
-
-         $jumlah = $a['jumlah'];
-         $ket = strtoupper($a['note']);
-         $tgl = substr($a['insertTime'], 0, 10);
-         $trx_date = $a['tanggal'];
-         $st = "UNDEFINED";
-
-         switch ($a['st']) {
-            case 0:
-               $st = "CHECKING";
-               break;
-            case 1:
-               $st = "CONFIRMED";
-               break;
-            case 2:
-               $st = "REJECTED";
-               break;
-         }
-
-         $rows[] = array($a['id'], $tgl, $trx_date, strtoupper($jenis), $ket, $jumlah, $st, $tanggal);
+         $jenis = $pj[$a['id_target']]['nama'] ?? $a['id_target'];
+         $st = self::$PETYCASH_STATUS[$a['st']] ?? 'UNDEFINED';
+         $rows[] = array($a['id'], substr($a['insertTime'], 0, 10), $a['tanggal'], strtoupper($jenis), strtoupper($a['note']), $a['jumlah'], $st, $tanggal);
       }
       $this->output_xlsx($filename, $rows);
    }
@@ -623,11 +472,44 @@ class Export extends Controller
          exit();
       }
       $days = ($tst - $tsf) / 86400;
-      if ($days > 366) {
-         echo "Maksimal periode 1 tahun";
+      if ($days > 92) {
+         echo "Maksimal periode 3 bulan (92 hari)";
          exit();
       }
       return [$df, $dt];
+   }
+
+   /** Returns [date_from, date_to, periodLabel, startTime, endTime] */
+   private function getPeriodParams()
+   {
+      list($date_from, $date_to) = $this->getPeriod();
+      return [
+         $date_from,
+         $date_to,
+         $date_from . "_to_" . $date_to,
+         $date_from . " 00:00:00",
+         $date_to . " 23:59:59"
+      ];
+   }
+
+   /** Batch-fetch missing refs to avoid N+1 queries. Returns merged ref_data. */
+   private function ensureRefDataComplete(array $ref_data, array $refsFromData)
+   {
+      $missingRefs = array_diff(array_unique(array_filter($refsFromData)), array_keys($ref_data));
+      if (empty($missingRefs)) {
+         return $ref_data;
+      }
+      $escaped = array_map(function ($r) {
+         return "'" . addslashes((string) $r) . "'";
+      }, $missingRefs);
+      $where = "ref IN (" . implode(",", $escaped) . ")";
+      $extra = $this->db(0)->get_where('ref', $where, 'ref');
+      return $ref_data + (is_array($extra) ? $extra : []);
+   }
+
+   private function getMark($ref, array $ref_data)
+   {
+      return isset($ref_data[$ref]['mark']) ? strtoupper($ref_data[$ref]['mark']) : '';
    }
 
    private function output_xlsx($filename, $rows, $sheetName = 'Sheet1')
