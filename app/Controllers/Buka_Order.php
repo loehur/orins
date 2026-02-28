@@ -1057,14 +1057,14 @@ class Buka_Order extends Controller
                         echo "Lengkapi Nama Customer";
                         exit();
                      }
-                     $cek_pelanggan = $this->db(0)->get_where_row('pelanggan', "UPPER(nama) = '" . $nama . "' AND no_hp = '" . $hp . "' AND id_toko = " . $this->userData['id_toko']);
+                     $cek_pelanggan = $this->db(0)->get_where_row('pelanggan', "UPPER(nama) = '" . addslashes($nama) . "' AND no_hp = '" . addslashes($hp) . "' AND id_toko = " . $this->userData['id_toko']);
                      if (isset($cek_pelanggan['id_pelanggan'])) {
                         $id_pelanggan = $cek_pelanggan['id_pelanggan'];
                      } else {
                         $get_lastID = $this->db(0)->get_cols('pelanggan', 'MAX(id_pelanggan) as max', 0);
                         $id_pelanggan = $get_lastID['max'] + 1;
-                        $cols = 'id_pelanggan, id_toko, nama, no_hp, id_pelanggan_jenis';
-                        $vals = $id_pelanggan . ", '" . $this->userData['id_toko'] . "', '" . $nama . "', '" . $hp . "', " . $id_pelanggan_jenis;
+                        $cols = 'id_pelanggan, id_toko, nama, no_hp, id_pelanggan_jenis, en';
+                        $vals = $id_pelanggan . ", '" . $this->userData['id_toko'] . "', '" . addslashes($nama) . "', '" . addslashes($hp) . "', " . $id_pelanggan_jenis . ", 1";
                         $do = $this->db(0)->insertCols('pelanggan', $cols, $vals);
                         if ($do['errno'] <> 0) {
                            echo $do['error'];
@@ -2053,13 +2053,17 @@ class Buka_Order extends Controller
    }
    function search_pelanggan($id_pelanggan_jenis)
    {
-      $q = $_GET['q'];
+      $q = isset($_GET['q']) ? trim($_GET['q']) : '';
       if (strlen($q) < 3) {
          echo json_encode([]);
          exit();
       }
 
-      $where = "en = 1 AND id_toko = " . $this->userData['id_toko'] . " AND id_pelanggan_jenis = " . $id_pelanggan_jenis . " AND (nama LIKE '%" . $q . "%' OR no_hp LIKE '%" . $q . "%' OR id_pelanggan LIKE '%" . $q . "%')";
+      $q_esc = addslashes($q);
+      $q_like = str_replace(['%', '_'], ['\\%', '\\_'], $q_esc);
+      $id_toko = (int) $this->userData['id_toko'];
+      $id_pelanggan_jenis = (int) $id_pelanggan_jenis;
+      $where = "(en = 1 OR en IS NULL) AND id_toko = " . $id_toko . " AND id_pelanggan_jenis = " . $id_pelanggan_jenis . " AND (nama LIKE '%" . $q_like . "%' OR no_hp LIKE '%" . $q_like . "%' OR id_pelanggan LIKE '%" . $q_like . "%')";
       $res = $this->db(0)->get_where('pelanggan', $where);
       $data = [];
       foreach ($res as $p) {
