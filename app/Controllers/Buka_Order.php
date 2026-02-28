@@ -2054,7 +2054,7 @@ class Buka_Order extends Controller
    function search_pelanggan($id_pelanggan_jenis)
    {
       $q = isset($_GET['q']) ? trim($_GET['q']) : '';
-      if (strlen($q) < 3) {
+      if (strlen($q) < 2) {
          echo json_encode([]);
          exit();
       }

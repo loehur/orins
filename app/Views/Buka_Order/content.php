@@ -731,7 +731,7 @@ $mgpaket = $data['harga_paket'];
                 }
             },
             load: function(query, callback) {
-                if (query.length < 3) return callback();
+                if (query.length < 2) return callback();
                 $.ajax({
                     url: '<?= PV::BASE_URL ?>Buka_Order/search_pelanggan/<?= $id_pelanggan_jenis ?>',
                     type: 'GET',
