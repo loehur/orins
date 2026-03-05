@@ -86,7 +86,7 @@
                             <div class="list-group-item list-group-item-action border-0 py-2 px-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <span class="fw-medium"><?= $d['ref_transaksi'] ?></span>
+                                        <a href="<?= PV::BASE_URL ?>Cek/order/<?= $d['ref_transaksi'] ?>/<?= $data['id_pelanggan'] ?>" target="_blank" class="text-primary text-decoration-none fw-medium" title="Cek transaksi"><?= $d['ref_transaksi'] ?></a>
                                     </div>
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="text-primary fw-semibold"><?= number_format($d['jumlah']) ?></span>
