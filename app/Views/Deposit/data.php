@@ -90,7 +90,7 @@
                                     </div>
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="text-primary fw-semibold"><?= number_format($d['jumlah']) ?></span>
-                                        <?php if (isset($data['refs'][$d['ref_transaksi']]) && $data['refs'][$d['ref_transaksi']]['tuntas'] == 0) { ?>
+                                        <?php if (isset($data['refs'][$d['ref_transaksi']])) { ?>
                                             <?php if ($d['status_mutasi'] == 1) { ?>
                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                     <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="btn btn-sm btn-outline-danger cancel text-decoration-none" data-id="<?= $d['id_kas'] ?>" href="#" title="Batalkan"><i class="fa-solid fa-square-xmark"></i></a>
