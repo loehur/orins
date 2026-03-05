@@ -1,76 +1,110 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
-<div class="row mx-0 mt-4">
-    <div class="col" style="max-width: 500px;">
-        <div class="row border-bottom pb-2">
-            <div class="col">Saldo</div>
-            <div class="col text-end">Rp <span class="fw-bold"><?= number_format($data['saldo']) ?></span></div>
-            <div class="col text-end">
-                <span class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal">Topup</span>
+<div class="row mx-0 mt-3 g-3" style="max-width: 540px;">
+    <!-- Saldo -->
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-muted small">Saldo Deposit</span>
+                    <span class="fs-5 fw-bold text-success">Rp <?= number_format($data['saldo']) ?></span>
+                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal">
+                        <i class="fa-solid fa-plus me-1"></i> Topup
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row mx-0 mt-2 text-sm">
-    <div class="col" style="max-width: 500px;">
-        <label class="text-success">Riwayat Topup</label>
-        <?php foreach ($data['data'] as $d) { ?>
-            <?php
-            $cs = $this->dKaryawanAll[$d['id_user']]['nama'];
-            ?>
-            <div class="row border-bottom">
-                <div class="col-auto">
-                    <?= substr($d['insertTime'], 0, 10) ?><br>
-                    <small><?= $d['jenis_mutasi'] == 1 ? 'Topup' : 'Refund' ?></small>
-                </div>
-                <div class="col">
-                    <i class="fa-solid fa-user-pen"></i> <?= $cs ?>
-                    <br>
-                    <span><?= $d['note'] ?></span>
-                </div>
-                <div class="col text-end">
-                    <?= number_format($d['jumlah']) ?><br>
-                    <span class="text-sm">
-                        <?php if ($d['status_mutasi'] == 1) { ?>
-                            <span class="text-success">Success</span>,
-                            <?php } else {
-                            if ($d['status_mutasi'] == 0) { ?>
-                                <span class="text-warning">Checking</span>,
-                            <?php } else { ?>
-                                <span class="text-danger">Rejected</span>, (<?= $d['note_batal'] ?>),
-                            <?php } ?>
-                        <?php } ?>
-                        <span class="badge text-dark">
-                            <?= $d['metode_mutasi'] == 1 ? 'Tunai' : 'NonTunai' ?>
-                        </span>
-                    </span>
-                </div>
-            </div>
-        <?php } ?>
-    </div>
-</div>
 
-<div class="row mx-0 mt-2 text-sm">
-    <div class="col" style="max-width: 500px;">
-        <label class="text-primary">Riwayat Pakai</label>
-        <?php foreach ($data['mutasi'] as $d) { ?>
-            <div class="row border-bottom">
-                <div class="col-auto">
-                    <?= $d['ref_transaksi'] ?>
-                </div>
-                <div class="col text-end">
-                    <?= number_format($d['jumlah']) ?>
-                </div>
-                <div class="col-auto">
-                    <?php if ($data['refs'][$d['ref_transaksi']]['tuntas'] == 0) { ?>
-                        <?php if ($d['status_mutasi'] == 1) { ?>
-                            <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="px-2 text-decoration-none text-danger cancel rounded" data-id="<?= $d['id_kas'] ?>" href="#"><i class="fa-solid fa-square-xmark"></i></a>
-                        <?php } else { ?>
-                            <small class="text-danger"><?= $d['note_batal'] ?></small>
-                        <?php } ?>
-                    <?php } ?>
-                </div>
+    <!-- Riwayat Topup -->
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-bottom py-2">
+                <label class="text-success mb-0 fw-semibold">
+                    <i class="fa-solid fa-wallet me-1"></i> Riwayat Topup
+                </label>
             </div>
-        <?php } ?>
+            <div class="card-body p-0">
+                <?php if (empty($data['data'])) { ?>
+                    <div class="text-muted text-center py-4 small">Belum ada riwayat topup</div>
+                <?php } else { ?>
+                    <div class="list-group list-group-flush">
+                        <?php foreach ($data['data'] as $d) {
+                            $cs = $this->dKaryawanAll[$d['id_user']]['nama'];
+                        ?>
+                            <div class="list-group-item list-group-item-action border-0 py-2 px-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <span class="small text-muted"><?= substr($d['insertTime'], 0, 10) ?></span>
+                                        <span class="badge bg-light text-dark ms-1"><?= $d['jenis_mutasi'] == 1 ? 'Topup' : 'Refund' ?></span>
+                                        <div class="mt-1">
+                                            <i class="fa-solid fa-user-pen text-muted me-1"></i>
+                                            <span class="small"><?= $cs ?></span>
+                                        </div>
+                                        <?php if (!empty($d['note'])) { ?>
+                                            <div class="small text-muted"><?= $d['note'] ?></div>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="fw-semibold"><?= number_format($d['jumlah']) ?></span>
+                                        <div class="small mt-1">
+                                            <?php if ($d['status_mutasi'] == 1) { ?>
+                                                <span class="text-success">Success</span>
+                                            <?php } elseif ($d['status_mutasi'] == 0) { ?>
+                                                <span class="text-warning">Checking</span>
+                                            <?php } else { ?>
+                                                <span class="text-danger">Rejected</span>
+                                                <?php if (!empty($d['note_batal'])) { ?>
+                                                    <span class="d-block small">(<?= $d['note_batal'] ?>)</span>
+                                                <?php } ?>
+                                            <?php } ?>
+                                            <span class="badge bg-secondary ms-1"><?= $d['metode_mutasi'] == 1 ? 'Tunai' : 'NonTunai' ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- Riwayat Pakai -->
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-bottom py-2">
+                <label class="text-primary mb-0 fw-semibold">
+                    <i class="fa-solid fa-receipt me-1"></i> Riwayat Pakai
+                </label>
+            </div>
+            <div class="card-body p-0">
+                <?php if (empty($data['mutasi'])) { ?>
+                    <div class="text-muted text-center py-4 small">Belum ada riwayat pakai</div>
+                <?php } else { ?>
+                    <div class="list-group list-group-flush">
+                        <?php foreach ($data['mutasi'] as $d) { ?>
+                            <div class="list-group-item list-group-item-action border-0 py-2 px-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="fw-medium"><?= $d['ref_transaksi'] ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-primary fw-semibold"><?= number_format($d['jumlah']) ?></span>
+                                        <?php if (isset($data['refs'][$d['ref_transaksi']]) && $data['refs'][$d['ref_transaksi']]['tuntas'] == 0) { ?>
+                                            <?php if ($d['status_mutasi'] == 1) { ?>
+                                                <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="btn btn-sm btn-outline-danger cancel text-decoration-none" data-id="<?= $d['id_kas'] ?>" href="#" title="Batalkan"><i class="fa-solid fa-square-xmark"></i></a>
+                                            <?php } else { ?>
+                                                <small class="text-danger"><?= $d['note_batal'] ?></small>
+                                            <?php } ?>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
     </div>
 </div>
 
