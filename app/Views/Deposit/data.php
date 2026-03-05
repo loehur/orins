@@ -1,10 +1,10 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
-<div class="row mx-0 mt-3 g-3" style="max-width: 540px;">
+<div class="row mx-0 mt-3 g-3">
     <!-- Saldo -->
-    <div class="col-12">
-        <div class="card border-0 shadow-sm">
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm h-100">
             <div class="card-body py-3">
-                <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
                     <span class="text-muted small">Saldo Deposit</span>
                     <span class="fs-5 fw-bold text-success">Rp <?= number_format($data['saldo']) ?></span>
                     <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal">
@@ -16,14 +16,14 @@
     </div>
 
     <!-- Riwayat Topup -->
-    <div class="col-12">
-        <div class="card border-0 shadow-sm">
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm h-100 d-flex flex-column">
             <div class="card-header bg-transparent border-bottom py-2">
                 <label class="text-success mb-0 fw-semibold">
                     <i class="fa-solid fa-wallet me-1"></i> Riwayat Topup
                 </label>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body p-0 flex-grow-1 overflow-auto" style="max-height: 320px;">
                 <?php if (empty($data['data'])) { ?>
                     <div class="text-muted text-center py-4 small">Belum ada riwayat topup</div>
                 <?php } else { ?>
@@ -70,14 +70,14 @@
     </div>
 
     <!-- Riwayat Pakai -->
-    <div class="col-12">
-        <div class="card border-0 shadow-sm">
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm h-100 d-flex flex-column">
             <div class="card-header bg-transparent border-bottom py-2">
                 <label class="text-primary mb-0 fw-semibold">
                     <i class="fa-solid fa-receipt me-1"></i> Riwayat Pakai
                 </label>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body p-0 flex-grow-1 overflow-auto" style="max-height: 320px;">
                 <?php if (empty($data['mutasi'])) { ?>
                     <div class="text-muted text-center py-4 small">Belum ada riwayat pakai</div>
                 <?php } else { ?>
