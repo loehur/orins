@@ -93,22 +93,6 @@ class Non_Tunai_Riwayat extends Controller
       echo $update['errno'];
    }
 
-   function actionMulti()
-   {
-      $id = explode("_", $_POST['id']);
-      $val = $_POST['val'];
-
-      foreach ($id as $i) {
-         $set = "status_mutasi = " . $val . ", id_finance_nontunai = " . $this->userData['id_user'];
-         $where = "id_kas = " . $i;
-         $update = $this->db(0)->update("kas", $set, $where);
-         if ($update['errno'] <> 0) {
-            echo $update['error'];
-            exit();
-         }
-      }
-   }
-
    function cekOrder($ref)
    {
       $data['kas'] = [];

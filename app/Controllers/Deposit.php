@@ -93,4 +93,47 @@ class Deposit extends Controller
    {
       echo "<br><span class='ms-3'>Deposit List is under construction (#Luhur)</span>";
    }
+
+   /**
+    * Cancel pembayaran deposit (Riwayat Pakai) - sama seperti Non_Tunai_Riwayat action val=2.
+    * Membuat pembayaran rejected dan transaksi tidak tuntas.
+    * Hanya user dengan PRIV[2] (kasir) yang dapat akses.
+    */
+   function cancel()
+   {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+         echo "Anda tidak memiliki akses untuk aksi ini!";
+         exit();
+      }
+
+      $id = (int)($_POST['id_kas'] ?? 0);
+      $note = $_POST['reason'] ?? '';
+
+      if ($id < 1) {
+         echo "ID tidak valid";
+         exit();
+      }
+
+      $where_kas = "id_kas = " . $id;
+      $row = $this->db(0)->get_where_row("kas", $where_kas);
+      if (!$row) {
+         echo "Data tidak ditemukan";
+         exit();
+      }
+
+      $ref = $row['ref_transaksi'];
+
+      if ($ref !== '' && $ref !== null) {
+         $undo = $this->data('Operasi')->un_tuntas($ref);
+         if ($undo['status'] == 'failed') {
+            echo $undo['error'];
+            exit();
+         }
+      }
+
+      $set = "note_batal = '" . addslashes($note) . "', status_mutasi = 2";
+      $update = $this->db(0)->update("kas", $set, $where_kas);
+
+      echo ($update['errno'] <> 0) ? $update['error'] : 0;
+   }
 }

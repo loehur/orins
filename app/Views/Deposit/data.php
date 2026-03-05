@@ -92,7 +92,9 @@
                                         <span class="text-primary fw-semibold"><?= number_format($d['jumlah']) ?></span>
                                         <?php if (isset($data['refs'][$d['ref_transaksi']]) && $data['refs'][$d['ref_transaksi']]['tuntas'] == 0) { ?>
                                             <?php if ($d['status_mutasi'] == 1) { ?>
-                                                <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="btn btn-sm btn-outline-danger cancel text-decoration-none" data-id="<?= $d['id_kas'] ?>" href="#" title="Batalkan"><i class="fa-solid fa-square-xmark"></i></a>
+                                                <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
+                                                    <a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="btn btn-sm btn-outline-danger cancel text-decoration-none" data-id="<?= $d['id_kas'] ?>" href="#" title="Batalkan"><i class="fa-solid fa-square-xmark"></i></a>
+                                                <?php } ?>
                                             <?php } else { ?>
                                                 <small class="text-danger"><?= $d['note_batal'] ?></small>
                                             <?php } ?>
@@ -163,7 +165,7 @@
     </div>
 </form>
 
-<form action="<?= PV::BASE_URL; ?>Setoran/cancel" method="POST">
+<form action="<?= PV::BASE_URL ?>Deposit/cancel" method="POST">
     <div class="modal" id="exampleModalCancel">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -195,6 +197,30 @@
 <script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 
 <script>
+    function showToast(message, type) {
+        type = type || 'warning';
+        var container = document.querySelector('.toast-container');
+        if (!container) return;
+        var bgClass = type === 'danger' ? 'bg-danger text-white' : type === 'success' ? 'bg-success text-white' : 'bg-warning text-dark';
+        var icon = type === 'danger' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+
+        var toastEl = document.createElement('div');
+        toastEl.className = 'toast align-items-center border-0 shadow ' + bgClass;
+        toastEl.setAttribute('role', 'alert');
+        toastEl.innerHTML = '<div class="d-flex">' +
+            '<div class="toast-body d-flex align-items-center">' +
+            '<i class="fas ' + icon + ' me-2 fs-5 flex-shrink-0"></i>' +
+            '<span>' + message + '</span>' +
+            '</div>' +
+            '<button type="button" class="btn-close ' + (type === 'warning' ? '' : 'btn-close-white') + ' me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>' +
+            '</div>';
+
+        container.appendChild(toastEl);
+        var toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+        toastEl.addEventListener('hidden.bs.toast', function() { toastEl.remove(); });
+        toast.show();
+    }
+
     $("form").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
@@ -203,9 +229,20 @@
             type: $(this).attr("method"),
             success: function(res) {
                 if (res == 0) {
+                    showToast('Berhasil!', 'success');
+                    var modalEl = document.getElementById('modal');
+                    var modalCancel = document.getElementById('exampleModalCancel');
+                    if (modalCancel) {
+                        var m = bootstrap.Modal.getInstance(modalCancel);
+                        if (m) m.hide();
+                    }
+                    if (modalEl) {
+                        var m2 = bootstrap.Modal.getInstance(modalEl);
+                        if (m2) m2.hide();
+                    }
                     $('.cek').click();
                 } else {
-                    alert(res);
+                    showToast(res, 'danger');
                 }
             }
         });
