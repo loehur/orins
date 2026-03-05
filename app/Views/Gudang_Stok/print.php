@@ -44,7 +44,7 @@
                     <th class="text-start pe-1">Tipe</th>
                     <th class="text-start pe-1">Brand</th>
                     <th class="text-start pe-1">Model</th>
-                    <th class="text-end">Stok T/G (sds0 sds1)</th>
+                    <th class="text-end">Stok T/G (S|T)</th>
                 </tr>
             </thead>
             <?php foreach ($data['barang'] as $key => $g) { ?>
