@@ -52,9 +52,9 @@ $max_length = [2, 2, 2, 3];
                                 </label>
                             </div>
                             <div class="mb-2">
-                                <input name="pb" class="form-check-input" type="checkbox" value="1">
+                                <input name="limited" class="form-check-input" type="checkbox" value="1">
                                 <label class="form-check-label" for="flexCheckDefault">
-                                    Publish
+                                    Limited
                                 </label>
                             </div>
                             <button type="submit" tabindex="<?= $tab += 1 ?>" class="btn btn-outline-success">Create</button>
@@ -80,11 +80,11 @@ $max_length = [2, 2, 2, 3];
                         <td>
                             #<?= $a['id'] ?><br>
                             <?php if ($a['sp'] == 0) { ?>
-                                <input name="pb" class="form-check-input check" type="checkbox" data-id="<?= $a['id'] ?>" data-col="pb" value="1" <?= $a['pb'] == 1 ? "checked" : '' ?>>
+                                <input name="limited" class="form-check-input check" type="checkbox" data-id="<?= $a['id'] ?>" data-col="limited" value="1" <?= $a['limited'] == 1 ? "checked" : '' ?>>
                                 <label class="form-check-label" for="flexCheckDefault">
-                                    PB
+                                    LM
                                 </label>
-                                <input name="pb" class="form-check-input check" type="checkbox" data-id="<?= $a['id'] ?>" data-col="sn" value="1" <?= $a['sn'] == 1 ? "checked" : '' ?>>
+                                <input name="sn" class="form-check-input check" type="checkbox" data-id="<?= $a['id'] ?>" data-col="sn" value="1" <?= $a['sn'] == 1 ? "checked" : '' ?>>
                                 <label class="form-check-label" for="flexCheckDefault">
                                     SN
                                 </label>

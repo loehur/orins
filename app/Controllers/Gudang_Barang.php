@@ -96,7 +96,7 @@ class Gudang_Barang extends Controller
       $model_c = strtoupper($_POST['model_c']);
       $model = strtoupper($_POST['model']);
       $sn = isset($_POST['sn']) ? $_POST['sn'] : 0;
-      $pb = isset($_POST['pb']) ? $_POST['pb'] : 0;
+      $limited = isset($_POST['limited']) ? $_POST['limited'] : 0;
       $code_gtb = $grup_c . $tipe_c . $brand_c;
       $code_model = $code_gtb . $model_c;
       $code = $code_model;
@@ -194,8 +194,8 @@ class Gudang_Barang extends Controller
       $code_f = strtoupper($_POST['code_f']);
 
       //BARANG
-      $cols = 'code,code_s,grup,tipe,brand,model,sn,pb,code_f';
-      $vals = "'" . $code . "','" . $code_s . "','" . $grup . "','" . $tipe . "','" . $brand . "','" . $model . "','" . $sn . "'," . $pb . ",'" . $code_f . "'";
+      $cols = 'code,code_s,grup,tipe,brand,model,sn,limited,code_f';
+      $vals = "'" . $code . "','" . $code_s . "','" . $grup . "','" . $tipe . "','" . $brand . "','" . $model . "','" . $sn . "'," . $limited . ",'" . $code_f . "'";
       $do = $this->db(0)->insertCols('master_barang', $cols, $vals);
       if ($do['errno'] <> 0) {
          echo $do['error'];

@@ -754,6 +754,15 @@ class Buka_Order extends Controller
          $harga = 0;
       }
 
+      // Barang limited: stok tidak boleh minus
+      if (isset($barang['limited']) && $barang['limited'] == 1) {
+         $sisa = $this->data('Barang')->sisa_stok($id_barang, $id_sumber, $sn, $sds);
+         if ($sisa < $qty) {
+            echo "Stok tidak mencukupi. Tersedia: " . $sisa;
+            exit();
+         }
+      }
+
       $cols = 'ref, jenis, jenis_target, id_barang, id_sumber, id_target, qty, sds, sn, sn_c, user_id, cs_id, harga_jual, price_locker, paket_ref, paket_group, harga_paket, paket_qty';
       $vals = "'" . $ref . "',2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $id_sumber . "'," . $id_target . "," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $cs_id . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $harga_paket . "," . $paket_qty;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
@@ -812,6 +821,8 @@ class Buka_Order extends Controller
       $data['stok'] = $this->data('Barang')->stok_data($produk, $this->userData['id_toko']);
       $data['stok_gudang'] = $this->data('Barang')->stok_data($produk, 0);
       $data['id_pelanggan_jenis'] = $id_pelanggan_jenis;
+      $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $produk . "'");
+      $data['limited'] = isset($barang['limited']) && $barang['limited'] == 1;
       $this->view(__CLASS__ . "/detail_barang", $data);
    }
 

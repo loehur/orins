@@ -39,7 +39,7 @@
                                 <input type="hidden" name="sds" value="<?= $ds['sds'] ?>">
                                 <input type="hidden" name="sn" value="<?= $ds['sn'] ?>">
                                 <input type="hidden" name="kode" value="<?= $ds['id_barang'] ?>">
-                                <input type="number" style="width: 50px;" min="1" value="1" name="qty" class="border-0 h-100 rounded text-center"> <button data-bs-dismiss="modal" type="submit" class="btn btn-sm btn-primary">Tambah</button>
+                                <input type="number" style="width: 50px;" min="1" value="1" name="qty" class="border-0 h-100 rounded text-center" <?= (!empty($data['limited']) && $ds['qty'] > 0) ? 'max="' . $ds['qty'] . '"' : '' ?> <?= (!empty($data['limited']) && $ds['qty'] == 0) ? 'disabled' : '' ?>> <button data-bs-dismiss="modal" type="submit" class="btn btn-sm btn-primary" <?= (!empty($data['limited']) && $ds['qty'] == 0) ? 'disabled' : '' ?>>Tambah</button>
                             </form>
                         </td>
                     </tr>
@@ -99,7 +99,7 @@
                 if (res == 0) {
                     content();
                 } else {
-                    alert(res);
+                    showToast(res, 'danger');
                 }
             }
         });

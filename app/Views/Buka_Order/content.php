@@ -670,23 +670,7 @@ $mgpaket = $data['harga_paket'];
     </div>
 </div>
 
-<!-- General Error/Info Modal -->
-<div class="modal fade" id="modalAlert" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger bg-gradient text-white" id="modalAlertHeader">
-                <h6 class="modal-title" id="modalAlertTitle">Peringatan</h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="modalAlertText" class="text-dark"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
 
 <!-- Confirmation Modal -->
 <div class="modal fade" id="modalConfirm" tabindex="-1" aria-hidden="true">
@@ -750,31 +734,32 @@ $mgpaket = $data['harga_paket'];
         });
     });
 
-    // Helper function to show modal alert
-    function showAlert(message, type = 'danger') {
-        $('#modalAlertText').html(message);
+    // Helper function to show toast notification
+    function showToast(message, type) {
+        type = type || 'danger';
+        var container = document.querySelector('.toast-container');
+        if (!container) return;
+        var bgClass = type === 'danger' ? 'bg-danger text-white' : type === 'success' ? 'bg-success text-white' : type === 'warning' ? 'bg-warning text-dark' : 'bg-info text-white';
+        var icon = type === 'danger' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
 
-        // Change header color based on type
-        const header = $('#modalAlertHeader');
-        const title = $('#modalAlertTitle');
+        var toastEl = document.createElement('div');
+        toastEl.className = 'toast align-items-center border-0 shadow ' + bgClass;
+        toastEl.setAttribute('role', 'alert');
+        toastEl.innerHTML = '<div class="d-flex">' +
+            '<div class="toast-body d-flex align-items-center">' +
+            '<i class="fas ' + icon + ' me-2 fs-5 flex-shrink-0"></i>' +
+            '<span>' + message + '</span>' +
+            '</div>' +
+            '<button type="button" class="btn-close ' + (type === 'warning' ? '' : 'btn-close-white') + ' me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>' +
+            '</div>';
 
-        if (type === 'danger' || type === 'error') {
-            header.removeClass('bg-success bg-warning bg-info').addClass('bg-danger');
-            title.text('Peringatan');
-        } else if (type === 'success') {
-            header.removeClass('bg-danger bg-warning bg-info').addClass('bg-success');
-            title.text('Berhasil');
-        } else if (type === 'warning') {
-            header.removeClass('bg-danger bg-success bg-info').addClass('bg-warning');
-            title.text('Perhatian');
-        } else if (type === 'info') {
-            header.removeClass('bg-danger bg-success bg-warning').addClass('bg-info');
-            title.text('Informasi');
-        }
-
-        var modal = new bootstrap.Modal(document.getElementById('modalAlert'));
-        modal.show();
+        container.appendChild(toastEl);
+        var toast = new bootstrap.Toast(toastEl, { delay: 4500 });
+        toastEl.addEventListener('hidden.bs.toast', function() { toastEl.remove(); });
+        toast.show();
     }
+
+    function showAlert(message, type) { showToast(message, type || 'danger'); }
 
     // Helper function to show confirmation modal
     function showConfirm(message, onConfirm, options = {}) {
