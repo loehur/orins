@@ -869,10 +869,20 @@
     var totalBill = 0;
     var json_rekap = [];
 
+    function updateTotalFromCheckboxes() {
+        var sum = 0;
+        $("input.cek_multi:checked").each(function() {
+            sum += parseInt($(this).attr("data-jumlah")) || 0;
+        });
+        totalBill = sum;
+        $("span#totalBill").html(sum.toLocaleString('en-US')).attr("data-total", sum);
+        bayarBill();
+    }
+
     $(document).ready(function() {
         // MULTI
-        totalBill = $("span#totalBill").attr("data-total") || 0;
         json_rekap = [<?= json_encode($loadRekap) ?>];
+        updateTotalFromCheckboxes();
 
         if (totalBill == 0) {
             $("div#loadMulti").fadeOut('fast');
@@ -1053,9 +1063,7 @@
 
     $(document).on("click", "td#clearCheck", function() {
         $("input.cek_multi").prop('checked', false);
-        totalBill = 0;
-        $("span#totalBill").html(totalBill.toLocaleString('en-US')).attr("data-total", totalBill);
-        bayarBill();
+        updateTotalFromCheckboxes();
     });
 
     $(document).on("click", "span.bayarPasMulti", function() {
@@ -1064,19 +1072,16 @@
     });
 
     $(document).on("change", "input.cek_multi", function() {
-        var jumlah = $(this).attr("data-jumlah");
-        let refRekap = $(this).attr("data-ref");
+        var jumlah = parseInt($(this).attr("data-jumlah")) || 0;
+        var refRekap = $(this).attr("data-ref");
 
         if ($(this).is(':checked')) {
-            totalBill = parseInt(totalBill) + parseInt(jumlah);
             json_rekap[0][refRekap] = jumlah;
         } else {
             delete json_rekap[0][refRekap];
-            totalBill = parseInt(totalBill) - parseInt(jumlah);
         }
 
-        $("span#totalBill").html(totalBill.toLocaleString('en-US')).attr("data-total", totalBill);
-        bayarBill();
+        updateTotalFromCheckboxes();
     });
 
     $(document).on("keyup change", "input#bayarBill", function() {
