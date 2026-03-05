@@ -570,13 +570,19 @@ class Data_Operasi extends Controller
    }
    function search_pelanggan()
    {
-      $q = $_GET['q'];
+      $q = trim($_GET['q'] ?? '');
       if (strlen($q) < 2) {
          echo json_encode([]);
          exit();
       }
 
-      $where = "en = 1 AND (nama LIKE '%" . $q . "%' OR no_hp LIKE '%" . $q . "%' OR id_pelanggan LIKE '%" . $q . "%')";
+      // Pisah kata agar "nn 91" bisa match nama + id_pelanggan
+      $parts = preg_split('/\s+/', $q, -1, PREG_SPLIT_NO_EMPTY);
+      $where = "en = 1";
+      foreach ($parts as $p) {
+         $p = addslashes($p);
+         $where .= " AND (nama LIKE '%" . $p . "%' OR no_hp LIKE '%" . $p . "%' OR id_pelanggan LIKE '%" . $p . "%')";
+      }
       $res = $this->db(0)->get_where('pelanggan', $where);
       $data = [];
       foreach ($res as $p) {

@@ -38,6 +38,15 @@
     <!-- Main page content-->
     <div style="margin:auto; width: 190mm; font-family: system-ui;">
         <table class="text-sm" style="margin: auto;">
+            <thead>
+                <tr class="border-bottom">
+                    <th class="text-start pe-1">Code</th>
+                    <th class="text-start pe-1">Tipe</th>
+                    <th class="text-start pe-1">Brand</th>
+                    <th class="text-start pe-1">Model</th>
+                    <th class="text-end">Stok T/G (sds0 sds1)</th>
+                </tr>
+            </thead>
             <?php foreach ($data['barang'] as $key => $g) { ?>
                 <tr>
                     <td colspan="10" class="border-bottom pt-2"><small class="fw-bold"><?= $key ?></small></td>
@@ -58,10 +67,15 @@
                                 <?= strtoupper($a['model']) ?><?= $a['product_name'] ?>
                             </td>
                             <td class="text-end">
-                                <?= number_format($data['stok'][$a['id']]['qty'], 0, 1) ?>
-                            </td>
-                            <td class="text-end">
-                                <?= isset($data['stok_gudang'][$a['id']]['qty']) ? number_format($data['stok_gudang'][$a['id']]['qty']) : 0 ?>
+                                <?php
+                                $q = isset($data['stok'][$a['id']]['qty']) ? (int)$data['stok'][$a['id']]['qty'] : 0;
+                                $qg = isset($data['stok_gudang'][$a['id']]['qty']) ? (int)$data['stok_gudang'][$a['id']]['qty'] : 0;
+                                $s0 = isset($data['stok_sds'][$a['id'] . '#0']['qty']) ? (int)$data['stok_sds'][$a['id'] . '#0']['qty'] : 0;
+                                $s0g = isset($data['stok_sds_gudang'][$a['id'] . '#0']['qty']) ? (int)$data['stok_sds_gudang'][$a['id'] . '#0']['qty'] : 0;
+                                $s1 = isset($data['stok_sds'][$a['id'] . '#1']['qty']) ? (int)$data['stok_sds'][$a['id'] . '#1']['qty'] : 0;
+                                $s1g = isset($data['stok_sds_gudang'][$a['id'] . '#1']['qty']) ? (int)$data['stok_sds_gudang'][$a['id'] . '#1']['qty'] : 0;
+                                echo number_format($q) . '/' . number_format($qg) . ' (' . number_format($s0) . '/' . number_format($s0g) . ' ' . number_format($s1) . '/' . number_format($s1g) . ')';
+                                ?>
                             </td>
                         </tr>
                     <?php } ?>

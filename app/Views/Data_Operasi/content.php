@@ -918,7 +918,7 @@
             $('select.ajax-pelanggan').selectize({
                 valueField: 'id',
                 labelField: 'nama',
-                searchField: ['nama', 'no_hp'],
+                searchField: ['nama', 'no_hp', 'id'],
                 options: <?= $data['pelanggan_init'] ?>,
                 create: false,
                 render: {
