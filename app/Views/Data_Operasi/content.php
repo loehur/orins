@@ -865,7 +865,30 @@
 
 
 <span data-custom-loader="true" class="d-none"></span>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
 <script>
+    function showToast(message, type) {
+        type = type || 'danger';
+        var container = document.querySelector('.toast-container');
+        if (!container) return;
+        var bgClass = type === 'danger' ? 'bg-danger text-white' : type === 'success' ? 'bg-success text-white' : type === 'warning' ? 'bg-warning text-dark' : 'bg-info text-white';
+        var icon = type === 'danger' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+        var toastEl = document.createElement('div');
+        toastEl.className = 'toast align-items-center border-0 shadow ' + bgClass;
+        toastEl.setAttribute('role', 'alert');
+        toastEl.innerHTML = '<div class="d-flex">' +
+            '<div class="toast-body d-flex align-items-center">' +
+            '<i class="fas ' + icon + ' me-2 fs-5 flex-shrink-0"></i>' +
+            '<span>' + message + '</span>' +
+            '</div>' +
+            '<button type="button" class="btn-close ' + (type === 'warning' ? '' : 'btn-close-white') + ' me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>' +
+            '</div>';
+        container.appendChild(toastEl);
+        var toast = new bootstrap.Toast(toastEl, { delay: 4500 });
+        toastEl.addEventListener('hidden.bs.toast', function() { toastEl.remove(); });
+        toast.show();
+    }
+
     var totalBill = 0;
     var json_rekap = [];
 
@@ -945,7 +968,7 @@
                 if (res == 0) {
                     content();
                 } else {
-                    alert(res);
+                    showToast(res, 'danger');
                 }
             }
         });
@@ -1126,7 +1149,7 @@
                 if (res == 0) {
                     content();
                 } else {
-                    alert(res);
+                    showToast(res, 'danger');
                 }
             }
         });
