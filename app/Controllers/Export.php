@@ -107,8 +107,10 @@ class Export extends Controller
                $ch = str_replace(['-', '&', '#'], '', $ch);
                $nb = strtoupper($dh['n_v']);
                $harga = $dh['h'];
-               $total = ($harga * $jumlah) - $diskon;
-               $rows[] = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $diskon, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
+               // Diskon per baris dari detail: 'd' = diskon per unit, total diskon baris = d * jumlah
+               $line_diskon = (isset($dh['d']) ? (int)$dh['d'] : 0) * $jumlah;
+               $total = ($harga * $jumlah) - $line_diskon;
+               $rows[] = array($a['id_order_data'], "R" . $ref, 'NO', $tgl_order[$ref], $jenis, $pelanggan, $mark, $cb, $main_order, '', $nb, '', $jumlah, $harga, $line_diskon, $total, $cs, $afiliasi, $order_status, $note, $tanggal);
             }
          } else {
             $detail_harga = unserialize($a['produk_detail']);
