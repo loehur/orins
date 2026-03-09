@@ -913,7 +913,7 @@
         
         // Asynchronous initialization of Selectize to keep UI responsive
         setTimeout(function() {
-            $('select.tize:not(.ajax-pelanggan)').selectize();
+            $('select.tize:not(.ajax-pelanggan):not(.ajax-pelanggan-ubah)').selectize();
 
             $('select.ajax-pelanggan').selectize({
                 valueField: 'id',
@@ -939,15 +939,40 @@
                         url: '<?= PV::BASE_URL ?>Data_Operasi/search_pelanggan',
                         type: 'GET',
                         dataType: 'json',
-                        data: {
-                            q: query
-                        },
-                        error: function() {
-                            callback();
-                        },
-                        success: function(res) {
-                            callback(res);
-                        }
+                        data: { q: query },
+                        error: function() { callback(); },
+                        success: function(res) { callback(res); }
+                    });
+                }
+            });
+
+            $('select.ajax-pelanggan-ubah').selectize({
+                valueField: 'id',
+                labelField: 'nama',
+                searchField: ['nama', 'no_hp', 'id'],
+                options: JSON.parse($('select.ajax-pelanggan-ubah').attr('data-options') || '[]'),
+                create: false,
+                render: {
+                    option: function(item, escape) {
+                        return '<div style="padding: 6px 15px;">' +
+                            '<span>' + escape(item.inisial || '') + ' ' + escape(item.nama) + '</span>' +
+                            ' #<small>' + (item.id ? escape(item.id).substring(escape(item.id).length - 2) : '') + '</small>' +
+                            ' <br><small>' + escape(item.no_hp || '') + '</small>' +
+                            '</div>';
+                    },
+                    item: function(item, escape) {
+                        return '<div style="padding: 2px 10px;">' + escape(item.inisial || '') + ' ' + escape(item.nama) + '</div>';
+                    }
+                },
+                load: function(query, callback) {
+                    if (query.length < 2) return callback();
+                    $.ajax({
+                        url: '<?= PV::BASE_URL ?>Data_Operasi/search_pelanggan',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: { q: query },
+                        error: function() { callback(); },
+                        success: function(res) { callback(res); }
                     });
                 }
             });
@@ -1084,6 +1109,10 @@
         var pelanggan = $(this).attr("data-pelanggan");
         $("input[name=ubah_ref]").val(ref);
         $("input[name=pelanggan_lama]").val(pelanggan);
+        var $sel = $("select.ajax-pelanggan-ubah");
+        if ($sel[0] && $sel[0].selectize) {
+            $sel[0].selectize.clear();
+        }
     });
 
     $(document).on("click", "td#clearCheck", function() {

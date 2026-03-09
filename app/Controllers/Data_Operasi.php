@@ -63,9 +63,11 @@ class Data_Operasi extends Controller
             'no_hp' => $p['no_hp'],
             'inisial' => $this->dToko[$p['id_toko']]['inisial']
          ]]);
+         $data['pelanggan_ubah_init'] = $data['pelanggan_init'];
       } else {
          $data['pelanggan'] = [];
          $data['pelanggan_init'] = "[]";
+         $data['pelanggan_ubah_init'] = "[]";
       }
 
       $data['saldo'] = $this->data("Saldo")->deposit($parse);
