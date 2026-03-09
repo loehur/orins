@@ -941,9 +941,15 @@ class Buka_Order extends Controller
 
    function diskon()
    {
-      $parse = explode("_", $_POST['parse']);
-      $diskon = $_POST['diskon'];
-      $harga = $parse[2];
+      $parts = explode("_", $_POST['parse']);
+      if (count($parts) < 2) {
+         echo "Format parse tidak valid!";
+         exit();
+      }
+      $id_order_data = $parts[0];
+      $harga = (int)end($parts);
+      $kl = count($parts) > 2 ? implode("_", array_slice($parts, 1, -1)) : $parts[1];
+      $diskon = (int)$_POST['diskon'];
 
       if ($diskon > $harga) {
          echo "Diskon tidak boleh melebihi harga!";
@@ -951,10 +957,10 @@ class Buka_Order extends Controller
       }
 
       $cols = "detail_harga";
-      $where = "id_order_data = " . $parse[0];
+      $where = "id_order_data = " . intval($id_order_data);
       $detail = unserialize($this->db(0)->get_cols_where('order_data', $cols, $where, 0)['detail_harga']);
 
-      $detail[$parse[1]]['d'] = $diskon;
+      $detail[$kl]['d'] = $diskon;
       $detail_ = serialize($detail);
 
       $set = "detail_harga = '" . $detail_ . "'";

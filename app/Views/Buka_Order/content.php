@@ -283,22 +283,23 @@ $mgpaket = $data['harga_paket'];
                                                                     <small>
                                                                         <?php
                                                                         foreach ($listDetail as $kl => $ld_o) {
-                                                                            $harga_d = $data['harga'][$keyD][$ld_o['c_h']]; ?>
+                                                                            $harga_d = $data['harga'][$keyD][$ld_o['c_h']] ?? 0;
+                                                                            $disk_line = (int)($ld_o['d'] ?? 0); ?>
                                                                             <div class="border-bottom mx-0">
                                                                                 <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
                                                                                 <div class="float-end">
                                                                                     <?php
                                                                                     if ($do['price_locker'] == 0) {
-                                                                                        if ($disk > 0) { ?>
-                                                                                            <del><?= number_format($data['harga'][$keyD][$ld_o['c_h']]) ?></del>
+                                                                                        if ($disk_line > 0) { ?>
+                                                                                            <del><?= number_format($harga_d) ?></del>
                                                                                         <?php } ?>
-                                                                                        <?= number_format($data['harga'][$keyD][$ld_o['c_h']] - $disk) ?>
+                                                                                        <?= number_format($harga_d - $disk_line) ?>
                                                                                     <?php } ?>
 
                                                                                     <?php if ((!isset($do['paket_ref']) || $do['paket_ref'] == '') && (!isset($do['paket_group']) || $do['paket_group'] == '')) { ?>
                                                                                         <b><span data-bs-toggle="modal" data-id_produk="<?= $id_produk ?>" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
                                                                                         <?php if ($harga_d > 0) { ?>
-                                                                                            <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-diskon="<?= (int)$disk ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
+                                                                                            <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-diskon="<?= $disk_line ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
                                                                                         <?php } ?>
                                                                                     <?php } ?>
                                                                                 </div>
