@@ -269,6 +269,12 @@ class Data_Order extends Controller
       $reason = trim($_POST['reason'] ?? '');
       $sn_baru = trim($_POST['sn_baru'] ?? '');
       $id_baru = trim($_POST['id_baru'] ?? '');
+      $sds_baru = isset($_POST['sds_baru']) ? (int)$_POST['sds_baru'] : -1;
+      if ($sds_baru < 0 || $sds_baru > 1) {
+         echo "SDS harus dipilih (Ya/Tidak)!";
+         exit();
+      }
+
       $where = "id = " . intval($id);
       $cek = $this->db(0)->get_where_row("master_mutasi", $where);
       if (!$cek) {
@@ -277,7 +283,6 @@ class Data_Order extends Controller
       }
 
       $id_sumber = (int)($cek['id_sumber'] ?? 0);
-      $sds = (int)($cek['sds'] ?? 0);
       $id_toko = (int)$this->userData['id_toko'];
 
       // Cek barang baru - pakai sn kosong untuk barang non-SN
@@ -288,32 +293,14 @@ class Data_Order extends Controller
       }
 
       $sn_cek = $sn_baru;
-      $sds_cek = $sds;
       if (isset($barang_baru['sn']) && $barang_baru['sn'] == 0) {
          $sn_cek = '';
-         $sds_cek = 0; // barang non-SN pakai sds 0
       }
 
-      $sisa_stok = $this->data('Barang')->sisa_stok($id_baru, $id_sumber, $sn_cek, $sds_cek);
+      // Cek stok spesifik SDS yang dipilih - tidak fallback ke total
+      $sisa_stok = $this->data('Barang')->sisa_stok($id_baru, $id_sumber, $sn_cek, $sds_baru);
       if ($sisa_stok <= 0 && $id_sumber != $id_toko) {
-         $sisa_stok = $this->data('Barang')->sisa_stok($id_baru, $id_toko, $sn_cek, $sds_cek);
-      }
-
-      if ($sisa_stok <= 0) {
-         $stok_all = $this->data('Barang')->stok_data_all($id_baru, $id_sumber);
-         $qty_all = 0;
-         foreach ($stok_all as $row) {
-            $qty_all = (int)($row['qty'] ?? 0);
-            break;
-         }
-         if ($qty_all <= 0 && $id_sumber != $id_toko) {
-            $stok_all = $this->data('Barang')->stok_data_all($id_baru, $id_toko);
-            foreach ($stok_all as $row) {
-               $qty_all = (int)($row['qty'] ?? 0);
-               break;
-            }
-         }
-         $sisa_stok = $qty_all;
+         $sisa_stok = $this->data('Barang')->sisa_stok($id_baru, $id_toko, $sn_cek, $sds_baru);
       }
 
       if ($sisa_stok <= 0) {
@@ -321,7 +308,7 @@ class Data_Order extends Controller
          exit();
       }
 
-      $set = "id_barang = '" . addslashes($id_baru) . "', sn = '" . addslashes($sn_baru) . "', note = '" . addslashes($reason) . "'";
+      $set = "id_barang = '" . addslashes($id_baru) . "', sn = '" . addslashes($sn_baru) . "', sds = " . $sds_baru . ", note = '" . addslashes($reason) . "'";
       $update = $this->db(0)->update("master_mutasi", $set, $where);
       if ($update['errno'] <> 0) {
          echo $update['error'];

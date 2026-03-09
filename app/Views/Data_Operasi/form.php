@@ -178,7 +178,14 @@
                             <div class="col">
                                 <label class="form-label">Serial Number (SN)</label>
                                 <input type="text" name="sn_baru" class="form-control form-control-sm">
-                                <input type="hidden" name="tukarBarang_id">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">SDS</label>
+                                <select name="sds_baru" class="form-select form-select-sm" required>
+                                    <option value="">-- Pilih --</option>
+                                    <option value="0">Tidak</option>
+                                    <option value="1">Ya</option>
+                                </select>
                             </div>
                         </div>
                         <div class="row mb-3">

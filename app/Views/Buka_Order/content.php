@@ -298,7 +298,7 @@ $mgpaket = $data['harga_paket'];
                                                                                     <?php if ((!isset($do['paket_ref']) || $do['paket_ref'] == '') && (!isset($do['paket_group']) || $do['paket_group'] == '')) { ?>
                                                                                         <b><span data-bs-toggle="modal" data-id_produk="<?= $id_produk ?>" data-code="<?= $ld_o['c_h'] ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#exampleModal1" style="cursor: pointer;" class="tetapkanHarga px-2">P</span></b>
                                                                                         <?php if ($harga_d > 0) { ?>
-                                                                                            <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
+                                                                                            <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-diskon="<?= (int)$disk ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
                                                                                         <?php } ?>
                                                                                     <?php } ?>
                                                                                 </div>
@@ -356,7 +356,15 @@ $mgpaket = $data['harga_paket'];
                                         $harga_paket_val = $group['harga_paket'];
                                     }
                                     $paket_qty_display = isset($group['paket_qty']) && $group['paket_qty'] > 0 ? $group['paket_qty'] : 1;
-                                    $total_order += ($harga_paket_val * $paket_qty_display);
+                                    $paket_diskon_total = 0;
+                                    foreach ($group['items'] as $item) {
+                                        $do_item = $item['do'];
+                                        $listDetail_item = unserialize($do_item['detail_harga']);
+                                        foreach ($listDetail_item as $ld_o) {
+                                            $paket_diskon_total += ($ld_o['d'] ?? 0) * $do_item['jumlah'];
+                                        }
+                                    }
+                                    $total_order += ($harga_paket_val * $paket_qty_display) - $paket_diskon_total;
                                 ?>
                                     <tr>
                                         <td>
@@ -378,7 +386,11 @@ $mgpaket = $data['harga_paket'];
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                         <b>
                                                             <small>
-                                                                <?= number_format($harga_paket_val * $paket_qty_display) ?>
+                                                                <?php if ($paket_diskon_total > 0) { ?>
+                                                                    <del><?= number_format($harga_paket_val * $paket_qty_display) ?></del> <?= number_format(($harga_paket_val * $paket_qty_display) - $paket_diskon_total) ?>
+                                                                <?php } else { ?>
+                                                                    <?= number_format($harga_paket_val * $paket_qty_display) ?>
+                                                                <?php } ?>
                                                             </small>
                                                         </b>
                                                     </td>
@@ -445,7 +457,30 @@ $mgpaket = $data['harga_paket'];
                                                                         </div>
                                                                     </td>
                                                                 </tr>
-                                                                <!-- listDetail hidden for paket items -->
+                                                                <?php if (isset($_SESSION['edit'][$this->userData['id_user']])) { ?>
+                                                                    <tr>
+                                                                        <td colspan="10" valign="top" class="p-0 border border-top-0">
+                                                                            <small>
+                                                                                <?php foreach ($listDetail as $kl => $ld_o) {
+                                                                                    $harga_d = isset($data['harga'][$keyD][$ld_o['c_h']]) ? $data['harga'][$keyD][$ld_o['c_h']] : 0;
+                                                                                    $disk = $ld_o['d']; ?>
+                                                                                    <div class="border-bottom mx-0">
+                                                                                        <div class="ps-1 float-start"><?= strtoupper($ld_o['n_v']) ?></div>
+                                                                                        <div class="float-end">
+                                                                                            <?php if ($do['price_locker'] == 0) {
+                                                                                                if ($disk > 0) { ?><del><?= number_format($harga_d) ?></del> <?php } ?>
+                                                                                                <?= number_format($harga_d - $disk) ?>
+                                                                                                <?php if ($harga_d > 0) { ?>
+                                                                                                    <b><span data-bs-toggle="modal" data-parse="<?= $id_order_data . "_" . $kl . "_" . $harga_d ?>" data-produk="<?= strtoupper($ld_o['n_b']) ?>" data-diskon="<?= (int)$disk ?>" data-bs-target="#modalDiskon" style="cursor: pointer;" class="tetapkanDiskon px-2">D</span></b>
+                                                                                                <?php } ?>
+                                                                                            <?php } ?>
+                                                                                        </div>
+                                                                                    </div><br>
+                                                                                <?php } ?>
+                                                                            </small>
+                                                                        </td>
+                                                                    </tr>
+                                                                <?php } ?>
                                                             </table>
                                                             <div class="row">
                                                                 <div class="col text-sm">
@@ -892,8 +927,10 @@ $mgpaket = $data['harga_paket'];
     $("span.tetapkanDiskon").click(function() {
         var produk = $(this).attr("data-produk");
         var parse = $(this).attr("data-parse");
+        var diskon = $(this).attr("data-diskon") || "0";
         $("span.produk_harga").html(produk);
-        $("input[name=parse").val(parse);
+        $("input[name=parse]").val(parse);
+        $("input[name=diskon]", "#modalDiskon").val(diskon);
     })
 
     $("span.tetapkanDiskonBarang").click(function() {
