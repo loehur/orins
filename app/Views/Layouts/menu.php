@@ -4,7 +4,7 @@ $where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_penerima <> 0 
 $aff_ = $this->db(0)->get_cols_where('order_data', $cols, $where, 1);
 $aff_c = count($aff_);
 
-$where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND cancel = 0 AND spk_lanjutan <> '' ORDER BY id_order_data DESC";
+$where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND cancel = 0 AND id_ambil = 0 AND spk_lanjutan <> '' ORDER BY id_order_data DESC";
 $data_spk_lnjut = $this->db(0)->get_where('order_data', $where);
 
 // Hitung order unik (ref) yang punya SPK prioritas - exclude divisi yang sudah tahap 1 & 2 (extract dari serialize spk_dvs)
