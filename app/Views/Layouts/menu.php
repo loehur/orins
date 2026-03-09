@@ -1,39 +1,48 @@
 <?php
-$cols = "id_toko, id_pelanggan, ref";
-$where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_penerima <> 0 AND (id_user_afiliasi = 0 OR status_order = 1) AND cancel = 0 GROUP BY id_toko, id_pelanggan, ref";
-$aff_ = $this->db(0)->get_cols_where('order_data', $cols, $where, 1);
-$aff_c = count($aff_);
+// OPTIMASI: Query hanya dijalankan untuk user yang punya akses menu tersebut
+$aff_ = [];
+$aff_c = 0;
+$data_spk_lnjut = [];
+$lanjut_c = 0;
+$list_l = [];
 
-$where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND cancel = 0 AND id_ambil = 0 AND spk_lanjutan <> '' ORDER BY id_order_data DESC";
-$data_spk_lnjut = $this->db(0)->get_where('order_data', $where);
+if (in_array($this->userData['user_tipe'], PV::PRIV[3])) {
+	$cols = "id_toko, id_pelanggan, ref";
+	$where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_penerima <> 0 AND (id_user_afiliasi = 0 OR status_order = 1) AND cancel = 0 GROUP BY id_toko, id_pelanggan, ref";
+	$aff_ = $this->db(0)->get_cols_where('order_data', $cols, $where, 1);
+	$aff_c = count($aff_);
+}
 
-// Hitung order unik (ref) yang punya SPK prioritas - exclude divisi yang sudah tahap 1 & 2 (extract dari serialize spk_dvs)
-$refs_spk_lnjut = [];
-foreach ($data_spk_lnjut as $ds) {
-	$spk_e = str_replace('D-', '', $ds['spk_lanjutan']);
-	$spk = explode('#', $spk_e);
-	$spk_dvs = strlen($ds['spk_dvs']) > 1 ? @unserialize($ds['spk_dvs']) : [];
-	if (!is_array($spk_dvs)) $spk_dvs = [];
-	$ada_pending = false;
-	foreach ($spk as $sl) {
-		if ($sl <> "" && isset($this->dDvs[$sl])) {
-			$dv = isset($spk_dvs[$sl]) ? $spk_dvs[$sl] : [];
-			$status = isset($dv['status']) ? (int)$dv['status'] : 0;
-			$cm = isset($dv['cm']) ? (int)$dv['cm'] : 0;
-			$cm_status = isset($dv['cm_status']) ? (int)$dv['cm_status'] : 0;
-			// Divisi selesai jika tahap 1 done DAN (tidak ada cm ATAU tahap 2 done)
-			$done = ($status == 1 && ($cm != 1 || $cm_status == 1));
-			if (!$done) {
-				$ada_pending = true;
-				break;
+if (in_array($this->userData['user_tipe'], PV::PRIV[4])) {
+	$where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND cancel = 0 AND id_ambil = 0 AND spk_lanjutan <> '' ORDER BY id_order_data DESC";
+	$data_spk_lnjut = $this->db(0)->get_cols_where('order_data', 'ref, spk_lanjutan, spk_dvs', $where, 1); // Hanya kolom yang dipakai
+
+	$refs_spk_lnjut = [];
+	foreach ($data_spk_lnjut as $ds) {
+		$spk = explode('#', str_replace('D-', '', $ds['spk_lanjutan'] ?? ''));
+		$spk_dvs = (strlen($ds['spk_dvs'] ?? '') > 1) ? @unserialize($ds['spk_dvs']) : [];
+		if (!is_array($spk_dvs)) $spk_dvs = [];
+		$ada_pending = false;
+		foreach ($spk as $sl) {
+			if ($sl !== '' && isset($this->dDvs[$sl])) {
+				$list_l[$sl] = 1; // Kumpulkan divisi unik untuk submenu
+				$dv = $spk_dvs[$sl] ?? [];
+				$status = (int)($dv['status'] ?? 0);
+				$cm = (int)($dv['cm'] ?? 0);
+				$cm_status = (int)($dv['cm_status'] ?? 0);
+				$done = ($status == 1 && ($cm != 1 || $cm_status == 1));
+				if (!$done) {
+					$ada_pending = true;
+				}
 			}
 		}
+		if ($ada_pending) {
+			$refs_spk_lnjut[$ds['ref']] = 1;
+		}
 	}
-	if ($ada_pending) {
-		$refs_spk_lnjut[$ds['ref']] = 1;
-	}
+	$lanjut_c = count($refs_spk_lnjut);
+	$list_l = array_keys($list_l);
 }
-$lanjut_c = count($refs_spk_lnjut);
 
 $yearNow = date('Y');
 ?>
@@ -82,22 +91,6 @@ $yearNow = date('Y');
 							</a>
 							<div class="collapse <?= (str_contains($t, "SPK - Lanjutan")) ? 'show' : '' ?>" id="collapseSPKP" data-bs-parent="#accordionSidenav">
 								<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
-									<?php
-									$list_l = [];
-									foreach ($data_spk_lnjut as $ds) {
-										$spk_e = str_replace('D-', '', $ds['spk_lanjutan']);
-										$spk = explode('#', $spk_e);
-
-										foreach ($spk as $sl) {
-											if ($sl <> "") {
-												if (isset($this->dDvs[$sl])) {
-													array_push($list_l, $sl);
-												}
-											}
-										}
-									}
-									$list_l = array_unique($list_l) ?>
-
 									<?php foreach ($list_l as $sl) { ?>
 										<a class="nav-link py-1 <?= ($t == "SPK - Lanjutan " . $this->dDvs[$sl]['divisi']) ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>SPK_L/index/<?= $sl ?>"><?= $this->dDvs[$sl]['divisi'] ?></a>
 									<?php } ?>
