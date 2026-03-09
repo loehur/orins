@@ -538,8 +538,8 @@ class Data_Operasi extends Controller
       }
 
       // Update order_data
-      $set = "id_pelanggan = " . $id_pelanggan_baru;
-      $where = "ref = '" . $ref . "' AND tuntas = 0";
+      $set = "id_pelanggan = " . intval($id_pelanggan_baru);
+      $where = "ref = '" . addslashes($ref) . "' AND tuntas = 0";
       $up1 = $this->db(0)->update("order_data", $set, $where);
       if ($up1['errno'] <> 0) {
          echo $up1['error'];
@@ -548,19 +548,10 @@ class Data_Operasi extends Controller
 
       // Update master_mutasi
       $set = "id_target = " . $id_pelanggan_baru;
-      $where = "ref = '" . $ref . "' AND tuntas = 0";
+      $where = "ref = '" . addslashes($ref) . "' AND tuntas = 0";
       $up2 = $this->db(0)->update("master_mutasi", $set, $where);
       if ($up2['errno'] <> 0) {
          echo $up2['error'];
-         exit();
-      }
-
-      // Update ref table
-      $set = "id_pelanggan = " . $id_pelanggan_baru;
-      $where = "ref = '" . $ref . "'";
-      $up3 = $this->db(0)->update("ref", $set, $where);
-      if ($up3['errno'] <> 0) {
-         echo $up3['error'];
          exit();
       }
 
