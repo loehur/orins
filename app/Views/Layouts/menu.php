@@ -7,19 +7,29 @@ $aff_c = count($aff_);
 $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND cancel = 0 AND spk_lanjutan <> '' ORDER BY id_order_data DESC";
 $data_spk_lnjut = $this->db(0)->get_where('order_data', $where);
 
-// Hitung order unik (ref) yang punya SPK prioritas - bukan jumlah divisi per order
+// Hitung order unik (ref) yang punya SPK prioritas - exclude divisi yang sudah tahap 1 & 2 (extract dari serialize spk_dvs)
 $refs_spk_lnjut = [];
 foreach ($data_spk_lnjut as $ds) {
 	$spk_e = str_replace('D-', '', $ds['spk_lanjutan']);
 	$spk = explode('#', $spk_e);
-	$ada_divisi = false;
+	$spk_dvs = strlen($ds['spk_dvs']) > 1 ? @unserialize($ds['spk_dvs']) : [];
+	if (!is_array($spk_dvs)) $spk_dvs = [];
+	$ada_pending = false;
 	foreach ($spk as $sl) {
 		if ($sl <> "" && isset($this->dDvs[$sl])) {
-			$ada_divisi = true;
-			break;
+			$dv = isset($spk_dvs[$sl]) ? $spk_dvs[$sl] : [];
+			$status = isset($dv['status']) ? (int)$dv['status'] : 0;
+			$cm = isset($dv['cm']) ? (int)$dv['cm'] : 0;
+			$cm_status = isset($dv['cm_status']) ? (int)$dv['cm_status'] : 0;
+			// Divisi selesai jika tahap 1 done DAN (tidak ada cm ATAU tahap 2 done)
+			$done = ($status == 1 && ($cm != 1 || $cm_status == 1));
+			if (!$done) {
+				$ada_pending = true;
+				break;
+			}
 		}
 	}
-	if ($ada_divisi) {
+	if ($ada_pending) {
 		$refs_spk_lnjut[$ds['ref']] = 1;
 	}
 }
