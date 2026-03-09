@@ -7,19 +7,23 @@ $aff_c = count($aff_);
 $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND cancel = 0 AND spk_lanjutan <> '' ORDER BY id_order_data DESC";
 $data_spk_lnjut = $this->db(0)->get_where('order_data', $where);
 
-$lanjut_c = 0;
+// Hitung order unik (ref) yang punya SPK prioritas - bukan jumlah divisi per order
+$refs_spk_lnjut = [];
 foreach ($data_spk_lnjut as $ds) {
 	$spk_e = str_replace('D-', '', $ds['spk_lanjutan']);
 	$spk = explode('#', $spk_e);
-
+	$ada_divisi = false;
 	foreach ($spk as $sl) {
-		if ($sl <> "") {
-			if (isset($this->dDvs[$sl])) {
-				$lanjut_c += 1;
-			}
+		if ($sl <> "" && isset($this->dDvs[$sl])) {
+			$ada_divisi = true;
+			break;
 		}
 	}
+	if ($ada_divisi) {
+		$refs_spk_lnjut[$ds['ref']] = 1;
+	}
 }
+$lanjut_c = count($refs_spk_lnjut);
 
 $yearNow = date('Y');
 ?>
