@@ -619,7 +619,7 @@
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#modalBatalAmbil" class="dropdown-item batalAmbil px-2" data-ref="<?= $ref ?>" href="#"><small>Batal Ambil</small></a></li>
                                                                 <?php } ?>
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $do['tuntas'] == 0) { ?>
-                                                                    <li><a data-bs-toggle="modal" data-bs-target="#modalUbahPelanggan" class="dropdown-item ubahPelanggan px-2" data-ref="<?= $ref ?>" data-pelanggan="<?= $id_pelanggan ?>" href="#"><small>Ubah Pelanggan</small></a></li>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#modalUbahPelanggan" class="dropdown-item ubahPelanggan px-2" data-ref="<?= $ref ?>" data-pelanggan="<?= $id_pelanggan ?>" data-pelanggan-jenis="<?= (int)($data['pelanggan'][$id_pelanggan]['id_pelanggan_jenis'] ?? 0) ?>" href="#"><small>Ubah Pelanggan</small></a></li>
                                                                 <?php } ?>
                                                             </ul>
                                                         </td>
@@ -966,11 +966,12 @@
                 },
                 load: function(query, callback) {
                     if (query.length < 2) return callback();
+                    var pelangganJenis = $('select.ajax-pelanggan-ubah').attr('data-pelanggan-jenis') || '';
                     $.ajax({
-                        url: '<?= PV::BASE_URL ?>Data_Operasi/search_pelanggan',
+                        url: '<?= PV::BASE_URL ?>Data_Operasi/search_pelanggan_ubah',
                         type: 'GET',
                         dataType: 'json',
-                        data: { q: query },
+                        data: { q: query, id_pelanggan_jenis: pelangganJenis },
                         error: function() { callback(); },
                         success: function(res) { callback(res); }
                     });
@@ -1107,8 +1108,10 @@
     $(document).on("click", "a.ubahPelanggan", function() {
         var ref = $(this).attr("data-ref");
         var pelanggan = $(this).attr("data-pelanggan");
+        var pelangganJenis = $(this).attr("data-pelanggan-jenis") || "";
         $("input[name=ubah_ref]").val(ref);
         $("input[name=pelanggan_lama]").val(pelanggan);
+        $("select.ajax-pelanggan-ubah").attr("data-pelanggan-jenis", pelangganJenis);
         var $sel = $("select.ajax-pelanggan-ubah");
         if ($sel[0] && $sel[0].selectize) {
             $sel[0].selectize.clear();

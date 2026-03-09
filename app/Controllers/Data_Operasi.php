@@ -597,4 +597,37 @@ class Data_Operasi extends Controller
       }
       echo json_encode($data);
    }
+
+   function search_pelanggan_ubah()
+   {
+      $q = trim($_GET['q'] ?? '');
+      if (strlen($q) < 2) {
+         echo json_encode([]);
+         exit();
+      }
+
+      $id_toko = (int)$this->userData['id_toko'];
+      $id_pelanggan_jenis = isset($_GET['id_pelanggan_jenis']) ? (int)$_GET['id_pelanggan_jenis'] : 0;
+
+      $parts = preg_split('/\s+/', $q, -1, PREG_SPLIT_NO_EMPTY);
+      $where = "en = 1 AND id_toko = " . $id_toko;
+      if ($id_pelanggan_jenis > 0) {
+         $where .= " AND id_pelanggan_jenis = " . $id_pelanggan_jenis;
+      }
+      foreach ($parts as $p) {
+         $p = addslashes($p);
+         $where .= " AND (nama LIKE '%" . $p . "%' OR no_hp LIKE '%" . $p . "%' OR id_pelanggan LIKE '%" . $p . "%')";
+      }
+      $res = $this->db(0)->get_where('pelanggan', $where);
+      $data = [];
+      foreach ($res as $p) {
+         $data[] = [
+            'id' => $p['id_pelanggan'],
+            'nama' => strtoupper($p['nama']),
+            'no_hp' => $p['no_hp'],
+            'inisial' => $this->dToko[$p['id_toko']]['inisial']
+         ];
+      }
+      echo json_encode($data);
+   }
 }

@@ -620,7 +620,7 @@
                                 <label class="form-label">Pelanggan Baru</label>
                                 <input type="hidden" name="ubah_ref">
                                 <input type="hidden" name="pelanggan_lama">
-                                <select class="form-select tize ajax-pelanggan-ubah" name="id_pelanggan_baru" required data-options='<?= $data['pelanggan_ubah_init'] ?? "[]" ?>'></select>
+                                <select class="form-select tize ajax-pelanggan-ubah" name="id_pelanggan_baru" required data-options='<?= $data['pelanggan_ubah_init'] ?? "[]" ?>' data-pelanggan-jenis=""></select>
                             </div>
                         </div>
                         <div class="row mb-2">
