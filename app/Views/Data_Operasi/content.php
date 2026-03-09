@@ -1170,9 +1170,8 @@
     });
 
     $(document).on("submit", "form", function(e) {
-        // Special handling for transfer modal already handled or should we unify?
-        // Let's unify or keep special one if it has specific logic.
-        if ($(this).closest('#modalTransfer').length) return; 
+        if ($(this).closest('#modalTransfer').length) return;
+        if ($(this).attr('action') && $(this).attr('action').indexOf('ubahPelanggan') >= 0) return;
 
         e.preventDefault();
         $.ajax({
