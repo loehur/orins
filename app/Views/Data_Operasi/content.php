@@ -290,7 +290,10 @@
                                             
                                             // Override diskon column logic with calculated value
                                             $do['diskon'] = $total_diskon_row;
-                                            $bill -= $total_diskon_row;
+                                            // Hanya kurangi diskon dari bill jika item belum cancel (agar item cancel tidak mengganggu jumlah tagihan)
+                                            if ($cancel == 0 && $do['stok'] == 0) {
+                                                $bill -= $total_diskon_row;
+                                            }
 
                                             $id_order_data = $do['id_order_data'];
                                             $id_produk = $do['id_produk'];
