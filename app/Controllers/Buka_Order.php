@@ -106,9 +106,9 @@ class Buka_Order extends Controller
       // Create snapshot before entering edit mode
       $session_key = 'edit_' . $this->userData['id_user'] . '_' . $ref . '_' . time();
 
-      // Get current order data
-      $order_data = $this->db(0)->get_where('order_data', "ref = '" . $ref . "' AND cancel <> 1");
-      $mutasi_data = $this->db(0)->get_where('master_mutasi', "ref = '" . $ref . "' AND stat <> 2");
+      // Get current order data - INCLUDE cancelled items agar saat restore/cancel edit tidak hilang
+      $order_data = $this->db(0)->get_where('order_data', "ref = '" . $ref . "'");
+      $mutasi_data = $this->db(0)->get_where('master_mutasi', "ref = '" . $ref . "'");
 
       // Convert to JSON for snapshot
       $snapshot_order = json_encode($order_data);
@@ -212,7 +212,8 @@ class Buka_Order extends Controller
       $data['id_jenis_pelanggan'] = $parse;
       if (isset($_SESSION['edit'][$this->userData['id_user']])) {
          $dEdit = $_SESSION['edit'][$this->userData['id_user']];
-         $where = "(ref = '" . $dEdit[0] . "' AND cancel <> 1) OR (id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0) AND cancel = 0";;
+         // Cart: JANGAN tampilkan item cancel - mengganggu proses edit, item cancel tidak perlu perubahan
+         $where = "(ref = '" . $dEdit[0] . "' AND cancel = 0) OR (id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0 AND cancel = 0)";
          $whereBarang = "(ref = '" . $dEdit[0] . "' AND stat <> 2 AND pid = 0) OR (id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND stat <> 2 AND pid = 0)";
       } else {
          $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0 AND cancel = 0";
@@ -1495,8 +1496,8 @@ class Buka_Order extends Controller
          $final_cs_id = $default_cs_id;
       }
       
-      // Update master_mutasi with the correct values
-      $where_mm_ref = "ref = '" . $ref . "'";
+      // Update master_mutasi with the correct values - JANGAN update item yang sudah cancel (stat=2)
+      $where_mm_ref = "ref = '" . $ref . "' AND stat <> 2";
       $set_mm_ref = "stat = 1, id_target = " . $final_id_target . ", jenis_target = " . $id_pelanggan_jenis . ", cs_id = " . $final_cs_id;
       $this->db(0)->update("master_mutasi", $set_mm_ref, $where_mm_ref);
 
