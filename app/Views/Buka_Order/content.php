@@ -23,6 +23,28 @@ $total_order = 0;
 $total_item = 0;
 $paket = false;
 $mgpaket = $data['harga_paket'];
+
+if (!function_exists('buka_order_spk_qty_locked')) {
+    function buka_order_spk_qty_locked($spk_dvs_raw)
+    {
+        if (strlen($spk_dvs_raw ?? '') <= 1) {
+            return false;
+        }
+        $spk = @unserialize($spk_dvs_raw);
+        if (!is_array($spk)) {
+            return false;
+        }
+        foreach ($spk as $dv) {
+            if (isset($dv['status']) && (int)$dv['status'] === 1) {
+                return true;
+            }
+            if (isset($dv['cm_status']) && (int)$dv['cm_status'] === 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
 ?>
 
 <main class="container">
@@ -191,6 +213,7 @@ $mgpaket = $data['harga_paket'];
                                         $akum_diskon += $disk ?>
                                     <?php }
 
+                                    $spk_qty_locked = buka_order_spk_qty_locked($do['spk_dvs'] ?? '');
                                     ?>
                                     <tr>
                                         <td class="">
@@ -209,7 +232,11 @@ $mgpaket = $data['harga_paket'];
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                         <small>
-                                                            <span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= $do['jumlah'] ?></span>x
+                                                            <?php if ($spk_qty_locked) { ?>
+                                                                <?= $do['jumlah'] ?>x
+                                                            <?php } else { ?>
+                                                                <span class="edit_n" data-id="<?= $do['id_order_data'] ?>"><?= $do['jumlah'] ?></span>x
+                                                            <?php } ?>
                                                         </small>
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
@@ -365,6 +392,13 @@ $mgpaket = $data['harga_paket'];
                                             $paket_diskon_total += ($ld_o['d'] ?? 0) * $do_item['jumlah'];
                                         }
                                     }
+                                    $paket_spk_qty_locked = false;
+                                    foreach ($group['items'] as $pit) {
+                                        if (buka_order_spk_qty_locked($pit['do']['spk_dvs'] ?? '')) {
+                                            $paket_spk_qty_locked = true;
+                                            break;
+                                        }
+                                    }
                                     $total_order += ($harga_paket_val * $paket_qty_display) - $paket_diskon_total;
                                 ?>
                                     <tr>
@@ -376,7 +410,11 @@ $mgpaket = $data['harga_paket'];
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                         <small>
-                                                            <span class="edit_paket_qty" data-paket_group="<?= $pg ?>" data-paket_ref="<?= $paket_ref ?>"><?= $paket_qty_display ?></span>x
+                                                            <?php if ($paket_spk_qty_locked) { ?>
+                                                                <?= $paket_qty_display ?>x
+                                                            <?php } else { ?>
+                                                                <span class="edit_paket_qty" data-paket_group="<?= $pg ?>" data-paket_ref="<?= $paket_ref ?>"><?= $paket_qty_display ?></span>x
+                                                            <?php } ?>
                                                         </small>
                                                     </td>
                                                     <td class="text-end" style="width: 1px;white-space: nowrap;">
@@ -595,6 +633,17 @@ $mgpaket = $data['harga_paket'];
 
                         // Render header only if this paket_group doesn't exist in order_paket_groups
                         $render_header = !isset($order_paket_groups[$pg]);
+                        $paket_spk_qty_locked = false;
+                        if ($render_header) {
+                            foreach ($data['order'] as $odo) {
+                                if (($odo['paket_group'] ?? '') == $pg && ($odo['paket_ref'] ?? '') == $paket_ref) {
+                                    if (buka_order_spk_qty_locked($odo['spk_dvs'] ?? '')) {
+                                        $paket_spk_qty_locked = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                         if ($render_header) {
                             $total_order += ($harga_paket_val * $paket_qty_display);
                         ?>
@@ -607,7 +656,11 @@ $mgpaket = $data['harga_paket'];
                                         </td>
                                         <td class="text-end" style="width: 1px;white-space: nowrap;">
                                             <small>
-                                                <span class="edit_paket_qty" data-paket_group="<?= $pg ?>" data-paket_ref="<?= $paket_ref ?>"><?= $paket_qty_display ?></span>x
+                                                <?php if ($paket_spk_qty_locked) { ?>
+                                                    <?= $paket_qty_display ?>x
+                                                <?php } else { ?>
+                                                    <span class="edit_paket_qty" data-paket_group="<?= $pg ?>" data-paket_ref="<?= $paket_ref ?>"><?= $paket_qty_display ?></span>x
+                                                <?php } ?>
                                             </small>
                                         </td>
                                         <td class="text-end" style="width: 1px;white-space: nowrap;">

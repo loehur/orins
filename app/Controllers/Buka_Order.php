@@ -23,6 +23,29 @@ class Buka_Order extends Controller
    const CUSTOMER_TYPE_STOK = 100;
 
    /**
+    * True jika ada divisi SPK yang sudah selesai tahap 1 (status) atau tahap 2 / CM (cm_status) di spk_dvs
+    */
+   private function spk_qty_locked($spk_dvs_raw)
+   {
+      if (strlen($spk_dvs_raw ?? '') <= 1) {
+         return false;
+      }
+      $spk = @unserialize($spk_dvs_raw);
+      if (!is_array($spk)) {
+         return false;
+      }
+      foreach ($spk as $dv) {
+         if (isset($dv['status']) && (int)$dv['status'] === 1) {
+            return true;
+         }
+         if (isset($dv['cm_status']) && (int)$dv['cm_status'] === 1) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   /**
     * Get cs_id and id_pelanggan from ref
     */
    private function getRefMetadata($ref)
@@ -1643,6 +1666,16 @@ class Buka_Order extends Controller
       $value = $_POST['value'];
       $id = $_POST['id'];
 
+      $row = $this->db(0)->get_where_row('order_data', "id_order_data = " . intval($id));
+      if (!$row) {
+         echo "Data tidak ditemukan";
+         exit();
+      }
+      if ($this->spk_qty_locked($row['spk_dvs'] ?? '')) {
+         echo "Jumlah tidak dapat diubah jika tahap 1 atau tahap 2 produksi sudah dicentang.";
+         exit();
+      }
+
       $where = "id_order_data = '" . $id . "'";
       $set = "jumlah = " . $value;
       $update = $this->db(0)->update("order_data", $set, $where);
@@ -1659,6 +1692,14 @@ class Buka_Order extends Controller
       if ($paket_qty_new <= 0) {
          echo "Qty paket harus lebih dari 0";
          exit();
+      }
+
+      $order_items_check = $this->db(0)->get_where("order_data", "paket_group = '" . $paket_group . "' AND paket_ref = '" . $paket_ref . "'");
+      foreach ($order_items_check as $chk) {
+         if ($this->spk_qty_locked($chk['spk_dvs'] ?? '')) {
+            echo "Qty paket tidak dapat diubah jika tahap 1 atau tahap 2 produksi sudah dicentang.";
+            exit();
+         }
       }
 
       // Get original paket items to know the base qty
@@ -1758,6 +1799,11 @@ class Buka_Order extends Controller
       // Process quantity updates for order_data
       if (!empty($changes['updatedQty'])) {
          foreach ($changes['updatedQty'] as $id => $qty) {
+            $row_q = $this->db(0)->get_where_row('order_data', "id_order_data = " . intval($id));
+            if ($row_q && $this->spk_qty_locked($row_q['spk_dvs'] ?? '')) {
+               echo "Jumlah tidak dapat diubah jika tahap 1 atau tahap 2 produksi sudah dicentang.";
+               exit();
+            }
             $set = "jumlah = " . intval($qty);
             $where = "id_order_data = " . intval($id);
             $update_result = $this->db(0)->update('order_data', $set, $where);
@@ -1804,6 +1850,14 @@ class Buka_Order extends Controller
 
             if (!$paket_ref || !$paket_group) {
                continue;
+            }
+
+            $order_items_chk = $this->db(0)->get_where("order_data", "paket_group = '" . $paket_group . "' AND paket_ref = '" . $paket_ref . "'");
+            foreach ($order_items_chk as $chk) {
+               if ($this->spk_qty_locked($chk['spk_dvs'] ?? '')) {
+                  echo "Qty paket tidak dapat diubah jika tahap 1 atau tahap 2 produksi sudah dicentang.";
+                  exit();
+               }
             }
 
             // Get base quantities from paket definitions
