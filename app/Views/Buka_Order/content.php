@@ -743,6 +743,52 @@ if (!function_exists('buka_order_spk_qty_locked')) {
 
 <?php require_once('form.php') ?>
 <div id="form-pick-modals"></div>
+<div id="formPickLoader" class="form-pick-loader d-none" aria-live="polite" aria-busy="false">
+    <div class="form-pick-loader-box text-center">
+        <div class="spinner-border text-primary" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+        <div class="mt-2 text-muted small fw-bold">Memuat data...</div>
+    </div>
+</div>
+<style>
+    .form-pick-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 10050;
+        background-color: rgba(255, 255, 255, 0.82);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .form-pick-loader-box {
+        padding: 1.25rem 1.5rem;
+        border-radius: 0.5rem;
+        background: #fff;
+        box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.12);
+    }
+
+    .detail-load-panel.is-loading {
+        min-height: 120px;
+        position: relative;
+    }
+
+    .detail-load-panel.is-loading::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.75);
+        z-index: 1;
+    }
+
+    .detail-load-panel .detail-load-spinner {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        text-align: center;
+    }
+</style>
 <div class="modal fade" id="modalUpdateError" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -795,6 +841,14 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         });
     }
 
+    function showFormPickLoader() {
+        $('#formPickLoader').removeClass('d-none').attr('aria-busy', 'true');
+    }
+
+    function hideFormPickLoader() {
+        $('#formPickLoader').addClass('d-none').attr('aria-busy', 'false');
+    }
+
     function loadFormPickModals(done) {
         if (formPickLoaded) {
             if (typeof done === 'function') done();
@@ -807,7 +861,15 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             return;
         }
         formPickLoading = true;
-        $('#form-pick-modals').load('<?= PV::BASE_URL ?>Buka_Order/form_modals/<?= $id_pelanggan_jenis ?>', function() {
+        showFormPickLoader();
+        $('#form-pick-modals').load('<?= PV::BASE_URL ?>Buka_Order/form_modals/<?= $id_pelanggan_jenis ?>', function(response, status) {
+            hideFormPickLoader();
+            if (status === 'error' || !response) {
+                formPickLoading = false;
+                formPickCallbacks = [];
+                showAlert('Gagal memuat data form. Silakan coba lagi.', 'danger');
+                return;
+            }
             formPickLoaded = true;
             formPickLoading = false;
             initFormPickSelectize();
@@ -816,6 +878,33 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             callbacks.forEach(function(cb) {
                 cb();
             });
+        });
+    }
+
+    function showDetailLoader($panel) {
+        $panel.addClass('detail-load-panel is-loading');
+        if ($panel.find('.detail-load-spinner').length === 0) {
+            $panel.append(
+                '<div class="detail-load-spinner">' +
+                '<div class="spinner-border spinner-border-sm text-primary" role="status"></div>' +
+                '<div class="small text-muted mt-1">Memuat...</div>' +
+                '</div>'
+            );
+        }
+    }
+
+    function hideDetailLoader($panel) {
+        $panel.removeClass('is-loading');
+        $panel.find('.detail-load-spinner').remove();
+    }
+
+    function loadDetailPanel($panel, url) {
+        showDetailLoader($panel);
+        $panel.load(url, function(response, status) {
+            hideDetailLoader($panel);
+            if (status === 'error') {
+                $panel.html('<div class="text-danger small py-2">Gagal memuat detail produk.</div>');
+            }
         });
     }
 
@@ -837,6 +926,9 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         if (!formPickLoaded) {
             e.preventDefault();
             e.stopPropagation();
+            if (!formPickLoading) {
+                showFormPickLoader();
+            }
             loadFormPickModals(function() {
                 openPickModal(target);
             });
@@ -988,32 +1080,28 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     $(document).on('change', 'select.loadDetail', function() {
         var produk = this.value;
         if (produk != "") {
-            $("div#detail").load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
-                $("div#detail").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
-            });
+            loadDetailPanel($("div#detail"), '<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
         }
     });
 
     $(document).on('change', 'select.loadDetail_aff', function() {
         var produk = this.value;
         if (produk != "") {
-            $("div#detail_aff").load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
-                $("div#detail_aff").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
-            });
+            loadDetailPanel($("div#detail_aff"), '<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
         }
     });
 
     $(document).on('change', 'select.loadDetail_Jasa', function() {
         var produk = this.value;
         if (produk != "") {
-            $("div#detail_jasa").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+            loadDetailPanel($("div#detail_jasa"), '<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
         }
     });
 
     $(document).on('change', 'select.loadDetail_Barang', function() {
         var produk = this.value;
         if (produk != "") {
-            $("div#detail_barang").load('<?= PV::BASE_URL ?>Buka_Order/load_detail_barang/' + produk + '/<?= $id_pelanggan_jenis ?>');
+            loadDetailPanel($("div#detail_barang"), '<?= PV::BASE_URL ?>Buka_Order/load_detail_barang/' + produk + '/<?= $id_pelanggan_jenis ?>');
         }
     });
 
