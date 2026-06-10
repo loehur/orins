@@ -206,13 +206,223 @@ class Buka_Order extends Controller
       $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse]);
    }
 
-   public function content($parse = "")
+   private function getCartQueries()
    {
-      $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
+      if (isset($_SESSION['edit'][$this->userData['id_user']])) {
+         $dEdit = $_SESSION['edit'][$this->userData['id_user']];
+         $where = "(ref = '" . $dEdit[0] . "' AND cancel = 0) OR (id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0 AND cancel = 0)";
+         $whereBarang = "(ref = '" . $dEdit[0] . "' AND stat <> 2 AND pid = 0) OR (id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND stat <> 2 AND pid = 0)";
+      } else {
+         $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0 AND cancel = 0";
+         $whereBarang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND stat <> 2 AND pid = 0";
+      }
+
+      return [$where, $whereBarang];
+   }
+
+   private function loadBarangForCart($order_barang)
+   {
+      if (count($order_barang) === 0) {
+         return [];
+      }
+
+      $barang_ids = array_unique(array_column($order_barang, 'id_barang'));
+      $barang_ids = array_filter($barang_ids, function ($id) {
+         return $id !== '' && $id !== null;
+      });
+      if (count($barang_ids) === 0) {
+         return [];
+      }
+
+      $id_list = implode(',', array_map('intval', $barang_ids));
+      return $this->db(0)->get_where('master_barang', "id IN (" . $id_list . ")", 'id');
+   }
+
+   private function loadPaketForCart($order, $order_barang)
+   {
+      $paket_ids = [];
+      foreach ($order as $do) {
+         if (!empty($do['paket_ref'])) {
+            $paket_ids[$do['paket_ref']] = 1;
+         }
+      }
+      foreach ($order_barang as $dm) {
+         if (!empty($dm['paket_ref'])) {
+            $paket_ids[$dm['paket_ref']] = 1;
+         }
+      }
+      if (count($paket_ids) === 0) {
+         return [];
+      }
+
+      $id_list = implode(',', array_map(function ($id) {
+         return "'" . addslashes($id) . "'";
+      }, array_keys($paket_ids)));
+      return $this->db(0)->get_where('paket_main', "id IN (" . $id_list . ")", "id");
+   }
+
+   private function loadBarangCodeForStok($order)
+   {
+      $codes = [];
+      foreach ($order as $do) {
+         if (!empty($do['produk_code'])) {
+            $code = str_replace(['-', '&', '#'], '', $do['produk_code']);
+            $codes[$code] = "'" . addslashes($code) . "'";
+         }
+      }
+      if (count($codes) === 0) {
+         return [];
+      }
+
+      return $this->db(0)->get_where('master_barang', "code IN (" . implode(',', $codes) . ")", 'code');
+   }
+
+   private function loadStokForModal()
+   {
+      if ($this->userData['id_toko'] == 1) {
+         $stok_gudang = $this->data('Barang')->stok_data_list(0);
+         $stok_toko = $this->data('Barang')->stok_data_list(1);
+         return $stok_toko + $stok_gudang;
+      }
+
+      return $this->data('Barang')->stok_data_list($this->userData['id_toko']);
+   }
+
+   private function processCartPricing($parse, &$order, $order_barang, $paket, $barang)
+   {
+      $indexedHarga = $this->getIndexedHarga();
+      $getHarga = [];
+      $errorID = [];
+      $id_margin = [];
+      $total_per_paket = [];
+
+      foreach ($order as $key => $do) {
+         if ($do['paket_ref'] <> "") {
+            if ($do['price_locker'] == 1) {
+               if (!isset($total_per_paket[$do['paket_ref']])) {
+                  $total_per_paket[$do['paket_ref']] = 0;
+               }
+
+               $id_margin[$do['paket_ref']]['id'] = $do['id_order_data'];
+               $get = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $do['paket_ref'] . "' AND price_locker = 1");
+               if (isset($get['jumlah'])) {
+                  $paket_qty = $do['jumlah'] / $get['jumlah'];
+                  $id_margin[$do['paket_ref']]['qty'] = $paket_qty;
+                  $id_margin[$do['paket_ref']]['nama'] = $paket[$do['paket_ref']]['nama'] ?? $do['paket_ref'];
+                  $id_margin[$do['paket_ref']]['tb'] = "order_data";
+                  $id_margin[$do['paket_ref']]['primary'] = "id_order_data";
+               }
+            }
+         }
+
+         $parse_harga = $this->normalizeCustomerType($parse);
+         $detail_harga = unserialize($do['detail_harga']);
+         if (is_array($detail_harga)) {
+            $countDH[$key] = count($detail_harga);
+            foreach ($detail_harga as $dh_o) {
+               $getHarga[$key][$dh_o['c_h']] = 0;
+               $priceFound = null;
+               $specificKey = $dh_o['c_h'] . '_' . $do['id_produk'];
+               $genericKey = $dh_o['c_h'] . '_0';
+
+               if (isset($indexedHarga[$genericKey]) && $indexedHarga[$genericKey]['harga_' . $parse_harga] <> 0) {
+                  $dh = $indexedHarga[$genericKey];
+                  $priceFound = $dh['harga_' . $parse_harga];
+                  $set = "harga_" . $parse_harga . " = " . $priceFound . ", id_produk = " . $do['id_produk'];
+                  $up = $this->db(0)->update("produk_harga", $set, "code = '" . $dh_o['c_h'] . "' AND id_produk = 0");
+                  if ($up['errno'] <> 0) {
+                     echo $up['error'];
+                     exit();
+                  }
+               } elseif (isset($indexedHarga[$specificKey]) && $indexedHarga[$specificKey]['harga_' . $parse_harga] <> 0) {
+                  $priceFound = $indexedHarga[$specificKey]['harga_' . $parse_harga];
+               }
+
+               if ($priceFound !== null) {
+                  $getHarga[$key][$dh_o['c_h']] = $priceFound;
+                  if ($do['paket_ref'] <> "") {
+                     $total_per_paket[$do['paket_ref']] = isset($total_per_paket[$do['paket_ref']])
+                        ? $total_per_paket[$do['paket_ref']] + ($priceFound * $do['jumlah'])
+                        : ($priceFound * $do['jumlah']);
+                  }
+                  $countDH[$key] -= 1;
+               }
+            }
+
+            if ($countDH[$key] == 0) {
+               if (isset($order[$key]['harga'])) {
+                  if (isset($getHarga[$key]) && is_array($getHarga[$key])) {
+                     $order[$key]['harga'] = array_sum($getHarga[$key]);
+                  } else {
+                     array_push($errorID, ['id' => $do['id_order_data'], 'produk' => $do['produk']]);
+                  }
+               }
+            }
+         }
+      }
+
+      foreach ($order_barang as $dm) {
+         if ($dm['price_locker'] == 1) {
+            if (!isset($total_per_paket[$dm['paket_ref']])) {
+               $total_per_paket[$dm['paket_ref']] = 0;
+            }
+
+            $id_margin[$dm['paket_ref']]['id'] = $dm['id'];
+            $get = $this->db(0)->get_where_row('paket_mutasi', "paket_ref = '" . $dm['paket_ref'] . "' AND price_locker = 1");
+            if (isset($get['qty'])) {
+               $paket_qty = $dm['qty'] / $get['qty'];
+               $id_margin[$dm['paket_ref']]['qty'] = $paket_qty;
+               $id_margin[$dm['paket_ref']]['nama'] = $paket[$dm['paket_ref']]['nama'] ?? $dm['paket_ref'];
+               $id_margin[$dm['paket_ref']]['tb'] = "master_mutasi";
+               $id_margin[$dm['paket_ref']]['primary'] = "id";
+            }
+         }
+
+         if (strlen($dm['paket_ref']) > 0 && isset($barang[$dm['id_barang']])) {
+            $db = $barang[$dm['id_barang']];
+            if (isset($total_per_paket[$dm['paket_ref']])) {
+               $total_per_paket[$dm['paket_ref']] += ($db['harga_' . $parse] * $dm['qty']);
+            } else {
+               $total_per_paket[$dm['paket_ref']] = ($db['harga_' . $parse] * $dm['qty']);
+            }
+         }
+      }
+
+      list($adjuster, $id_margin) = $this->calculatePaketAdjustments($total_per_paket, $id_margin, $paket, $parse);
+
+      return [
+         'harga' => $getHarga,
+         'harga_paket' => $id_margin,
+         'errorID' => $errorID,
+      ];
+   }
+
+   public function form_modals($parse = "")
+   {
+      list($where, $whereBarang) = $this->getCartQueries();
+      $order = $this->db(0)->get_where('order_data', $where);
+      $order_barang = $this->db(0)->get_where('master_mutasi', $whereBarang);
+      $paket = $this->loadPaketForCart($order, $order_barang);
+      $barang = $this->loadBarangForCart($order_barang);
+
+      if (count($order) + count($order_barang) > 0) {
+         $pricing = $this->processCartPricing($parse, $order, $order_barang, $paket, $barang);
+         $data['harga_paket'] = $pricing['harga_paket'];
+      } else {
+         $data['harga_paket'] = [];
+      }
+
+      $data['id_jenis_pelanggan'] = $parse;
       $data['produk'] = $this->db(0)->get_where('produk', 'pj = 0 ORDER BY freq DESC, id_produk');
       $data['produk_jasa'] = $this->db(0)->get_where('produk', "pj = " . $this->userData['id_toko'] . " ORDER BY freq DESC, id_produk");
       $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
+      $data['stok'] = $this->loadStokForModal();
+      $data['barang'] = $this->db(0)->get('master_barang', 'id');
+      $this->view(__CLASS__ . '/form_pick', $data);
+   }
 
+   public function content($parse = "")
+   {
       $id_pelanggan_selected = 0;
       if (isset($_SESSION['edit'][$this->userData['id_user']])) {
          $id_pelanggan_selected = $_SESSION['edit'][$this->userData['id_user']][3];
@@ -233,174 +443,31 @@ class Buka_Order extends Controller
       }
 
       $data['id_jenis_pelanggan'] = $parse;
-      if (isset($_SESSION['edit'][$this->userData['id_user']])) {
-         $dEdit = $_SESSION['edit'][$this->userData['id_user']];
-         // Cart: JANGAN tampilkan item cancel - mengganggu proses edit, item cancel tidak perlu perubahan
-         $where = "(ref = '" . $dEdit[0] . "' AND cancel = 0) OR (id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0 AND cancel = 0)";
-         $whereBarang = "(ref = '" . $dEdit[0] . "' AND stat <> 2 AND pid = 0) OR (id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND stat <> 2 AND pid = 0)";
-      } else {
-         $where = "id_toko = " . $this->userData['id_toko'] . " AND id_user = " . $this->userData['id_user'] . " AND id_pelanggan = 0 AND cancel = 0";
-         $whereBarang = "id_sumber = " . $this->userData['id_toko'] . " AND user_id = " . $this->userData['id_user'] . " AND jenis = 2 AND id_target = 0 AND stat <> 2 AND pid = 0";
-      }
-
+      list($where, $whereBarang) = $this->getCartQueries();
       $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data['order_barang'] = $this->db(0)->get_where('master_mutasi', $whereBarang);
-
-      $data['barang'] = $this->db(0)->get('master_barang', 'id');
-
-      if ($parse == self::CUSTOMER_TYPE_STOK) {
-         $data['barang_code'] = $this->db(0)->get('master_barang', 'code');
-      }
-
-      // Optimized Stock Fetching
-      if ($this->userData['id_toko'] == 1) {
-         // Combine gudang (0) and toko (1) stock in one go if possible, or keep separate calls if logic demands
-         // Original code merged them with overwrite. Optimization:
-         $stok_gudang = $this->data('Barang')->stok_data_list(0);
-         $stok_toko = $this->data('Barang')->stok_data_list(1);
-         // Use + operator for array union if keys are id_barang, but array_merge overwrites index.
-         // Original loop overwrite logic: Toko overwrites Gudang.
-         $data['stok'] = $stok_toko + $stok_gudang;
-         // Note: If stok_data_list returns array indexed by 0,1,2.. this won't work as expected.
-         // Assuming it returns indexed by id_barang as seemingly implied by original code structure?
-         // Original code:
-         // foreach ($stok_gudang as $item) { $gabung[$item['id_barang']] = $item; }
-         // foreach ($stok_toko as $item) { $gabung[$item['id_barang']] = $item; }
-         // So if we trust array_column or assuming the return is clean, let's stick to safe manual merge but cleaner
-      } else {
-         $data['stok'] = $this->data('Barang')->stok_data_list($this->userData['id_toko']);
-      }
-
-      // Pre-load and Index Prices for O(1) Lookup
-      $indexedHarga = $this->getIndexedHarga();
-
       $data['count'] = count($data['order']) + count($data['order_barang']);
-      $getHarga = [];
-      $data['errorID'] = [];
 
-      $count_price_locker = 0;
-      $id_margin = [];
-      $total_per_paket = [];
-      $harga_paket = [];
+      $data['barang'] = $this->loadBarangForCart($data['order_barang']);
+      $data['paket'] = $this->loadPaketForCart($data['order'], $data['order_barang']);
+      $data['barang_code'] = ($parse == self::CUSTOMER_TYPE_STOK && $data['count'] > 0)
+         ? $this->loadBarangCodeForStok($data['order'])
+         : [];
+      $data['spk_pending'] = $data['count'] > 0 ? $this->db(0)->get('spk_pending', 'id') : [];
 
-      foreach ($data['order'] as $key => $do) {
-         if ($do['paket_ref'] <> "") {
-            if ($do['price_locker'] == 1) {
-
-               if (!isset($total_per_paket[$do['paket_ref']])) {
-                  $total_per_paket[$do['paket_ref']] = 0;
-               }
-
-               $count_price_locker += 1;
-               $harga_paket[$do['paket_ref']] = $data['paket'][$do['paket_ref']]['harga_' . $parse];
-               $id_margin[$do['paket_ref']]['id'] = $do['id_order_data'];
-               $get = $this->db(0)->get_where_row('paket_order', "paket_ref = '" . $do['paket_ref'] . "' AND price_locker = 1");
-               if (isset($get['jumlah'])) {
-                  $paket_qty = $do['jumlah'] / $get['jumlah'];
-                  $id_margin[$do['paket_ref']]['qty'] = $paket_qty;
-                  $id_margin[$do['paket_ref']]['nama'] =  $data['paket'][$do['paket_ref']]['nama'];
-                  $id_margin[$do['paket_ref']]['tb'] = "order_data";
-                  $id_margin[$do['paket_ref']]['primary'] =  "id_order_data";
-               }
-            }
-         }
-
-         $parse_harga = $this->normalizeCustomerType($parse);
-
-         $detail_harga = unserialize($do['detail_harga']);
-         if (is_array($detail_harga)) {
-            $countDH[$key] = count($detail_harga);
-            foreach ($detail_harga as $dh_o) {
-               $getHarga[$key][$dh_o['c_h']] = 0;
-
-               // Optimized Price Lookup O(1)
-               $priceFound = null;
-               
-               // Try specific product price first
-               $specificKey = $dh_o['c_h'] . '_' . $do['id_produk'];
-               // Try generic price (id_produk = 0)
-               $genericKey = $dh_o['c_h'] . '_0';
-
-               if (isset($indexedHarga[$genericKey]) && $indexedHarga[$genericKey]['harga_' . $parse_harga] <> 0) {
-                  $dh = $indexedHarga[$genericKey];
-                  $priceFound = $dh['harga_' . $parse_harga];
-                  
-                  // Update Logic (Legacy migration support)
-                  $where = "code = '" . $dh_o['c_h'] . "' AND id_produk = 0";
-                  $set = "harga_" . $parse_harga . " = " .  $priceFound . ", id_produk = " . $do['id_produk'];
-                  $up = $this->db(0)->update("produk_harga", $set, $where);
-                  if ($up['errno'] <> 0) {
-                     echo $up['error'];
-                     exit();
-                  }
-                  
-                  // Update local index to reflect change if needed, though mostly read-only for this page load
-               } elseif (isset($indexedHarga[$specificKey]) && $indexedHarga[$specificKey]['harga_' . $parse_harga] <> 0) {
-                  $dh = $indexedHarga[$specificKey];
-                  $priceFound = $dh['harga_' . $parse_harga];
-               }
-
-               if ($priceFound !== null) {
-                  $getHarga[$key][$dh_o['c_h']] = $priceFound;
-                  if ($do['paket_ref'] <> "") {
-                      $total_per_paket[$do['paket_ref']] = isset($total_per_paket[$do['paket_ref']]) 
-                          ? $total_per_paket[$do['paket_ref']] + ($priceFound * $do['jumlah']) 
-                          : ($priceFound * $do['jumlah']);
-                  }
-                  $countDH[$key] -= 1;
-               }
-            }
-
-            if ($countDH[$key] == 0) {
-               if (isset($data['order'][$key]['harga'])) {
-                  if (isset($getHarga[$key]) && is_array($getHarga[$key])) {
-                     $data['order'][$key]['harga'] = array_sum($getHarga[$key]);
-                  } else {
-                     array_push($data['errorID'], ['id' => $do['id_order_data'], 'produk' => $do['produk']]);
-                  }
-               }
-            }
-         }
+      if ($data['count'] > 0) {
+         $pricing = $this->processCartPricing($parse, $data['order'], $data['order_barang'], $data['paket'], $data['barang']);
+         $data['harga'] = $pricing['harga'];
+         $data['harga_paket'] = $pricing['harga_paket'];
+         $data['errorID'] = $pricing['errorID'];
+      } else {
+         $data['harga'] = [];
+         $data['harga_paket'] = [];
+         $data['errorID'] = [];
       }
 
-      foreach ($data['order_barang'] as $dm) {
-         if ($dm['price_locker'] == 1) {
-
-            if (!isset($total_per_paket[$dm['paket_ref']])) {
-               $total_per_paket[$dm['paket_ref']] = 0;
-            }
-
-            $count_price_locker += 1;
-            $harga_paket[$dm['paket_ref']] = $data['paket'][$dm['paket_ref']]['harga_' . $parse];
-            $id_margin[$dm['paket_ref']]['id'] = $dm['id'];
-            $get = $this->db(0)->get_where_row('paket_mutasi', "paket_ref = '" . $dm['paket_ref'] . "' AND price_locker = 1");
-            if (isset($get['qty'])) {
-               $paket_qty = $dm['qty'] / $get['qty'];
-               $id_margin[$dm['paket_ref']]['qty'] = $paket_qty;
-               $id_margin[$dm['paket_ref']]['nama'] =  $data['paket'][$dm['paket_ref']]['nama'];
-               $id_margin[$dm['paket_ref']]['tb'] = "master_mutasi";
-               $id_margin[$dm['paket_ref']]['primary'] =  "id";
-            }
-         }
-
-         if (strlen($dm['paket_ref']) > 0) {
-            $db = $data['barang'][$dm['id_barang']];
-            if (isset($total_per_paket[$dm['paket_ref']])) {
-               $total_per_paket[$dm['paket_ref']] += ($db['harga_' . $parse] * $dm['qty']);
-            } else {
-               $total_per_paket[$dm['paket_ref']] = ($db['harga_' . $parse] * $dm['qty']);
-            }
-         }
-      }
-
-      // Use Helper for Paket Adjustments
-      list($adjuster, $id_margin) = $this->calculatePaketAdjustments($total_per_paket, $id_margin, $data['paket'], $parse);
-
-      $whereKaryawan =  "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC";
+      $whereKaryawan = "id_toko = " . $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC";
       $data['karyawan'] = $this->db(0)->get_where('karyawan', $whereKaryawan, 'id_karyawan');
-      $data['harga'] = $getHarga;
-
-      $data['harga_paket'] = $id_margin;
       $this->view($this->v_content, $data);
    }
 

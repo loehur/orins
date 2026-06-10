@@ -742,6 +742,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
 </main>
 
 <?php require_once('form.php') ?>
+<div id="form-pick-modals"></div>
 <div class="modal fade" id="modalUpdateError" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -781,6 +782,67 @@ if (!function_exists('buka_order_spk_qty_locked')) {
 </div>
 
 <script>
+    var formPickLoaded = false;
+    var formPickLoading = false;
+    var formPickCallbacks = [];
+    var pickModalTargets = ['#exampleModal', '#exampleModalPaket', '#exampleModalJasa', '#exampleModalB', '#exampleModalAff'];
+
+    function initFormPickSelectize() {
+        $('#form-pick-modals .tize').each(function() {
+            if (!this.selectize) {
+                $(this).selectize();
+            }
+        });
+    }
+
+    function loadFormPickModals(done) {
+        if (formPickLoaded) {
+            if (typeof done === 'function') done();
+            return;
+        }
+        if (typeof done === 'function') {
+            formPickCallbacks.push(done);
+        }
+        if (formPickLoading) {
+            return;
+        }
+        formPickLoading = true;
+        $('#form-pick-modals').load('<?= PV::BASE_URL ?>Buka_Order/form_modals/<?= $id_pelanggan_jenis ?>', function() {
+            formPickLoaded = true;
+            formPickLoading = false;
+            initFormPickSelectize();
+            var callbacks = formPickCallbacks.slice();
+            formPickCallbacks = [];
+            callbacks.forEach(function(cb) {
+                cb();
+            });
+        });
+    }
+
+    function openPickModal(target) {
+        var modalEl = document.querySelector(target);
+        if (modalEl) {
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        }
+    }
+
+    $(document).on('click', '[data-bs-toggle="modal"]', function(e) {
+        var target = $(this).attr('data-bs-target');
+        if (pickModalTargets.indexOf(target) === -1) {
+            return;
+        }
+        if ($(this).hasClass('aff')) {
+            $('input#aff_target').val($(this).attr('data-id'));
+        }
+        if (!formPickLoaded) {
+            e.preventDefault();
+            e.stopPropagation();
+            loadFormPickModals(function() {
+                openPickModal(target);
+            });
+        }
+    });
+
     $(document).ready(function() {
         $('.tize:not(.ajax-pelanggan)').selectize();
 
@@ -923,7 +985,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             });
     })
 
-    $('select.loadDetail').on('change', function() {
+    $(document).on('change', 'select.loadDetail', function() {
         var produk = this.value;
         if (produk != "") {
             $("div#detail").load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
@@ -932,8 +994,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         }
     });
 
-
-    $('select.loadDetail_aff').on('change', function() {
+    $(document).on('change', 'select.loadDetail_aff', function() {
         var produk = this.value;
         if (produk != "") {
             $("div#detail_aff").load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
@@ -942,15 +1003,14 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         }
     });
 
-    $('select.loadDetail_Jasa').on('change', function() {
+    $(document).on('change', 'select.loadDetail_Jasa', function() {
         var produk = this.value;
         if (produk != "") {
-            $("div#detail_Jasa").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
+            $("div#detail_jasa").load('<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
         }
     });
 
-
-    $('select.loadDetail_Barang').on('change', function() {
+    $(document).on('change', 'select.loadDetail_Barang', function() {
         var produk = this.value;
         if (produk != "") {
             $("div#detail_barang").load('<?= PV::BASE_URL ?>Buka_Order/load_detail_barang/' + produk + '/<?= $id_pelanggan_jenis ?>');
@@ -991,9 +1051,9 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         $("input[name=id_barang_diskon").val(id);
     })
 
-    $("a.aff").click(function() {
+    $(document).on('click', 'a.aff', function() {
         $('input#aff_target').val($(this).attr("data-id"));
-    })
+    });
 
     $("a.deleteItem").click(function() {
         var id = $(this).attr("data-id_order");
@@ -1031,12 +1091,13 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         });
     })
 
-    $("form.ajax").on("submit", function(e) {
+    $(document).on("submit", "form.ajax", function(e) {
         e.preventDefault();
+        var $form = $(this);
         $.ajax({
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            type: $(this).attr("method"),
+            url: $form.attr('action'),
+            data: $form.serialize(),
+            type: $form.attr("method"),
             success: function(res) {
                 if (res == 0) {
                     content();
