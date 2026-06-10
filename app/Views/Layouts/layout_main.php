@@ -178,6 +178,26 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 		});
 		<?php } ?>
 	})();
+
+	(function() {
+		var base = '<?= PV::BASE_URL ?>';
+		$(document).on('click', '#layoutSidenav a.nav-link[href^="' + base + '"]', function(e) {
+			var href = $(this).attr('href');
+			if (!href || href.indexOf('javascript') === 0) {
+				return;
+			}
+			if (typeof appNavigateFromHref === 'function' && appNavigateFromHref(href)) {
+				e.preventDefault();
+				$('#layoutSidenav a.nav-link.active').removeClass('active');
+				$(this).addClass('active');
+			}
+		});
+		window.addEventListener('popstate', function(ev) {
+			if (ev.state && ev.state.href && typeof appNavigateFromHref === 'function') {
+				appNavigateFromHref(ev.state.href);
+			}
+		});
+	})();
 	</script>
 </body>
 

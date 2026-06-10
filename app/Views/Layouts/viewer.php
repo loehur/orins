@@ -58,38 +58,89 @@
 </div>
 
 <script>
+    var appBaseUrl = '<?= PV::BASE_URL ?>';
+    var appController = '<?= $data["controller"] ?>';
+    var appPage = "<?= isset($data['page']) && $data['page'] != "" ? $data['page'] : 'content' ?>";
+    var appParse = '<?= $data['parse'] ?>';
+    var appParse2 = '<?= isset($data['parse_2']) ? $data['parse_2'] : '' ?>';
+
     $(document).ready(function() {
         content();
     });
 
-    function content(new_parse = "", new_parse_2 = "") {
+    function appContentUrl(controller, page, parse, parse2) {
+        var url = appBaseUrl + controller + '/' + page;
+        if (parse !== '' && parse !== undefined) {
+            url += '/' + parse;
+            if (parse2 !== '' && parse2 !== undefined) {
+                url += '/' + parse2;
+            }
+        }
+        return url;
+    }
+
+    function loadAppContent(url, done) {
         $('div.loaderDiv').removeClass('d-none');
+        $("div#content").load(url, function() {
+            if ($("#content").find("[data-custom-loader]").length == 0) {
+                $('div.loaderDiv').addClass('d-none');
+            }
+            if (typeof done === 'function') {
+                done();
+            }
+        });
+    }
 
-        if (new_parse != "") {
-            parse = new_parse
-        } else {
-            parse = '<?= $data['parse'] ?>';
+    function content(new_parse, new_parse_2, new_controller) {
+        if (new_controller) {
+            appController = new_controller;
+        }
+        if (new_parse !== undefined && new_parse !== "") {
+            appParse = new_parse;
+        }
+        if (new_parse_2 !== undefined && new_parse_2 !== "") {
+            appParse2 = new_parse_2;
+        } else if (new_parse !== undefined && new_parse !== "") {
+            appParse2 = '';
         }
 
-        if (new_parse_2 != "") {
-            parse_2 = new_parse_2
-        } else {
-            parse_2 = '<?= isset($data['parse_2']) ? $data['parse_2'] : '' ?>';
+        var url = appContentUrl(appController, appPage, appParse, appParse2);
+        loadAppContent(url);
+    }
+
+    function appNavigateFromHref(href) {
+        var path = href.replace(appBaseUrl, '').replace(/^\/+/, '');
+        var parts = path.split('/').filter(function(p) {
+            return p !== '';
+        });
+        if (parts.length === 0) {
+            return false;
         }
-        page = "<?= isset($data['page']) && $data['page'] != "" ? $data['page'] : 'content' ?>";
-        if (parse_2 != "") {
-            $("div#content").load('<?= PV::BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse + '/' + parse_2, function() {
-                // If the loaded content doesn't have its own loader-hiding logic, hide it here.
-                if ($("#content").find("[data-custom-loader]").length == 0) {
-                    $('div.loaderDiv').addClass('d-none');
-                }
-            });
+
+        var controller = parts[0];
+        var page = 'content';
+        var parse = '';
+        var parse2 = '';
+
+        if (parts.length === 1) {
+            parse = '';
+        } else if (parts[1] === 'index') {
+            parse = parts[2] || '';
+            parse2 = parts[3] || '';
         } else {
-            $("div#content").load('<?= PV::BASE_URL ?><?= $data["controller"] ?>/' + page + '/' + parse, function() {
-                if ($("#content").find("[data-custom-loader]").length == 0) {
-                    $('div.loaderDiv').addClass('d-none');
-                }
-            });
+            return false;
         }
+
+        appController = controller;
+        appPage = page;
+        appParse = parse;
+        appParse2 = parse2;
+        loadAppContent(appContentUrl(controller, page, parse, parse2));
+        if (window.history && window.history.pushState) {
+            window.history.pushState({
+                href: href
+            }, '', href);
+        }
+        return true;
     }
 </script>
