@@ -25,7 +25,7 @@
                         </td>
                         <td style="width: 70px;" class="text-end">
                             <?php if ($data['stok_gudang'][$a['id']]['qty'] > 0) { ?>
-                                <span class="btn btn-sm btn-danger bg-gradient pakai" data-bs-toggle="modal" data-bs-target="#exampleModal4" id="b<?= $a['id'] ?>" data-id_barang="<?= $a['id'] ?>" data-id_sumber="0" style="min-width: 50px;"><?= number_format($data['stok_gudang'][$a['id']]['qty'], 0) ?></span>
+                                <span class="btn btn-sm btn-danger bg-gradient pakai" data-bs-toggle="modal" data-bs-target="#exampleModal4" id="b<?= $a['id'] ?>" data-id_barang="<?= $a['id'] ?>" data-id_sumber="0" data-has_sn="<?= $a['sn'] ?>" style="min-width: 50px;"><?= number_format($data['stok_gudang'][$a['id']]['qty'], 0) ?></span>
                             <?php } else { ?>
                                 <span class="btn btn-sm btn-dark bg-gradient pakai" style="min-width: 50px;"><?= number_format($data['stok_gudang'][$a['id']]['qty'], 0) ?></span>
                             <?php } ?>
@@ -46,8 +46,11 @@
                     <div class="container">
                         <div class="row mb-3">
                             <div class="col">
-                                <label class="form-label text-sm">SN (Optional)</label>
-                                <input class="form form-control mb-2" name="sn">
+                                <label class="form-label text-sm" id="sn_label">SN (Optional)</label>
+                                <input class="form form-control mb-2" name="sn" id="sn_input">
+                                <select class="form-select mb-2" name="sn" id="sn_select" style="display:none;">
+                                    <option value="">Pilih SN</option>
+                                </select>
 
                                 <label class="form-label text-sm">SDS</label>
                                 <select class="form-select mb-2" name="sds">
@@ -66,7 +69,7 @@
                                 <input class="form form-control mb-2" name="note" required>
 
                                 <label class="form-label text-sm">Jumlah</label>
-                                <input class="form form-control mb-2" type="number" value="1" min="1" name="qty">
+                                <input class="form form-control mb-2" type="number" value="1" min="1" name="qty" id="qty_input">
 
                                 <label class="form-label text-sm">Karyawan</label>
                                 <input type="hidden" id="id_sumber" name="id_sumber">
@@ -97,6 +100,47 @@
 <script>
     var qty = 0;
     var id = 0;
+    var snList = [];
+    var hasSnItem = false;
+
+    function setSnMode(useSelect) {
+        hasSnItem = useSelect;
+        if (useSelect) {
+            $("#sn_label").text("SN");
+            $("#sn_input").hide().prop("disabled", true).val("");
+            $("#sn_select").show().prop("disabled", false).prop("required", true);
+        } else {
+            $("#sn_label").text("SN (Optional)");
+            $("#sn_select").hide().prop("disabled", true).prop("required", false).val("");
+            $("#sn_input").show().prop("disabled", false);
+            snList = [];
+        }
+        $("#qty_input").val(1).removeAttr("max");
+    }
+
+    function renderSnOptions() {
+        var sds = $("select[name=sds]").val();
+        var $sel = $("#sn_select").empty().append('<option value="">Pilih SN</option>');
+        var count = 0;
+        $.each(snList, function(i, item) {
+            if (String(item.sds) === String(sds)) {
+                $sel.append('<option value="' + item.sn + '" data-qty="' + item.qty + '">' + item.sn + ' (' + item.qty + ')</option>');
+                count++;
+            }
+        });
+        if (count === 0) {
+            $sel.append('<option value="" disabled>SN tidak tersedia</option>');
+        }
+        $("#qty_input").val(1).removeAttr("max");
+    }
+
+    function loadSnList(id_barang, id_sumber) {
+        $.getJSON('<?= PV::BASE_URL ?>Stok_Bahan_Baku/stok_sn/' + id_barang + '/' + id_sumber, function(data) {
+            snList = data || [];
+            renderSnOptions();
+        });
+    }
+
     $(document).ready(function() {
         $('select.tize').selectize();
 
@@ -110,6 +154,24 @@
             "dom": "lfrti"
         });
     })
+
+    $("select[name=sds]").on("change", function() {
+        if (hasSnItem) {
+            renderSnOptions();
+        }
+    });
+
+    $("#sn_select").on("change", function() {
+        var maxQty = $(this).find(":selected").data("qty");
+        if (maxQty) {
+            $("#qty_input").attr("max", maxQty);
+            if (parseInt($("#qty_input").val(), 10) > maxQty) {
+                $("#qty_input").val(maxQty);
+            }
+        } else {
+            $("#qty_input").val(1).removeAttr("max");
+        }
+    });
 
     $("form").on("submit", function(e) {
         e.preventDefault();
@@ -133,10 +195,18 @@
     $("span.pakai").click(function() {
         var id_barang = $(this).attr("data-id_barang");
         var id_sumber = $(this).attr("data-id_sumber");
+        var has_sn = $(this).attr("data-has_sn");
         qty = $(this).text();
         id = $(this).attr("id");
         $("input#id_barang").val(id_barang);
         $("input#id_sumber").val(id_sumber);
+        $("select[name=sds]").val("0");
+        if (has_sn == "1") {
+            setSnMode(true);
+            loadSnList(id_barang, id_sumber);
+        } else {
+            setSnMode(false);
+        }
     })
 
     var click = 0;

@@ -39,6 +39,23 @@ class Stok_Bahan_Baku extends Controller
       $this->view($this->v_content, $data);
    }
 
+   function stok_sn($id_barang, $id_sumber)
+   {
+      $stok = $this->data('Barang')->stok_data($id_barang, $id_sumber);
+      $list = [];
+      foreach ($stok as $s) {
+         if ($s['qty'] > 0 && $s['sn'] !== "") {
+            $list[] = [
+               'sn' => $s['sn'],
+               'sds' => (int) $s['sds'],
+               'qty' => (int) $s['qty'],
+            ];
+         }
+      }
+      header('Content-Type: application/json');
+      echo json_encode($list);
+   }
+
    function pakai()
    {
       $id_sumber = $_POST['id_sumber'];
@@ -58,6 +75,11 @@ class Stok_Bahan_Baku extends Controller
       }
 
       $qty = $_POST['qty'];
+      $barang = $this->db(0)->get_where_row('master_barang', "id = " . $id_barang);
+      if (isset($barang['sn']) && $barang['sn'] == 1 && $sn === "") {
+         echo "SN wajib dipilih";
+         exit();
+      }
 
       //cek stok (sesuai tampilan: total jika SN kosong, per SN jika diisi)
       if ($sn === "") {
