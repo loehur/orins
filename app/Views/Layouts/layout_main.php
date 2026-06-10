@@ -133,28 +133,37 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 		}
 
 		var prioritasLoaded = false;
-		var prioritasUrl = '<?= PV::BASE_URL ?>Menu/prioritas/' + encodeURIComponent(<?= json_encode($t) ?>);
+		var prioritasUrl = '<?= PV::BASE_URL ?>Home/menu_prioritas?t=' + encodeURIComponent(<?= json_encode($t) ?>);
 
 		function loadPrioritasMenu() {
 			if (prioritasLoaded) {
 				return;
 			}
 			$('#menuPrioritasContent').html('<span class="nav-link py-1 text-muted">Memuat...</span>');
-			$('#menuPrioritasContent').load(prioritasUrl, function(response, status) {
-				if (status !== 'success') {
+			$.ajax({
+				url: prioritasUrl,
+				type: 'GET',
+				cache: false,
+				success: function(response) {
+					if (!response || String(response).indexOf('menuPrioritasItems') === -1) {
+						$('#menuPrioritasContent').html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
+						return;
+					}
+					$('#menuPrioritasContent').html(response);
+					prioritasLoaded = true;
+					var count = parseInt($('#menuPrioritasItems').data('count') || 0, 10);
+					var $badge = $('#menuPrioritasBadge');
+					if (count > 0) {
+						$badge.text(count).removeClass('d-none');
+					} else {
+						$badge.addClass('d-none');
+					}
+					if (typeof feather !== 'undefined') {
+						feather.replace();
+					}
+				},
+				error: function() {
 					$('#menuPrioritasContent').html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
-					return;
-				}
-				prioritasLoaded = true;
-				var count = parseInt($('#menuPrioritasItems').data('count') || 0, 10);
-				var $badge = $('#menuPrioritasBadge');
-				if (count > 0) {
-					$badge.text(count).removeClass('d-none');
-				} else {
-					$badge.addClass('d-none');
-				}
-				if (typeof feather !== 'undefined') {
-					feather.replace();
 				}
 			});
 		}
