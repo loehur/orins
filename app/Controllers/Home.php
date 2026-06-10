@@ -5,7 +5,7 @@ class Home extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data_order();
+      $this->dataBootstrap();
 
 
       if ($this->userData['user_tipe'] == 9) {

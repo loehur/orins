@@ -5,13 +5,13 @@ class Log extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data_order();
+      $this->dataBootstrap();
    }
 
    public function sync()
    {
       $this->dataSynchrone();
-      $this->data_order();
+      $this->dataBootstrap();
    }
 
    function change_toko($id)

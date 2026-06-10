@@ -5,7 +5,7 @@ class Buka_Order extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data_order();
+      $this->dataBootstrap();
 
       if (!in_array($this->userData['user_tipe'], PV::PRIV[3])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
@@ -539,7 +539,7 @@ class Buka_Order extends Controller
    function add($afiliasi = 0, $paket_ref = '', $paket_group = '', $price_locker = 0, $harga_paket = 0, $pj = 0, $paket_qty = 0)
    {
       $this->dataSynchrone();
-      $this->data_order();
+      $this->dataBootstrap();
 
       $ref = "";
       $id_pelanggan = 0;

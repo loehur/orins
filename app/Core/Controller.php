@@ -4,9 +4,31 @@ require 'app/Config/PV.php';
 
 class Controller extends PV
 {
-    public $userData, $dToko, $dDvs, $dDvs_all, $dProduk, $dProdukAll, $dDetailGroup, $dDetailGroupAll, $dDetailItem, $dDetailItem_1, $dDetailItemVarian_1, $dDetailItemAll, $dSPK, $dUser, $dPelanggan, $dPelangganAll;
+    public $userData;
+    public $dToko;
     public $v_viewer, $v_content, $v_load;
-    public $dKaryawan_cs, $dKaryawan_pro, $dKaryawan_driver, $dKaryawanAll, $dKaryawanAll_cs, $dKaryawanAll_driver;
+
+    private $bootstrapped = false;
+    private $sessionCache = [];
+
+    private static $sessionMap = [
+        'dDvs' => 'data_divisi',
+        'dDvs_all' => 'data_divisi_all',
+        'dDetailGroup' => 'detail_group',
+        'dDetailItem' => 'detail_item',
+        'dDetailItem_1' => 'detail_item_1',
+        'dDetailItemVarian_1' => 'detail_item_varian_1',
+        'dSPK' => 'spk_divisi',
+        'dUser' => 'data_user',
+        'dPelanggan' => 'data_pelanggan',
+        'dPelangganAll' => 'data_pelanggan_all',
+        'dKaryawan_cs' => 'karyawan_cs',
+        'dKaryawan_pro' => 'karyawan_pro',
+        'dKaryawan_driver' => 'karyawan_driver',
+        'dKaryawanAll' => 'karyawan_all',
+        'dKaryawanAll_cs' => 'karyawan_all_cs',
+        'dKaryawanAll_driver' => 'karyawan_all_driver',
+    ];
 
     public function view($file, $data = [])
     {
@@ -31,42 +53,97 @@ class Controller extends PV
         }
     }
 
-    public function data_order()
+    /**
+     * Muat konteks minimal (user + toko) — cukup untuk layout & mayoritas endpoint ringan.
+     */
+    public function dataBootstrap()
     {
-        if (isset($_SESSION['login_orins'])) {
-            if ($_SESSION['login_orins'] == true) {
-                $this->userData = $_SESSION['user_data'];
-                $this->dToko = $_SESSION['data_toko'];
+        if ($this->bootstrapped) {
+            return;
+        }
 
-                foreach ($this->dToko as $dt) {
-                    if ($dt['id_toko'] == $this->userData['id_toko']) {
-                        $this->userData['nama_toko'] = $dt['nama_toko'];
-                        $this->userData['aff_id'] = $dt['aff_id'];
-                        $this->userData['sub_nama'] = $dt['sub_nama'];
-                        $this->userData['alamat'] = $dt['alamat'];
-                        $this->userData['color'] = $dt['color'];
-                    }
-                }
+        if (!isset($_SESSION['login_orins']) || $_SESSION['login_orins'] != true) {
+            return;
+        }
 
-                $this->dDvs = $_SESSION['data_divisi'];
-                $this->dDvs_all = $_SESSION['data_divisi_all'];
-                $this->dDetailGroup = $_SESSION['detail_group'];
-                $this->dDetailItem = $_SESSION['detail_item'];
-                $this->dDetailItem_1 = $_SESSION['detail_item_1'];
-                $this->dDetailItemVarian_1 = $_SESSION['detail_item_varian_1'];
-                $this->dSPK = $_SESSION['spk_divisi'];
-                $this->dUser = $_SESSION['data_user'];
-                $this->dPelanggan = $_SESSION['data_pelanggan'];
-                $this->dPelangganAll = $_SESSION['data_pelanggan_all'];
-                $this->dKaryawan_cs = $_SESSION['karyawan_cs'];
-                $this->dKaryawan_pro = $_SESSION['karyawan_pro'];
-                $this->dKaryawan_driver = $_SESSION['karyawan_driver'];
+        $this->userData = $_SESSION['user_data'];
+        $this->dToko = $_SESSION['data_toko'];
 
-                $this->dKaryawanAll = $_SESSION['karyawan_all'];
-                $this->dKaryawanAll_cs = $_SESSION['karyawan_all_cs'];
-                $this->dKaryawanAll_driver = $_SESSION['karyawan_all_driver'];
+        foreach ($this->dToko as $dt) {
+            if ($dt['id_toko'] == $this->userData['id_toko']) {
+                $this->userData['nama_toko'] = $dt['nama_toko'];
+                $this->userData['aff_id'] = $dt['aff_id'];
+                $this->userData['sub_nama'] = $dt['sub_nama'];
+                $this->userData['alamat'] = $dt['alamat'];
+                $this->userData['color'] = $dt['color'];
             }
         }
+
+        $this->bootstrapped = true;
+    }
+
+    /**
+     * Muat semua bucket session ke cache (setara perilaku data_order lama).
+     */
+    public function data_order()
+    {
+        $this->dataBootstrap();
+
+        foreach (self::$sessionMap as $prop => $sessionKey) {
+            $this->sessionCache[$prop] = $_SESSION[$sessionKey] ?? [];
+        }
+    }
+
+    private function loadSessionBucket($name)
+    {
+        if (!array_key_exists($name, self::$sessionMap)) {
+            return null;
+        }
+
+        if (!array_key_exists($name, $this->sessionCache)) {
+            $this->dataBootstrap();
+            $sessionKey = self::$sessionMap[$name];
+            $this->sessionCache[$name] = $_SESSION[$sessionKey] ?? [];
+        }
+
+        return $this->sessionCache[$name];
+    }
+
+    private function resetSessionCache()
+    {
+        $this->sessionCache = [];
+        $this->bootstrapped = false;
+        $this->userData = null;
+        $this->dToko = null;
+    }
+
+    public function __get($name)
+    {
+        if ($name === 'userData' || $name === 'dToko') {
+            $this->dataBootstrap();
+            return $this->$name;
+        }
+
+        if (isset(self::$sessionMap[$name])) {
+            return $this->loadSessionBucket($name);
+        }
+
+        return null;
+    }
+
+    public function __isset($name)
+    {
+        if ($name === 'userData' || $name === 'dToko') {
+            $this->dataBootstrap();
+            return isset($this->$name);
+        }
+
+        if (isset(self::$sessionMap[$name])) {
+            $value = $this->loadSessionBucket($name);
+            return is_array($value) ? count($value) > 0 : isset($value);
+        }
+
+        return false;
     }
 
     public function dataSynchrone()
@@ -100,6 +177,8 @@ class Controller extends PV
         $_SESSION['karyawan_all'] = $this->db(0)->get_where('karyawan', "en >= 0 ORDER BY freq_cs DESC", "id_karyawan");
         $_SESSION['karyawan_all_cs'] = $this->db(0)->get_where('karyawan', "en = 1 ORDER BY freq_cs DESC", "id_karyawan");
         $_SESSION['karyawan_all_driver'] = $this->db(0)->get_where('karyawan', "en = 1 ORDER BY freq_driver DESC", "id_karyawan");
+
+        $this->resetSessionCache();
     }
 
     public function logout()

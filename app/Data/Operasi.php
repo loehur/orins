@@ -5,7 +5,7 @@ class Operasi extends Controller
     public function __construct()
     {
         $this->session_cek();
-        $this->data_order();
+        $this->dataBootstrap();
     }
 
     function ambil($id, $id_karyawan, $id_driver = 0)

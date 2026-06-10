@@ -5,7 +5,7 @@ class Gudang_Stok extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data_order();
+      $this->dataBootstrap();
       if (!in_array($this->userData['user_tipe'], PV::PRIV[101])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();

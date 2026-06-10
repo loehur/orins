@@ -5,7 +5,7 @@ class Paket extends Controller
    public function __construct()
    {
       $this->session_cek();
-      $this->data_order();
+      $this->dataBootstrap();
 
       if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
@@ -149,7 +149,7 @@ class Paket extends Controller
    function add($afiliasi = 0, $pj = 0, $ref = '')
    {
       $this->dataSynchrone();
-      $this->data_order();
+      $this->dataBootstrap();
 
       $id_produk = $_POST['id_produk'];
       //update freq
