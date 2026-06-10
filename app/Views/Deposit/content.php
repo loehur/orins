@@ -34,8 +34,6 @@
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
 </main>
 
-<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 
 <script>
     $(document).ready(function() {

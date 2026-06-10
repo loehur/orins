@@ -303,7 +303,6 @@ $total_item = 0;
 
 <?php require_once('form.php') ?>
 
-<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 <script>
     $(document).ready(function() {
         $('select.tize').selectize();

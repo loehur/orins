@@ -780,7 +780,6 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     </div>
 </div>
 
-<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 <script>
     $(document).ready(function() {
         $('.tize:not(.ajax-pelanggan)').selectize();

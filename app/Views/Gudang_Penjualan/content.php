@@ -50,8 +50,6 @@
         </table>
     </div>
 </main>
-<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 
 <script>
     $(document).ready(function() {

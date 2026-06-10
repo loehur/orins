@@ -133,8 +133,6 @@
         </div>
     </small>
 </main>
-<script src="<?= $this->ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
-
 <script>
     $("#myInput").on("keyup", function() {
         var input = this.value;

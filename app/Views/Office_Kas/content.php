@@ -142,7 +142,6 @@
     </div>
 </div>
 
-<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
     $("a.ajax").click(function(e) {

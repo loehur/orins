@@ -118,5 +118,3 @@
             </tr>
         <?php } ?>
     </table>
-
-    <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>

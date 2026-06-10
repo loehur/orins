@@ -38,7 +38,6 @@
         <div class="modal-content" id="cek_load"></div>
     </div>
 </div>
-<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
     $("button#cek").click(function() {

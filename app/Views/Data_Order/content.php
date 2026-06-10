@@ -323,7 +323,6 @@
     </small>
 </main>
 
-<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 
 <script>
     $("#myInput").on("keyup", function() {

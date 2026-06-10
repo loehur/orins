@@ -8,7 +8,6 @@
     </select>
 </div>
 
-<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 <script>
     $(document).ready(function() {
         $('select.tize').selectize();

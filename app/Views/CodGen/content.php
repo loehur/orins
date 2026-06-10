@@ -71,7 +71,6 @@ $max_length = [2, 2, 3, 3, 2];
     </div>
 </main>
 
-<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/autocomplete.js"></script>
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 
