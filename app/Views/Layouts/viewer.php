@@ -4,58 +4,67 @@
         opacity: 0.8;
     }
 
-    .loader {
-        border: 16px solid #f3f3f3;
-        border-radius: 50%;
-        border-top: 16px solid #04871e;
-        border-right: 16px solid #abf1b9;
-        border-bottom: 16px solid #ffffff;
-        border-left: 16px solid #3193df;
-        width: 100px;
-        height: 100px;
-        -webkit-animation: spin 1s linear infinite;
-        /* Safari */
-        animation: spin 1s linear infinite;
+    #content.content-is-loading {
+        position: relative;
+        min-height: 320px;
     }
 
-    .loaderDiv {
-        position: fixed;
-        z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.7);
+    #content .content-loader {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(2px);
+        border-radius: 0.35rem;
+    }
+
+    .content-loader-card {
+        text-align: center;
+        padding: 1.25rem 1.75rem;
+        border-radius: 0.65rem;
+        background: #fff;
+        box-shadow: 0 0.35rem 1.25rem rgba(15, 23, 42, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .content-loader-dots {
         display: flex;
         justify-content: center;
-        align-items: center;
+        gap: 0.45rem;
+        margin-bottom: 0.65rem;
     }
 
-    /* Safari */
-    @-webkit-keyframes spin {
-        0% {
-            -webkit-transform: rotate(0deg);
-        }
-
-        100% {
-            -webkit-transform: rotate(360deg);
-        }
+    .content-loader-dots span {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #04871e, #3193df);
+        animation: content-loader-bounce 1s ease-in-out infinite;
     }
 
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
+    .content-loader-dots span:nth-child(2) {
+        animation-delay: 0.15s;
+    }
+
+    .content-loader-dots span:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    @keyframes content-loader-bounce {
+        0%, 80%, 100% {
+            transform: translateY(0);
+            opacity: 0.45;
         }
 
-        100% {
-            transform: rotate(360deg);
+        40% {
+            transform: translateY(-7px);
+            opacity: 1;
         }
     }
 </style>
-
-<div class="loaderDiv">
-    <div class="loader"></div>
-</div>
 
 <script>
     var appBaseUrl = '<?= PV::BASE_URL ?>';
@@ -63,6 +72,30 @@
     var appPage = "<?= isset($data['page']) && $data['page'] != "" ? $data['page'] : 'content' ?>";
     var appParse = '<?= $data['parse'] ?>';
     var appParse2 = '<?= isset($data['parse_2']) ? $data['parse_2'] : '' ?>';
+
+    function contentLoaderMarkup() {
+        return '<div class="content-loader" aria-live="polite" aria-busy="true">' +
+            '<div class="content-loader-card">' +
+            '<div class="content-loader-dots"><span></span><span></span><span></span></div>' +
+            '<div class="small text-muted fw-bold">Memuat halaman...</div>' +
+            '</div></div>';
+    }
+
+    function showContentLoader() {
+        var $content = $('#content');
+        $content.addClass('content-is-loading');
+        if ($content.children('.content-loader').length === 0) {
+            $content.append(contentLoaderMarkup());
+        } else {
+            $content.children('.content-loader').removeClass('d-none').attr('aria-busy', 'true');
+        }
+    }
+
+    function hideContentLoader() {
+        var $content = $('#content');
+        $content.removeClass('content-is-loading');
+        $content.children('.content-loader').addClass('d-none').attr('aria-busy', 'false');
+    }
 
     $(document).ready(function() {
         content();
@@ -80,10 +113,13 @@
     }
 
     function loadAppContent(url, done) {
-        $('div.loaderDiv').removeClass('d-none');
-        $("div#content").load(url, function() {
-            if ($("#content").find("[data-custom-loader]").length == 0) {
-                $('div.loaderDiv').addClass('d-none');
+        showContentLoader();
+        $("div#content").load(url, function(response, status) {
+            if (status === 'error') {
+                hideContentLoader();
+                $('#content').html('<div class="alert alert-danger m-3">Gagal memuat halaman. <a href="javascript:location.reload()">Coba lagi</a></div>');
+            } else if ($("#content").find("[data-custom-loader]").length == 0) {
+                hideContentLoader();
             }
             if (typeof done === 'function') {
                 done();

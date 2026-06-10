@@ -982,7 +982,9 @@
             });
 
             // Hide the loader only after everything is ready
-            $('div.loaderDiv').addClass('d-none');
+            if (typeof hideContentLoader === 'function') {
+                hideContentLoader();
+            }
         }, 500);
     });
 
