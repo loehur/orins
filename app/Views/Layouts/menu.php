@@ -1,49 +1,5 @@
 <?php
-// OPTIMASI: Query hanya dijalankan untuk user yang punya akses menu tersebut
-$aff_ = [];
-$aff_c = 0;
-$data_spk_lnjut = [];
-$lanjut_c = 0;
-$list_l = [];
-
-if (in_array($this->userData['user_tipe'], PV::PRIV[3])) {
-	$cols = "id_toko, id_pelanggan, ref";
-	$where = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_penerima <> 0 AND (id_user_afiliasi = 0 OR status_order = 1) AND cancel = 0 GROUP BY id_toko, id_pelanggan, ref";
-	$aff_ = $this->db(0)->get_cols_where('order_data', $cols, $where, 1);
-	$aff_c = count($aff_);
-}
-
-if (in_array($this->userData['user_tipe'], PV::PRIV[4])) {
-	$where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND cancel = 0 AND id_ambil = 0 AND spk_lanjutan <> '' ORDER BY id_order_data DESC";
-	$data_spk_lnjut = $this->db(0)->get_cols_where('order_data', 'ref, spk_lanjutan, spk_dvs', $where, 1); // Hanya kolom yang dipakai
-
-	$refs_spk_lnjut = [];
-	foreach ($data_spk_lnjut as $ds) {
-		$spk = explode('#', str_replace('D-', '', $ds['spk_lanjutan'] ?? ''));
-		$spk_dvs = (strlen($ds['spk_dvs'] ?? '') > 1) ? @unserialize($ds['spk_dvs']) : [];
-		if (!is_array($spk_dvs)) $spk_dvs = [];
-		$ada_pending = false;
-		foreach ($spk as $sl) {
-			if ($sl !== '' && isset($this->dDvs[$sl])) {
-				$list_l[$sl] = 1; // Kumpulkan divisi unik untuk submenu
-				$dv = $spk_dvs[$sl] ?? [];
-				$status = (int)($dv['status'] ?? 0);
-				$cm = (int)($dv['cm'] ?? 0);
-				$cm_status = (int)($dv['cm_status'] ?? 0);
-				$done = ($status == 1 && ($cm != 1 || $cm_status == 1));
-				if (!$done) {
-					$ada_pending = true;
-				}
-			}
-		}
-		if ($ada_pending) {
-			$refs_spk_lnjut[$ds['ref']] = 1;
-		}
-	}
-	$lanjut_c = count($refs_spk_lnjut);
-	$list_l = array_keys($list_l);
-}
-
+$canPrioritasMenu = in_array($this->userData['user_tipe'], PV::PRIV[3]) || in_array($this->userData['user_tipe'], PV::PRIV[4]);
 $yearNow = date('Y');
 ?>
 
@@ -60,43 +16,18 @@ $yearNow = date('Y');
 		<nav class="sidenav sidenav-light border-end" style="z-index: -100;">
 			<div class="sidenav-menu">
 				<div class="nav accordion pt-3" id="accordionSidenav">
-					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[3])) { ?>
-						<?php if ($aff_c > 0) { ?>
-							<a class="nav-link <?= (str_contains($t, "Afiliasi Order")) ? 'active' : 'collapsed' ?> py-1" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#collapseAff" aria-expanded="true" aria-controls="collapseAff">
-								<div class="nav-link-icon text-danger"><i data-feather="plus-square"></i></div>
-								Afiliasi Order <span class="badge bg-danger-soft text-danger ms-2"><?= $aff_c ?></span>
-								<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-							</a>
-							<div class="collapse <?= (str_contains($t, "Afiliasi Order")) ? 'show' : '' ?>" id="collapseAff" data-bs-parent="#accordionSidenav">
-								<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
-									<?php foreach ($aff_ as $af) {
-										$toko = $this->dToko[$af['id_toko']]['inisial'];
-										if (isset($this->dPelangganAll[$af['id_pelanggan']])) {
-											$pelanggan = $this->dPelangganAll[$af['id_pelanggan']]['nama'];
-										} else {
-											$pelanggan = $af['id_pelanggan'];
-										} ?>
-										<a class="nav-link py-1 <?= ($t == "Afiliasi Order - " . $af['ref']) ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>Buka_Order_Aff/index/<?= $af['ref'] ?>"><?= $toko ?> #<?= strtoupper($pelanggan) ?></a>
-									<?php } ?>
-								</nav>
-							</div>
-						<?php } ?>
-					<?php } ?>
-					<?php if (in_array($this->userData['user_tipe'], PV::PRIV[4])) { ?>
-						<?php if ($lanjut_c > 0) { ?>
-							<a class="nav-link <?= (str_contains($t, "SPK - Lanjutan")) ? 'active' : 'collapsed' ?> py-1" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseSPKP" aria-expanded="true" aria-controls="collapseSPKP">
-								<div class="nav-link-icon text-danger"><i data-feather="alert-triangle"></i></div>
-								SPK - Prioritas <span class="badge bg-danger-soft text-danger ms-2"><?= $lanjut_c ?></span>
-								<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-							</a>
-							<div class="collapse <?= (str_contains($t, "SPK - Lanjutan")) ? 'show' : '' ?>" id="collapseSPKP" data-bs-parent="#accordionSidenav">
-								<nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
-									<?php foreach ($list_l as $sl) { ?>
-										<a class="nav-link py-1 <?= ($t == "SPK - Lanjutan " . $this->dDvs[$sl]['divisi']) ? 'active' : '' ?>" href="<?= PV::BASE_URL ?>SPK_L/index/<?= $sl ?>"><?= $this->dDvs[$sl]['divisi'] ?></a>
-									<?php } ?>
-								</nav>
-							</div>
-						<?php } ?>
+					<?php if ($canPrioritasMenu) { ?>
+						<a class="nav-link <?= $openPrioritasMenu ? 'active' : 'collapsed' ?> py-1" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#collapsePrioritas" aria-expanded="<?= $openPrioritasMenu ? 'true' : 'false' ?>" aria-controls="collapsePrioritas">
+							<div class="nav-link-icon text-danger"><i data-feather="alert-triangle"></i></div>
+							Prioritas
+							<span class="badge bg-danger-soft text-danger ms-2 d-none" id="menuPrioritasBadge"></span>
+							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse <?= $openPrioritasMenu ? 'show' : '' ?>" id="collapsePrioritas" data-bs-parent="#accordionSidenav">
+							<nav class="sidenav-menu-nested nav" id="menuPrioritasContent">
+								<span class="nav-link py-1 text-muted">Klik untuk memuat...</span>
+							</nav>
+						</div>
 					<?php } ?>
 					<?php foreach (Pv::MENU as $key => $md) { ?>
 						<?php foreach ($md['access'] as $mda) { ?>
