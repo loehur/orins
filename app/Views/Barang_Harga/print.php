@@ -8,12 +8,7 @@
     <link href="<?= PV::ASSETS_URL ?>css/styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>plugins/bootstrap-5.1/bootstrap.min.css" rel="stylesheet" />
     <link rel="icon" type="image/x-icon" href="<?= PV::ASSETS_URL ?>assets/img/favicon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap" rel="stylesheet">
-    <!-- FONT -->
-
-    <?php $fontStyle = "'Titillium Web', sans-serif;" ?>
+    <?php $fontStyle = "system-ui, -apple-system, \"Segoe UI\", Roboto, Arial, sans-serif;" ?>
 
     <style>
         html {

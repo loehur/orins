@@ -13,13 +13,9 @@
     <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>plugins/fontawesome-free-6.4.0-web/css/all.css" rel="stylesheet">
     <link href="<?= PV::ASSETS_URL ?>plugins/toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap" rel="stylesheet">
-    <!-- FONT -->
 </head>
 
-<?php $fontStyle = "'Titillium Web', sans-serif;" ?>
+<?php $fontStyle = "system-ui, -apple-system, \"Segoe UI\", Roboto, Arial, sans-serif;" ?>
 
 <style>
     html {

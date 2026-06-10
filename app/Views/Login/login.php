@@ -14,12 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>plugins/fontawesome-free-6.4.0-web/css/all.css" rel="stylesheet">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap" rel="stylesheet">
-    <!-- FONT -->
-
-    <?php $fontStyle = "'Titillium Web', sans-serif;" ?>
+    <?php $fontStyle = "system-ui, -apple-system, \"Segoe UI\", Roboto, Arial, sans-serif;" ?>
 
     <style>
         html .table {
