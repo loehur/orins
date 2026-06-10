@@ -57,10 +57,17 @@ class Stok_Bahan_Baku extends Controller
          $sds = 0;
       }
 
-      //cek stok
-      $stok = $this->data('Barang')->sisa_stok($id_barang, 0, $sn, $sds);
-      if ($stok <= 0) {
-         echo "Stok Kosong";
+      $qty = $_POST['qty'];
+
+      //cek stok (sesuai tampilan: total jika SN kosong, per SN jika diisi)
+      if ($sn === "") {
+         $stok_all = $this->data('Barang')->stok_data_all($id_barang, $id_sumber);
+         $stok = isset($stok_all[$id_barang]) ? (int) $stok_all[$id_barang]['qty'] : 0;
+      } else {
+         $stok = $this->data('Barang')->sisa_stok($id_barang, $id_sumber, $sn, $sds);
+      }
+      if ($stok < $qty) {
+         echo $stok <= 0 ? "Stok Kosong" : "Stok tidak mencukupi. Tersedia: " . $stok;
          exit();
       }
 
@@ -72,12 +79,17 @@ class Stok_Bahan_Baku extends Controller
       } else {
          $id_target = 0;
       }
-      $qty = $_POST['qty'];
 
       $ref = date("YmdHi");
       $cols = 'ref, jenis, id_barang, id_sumber, id_target, qty, cs_id, sds, stat';
+      if ($sn !== "") {
+         $cols .= ', sn';
+      }
 
       $vals = "'" . $ref . "',4," . $id_barang . ",'" . $id_sumber . "','" . $id_target . "'," . $qty . "," . $karyawan . "," . $sds . ",1";
+      if ($sn !== "") {
+         $vals .= ",'" . addslashes($sn) . "'";
+      }
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
