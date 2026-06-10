@@ -745,26 +745,25 @@ if (!function_exists('buka_order_spk_qty_locked')) {
 <div id="form-pick-modals"></div>
 <div id="formPickLoader" class="form-pick-loader d-none" aria-live="polite" aria-busy="false">
     <div class="form-pick-loader-box text-center">
-        <div class="spinner-border text-primary" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
-        <div class="mt-2 text-muted small fw-bold">Memuat data...</div>
+        <div class="spinner-border text-primary" style="width: 2rem; height: 2rem;" role="status"></div>
+        <div class="mt-1 text-primary small fw-bold">Memuat data...</div>
     </div>
 </div>
 <style>
     .form-pick-loader {
         position: fixed;
-        inset: 0;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
         z-index: 10050;
-        background-color: rgba(255, 255, 255, 0.82);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        background: transparent;
+        pointer-events: none;
     }
 
     .form-pick-loader-box {
-        padding: 1.25rem 1.5rem;
-        border-radius: 0.5rem;
-        background: #fff;
-        box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.12);
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
     }
 
     .detail-load-panel.is-loading {
