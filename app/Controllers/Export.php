@@ -124,7 +124,7 @@ class Export extends Controller
       $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $dBarang = $this->db(0)->get('master_barang', 'id');
 
-      $where = "paket_group = '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
+      $where = "paket_group = '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2";
       $data = $this->db(0)->get_where("master_mutasi", $where);
 
       $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
@@ -148,7 +148,7 @@ class Export extends Controller
          $db = $dBarang[$a['id_barang']];
          $barang = strtoupper($db['product_name'] . $db['brand'] . " " . $db['model']);
 
-         $order_status = $this->resolveExportStatus($ref, $a, $ref_data);
+         $order_status = $this->resolveMutasiStatStatus($a);
 
          if (isset($dKaryawan[$a['cs_id']]['nama'])) {
             $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
@@ -250,7 +250,7 @@ class Export extends Controller
          }
 
          $dBarang = $this->db(0)->get('master_barang', 'id');
-         $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2 AND stat = 1";
+         $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2";
          $data2 = $this->db(0)->get_where("master_mutasi", $where);
          $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data2, 'ref'));
 
@@ -270,7 +270,7 @@ class Export extends Controller
                $sumPaket[$paket_group] = 0;
             }
 
-            $order_status = $this->resolveExportStatus($ref, $a, $ref_data);
+            $order_status = $this->resolveMutasiStatStatus($a);
 
             if (isset($dKaryawan[$a['cs_id']]['nama'])) {
                $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
@@ -498,11 +498,22 @@ class Export extends Controller
       return '';
    }
 
+   private function resolveMutasiStatStatus(array $row): string
+   {
+      switch ((int)($row['stat'] ?? -1)) {
+         case 1:
+            return 'LUNAS';
+         case 2:
+            return 'BATAL';
+         case 0:
+            return 'PIUTANG';
+         default:
+            return 'PIUTANG';
+      }
+   }
+
    private function resolveExportStatus($ref, array $row, array $ref_data): string
    {
-      if (isset($row['stat']) && (int)$row['stat'] === 2) {
-         return 'BATAL';
-      }
       if (isset($row['cancel']) && (int)$row['cancel'] === 1) {
          return 'BATAL';
       }
