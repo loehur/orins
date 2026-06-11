@@ -46,6 +46,65 @@
         width: 1px;
         white-space: nowrap;
     }
+
+    .status-cards {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .status-card {
+        flex: 1 1 160px;
+        border-radius: 0.5rem;
+        padding: 0.65rem 0.75rem;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .status-card-label {
+        font-size: 10px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #6c757d;
+        margin-bottom: 0.15rem;
+    }
+
+    .status-card-value {
+        font-size: 0.95rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .status-card-icon {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+
+    .status-card-lunas .status-card-icon {
+        background: rgba(25, 135, 84, 0.12);
+        color: #198754;
+    }
+
+    .status-card-belum .status-card-icon {
+        background: rgba(220, 53, 69, 0.12);
+        color: #dc3545;
+    }
+
+    .status-card-tuntas .status-card-icon {
+        background: rgba(25, 135, 84, 0.12);
+        color: #198754;
+    }
+
+    .status-card-berjalan .status-card-icon {
+        background: rgba(13, 110, 253, 0.12);
+        color: #0d6efd;
+    }
 </style>
 </head>
 
@@ -506,6 +565,39 @@
                                 </tbody>
                             </table>
                         </small>
+                    </div>
+                    <div class="status-cards px-1 pb-1">
+                        <div class="status-card <?= $lunas ? 'status-card-lunas border border-success' : 'status-card-belum border border-danger' ?>">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="status-card-icon">
+                                    <i class="fa-solid <?= $lunas ? 'fa-circle-check' : 'fa-clock' ?>"></i>
+                                </span>
+                                <div>
+                                    <div class="status-card-label">Status Pembayaran</div>
+                                    <div class="status-card-value <?= $lunas ? 'text-success' : 'text-danger' ?>">
+                                        <?= $lunas ? 'Lunas' : 'Belum Lunas' ?>
+                                    </div>
+                                    <?php if (!$lunas && $sisa > 0) { ?>
+                                        <small class="text-muted">Sisa Rp<?= number_format($sisa) ?></small>
+                                    <?php } elseif (!$lunas && $pending_bayar) { ?>
+                                        <small class="text-warning">Menunggu verifikasi office</small>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="status-card <?= ($dh['tuntas'] == 1) ? 'status-card-tuntas border border-success' : 'status-card-berjalan border border-primary' ?>">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="status-card-icon">
+                                    <i class="fa-solid <?= ($dh['tuntas'] == 1) ? 'fa-flag-checkered' : 'fa-spinner' ?>"></i>
+                                </span>
+                                <div>
+                                    <div class="status-card-label">Status Order</div>
+                                    <div class="status-card-value <?= ($dh['tuntas'] == 1) ? 'text-success' : 'text-primary' ?>">
+                                        <?= ($dh['tuntas'] == 1) ? 'Tuntas' : 'Berjalan' ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
