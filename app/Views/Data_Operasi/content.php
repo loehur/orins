@@ -587,7 +587,7 @@
                                         <td class="text-end text border-0 pb-0" colspan="3">
                                             <table>
                                                 <tr>
-                                                    <td class="text-end pe-1"><small><a href="<?= PV::BASE_URL; ?>Data_Order/print/<?= $ref ?>" target="_blank" class="btnBayar rounded border-0 px-1 text-dark text-decoration-none"><i class="fa-solid fa-print"></i></a></small></td>
+                                                    <td class="text-end pe-1"><small><a href="#" class="btnPrintOrder rounded border-0 px-1 text-dark text-decoration-none" data-ref="<?= $ref ?>" data-printed="<?= (int)($dRef['printed'] ?? 0) ?>" title="Cetak Order<?= (int)($dRef['printed'] ?? 0) > 0 ? ' (x' . (int)$dRef['printed'] . ')' : '' ?>"><i class="fa-solid fa-print"></i></a></small></td>
                                                     <?php if ($ambil_all[$ref] == false) { ?>
                                                         <?php if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
                                                             <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>
@@ -897,6 +897,33 @@
 
     var totalBill = 0;
     var json_rekap = [];
+    var printOrderBaseUrl = '<?= PV::BASE_URL ?>Data_Order/print/';
+    var isKasirPrint = <?= in_array($this->userData['user_tipe'], PV::PRIV[2]) ? 'true' : 'false' ?>;
+
+    function openPrintOrder(ref) {
+        window.open(printOrderBaseUrl + ref, '_blank');
+    }
+
+    function markPrintAndOpen(ref, reason, done) {
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Data_Operasi/mark_print',
+            type: 'POST',
+            data: {
+                ref: ref,
+                reprint_reason: reason || ''
+            },
+            success: function(res) {
+                if (res == 0) {
+                    openPrintOrder(ref);
+                    if (typeof done === 'function') {
+                        done();
+                    }
+                } else {
+                    showToast(res, 'danger');
+                }
+            }
+        });
+    }
 
     function updateTotalFromCheckboxes() {
         var sum = 0;
@@ -1111,6 +1138,56 @@
     $(document).on("click", "a.batalAmbil", function() {
         var ref = $(this).attr("data-ref");
         $("input[name=batal_ambil_ref]").val(ref);
+    });
+
+    $(document).on('click', 'a.btnPrintOrder', function(e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var ref = $btn.data('ref');
+        var printed = parseInt($btn.data('printed'), 10) || 0;
+
+        if (printed === 0) {
+            markPrintAndOpen(ref, '', function() {
+                $btn.data('printed', 1).attr('data-printed', 1).attr('title', 'Cetak Order (x1)');
+            });
+            return;
+        }
+
+        if (!isKasirPrint) {
+            showToast('Cetak ulang hanya boleh oleh Kasir', 'warning');
+            return;
+        }
+
+        $('input[name=reprint_ref]').val(ref);
+        $('input[name=reprint_reason_input]').val('');
+        var modalEl = document.getElementById('modalReprintOrder');
+        if (modalEl) {
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        }
+    });
+
+    $(document).on('click', '#btnConfirmReprint', function() {
+        var ref = $('input[name=reprint_ref]').val();
+        var reason = $('input[name=reprint_reason_input]').val().trim();
+        if (!reason) {
+            showToast('Alasan cetak ulang wajib diisi', 'warning');
+            return;
+        }
+
+        var $btn = $('a.btnPrintOrder[data-ref="' + ref + '"]');
+        var printed = parseInt($btn.data('printed'), 10) || 0;
+        var modalEl = document.getElementById('modalReprintOrder');
+
+        markPrintAndOpen(ref, reason, function() {
+            var next = printed + 1;
+            $btn.data('printed', next).attr('data-printed', next).attr('title', 'Cetak Order (x' + next + ')');
+            if (modalEl) {
+                var modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) {
+                    modal.hide();
+                }
+            }
+        });
     });
 
     $(document).on("click", "a.ubahPelanggan", function() {

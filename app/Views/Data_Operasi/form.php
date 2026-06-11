@@ -578,6 +578,27 @@
     </div>
 </form>
 
+<div class="modal fade" id="modalReprintOrder" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-warning py-2">
+                <h6 class="modal-title mb-0">Cetak Ulang Order</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small mb-2">Order ini sudah pernah dicetak. Cetak ulang hanya untuk Kasir dan wajib isi alasan.</p>
+                <input type="hidden" name="reprint_ref">
+                <label class="form-label small mb-1">Alasan cetak ulang</label>
+                <input type="text" name="reprint_reason_input" class="form-control form-control-sm" required>
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-sm btn-warning" id="btnConfirmReprint">Cetak</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <form action="<?= PV::BASE_URL; ?>Data_Order/batal_ambil" method="POST">
     <div class="modal" id="modalBatalAmbil">
         <div class="modal-dialog modal-sm">

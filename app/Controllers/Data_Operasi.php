@@ -621,4 +621,61 @@ class Data_Operasi extends Controller
       }
       echo json_encode($data);
    }
+
+   public function mark_print()
+   {
+      $ref = trim($_POST['ref'] ?? '');
+      $reason = trim($_POST['reprint_reason'] ?? '');
+
+      if ($ref === '') {
+         echo 'Ref tidak valid';
+         exit();
+      }
+
+      $refEsc = addslashes($ref);
+      $row = $this->db(0)->get_where_row('ref', "ref = '" . $refEsc . "'");
+      if (!isset($row['ref'])) {
+         echo 'Ref tidak ditemukan';
+         exit();
+      }
+
+      $printed = (int)($row['printed'] ?? 0);
+      $userLabel = $this->userData['user'] ?? ('#' . $this->userData['id_user']);
+
+      if ($printed === 0) {
+         $up = $this->db(0)->update('ref', 'printed = 1', "ref = '" . $refEsc . "'");
+         if ($up['errno'] <> 0) {
+            echo $up['error'];
+            exit();
+         }
+         $this->model('Log')->write($this->userData['user'] . " Cetak order pertama ref " . $ref);
+         echo 0;
+         exit();
+      }
+
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+         echo 'Cetak ulang hanya boleh oleh Kasir';
+         exit();
+      }
+
+      if ($reason === '') {
+         echo 'Alasan cetak ulang wajib diisi';
+         exit();
+      }
+
+      $line = '[' . date('Y-m-d H:i') . '] ' . $userLabel . ': ' . $reason;
+      $existing = trim($row['reprint_reason'] ?? '');
+      $newReason = $existing === '' ? $line : $existing . "\n" . $line;
+      $newCount = $printed + 1;
+
+      $set = "printed = " . $newCount . ", reprint_reason = '" . addslashes($newReason) . "'";
+      $up = $this->db(0)->update('ref', $set, "ref = '" . $refEsc . "'");
+      if ($up['errno'] <> 0) {
+         echo $up['error'];
+         exit();
+      }
+
+      $this->model('Log')->write($this->userData['user'] . " Cetak ulang ref " . $ref . " (#" . $newCount . "): " . $reason);
+      echo 0;
+   }
 }
