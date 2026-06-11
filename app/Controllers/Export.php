@@ -133,6 +133,7 @@ class Export extends Controller
 
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
       $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
+      $lastKasPayDates = $this->loadLastKasPaymentDates(array_column($data, 'ref'));
 
       $tanggal = date("Y-m-d");
 
@@ -148,7 +149,7 @@ class Export extends Controller
          $db = $dBarang[$a['id_barang']];
          $barang = strtoupper($db['product_name'] . $db['brand'] . " " . $db['model']);
 
-         $order_status = $this->resolveMutasiStatStatus($a);
+         $order_status = $this->resolveMutasiStatStatus($a, $ref, $lastKasPayDates);
 
          if (isset($dKaryawan[$a['cs_id']]['nama'])) {
             $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
@@ -253,6 +254,7 @@ class Export extends Controller
          $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2";
          $data2 = $this->db(0)->get_where("master_mutasi", $where);
          $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data2, 'ref'));
+         $lastKasPayDates = $this->loadLastKasPaymentDates(array_column($data2, 'ref'));
 
          foreach ($data2 as $a) {
             $jumlah = $a['paket_qty'];
@@ -270,7 +272,7 @@ class Export extends Controller
                $sumPaket[$paket_group] = 0;
             }
 
-            $order_status = $this->resolveMutasiStatStatus($a);
+            $order_status = $this->resolveMutasiStatStatus($a, $ref, $lastKasPayDates);
 
             if (isset($dKaryawan[$a['cs_id']]['nama'])) {
                $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
@@ -498,11 +500,47 @@ class Export extends Controller
       return '';
    }
 
-   private function resolveMutasiStatStatus(array $row): string
+   private function loadLastKasPaymentDates(array $refs): array
+   {
+      $refs = array_unique(array_filter($refs));
+      if (empty($refs)) {
+         return [];
+      }
+      $escaped = array_map(function ($r) {
+         return "'" . addslashes((string) $r) . "'";
+      }, $refs);
+      $refList = implode(',', $escaped);
+      $rows = $this->db(0)->get_cols_where(
+         'kas',
+         'ref_transaksi, MAX(insertTime) as last_pay',
+         "ref_transaksi IN (" . $refList . ") AND status_mutasi <> 2 GROUP BY ref_transaksi",
+         1,
+         'ref_transaksi'
+      );
+      if (!is_array($rows)) {
+         return [];
+      }
+      $lastDates = [];
+      foreach ($rows as $ref => $row) {
+         if (!empty($row['last_pay'])) {
+            $lastDates[(string)$ref] = substr($row['last_pay'], 0, 10);
+         }
+      }
+      return $lastDates;
+   }
+
+   private function lastKasPaymentDate($ref, array $lastKasPayDates): string
+   {
+      $refKey = (string)$ref;
+      return $lastKasPayDates[$refKey] ?? $lastKasPayDates[$ref] ?? '';
+   }
+
+   private function resolveMutasiStatStatus(array $row, $ref, array $lastKasPayDates): string
    {
       switch ((int)($row['stat'] ?? -1)) {
          case 1:
-            return 'LUNAS';
+            $payDate = $this->lastKasPaymentDate($ref, $lastKasPayDates);
+            return $payDate !== '' ? 'LUNAS ' . $payDate : 'LUNAS';
          case 2:
             return 'BATAL';
          case 0:
