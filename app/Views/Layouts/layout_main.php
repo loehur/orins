@@ -123,51 +123,40 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 
 	(function() {
 		var $toggle = $('#prioritasToggle');
-		if ($toggle.length === 0) {
+		var $panel = $('#collapsePrioritas');
+		var $submenu = $('#prioritasSubmenu');
+		if ($toggle.length === 0 || $panel.length === 0) {
 			return;
 		}
 
-		var $submenu = $('#prioritasSubmenu');
 		var prioritasLoaded = false;
 		var prioritasUrl = '<?= PV::BASE_URL ?>Home/menu_prioritas?t=' + encodeURIComponent(<?= json_encode($t) ?>);
-
-		function ensureSubmenu() {
-			$submenu = $('#prioritasSubmenu');
-			if ($submenu.length === 0) {
-				$toggle.after('<nav class="sidenav-menu-nested nav" id="prioritasSubmenu"></nav>');
-				$submenu = $('#prioritasSubmenu');
-			}
-			return $submenu;
-		}
 
 		function setPrioritasOpen(open) {
 			$toggle.toggleClass('collapsed', !open);
 			$toggle.toggleClass('active', open);
 			$toggle.attr('aria-expanded', open ? 'true' : 'false');
+			$panel.toggleClass('show', open);
 			if (!open) {
-				$('#prioritasSubmenu').remove();
-				$submenu = $();
-				return;
+				$panel[0].style.height = '';
 			}
-			ensureSubmenu();
 		}
 
 		function loadPrioritasMenu() {
-			var $menu = ensureSubmenu();
 			if (prioritasLoaded) {
 				return;
 			}
-			$menu.html('<span class="nav-link py-1 text-muted ps-3">Memuat...</span>');
+			$submenu.html('<span class="nav-link py-1 text-muted ps-3">Memuat...</span>');
 			$.ajax({
 				url: prioritasUrl,
 				type: 'GET',
 				cache: false,
 				success: function(response) {
 					if (!response || String(response).indexOf('menuPrioritasItems') === -1) {
-						$menu.html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
+						$submenu.html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
 						return;
 					}
-					$menu.html(response);
+					$submenu.html(response);
 					prioritasLoaded = true;
 					var count = parseInt($('#menuPrioritasItems').data('count') || 0, 10);
 					var $badge = $('#menuPrioritasBadge');
@@ -181,14 +170,14 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 					}
 				},
 				error: function() {
-					$menu.html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
+					$submenu.html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
 				}
 			});
 		}
 
 		$toggle.on('click', function(e) {
 			e.preventDefault();
-			var opening = $('#prioritasSubmenu').length === 0;
+			var opening = !$panel.hasClass('show');
 			setPrioritasOpen(opening);
 			if (opening) {
 				loadPrioritasMenu();
@@ -197,7 +186,6 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 
 		<?php if (!empty($openPrioritasMenu)) { ?>
 		$(function() {
-			setPrioritasOpen(true);
 			loadPrioritasMenu();
 		});
 		<?php } ?>
