@@ -88,24 +88,24 @@
         e.preventDefault();
         e.stopPropagation();
         var $form = $(this);
-        if ($form.data('ajaxSubmitting')) {
+        if (typeof window.beginBukaOrderSubmit === 'function') {
+            if (!window.beginBukaOrderSubmit($form)) {
+                return false;
+            }
+        } else if ($form.data('ajaxSubmitting')) {
             return false;
+        } else {
+            $form.data('ajaxSubmitting', true);
+            $form.find('button[type="submit"]').prop('disabled', true);
         }
         var id_paket = $("#paket_barang").val();
         if (typeof id_paket == "undefined") {
             id_paket = "";
         }
-        var $btn = $form.find('button[type="submit"]');
-        $form.data('ajaxSubmitting', true);
-        $btn.prop('disabled', true);
         $.ajax({
             url: $form.attr('action'),
             data: $form.serialize() + "&id_paket=" + id_paket,
             type: $form.attr("method"),
-            complete: function() {
-                $form.data('ajaxSubmitting', false);
-                $btn.prop('disabled', false);
-            },
             success: function(res) {
                 if (res == 0) {
                     var modalEl = $form.closest('.modal')[0];
@@ -115,8 +115,34 @@
                     formPickLoaded = false;
                     $('#form-pick-modals').empty();
                     content();
+                    if (typeof window.resetBukaOrderSubmit === 'function') {
+                        setTimeout(function() {
+                            window.resetBukaOrderSubmit($form);
+                        }, 1200);
+                    }
                 } else {
-                    showToast(res, 'danger');
+                    if (typeof showToast === 'function') {
+                        showToast(res, 'danger');
+                    } else {
+                        alert(res);
+                    }
+                    if (typeof window.resetBukaOrderSubmit === 'function') {
+                        window.resetBukaOrderSubmit($form);
+                    } else {
+                        $form.data('ajaxSubmitting', false);
+                        $form.find('button[type="submit"]').prop('disabled', false);
+                    }
+                }
+            },
+            error: function() {
+                if (typeof showToast === 'function') {
+                    showToast('Gagal menambahkan barang. Coba lagi.', 'danger');
+                }
+                if (typeof window.resetBukaOrderSubmit === 'function') {
+                    window.resetBukaOrderSubmit($form);
+                } else {
+                    $form.data('ajaxSubmitting', false);
+                    $form.find('button[type="submit"]').prop('disabled', false);
                 }
             }
         });

@@ -45,6 +45,50 @@ class Buka_Order extends Controller
       return false;
    }
 
+   private function orderAddLockKey(array $parts)
+   {
+      return 'bo_' . (int) $this->userData['id_user'] . '_' . substr(md5(implode('|', $parts)), 0, 16);
+   }
+
+   private function acquireOrderAddLock(array $parts)
+   {
+      $key = addslashes($this->orderAddLockKey($parts));
+      return (int) $this->db(0)->scalar("SELECT GET_LOCK('" . $key . "', 10)") === 1;
+   }
+
+   private function releaseOrderAddLock(array $parts)
+   {
+      $key = addslashes($this->orderAddLockKey($parts));
+      $this->db(0)->scalar("SELECT RELEASE_LOCK('" . $key . "')");
+   }
+
+   private function isDuplicateOrderRow($ref, $produk_code, $paket_ref, $jumlah, $note)
+   {
+      $where = "ref = '" . addslashes($ref) . "'"
+         . " AND id_user = " . (int) $this->userData['id_user']
+         . " AND produk_code = '" . addslashes($produk_code) . "'"
+         . " AND paket_ref = '" . addslashes($paket_ref) . "'"
+         . " AND jumlah = " . (int) $jumlah
+         . " AND note = '" . addslashes($note) . "'"
+         . " AND tuntas = 0 AND cancel = 0";
+
+      return $this->db(0)->count_where('order_data', $where) > 0;
+   }
+
+   private function isDuplicateBarangRow($ref, $id_barang, $sn, $sds, $qty, $paket_ref)
+   {
+      $where = "ref = '" . addslashes($ref) . "'"
+         . " AND user_id = " . (int) $this->userData['id_user']
+         . " AND id_barang = " . (int) $id_barang
+         . " AND sn = '" . addslashes($sn) . "'"
+         . " AND sds = " . (int) $sds
+         . " AND qty = " . (int) $qty
+         . " AND paket_ref = '" . addslashes($paket_ref) . "'"
+         . " AND tuntas = 0 AND stat <> 2";
+
+      return $this->db(0)->count_where('master_mutasi', $where) > 0;
+   }
+
    /**
     * Get cs_id and id_pelanggan from ref
     */
@@ -752,31 +796,38 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
-      if ($paket_ref <> "") {
-         $cek_double = $this->db(0)->count_where('order_data', "ref = '" . $ref . "' AND id_user = " . $this->userData['id_user'] . " AND produk_code = '" . $produk_code . "' AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND cancel = 0");
-         if ($cek_double <> 0) {
+      $lockParts = [$ref, 'order', $produk_code, $paket_ref, $jumlah, $note];
+      if (!$this->acquireOrderAddLock($lockParts)) {
+         echo "Input masih diproses. Tunggu sebentar lalu coba lagi.";
+         exit();
+      }
+
+      try {
+         if ($this->isDuplicateOrderRow($ref, $produk_code, $paket_ref, $jumlah, $note)) {
             echo 0;
             exit();
          }
-      }
 
-      // If this is part of a paket, ensure harga field is set to 0 at insert time
-      $harga_insert = 0;
-      if ((int)$afiliasi === 0) {
-         $cols = 'ref, id_pelanggan, id_pelanggan_jenis, id_penerima, status_order, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
-         $vals = "'" . $ref . "'," . $id_pelanggan . "," . $id_pelanggan_jenis . "," . $id_penerima . ",0,'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
-      } else {
-         $cols = 'ref, id_pelanggan, id_pelanggan_jenis, id_penerima, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
-         $vals = "'" . $ref . "'," . $id_pelanggan . "," . $id_pelanggan_jenis . "," . $id_penerima . ",'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
-      }
+         // If this is part of a paket, ensure harga field is set to 0 at insert time
+         $harga_insert = 0;
+         if ((int)$afiliasi === 0) {
+            $cols = 'ref, id_pelanggan, id_pelanggan_jenis, id_penerima, status_order, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
+            $vals = "'" . $ref . "'," . $id_pelanggan . "," . $id_pelanggan_jenis . "," . $id_penerima . ",0,'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "','" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
+         } else {
+            $cols = 'ref, id_pelanggan, id_pelanggan_jenis, id_penerima, detail_harga, produk, id_toko, id_produk, produk_code, produk_detail, spk_dvs, jumlah, id_user, note, note_spk, id_afiliasi, status_order, paket_ref, paket_group, price_locker, harga_paket, pj, pending_spk, harga, paket_qty';
+            $vals = "'" . $ref . "'," . $id_pelanggan . "," . $id_pelanggan_jenis . "," . $id_penerima . ",'" . $detailHarga_ . "','" . $produk_name . "'," . $this->userData['id_toko'] . "," . $id_produk . ",'" . $produk_code . "','" . $produk_detail . "','" . $spkDVS_ . "'," . $jumlah . "," . $this->userData['id_user'] . ",'" . $note . "','" . $spkNote_ . "'," . $afiliasi . ",1,'" . $paket_ref . "','" . $paket_group . "'," . $price_locker . "," . $harga_paket . "," . $pj . ",'" . $spkR_ . "'," . $harga_insert . "," . $paket_qty;
+         }
 
-      $do = $this->db(0)->insertCols('order_data', $cols, $vals);
-      if ($do['errno'] == 0) {
-         $this->model('Log')->write($this->userData['user'] . " Add Order Success!");
-         echo $do['errno'];
-      } else {
-         print_r($do['error']);
-         exit();
+         $do = $this->db(0)->insertCols('order_data', $cols, $vals);
+         if ($do['errno'] == 0) {
+            $this->model('Log')->write($this->userData['user'] . " Add Order Success!");
+            echo $do['errno'];
+         } else {
+            print_r($do['error']);
+            exit();
+         }
+      } finally {
+         $this->releaseOrderAddLock($lockParts);
       }
    }
 
@@ -830,13 +881,17 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
-      if ($paket_ref <> "") {
-         $cek_double_paket = $this->db(0)->count_where('master_mutasi', "ref = '" . $ref . "' AND user_id = " . $this->userData['id_user'] . " AND id_barang = " . $id_barang . " AND sn = '" . $sn . "' AND sds = " . $sds . " AND paket_ref = '" . $paket_ref . "' AND tuntas = 0 AND stat <> 2");
-         if ($cek_double_paket <> 0) {
+      $lockParts = [$ref, 'barang', $id_barang, $sn, $sds, $qty, $paket_ref];
+      if (!$this->acquireOrderAddLock($lockParts)) {
+         echo "Input masih diproses. Tunggu sebentar lalu coba lagi.";
+         exit();
+      }
+
+      try {
+         if ($this->isDuplicateBarangRow($ref, $id_barang, $sn, $sds, $qty, $paket_ref)) {
             echo 0;
             exit();
          }
-      }
 
       $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $id_barang . "'");
       $harga = $barang['harga_' . $id_jenis_pelanggan];
@@ -858,6 +913,9 @@ class Buka_Order extends Controller
       $vals = "'" . $ref . "',2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $id_sumber . "'," . $id_target . "," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $cs_id . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $harga_paket . "," . $paket_qty;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
+      } finally {
+         $this->releaseOrderAddLock($lockParts);
+      }
    }
 
    function load_detail($produk)

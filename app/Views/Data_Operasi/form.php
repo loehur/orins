@@ -172,34 +172,43 @@
                 </div>
                 <div class="modal-body">
                     <div class="container">
+                        <input type="hidden" name="tukarBarang_id">
+                        <input type="hidden" id="tukarBarang_id_sumber" value="0">
                         <div class="row mb-2">
                             <div class="col">
                                 <label class="form-label">ID Barang Baru</label>
-                                <input type="text" name="id_baru" class="form-control form-control-sm" required>
-                                <input type="hidden" name="tukarBarang_id">
+                                <input type="text" name="id_baru" id="tukarBarang_id_baru" class="form-control form-control-sm" required>
                             </div>
                             <div class="col">
-                                <label class="form-label">Serial Number (SN)</label>
-                                <input type="text" name="sn_baru" class="form-control form-control-sm">
+                                <label class="form-label">SN</label>
+                                <input type="text" name="sn_baru" id="tukarBarang_sn" class="form-control form-control-sm">
                             </div>
                             <div class="col">
                                 <label class="form-label">SDS</label>
-                                <select name="sds_baru" class="form-select form-select-sm" required>
+                                <select name="sds_baru" id="tukarBarang_sds" class="form-select form-select-sm" required>
                                     <option value="">-- Pilih --</option>
                                     <option value="0">Tidak</option>
                                     <option value="1">Ya</option>
                                 </select>
                             </div>
                         </div>
+                        <div class="row mb-2">
+                            <div class="col">
+                                <button type="button" id="btnCekBarangTukar" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fas fa-search me-1"></i> Cek Ketersediaan Barang
+                                </button>
+                            </div>
+                        </div>
+                        <div class="tukar-barang-cek-result mb-2 d-none" aria-live="polite"></div>
                         <div class="row mb-3">
                             <div class="col">
                                 <label class="form-label">Alasan Tukar Barang</label>
-                                <input type="text" name="reason" class="form-control form-control-sm" required>
+                                <input type="text" name="reason" id="tukarBarang_reason" class="form-control form-control-sm" required>
                             </div>
                         </div>
                         <div class="row mb-2">
                             <div class="col-sm-6">
-                                <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Tukar Barang</button>
+                                <button type="submit" id="btnTukarBarang" class="btn btn-primary" disabled>Tukar Barang</button>
                             </div>
                         </div>
                     </div>

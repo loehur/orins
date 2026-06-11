@@ -8,6 +8,22 @@ $yearNow = date('Y');
 	div {
 		scrollbar-color: pink white;
 	}
+
+	#accordionSidenav > #collapsePrioritas:not(.show) {
+		display: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		min-height: 0 !important;
+	}
+
+	#accordionSidenav > a.nav-link[data-bs-target="#collapsePrioritas"] {
+		margin-bottom: 0;
+	}
+
+	#collapsePrioritas .sidenav-menu-nested {
+		margin-bottom: 0;
+		padding-bottom: 0;
+	}
 </style>
 
 
@@ -17,16 +33,14 @@ $yearNow = date('Y');
 			<div class="sidenav-menu">
 				<div class="nav accordion pt-3" id="accordionSidenav">
 					<?php if ($canPrioritasMenu) { ?>
-						<a class="nav-link <?= $openPrioritasMenu ? 'active' : 'collapsed' ?> py-1" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#collapsePrioritas" aria-expanded="<?= $openPrioritasMenu ? 'true' : 'false' ?>" aria-controls="collapsePrioritas">
+						<a class="nav-link <?= $openPrioritasMenu ? 'active' : 'collapsed' ?> py-2" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#collapsePrioritas" aria-expanded="<?= $openPrioritasMenu ? 'true' : 'false' ?>" aria-controls="collapsePrioritas">
 							<div class="nav-link-icon text-danger"><i data-feather="alert-triangle"></i></div>
 							Prioritas
 							<span class="badge bg-danger-soft text-danger ms-2 d-none" id="menuPrioritasBadge"></span>
 							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 						</a>
 						<div class="collapse <?= $openPrioritasMenu ? 'show' : '' ?>" id="collapsePrioritas" data-bs-parent="#accordionSidenav">
-							<nav class="sidenav-menu-nested nav" id="menuPrioritasContent">
-								<span class="nav-link py-1 text-muted">Klik untuk memuat...</span>
-							</nav>
+							<nav class="sidenav-menu-nested nav py-0" id="menuPrioritasContent"></nav>
 						</div>
 					<?php } ?>
 					<?php foreach (Menu::items() as $key => $md) { ?>

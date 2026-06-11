@@ -1,17 +1,59 @@
 <?php $parse = $data['parse'];
 ?>
+<style>
+    .filter-select-wrap {
+        position: relative;
+        max-width: 600px;
+        min-height: 38px;
+    }
+
+    .filter-select-wrap.is-loading .filter-select-fields {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .filter-select-mini-loader {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0 0.5rem;
+        z-index: 2;
+    }
+
+    .filter-select-wrap.is-ready .filter-select-mini-loader {
+        display: none;
+    }
+
+    .filter-select-wrap.is-ready .filter-select-fields {
+        opacity: 1;
+    }
+
+    .filter-select-mini-loader .spinner-border {
+        width: 1rem;
+        height: 1rem;
+        border-width: 0.15em;
+    }
+</style>
 <main class="container">
-    <div class="row mx-0 px-0">
-        <div class="col pe-0 ps-2" style="max-width: 250px;">
-            <select class="border rounded tize cek" name="customer" required>
-                <option></option>
-                <?php foreach ($data['dPelanggan'] as $p) { ?>
-                    <option <?= $data['customer'] == $p['id_pelanggan'] ? 'selected' : '' ?> value="<?= $p['id_pelanggan'] ?>"><?= $this->dToko[$p['id_toko']]['inisial'] ?> <?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], -2) ?></option>
-                <?php } ?>
-            </select>
+    <div class="filter-select-wrap is-loading mx-0" id="filterSelectWrap">
+        <div class="filter-select-mini-loader" aria-live="polite" aria-busy="true">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            <small class="text-muted">Memuat pilihan...</small>
         </div>
-        <div class="col pt-auto mt-auto pe-0">
-            <button type="submit" class="cek pt-2 btn btn-sm btn-primary">Cek Order</button>
+        <div class="filter-select-fields row mx-0">
+            <div class="col px-0">
+                <select class="border rounded tize ajax-pelanggan" name="customer" required>
+                    <option></option>
+                    <?php foreach ($data['pelanggan'] as $p) { ?>
+                        <option value="<?= $p['id_pelanggan'] ?>" selected><?= $this->dToko[$p['id_toko']]['inisial'] ?> <?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], -2) ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+            <div class="col-auto pt-auto mt-auto pe-0">
+                <button type="button" class="cek btn btn-primary">Cek Order</button>
+            </div>
         </div>
     </div>
     <?php if ($data['customer'] <> 0) { ?>
@@ -233,21 +275,81 @@
     </form>
 
     <script>
-        $(document).ready(function() {
-            $('select.tize').selectize();
-        });
-        var parse;
-        var parse_2;
+        var parse = <?= $parse ?>;
+        var parse_2 = <?= (int)$data['customer'] ?>;
 
-        $('select.cek').change(function() {
-            parse = <?= $parse ?>;
-            parse_2 = $(this).val();
-            if (parse_2 == "") {
+        function markFilterSelectReady() {
+            var wrap = document.getElementById('filterSelectWrap');
+            if (wrap) {
+                wrap.classList.remove('is-loading');
+                wrap.classList.add('is-ready');
+                wrap.querySelector('.filter-select-mini-loader')?.setAttribute('aria-busy', 'false');
+            }
+            if (typeof hideContentLoader === 'function') {
+                hideContentLoader();
+            }
+        }
+
+        function pelangganSelectizeOptions() {
+            return {
+                valueField: 'id',
+                labelField: 'nama',
+                searchField: ['nama', 'no_hp', 'id'],
+                create: false,
+                render: {
+                    option: function(item, escape) {
+                        return '<div style="padding: 6px 15px;">' +
+                            '<span>' + escape(item.inisial || '') + ' ' + escape(item.nama) + '</span>' +
+                            ' #<small>' + (item.id ? escape(String(item.id)).substring(String(item.id).length - 2) : '') + '</small>' +
+                            ' <br><small>' + escape(item.no_hp || '') + '</small>' +
+                            '</div>';
+                    },
+                    item: function(item, escape) {
+                        return '<div style="padding: 2px 10px;">' + escape(item.inisial || '') + ' ' + escape(item.nama) + '</div>';
+                    }
+                }
+            };
+        }
+
+        function initFilterSelectize() {
+            var $el = $('select.ajax-pelanggan');
+            if (!$el.length || $el[0].selectize) {
+                markFilterSelectReady();
                 return;
             }
+            var pelangganOpts = pelangganSelectizeOptions();
+            pelangganOpts.options = <?= $data['pelanggan_init'] ?>;
+            pelangganOpts.load = function(query, callback) {
+                if (query.length < 2) {
+                    return callback();
+                }
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>SPK_Customer/search_pelanggan',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { q: query },
+                    error: function() { callback(); },
+                    success: function(res) { callback(res); }
+                });
+            };
+            $el.selectize(pelangganOpts);
+            markFilterSelectReady();
+        }
+
+        $(document).ready(function() {
+            initFilterSelectize();
+            $('select.tize:not(.ajax-pelanggan)').each(function() {
+                if (!this.selectize) {
+                    $(this).selectize();
+                }
+            });
         });
 
-        $('button.cek').click(function() {
+        $(document).on('click', 'button.cek', function() {
+            parse_2 = $('select[name=customer]').val();
+            if (!parse_2) {
+                return;
+            }
             $("div#content").load('<?= PV::BASE_URL ?>SPK_Customer/content/' + parse + '/' + parse_2);
         });
 

@@ -939,6 +939,31 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     }
 
     var bukaOrderEvt = '.bukaOrder';
+    window.bukaOrderAddBusy = false;
+
+    window.resetBukaOrderSubmit = function($form) {
+        window.bukaOrderAddBusy = false;
+        if (!$form || !$form.length) {
+            return;
+        }
+        $form.data('ajaxSubmitting', false);
+        $form.find('button[type="submit"]').prop('disabled', false);
+    };
+
+    window.beginBukaOrderSubmit = function($form) {
+        if (window.bukaOrderAddBusy) {
+            return false;
+        }
+        if ($form && $form.data('ajaxSubmitting')) {
+            return false;
+        }
+        window.bukaOrderAddBusy = true;
+        if ($form && $form.length) {
+            $form.data('ajaxSubmitting', true);
+            $form.find('button[type="submit"]').prop('disabled', true);
+        }
+        return true;
+    };
 
     $(document).off('click' + bukaOrderEvt, '[data-bs-toggle="modal"]').on('click' + bukaOrderEvt, '[data-bs-toggle="modal"]', function(e) {
         var target = $(this).attr('data-bs-target');
@@ -1217,29 +1242,30 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         e.preventDefault();
         e.stopPropagation();
         var $form = $(this);
-        if ($form.data('ajaxSubmitting')) {
+        if (!window.beginBukaOrderSubmit($form)) {
             return false;
         }
-        var $btn = $form.find('button[type="submit"]');
-        $form.data('ajaxSubmitting', true);
-        $btn.prop('disabled', true);
         $.ajax({
             url: $form.attr('action'),
             data: $form.serialize(),
             type: $form.attr("method"),
-            complete: function() {
-                $form.data('ajaxSubmitting', false);
-                $btn.prop('disabled', false);
-            },
             success: function(res) {
                 if (res == 0) {
                     closeFormModal($form);
                     formPickLoaded = false;
                     $('#form-pick-modals').empty();
                     content();
+                    setTimeout(function() {
+                        window.resetBukaOrderSubmit($form);
+                    }, 1200);
                 } else {
                     showAlert(res, 'danger');
+                    window.resetBukaOrderSubmit($form);
                 }
+            },
+            error: function() {
+                showAlert('Gagal menambahkan item. Coba lagi.', 'danger');
+                window.resetBukaOrderSubmit($form);
             }
         });
     });

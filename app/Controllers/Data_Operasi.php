@@ -201,12 +201,36 @@ class Data_Operasi extends Controller
       echo $update['errno'] == 0 ? 0 : $update['error'];
    }
 
+   private function msgBayarGagal($jenis, $ctx = [])
+   {
+      switch ($jenis) {
+         case 'duplikat':
+            $ref = $ctx['ref'] ?? '';
+            $jumlah = isset($ctx['jumlah']) ? number_format((int) $ctx['jumlah']) : '0';
+            $metode = (int) ($ctx['metode'] ?? 0);
+            if (in_array($metode, [2, 3], true)) {
+               $solusi = 'Ubah isian <b>Catatan Transaksi</b> agar berbeda dari pembayaran sebelumnya (mis. nama pengirim, jam, atau no. referensi transfer).';
+            } else {
+               $solusi = 'Pastikan pembayaran belum tercatat (refresh halaman). Jika ini pembayaran baru, gunakan metode <b>Non Tunai/Afiliasi</b> lalu isi <b>Catatan Transaksi</b> yang unik.';
+            }
+            return 'Pembayaran gagal: sistem mendeteksi <b>input ganda</b> (ref ' . $ref . ', jumlah Rp' . $jumlah . ', metode & catatan sama dengan data yang sudah ada).<br><br><b>Solusi:</b> ' . $solusi;
+         case 'pilih_tagihan':
+            return 'Pembayaran gagal: tidak ada tagihan yang dipilih.<br><br><b>Solusi:</b> centang minimal satu tagihan di daftar <b>Pembayaran Multi</b>.';
+         case 'akun_pembayaran':
+            return 'Pembayaran gagal: akun pembayaran belum dipilih.<br><br><b>Solusi:</b> pilih <b>Akun Pembayaran</b> pada metode Non Tunai.';
+         case 'db':
+            return 'Pembayaran gagal: ' . ($ctx['msg'] ?? 'terjadi kesalahan database.') . '<br><br><b>Solusi:</b> coba lagi. Jika berulang, hubungi admin.';
+         default:
+            return $ctx['msg'] ?? 'Pembayaran gagal.';
+      }
+   }
+
    public function bayar_multi()
    {
       if (isset($_POST['ref_multi'])) {
          $ref_multi = $_POST['ref_multi'];
       } else {
-         echo "Tidak pembayaran yang di pilih";
+         echo $this->msgBayarGagal('pilih_tagihan');
          exit();
       }
 
@@ -214,7 +238,7 @@ class Data_Operasi extends Controller
 
       $count_ref = count($ref_multi);
       if ($count_ref == 0) {
-         echo "Tidak pembayaran yang di pilih";
+         echo $this->msgBayarGagal('pilih_tagihan');
          exit();
       }
 
@@ -231,7 +255,7 @@ class Data_Operasi extends Controller
 
       if ($metode == 2) {
          if ($_POST['payment_account'] == "") {
-            echo "Silahkan pilih akun pembayaran";
+            echo $this->msgBayarGagal('akun_pembayaran');
             exit();
          } else {
             $payment_account = $_POST['payment_account'];
@@ -250,7 +274,7 @@ class Data_Operasi extends Controller
          $note = "Afiliasi";
       }
 
-      $error = 0;
+      $inserted = 0;
       arsort($ref_multi);
       foreach ($ref_multi as $value) {
          $count_ref -= 1;
@@ -300,19 +324,35 @@ class Data_Operasi extends Controller
          $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali, id_finance_nontunai, pa, sds, charge";
          $vals = $this->userData['id_toko'] . ",1,1,'" . $ref . "'," . $metode . "," . $status_mutasi . "," . $jumlah . "," . $this->userData['id_user'] . "," . $client . ",'" . $note . "','" . $ref_bayar . "'," . $bayarnya . "," . $kembalian . "," . $finance_id . ",'" . $payment_account . "'," . $sds . "," . $charge;
 
-         if ($dataCount == 0) {
-            $do = $this->db(0)->insertCols('kas', $cols, $vals);
-            if ($do['errno'] == 0) {
-               $dibayar -= $jumlah;
-               $error = $do['errno'];
-            } else {
-               echo $do['error'];
-               exit();
-            }
+         if ($dataCount > 0) {
+            echo $this->msgBayarGagal('duplikat', [
+               'ref' => $ref,
+               'jumlah' => $jumlah,
+               'metode' => $metode,
+            ]);
+            exit();
+         }
+
+         $do = $this->db(0)->insertCols('kas', $cols, $vals);
+         if ($do['errno'] == 0) {
+            $dibayar -= $jumlah;
+            $inserted++;
+         } else {
+            echo $this->msgBayarGagal('db', ['msg' => $do['error']]);
+            exit();
          }
       }
 
-      echo $error;
+      if ($inserted === 0) {
+         echo $this->msgBayarGagal('duplikat', [
+            'ref' => '',
+            'jumlah' => 0,
+            'metode' => $metode,
+         ]);
+         exit();
+      }
+
+      echo 0;
    }
 
    public function transfer_item()
@@ -694,5 +734,70 @@ class Data_Operasi extends Controller
       }
       header('Content-Type: application/json');
       echo json_encode($list);
+   }
+
+   public function cek_barang_tukar()
+   {
+      header('Content-Type: application/json');
+
+      $id = (int) ($_POST['tukarBarang_id'] ?? 0);
+      $id_baru = trim($_POST['id_baru'] ?? '');
+      $sn_baru = trim($_POST['sn_baru'] ?? '');
+      $sds_baru = isset($_POST['sds_baru']) ? (int) $_POST['sds_baru'] : -1;
+
+      if ($id <= 0) {
+         echo json_encode(['ok' => false, 'message' => 'Data baris order tidak valid']);
+         exit();
+      }
+      if ($id_baru === '') {
+         echo json_encode(['ok' => false, 'message' => 'ID Barang baru wajib diisi']);
+         exit();
+      }
+      if ($sds_baru < 0 || $sds_baru > 1) {
+         echo json_encode(['ok' => false, 'message' => 'SDS harus dipilih (Ya/Tidak)']);
+         exit();
+      }
+
+      $cek = $this->db(0)->get_where_row('master_mutasi', 'id = ' . $id);
+      if (!$cek) {
+         echo json_encode(['ok' => false, 'message' => 'Data order tidak ditemukan']);
+         exit();
+      }
+
+      $barang = $this->db(0)->get_where_row('master_barang', "id = '" . addslashes($id_baru) . "'");
+      if (!$barang) {
+         echo json_encode(['ok' => false, 'message' => 'ID Barang tidak ditemukan']);
+         exit();
+      }
+
+      $has_sn = (int) ($barang['sn'] ?? 0) === 1;
+      $sn_cek = $sn_baru;
+      if (!$has_sn) {
+         $sn_cek = '';
+      } elseif ($sn_cek === '') {
+         echo json_encode(['ok' => false, 'message' => 'SN wajib diisi untuk barang ber-SN']);
+         exit();
+      }
+
+      $id_sumber = (int) ($cek['id_sumber'] ?? 0);
+      $id_toko = (int) $this->userData['id_toko'];
+      $sisa_stok = $this->data('Barang')->sisa_stok($id_baru, $id_sumber, $sn_cek, $sds_baru);
+      if ($sisa_stok <= 0 && $id_sumber != $id_toko) {
+         $sisa_stok = $this->data('Barang')->sisa_stok($id_baru, $id_toko, $sn_cek, $sds_baru);
+      }
+
+      if ($sisa_stok <= 0) {
+         echo json_encode(['ok' => false, 'message' => 'Stok barang tidak tersedia untuk ID, SN, dan SDS tersebut']);
+         exit();
+      }
+
+      $nama = trim(($barang['brand'] ?? '') . ' ' . ($barang['model'] ?? '') . ($barang['product_name'] ?? ''));
+      echo json_encode([
+         'ok' => true,
+         'nama' => $nama !== '' ? $nama : $id_baru,
+         'sn' => ($has_sn && $sn_baru !== '') ? $sn_baru : '-',
+         'lokasi' => $sds_baru === 1 ? 'SDS' : 'TOKO',
+         'qty' => (int) $sisa_stok,
+      ]);
    }
 }

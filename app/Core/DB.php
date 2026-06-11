@@ -278,6 +278,16 @@ class DB extends DBC
         }
     }
 
+    public function scalar($sql)
+    {
+        $result = $this->mysqli->query($sql);
+        if ($result && ($row = $result->fetch_row())) {
+            return $row[0];
+        }
+
+        return null;
+    }
+
     public function innerJoin1($table, $tb_join, $join_where)
     {
         $query = "SELECT * FROM $table INNER JOIN $tb_join ON $join_where";

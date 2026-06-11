@@ -44,6 +44,28 @@
         font-size: 1.15rem;
         font-weight: 700;
     }
+
+    .tukar-barang-cek-ok {
+        border: 1px solid #198754;
+        border-radius: 0.5rem;
+        background: linear-gradient(135deg, rgba(25, 135, 84, 0.12) 0%, rgba(25, 135, 84, 0.04) 100%);
+        padding: 0.75rem 0.9rem;
+    }
+
+    .tukar-barang-cek-ok .tukar-barang-nama {
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    .tukar-barang-cek-fail {
+        border: 1px solid #dc3545;
+        border-radius: 0.5rem;
+        background: rgba(220, 53, 69, 0.08);
+        padding: 0.65rem 0.9rem;
+        color: #842029;
+        font-size: 0.9rem;
+    }
 </style>
 
 <main>
@@ -73,7 +95,7 @@
                 </div>
             <?php } ?>
             <div class="col-auto pt-auto mt-auto pe-0">
-                <button type="submit" class="cek btn btn-light border">Cek</button>
+                <button type="button" class="cek btn btn-primary">Cek Order</button>
             </div>
         </div>
     </div>
@@ -595,7 +617,7 @@
                                                             <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                 <?php if ($do['stat'] == 1) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarSN" class="dropdown-item tukarSN px-2" data-id="<?= $do['id'] ?>" data-id_barang="<?= $do['id_barang'] ?>" data-id_sumber="<?= $do['id_sumber'] ?>" data-sds="<?= (int)($do['sds'] ?? 0) ?>" data-has_sn="<?= (int)($dp['sn'] ?? 0) ?>" data-sn="<?= htmlspecialchars($do['sn'] ?? '', ENT_QUOTES) ?>" href="#">Tukar SN</a></li>
-                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarBarang" class="dropdown-item tukarBarang px-2" data-id="<?= $do['id'] ?>" data-sds="<?= (int)($do['sds'] ?? 0) ?>" href="#">Tukar Barang</a></li>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarBarang" class="dropdown-item tukarBarang px-2" data-id="<?= $do['id'] ?>" data-id_sumber="<?= $do['id_sumber'] ?>" data-sds="<?= (int)($do['sds'] ?? 0) ?>" href="#">Tukar Barang</a></li>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancelBarang px-2" data-id="<?= $do['id'] ?>" href="#">Cancel (+)</a></li>
                                                                 <?php } else { ?>
                                                                     <li><a class="dropdown-item px-2 ajax" href="<?= PV::BASE_URL ?>Data_Operasi/jadikan/<?= $do['id'] ?>">Cancel (-)</a></li>
@@ -933,18 +955,20 @@
         if (!container) return;
         var bgClass = type === 'danger' ? 'bg-danger text-white' : type === 'success' ? 'bg-success text-white' : type === 'warning' ? 'bg-warning text-dark' : 'bg-info text-white';
         var icon = type === 'danger' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+        var bodyHtml = String(message).replace(/\n/g, '<br>');
+        var toastDelay = bodyHtml.length > 100 ? 9000 : 4500;
         var toastEl = document.createElement('div');
         toastEl.className = 'toast align-items-center border-0 shadow ' + bgClass;
         toastEl.setAttribute('role', 'alert');
         toastEl.innerHTML = '<div class="d-flex">' +
-            '<div class="toast-body d-flex align-items-center">' +
-            '<i class="fas ' + icon + ' me-2 fs-5 flex-shrink-0"></i>' +
-            '<span>' + message + '</span>' +
+            '<div class="toast-body d-flex align-items-start">' +
+            '<i class="fas ' + icon + ' me-2 fs-5 flex-shrink-0 mt-1"></i>' +
+            '<span class="text-sm">' + bodyHtml + '</span>' +
             '</div>' +
             '<button type="button" class="btn-close ' + (type === 'warning' ? '' : 'btn-close-white') + ' me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>' +
             '</div>';
         container.appendChild(toastEl);
-        var toast = new bootstrap.Toast(toastEl, { delay: 4500 });
+        var toast = new bootstrap.Toast(toastEl, { delay: toastDelay });
         toastEl.addEventListener('hidden.bs.toast', function() { toastEl.remove(); });
         toast.show();
     }
@@ -1261,11 +1285,137 @@
         }
     });
 
+    var tukarBarangVerifiedKey = '';
+    var tukarBarangPending = null;
+
+    function $tukarBarangModal($from) {
+        if ($from && $from.length) {
+            var $scoped = $from.closest('#exampleModalTukarBarang');
+            if ($scoped.length) {
+                return $scoped;
+            }
+        }
+        var $shown = $('#exampleModalTukarBarang.show');
+        if ($shown.length) {
+            return $shown.last();
+        }
+        return $('#exampleModalTukarBarang').last();
+    }
+
+    function resetTukarBarangCek($modal) {
+        $modal = $modal || $tukarBarangModal();
+        tukarBarangVerifiedKey = '';
+        $modal.find('.tukar-barang-cek-result').addClass('d-none').empty();
+        $modal.find('#btnTukarBarang').prop('disabled', true);
+    }
+
+    function tukarBarangFormKey($modal) {
+        $modal = $modal || $tukarBarangModal();
+        return [
+            $modal.find('#tukarBarang_id_baru').val(),
+            $modal.find('#tukarBarang_sn').val(),
+            $modal.find('#tukarBarang_sds').val(),
+            $modal.find('input[name=tukarBarang_id]').val()
+        ].join('|');
+    }
+
+    function renderTukarBarangCekOk(data) {
+        var lokasiBadge = data.lokasi === 'SDS'
+            ? '<span class="badge bg-danger">SDS</span>'
+            : '<span class="badge bg-primary">TOKO</span>';
+        return '<div class="tukar-barang-cek-ok">' +
+            '<div class="d-flex align-items-center mb-2">' +
+            '<i class="fas fa-check-circle text-success fs-5 me-2"></i>' +
+            '<span class="fw-bold text-success">Barang Tersedia</span>' +
+            '</div>' +
+            '<div class="tukar-barang-nama text-dark mb-1">' + $('<div>').text(data.nama).html() + '</div>' +
+            '<div class="small text-secondary mb-2">SN: <span class="fw-semibold text-dark">' + $('<div>').text(data.sn).html() + '</span></div>' +
+            '<div class="d-flex align-items-center gap-2 flex-wrap">' +
+            lokasiBadge +
+            '<small class="text-muted">Stok tersedia: <strong>' + data.qty + '</strong></small>' +
+            '</div></div>';
+    }
+
+    function renderTukarBarangCekFail(message) {
+        return '<div class="tukar-barang-cek-fail">' +
+            '<i class="fas fa-times-circle me-1"></i>' + $('<div>').text(message).html() +
+            '</div>';
+    }
+
     $(document).on("click", "a.tukarBarang", function() {
-        var id = $(this).attr("data-id");
-        var sds = $(this).attr("data-sds") || "0";
-        $("input[name=tukarBarang_id]").val(id);
-        $("select[name=sds_baru]").val(sds);
+        tukarBarangPending = {
+            id: $(this).attr("data-id"),
+            sds: $(this).attr("data-sds") || "0",
+            id_sumber: $(this).attr("data-id_sumber") || "0"
+        };
+    });
+
+    $(document).on("shown.bs.modal", "#exampleModalTukarBarang", function() {
+        var $modal = $(this);
+        if (tukarBarangPending) {
+            $modal.find("input[name=tukarBarang_id]").val(tukarBarangPending.id);
+            $modal.find("#tukarBarang_id_sumber").val(tukarBarangPending.id_sumber);
+            $modal.find("#tukarBarang_sds").val(tukarBarangPending.sds);
+            $modal.find("#tukarBarang_id_baru").val('');
+            $modal.find("#tukarBarang_sn").val('');
+            $modal.find("#tukarBarang_reason").val('');
+            tukarBarangPending = null;
+        }
+        resetTukarBarangCek($modal);
+    });
+
+    $(document).on("input change", "#exampleModalTukarBarang #tukarBarang_id_baru, #exampleModalTukarBarang #tukarBarang_sn, #exampleModalTukarBarang #tukarBarang_sds", function() {
+        var $modal = $tukarBarangModal($(this));
+        if (tukarBarangVerifiedKey && tukarBarangVerifiedKey !== tukarBarangFormKey($modal)) {
+            resetTukarBarangCek($modal);
+        }
+    });
+
+    $(document).on("click", "#exampleModalTukarBarang #btnCekBarangTukar", function() {
+        var $modal = $tukarBarangModal($(this));
+        var $btn = $(this).prop('disabled', true);
+        var $result = $modal.find('.tukar-barang-cek-result');
+        tukarBarangVerifiedKey = '';
+        $modal.find('#btnTukarBarang').prop('disabled', true);
+        $result.removeClass('d-none').html('<div class="text-muted small py-2"><span class="spinner-border spinner-border-sm me-1"></span>Memeriksa ketersediaan...</div>');
+
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Data_Operasi/cek_barang_tukar',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                tukarBarang_id: $modal.find('input[name=tukarBarang_id]').val(),
+                id_baru: $modal.find('#tukarBarang_id_baru').val(),
+                sn_baru: $modal.find('#tukarBarang_sn').val(),
+                sds_baru: $modal.find('#tukarBarang_sds').val()
+            },
+            success: function(res) {
+                if (res && res.ok) {
+                    $result.html(renderTukarBarangCekOk(res));
+                    tukarBarangVerifiedKey = tukarBarangFormKey($modal);
+                    $modal.find('#btnTukarBarang').prop('disabled', false);
+                } else {
+                    $result.html(renderTukarBarangCekFail((res && res.message) ? res.message : 'Stok barang tidak tersedia'));
+                }
+            },
+            error: function() {
+                $result.html(renderTukarBarangCekFail('Gagal memeriksa ketersediaan. Coba lagi.'));
+            },
+            complete: function() {
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+
+    $(document).on("submit", "#exampleModalTukarBarang form", function(e) {
+        var $modal = $tukarBarangModal($(this));
+        if (!$modal.find('#btnTukarBarang').prop('disabled') && tukarBarangVerifiedKey === tukarBarangFormKey($modal)) {
+            return;
+        }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        showToast('Cek ketersediaan barang terlebih dahulu.', 'warning');
+        return false;
     });
 
     $(document).on("click", "a.refund", function() {
@@ -1420,7 +1570,8 @@
                 if (res == 0) {
                     content();
                 } else {
-                    showToast(res, 'danger');
+                    var toastType = String(res).indexOf('input ganda') >= 0 ? 'warning' : 'danger';
+                    showToast(res, toastType);
                 }
             },
             complete: function() {

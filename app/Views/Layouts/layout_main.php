@@ -134,7 +134,7 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 			if (prioritasLoaded) {
 				return;
 			}
-			$('#menuPrioritasContent').html('<span class="nav-link py-1 text-muted">Memuat...</span>');
+			$('#menuPrioritasContent').html('<span class="nav-link py-1 text-muted ps-3">Memuat...</span>');
 			$.ajax({
 				url: prioritasUrl,
 				type: 'GET',
@@ -167,9 +167,19 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 			loadPrioritasMenu();
 		});
 
+		$collapse.on('hidden.bs.collapse', function() {
+			this.style.height = '';
+		});
+
 		<?php if (!empty($openPrioritasMenu)) { ?>
 		$(function() {
 			loadPrioritasMenu();
+		});
+		<?php } else { ?>
+		$(function() {
+			if ($collapse.hasClass('show')) {
+				$collapse.removeClass('show');
+			}
 		});
 		<?php } ?>
 	})();
