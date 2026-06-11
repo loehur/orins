@@ -88,9 +88,70 @@ class Cron extends Controller
       }
    }
 
+   private function sync_tuntas_children_for_ref($ref, $date)
+   {
+      $ref = addslashes($ref);
+      $date = addslashes($date);
+      $set = "tuntas = 1, tuntas_date = '" . $date . "'";
+      $where = "ref = '" . $ref . "' AND tuntas = 0";
+
+      $upOrder = $this->db(0)->update('order_data', $set, $where);
+      if ($upOrder['errno'] <> 0) {
+         return $upOrder;
+      }
+
+      return $this->db(0)->update('master_mutasi', $set, $where);
+   }
+
+   private function sync_tuntas_children_from_ref($batchLimit = 200)
+   {
+      $batchLimit = max(1, (int)$batchLimit);
+      $today = date('Y-m-d');
+      $dateExpr = "IF(r.tuntas_date IS NOT NULL AND r.tuntas_date <> '' AND r.tuntas_date <> '0000-00-00', r.tuntas_date, '" . $today . "')";
+      $pendingWhere = "tuntas = 0 AND ref <> '' AND ref IN (SELECT ref FROM ref WHERE tuntas = 1)";
+
+      $pendingMutasi = (int)$this->db(0)->count_where('master_mutasi', $pendingWhere);
+      $pendingOrder = (int)$this->db(0)->count_where('order_data', "tuntas = 0 AND ref IN (SELECT ref FROM ref WHERE tuntas = 1)");
+
+      if ($pendingMutasi === 0 && $pendingOrder === 0) {
+         echo "0 baris disinkronkan (ref tuntas vs detail)\n";
+         return 0;
+      }
+
+      $syncMutasi = min($pendingMutasi, $batchLimit);
+      $syncOrder = min($pendingOrder, $batchLimit);
+
+      $sqlMutasi = "UPDATE master_mutasi mm
+         INNER JOIN ref r ON r.ref = mm.ref
+         SET mm.tuntas = 1, mm.tuntas_date = " . $dateExpr . "
+         WHERE r.tuntas = 1 AND mm.tuntas = 0 AND mm.ref <> ''
+         LIMIT " . $batchLimit;
+
+      $sqlOrder = "UPDATE order_data od
+         INNER JOIN ref r ON r.ref = od.ref
+         SET od.tuntas = 1, od.tuntas_date = " . $dateExpr . "
+         WHERE r.tuntas = 1 AND od.tuntas = 0
+         LIMIT " . $batchLimit;
+
+      if ($pendingOrder > 0 && !$this->db(0)->query($sqlOrder)) {
+         echo "Gagal sinkron order_data dari ref tuntas\n";
+      }
+
+      if ($pendingMutasi > 0 && !$this->db(0)->query($sqlMutasi)) {
+         echo "Gagal sinkron master_mutasi dari ref tuntas\n";
+      }
+
+      $total = $syncMutasi + $syncOrder;
+      echo $total . " baris disinkronkan (ref tuntas -> order_data/master_mutasi, max " . $batchLimit . " per tabel)\n";
+
+      return $total;
+   }
+
    function run_cek_tuntas()
    {
       $batchLimit = self::CEK_TUNTAS_BATCH;
+      $this->sync_tuntas_children_from_ref($batchLimit);
+
       $refRows = $this->db(0)->get_where_order('ref', 'tuntas = 0', 'ref ASC LIMIT ' . $batchLimit);
       $ref_tuntas = [];
       $refs = [];
@@ -259,19 +320,20 @@ class Cron extends Controller
 
          $where = "ref IN (" . $rt_list . ")";
          $set = "tuntas = 1, tuntas_date = '" . $tuntas_date . "'";
-         $up = $this->db(0)->update("ref", $set, $where);
+         $up = $this->db(0)->update("order_data", $set, $where);
          if ($up['errno'] <> 0) {
             echo $up['error'] . "\n";
          } else {
-            $up = $this->db(0)->update("order_data", $set, $where);
-            if ($up['errno'] <> 0) {
-               echo $up['error'] . "\n";
-            }
             $up = $this->db(0)->update("master_mutasi", $set, $where);
             if ($up['errno'] <> 0) {
                echo $up['error'] . "\n";
             } else {
-               echo $total_tuntas . " ORDER TUNTAS dari " . $checked . " ref dicek\n";
+               $up = $this->db(0)->update("ref", $set, $where);
+               if ($up['errno'] <> 0) {
+                  echo $up['error'] . "\n";
+               } else {
+                  echo $total_tuntas . " ORDER TUNTAS dari " . $checked . " ref dicek\n";
+               }
             }
          }
       } else {
@@ -291,7 +353,20 @@ class Cron extends Controller
 
       $ref = $cek['ref'];
       $tuntas_date = date("Y-m-d");
-      
+
+      if ((int)$cek['tuntas'] === 1) {
+         $syncDate = !empty($cek['tuntas_date']) && $cek['tuntas_date'] !== '0000-00-00'
+            ? $cek['tuntas_date']
+            : $tuntas_date;
+         $sync = $this->sync_tuntas_children_for_ref($ref, $syncDate);
+         if ($sync['errno'] <> 0 && $print) {
+            echo "Sync detail gagal: " . $sync['error'] . "<br>";
+         }
+         if (!$print) {
+            exit();
+         }
+      }
+
       // Data Gathering
       $where = "ref = '" . $ref . "'";
       $data['order'] = $this->db(0)->get_where('order_data', $where);
@@ -435,7 +510,11 @@ class Cron extends Controller
       // Actions
       if (!$print) {
          if ($tuntas_status_db) {
-            $this->update_ref($ref, $db_tuntas_date);
+            $syncDate = !empty($db_tuntas_date) && $db_tuntas_date !== '0000-00-00'
+               ? $db_tuntas_date
+               : $tuntas_date;
+            $this->sync_tuntas_children_for_ref($ref, $syncDate);
+            $this->update_ref($ref, $syncDate);
             exit();
          }
          if ($ready_to_tuntas) {
@@ -495,8 +574,11 @@ class Cron extends Controller
    {
       $today = date("Y-m-d");
       $set = "tuntas = 1, tuntas_date = '" . $today . "'";
-      $where = "ref = '" . $ref . "'";
-      $this->db(0)->update("order_data", $set, $where);
+      $where = "ref = '" . addslashes($ref) . "'";
+      $up = $this->db(0)->update("order_data", $set, $where);
+      if ($up['errno'] <> 0) {
+         return;
+      }
       $up = $this->db(0)->update("master_mutasi", $set, $where);
       if ($up['errno'] == 0) {
          $this->update_ref($ref, $today);
