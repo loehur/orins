@@ -1,38 +1,17 @@
-<?php if (!empty($data['is_reprint'])) { ?>
-<style>
-    #copied-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        pointer-events: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    #copied-overlay span {
-        font-size: 110px;
-        font-weight: 800;
-        color: rgba(180, 0, 0, 0.16);
-        transform: rotate(-32deg);
-        letter-spacing: 0.12em;
-        user-select: none;
-        line-height: 1;
-    }
-
-    @media print {
-        #copied-overlay {
-            position: fixed;
-            inset: 0;
-        }
-    }
-</style>
-<div id="copied-overlay" aria-hidden="true"><span>COPIED</span></div>
-<?php } ?>
-
 <div style="margin:auto; width: 190mm; font-family: system-ui; position: relative;">
     <div class="header">
-        <h2 style="margin:0;color:<?= $this->userData['color'] ?>"><b><?= $this->userData['nama_toko'] ?></b></h2>
+        <table style="width:100%; border-collapse:collapse;">
+            <tr>
+                <td style="padding:0; vertical-align:baseline;">
+                    <h2 style="margin:0;color:<?= $this->userData['color'] ?>"><b><?= $this->userData['nama_toko'] ?></b></h2>
+                </td>
+                <?php if (!empty($data['is_reprint'])) { ?>
+                <td style="padding:0; text-align:right; vertical-align:baseline; white-space:nowrap;">
+                    <small style="color:#b40000; font-weight:700; letter-spacing:0.08em;">COPIED</small>
+                </td>
+                <?php } ?>
+            </tr>
+        </table>
         <b><?= $this->userData['sub_nama'] ?></b><br>
         <?= $this->userData['alamat'] ?>
     </div>

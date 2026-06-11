@@ -583,7 +583,7 @@
 
                                                             <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                 <?php if ($do['stat'] == 1) { ?>
-                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarSN" class="dropdown-item tukarSN px-2" data-id="<?= $do['id'] ?>" href="#">Tukar SN</a></li>
+                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarSN" class="dropdown-item tukarSN px-2" data-id="<?= $do['id'] ?>" data-id_barang="<?= $do['id_barang'] ?>" data-id_sumber="<?= $do['id_sumber'] ?>" data-sds="<?= (int)($do['sds'] ?? 0) ?>" data-has_sn="<?= (int)($dp['sn'] ?? 0) ?>" data-sn="<?= htmlspecialchars($do['sn'] ?? '', ENT_QUOTES) ?>" href="#">Tukar SN</a></li>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarBarang" class="dropdown-item tukarBarang px-2" data-id="<?= $do['id'] ?>" data-sds="<?= (int)($do['sds'] ?? 0) ?>" href="#">Tukar Barang</a></li>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancelBarang px-2" data-id="<?= $do['id'] ?>" href="#">Cancel (+)</a></li>
                                                                 <?php } else { ?>
@@ -1196,9 +1196,58 @@
         $("input[name=tb]").val(1);
     });
 
+    var tukarSnList = [];
+    var tukarSnSds = 0;
+    var tukarSnCurrent = '';
+
+    function setTukarSnMode(useSelect) {
+        if (useSelect) {
+            $("#tukarSN_input").hide().prop("disabled", true).val("");
+            $("#tukarSN_select").show().prop("disabled", false).prop("required", true);
+        } else {
+            $("#tukarSN_select").hide().prop("disabled", true).prop("required", false).val("");
+            $("#tukarSN_input").show().prop("disabled", false).prop("required", true);
+            tukarSnList = [];
+        }
+    }
+
+    function renderTukarSnOptions() {
+        var $sel = $("#tukarSN_select").empty().append('<option value="">Pilih SN</option>');
+        var count = 0;
+        $.each(tukarSnList, function(i, item) {
+            if (String(item.sds) === String(tukarSnSds) && item.sn !== tukarSnCurrent) {
+                $sel.append('<option value="' + item.sn + '">' + item.sn + '</option>');
+                count++;
+            }
+        });
+        if (count === 0) {
+            $sel.append('<option value="" disabled>SN tidak tersedia</option>');
+        }
+    }
+
+    function loadTukarSnList(id_barang, id_sumber) {
+        $("#tukarSN_select").empty().append('<option value="">Memuat...</option>');
+        $.getJSON('<?= PV::BASE_URL ?>Data_Operasi/stok_sn/' + id_barang + '/' + id_sumber, function(data) {
+            tukarSnList = data || [];
+            renderTukarSnOptions();
+        });
+    }
+
     $(document).on("click", "a.tukarSN", function() {
         var id = $(this).attr("data-id");
+        var id_barang = $(this).attr("data-id_barang");
+        var id_sumber = $(this).attr("data-id_sumber");
+        var has_sn = $(this).attr("data-has_sn");
+        tukarSnSds = $(this).attr("data-sds") || "0";
+        tukarSnCurrent = $(this).attr("data-sn") || "";
         $("input[name=tukarSN_id]").val(id);
+        $("#exampleModalTukarSN input[name=reason]").val("");
+        if (has_sn == "1") {
+            setTukarSnMode(true);
+            loadTukarSnList(id_barang, id_sumber);
+        } else {
+            setTukarSnMode(false);
+        }
     });
 
     $(document).on("click", "a.tukarBarang", function() {

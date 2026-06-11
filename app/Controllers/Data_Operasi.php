@@ -678,4 +678,21 @@ class Data_Operasi extends Controller
       $this->model('Log')->write($this->userData['user'] . " Cetak ulang ref " . $ref . " (#" . $newCount . "): " . $reason);
       echo 0;
    }
+
+   public function stok_sn($id_barang, $id_sumber)
+   {
+      $stok = $this->data('Barang')->stok_data($id_barang, $id_sumber);
+      $list = [];
+      foreach ($stok as $s) {
+         if ($s['qty'] > 0 && $s['sn'] !== "") {
+            $list[] = [
+               'sn' => $s['sn'],
+               'sds' => (int) $s['sds'],
+               'qty' => (int) $s['qty'],
+            ];
+         }
+      }
+      header('Content-Type: application/json');
+      echo json_encode($list);
+   }
 }

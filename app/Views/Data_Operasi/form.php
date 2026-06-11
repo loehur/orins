@@ -137,8 +137,11 @@
                     <div class="container">
                         <div class="row mb-2">
                             <div class="col">
-                                <label class="form-label">Serial Number (SN) Baru</label>
-                                <input type="text" name="sn_baru" class="form-control form-control-sm" required>
+                                <label class="form-label" id="tukarSN_sn_label">Serial Number (SN) Baru</label>
+                                <input type="text" name="sn_baru" id="tukarSN_input" class="form-control form-control-sm" required>
+                                <select class="form-select form-select-sm" name="sn_baru" id="tukarSN_select" style="display:none;" required>
+                                    <option value="">Pilih SN</option>
+                                </select>
                                 <input type="hidden" name="tukarSN_id">
                             </div>
                         </div>
