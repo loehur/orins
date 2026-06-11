@@ -9,6 +9,15 @@ class Functions extends Controller
       $col = $_POST['col'];
       $primary = $_POST['primary'];
       $tb = $_POST['tb'];
+
+      if ($tb === 'master_barang' && in_array($col, ['harga_1', 'harga_2', 'harga_3'], true)) {
+         $this->session_cek();
+         $this->dataBootstrap();
+         if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+            echo 'Akses edit harga ditolak';
+            exit();
+         }
+      }
       $set = $col . " = '" . $value . "'";
       $where = $primary . " = " . $id;
       $up = $this->db(0)->update($tb, $set, $where);

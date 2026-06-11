@@ -1,5 +1,6 @@
 <?php
-$canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
+$canEditHarga = in_array($this->userData['user_tipe'], PV::PRIV[2]);
+$canSnStok = $canEditHarga;
 ?>
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
 <style>
@@ -38,7 +39,7 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
                     </td>
                     <?php foreach (['harga_1', 'harga_2', 'harga_3'] as $hCol) { ?>
                         <td class="text-end align-top">
-                            <?php if ($canKasirStok) { ?>
+                            <?php if ($canEditHarga) { ?>
                                 <span class="cell_edit_harga" data-id="<?= $a['id'] ?>" data-primary="id" data-col="<?= $hCol ?>" data-tb="master_barang"><?= number_format((int)$a[$hCol], 0, ',', '.') ?></span>
                             <?php } else { ?>
                                 <?= number_format((int)$a[$hCol]) ?>
@@ -46,7 +47,7 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
                         </td>
                     <?php } ?>
                     <td class="text-end align-top">
-                        <?php if ($canKasirStok && (int)$a['sn'] === 1 && $snQty > 0) { ?>
+                        <?php if ($canSnStok && (int)$a['sn'] === 1 && $snQty > 0) { ?>
                             <i class="fa-solid fa-magnifying-glass text-primary cek-sn" data-id="<?= $a['id'] ?>" style="cursor: pointer;" title="Lihat SN"></i>
                         <?php } ?>
                         <?= number_format($qtyToko, 0) ?>/<?= number_format($qtyGudang, 0) ?><br>
@@ -60,7 +61,7 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
     </div>
 </main>
 
-<?php if ($canKasirStok) { ?>
+<?php if ($canSnStok) { ?>
 <div class="modal fade" id="modalSnStok" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -111,7 +112,7 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
         });
     });
 
-    <?php if ($canKasirStok) { ?>
+    <?php if ($canEditHarga || $canSnStok) { ?>
     var hargaEditClick = 0;
 
     function parseHargaNum(str) {

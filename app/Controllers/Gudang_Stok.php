@@ -2,6 +2,11 @@
 
 class Gudang_Stok extends Controller
 {
+   private static function canEditHarga($userTipe)
+   {
+      return in_array($userTipe, PV::PRIV[2]);
+   }
+
    public function __construct()
    {
       $this->session_cek();
@@ -19,7 +24,7 @@ class Gudang_Stok extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Gudang Stok"
+         "title" => "Stok Harga"
       ]);
 
       $this->viewer();
@@ -48,7 +53,7 @@ class Gudang_Stok extends Controller
 
    public function cek_barang($id)
    {
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+      if (!self::canEditHarga($this->userData['user_tipe'])) {
          http_response_code(403);
          exit();
       }
