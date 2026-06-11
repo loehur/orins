@@ -5,7 +5,7 @@
             <div class="w-100 text-center text-sm">Kosong</div>
         <?php } else { ?>
             <table class="table table-sm mb-0 text-sm">
-                <?php foreach ($data['stok'] as $key => $d) {
+                <?php foreach ($data['stok'] as $d) {
                     if ($d['qty'] == 0) {
                         continue;
                     } ?>
@@ -24,7 +24,7 @@
             <div class="w-100 text-center text-sm">Kosong</div>
         <?php } else { ?>
             <table class="table table-sm mb-0 text-sm">
-                <?php foreach ($data['stok_gudang'] as $key => $d) {
+                <?php foreach ($data['stok_gudang'] as $d) {
                     if ($d['qty'] == 0) {
                         continue;
                     } ?>

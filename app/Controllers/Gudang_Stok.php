@@ -6,7 +6,7 @@ class Gudang_Stok extends Controller
    {
       $this->session_cek();
       $this->dataBootstrap();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[101])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[101]) && !in_array($this->userData['user_tipe'], PV::PRIV[102])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -44,6 +44,18 @@ class Gudang_Stok extends Controller
    {
       $data = $this->db(0)->get_where($table, $col . " = '" . $kode . "'");
       echo json_encode($data);
+   }
+
+   public function cek_barang($id)
+   {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+         http_response_code(403);
+         exit();
+      }
+
+      $data['stok'] = $this->data('Barang')->stok_data($id, $this->userData['id_toko']);
+      $data['stok_gudang'] = $this->data('Barang')->stok_data($id, 0);
+      $this->view(__CLASS__ . '/data_cek', $data);
    }
 
    public function print()

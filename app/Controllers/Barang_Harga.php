@@ -6,53 +6,33 @@ class Barang_Harga extends Controller
    {
       $this->session_cek();
       $this->dataBootstrap();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[102])) {
-         $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
-         $this->logout();
-      }
-
-      $this->v_load = __CLASS__ . "/load";
-      $this->v_content = __CLASS__ . "/content";
-      $this->v_viewer = "Layouts/viewer";
    }
 
    public function index()
    {
-      $this->view("Layouts/layout_main", [
-         "title" => "Harga Barang"
-      ]);
-
-      $this->viewer();
+      header('Location: ' . PV::BASE_URL . 'Gudang_Stok');
+      exit();
    }
 
    public function viewer()
    {
-      $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => ""]);
+      $this->index();
    }
 
    public function content()
    {
-      $data['stok'] = $this->data('Barang')->stok_data_list_all($this->userData['id_toko']);
-      $data['stok_gudang'] = $this->data('Barang')->stok_data_list_all(0);
-      $data['barang'] = $this->db(0)->get_where('master_barang', 'en = 1 ORDER BY id DESC');
-      $this->view($this->v_content, $data);
+      $this->index();
    }
 
    public function print()
    {
-      $data['stok'] = $this->data('Barang')->stok_data_list_all($this->userData['id_toko']);
-      $data['stok_gudang'] = $this->data('Barang')->stok_data_list_all(0);
-      $data['barang'] = $this->db(0)->get_where('master_barang', 'en = 1 ORDER BY grup ASC, tipe ASC, brand ASC, CONCAT(model, product_name) ASC', 'grup', 1);
-      $data['grup'] = $this->db(0)->get('master_grup');
-      $data['tipe'] = $this->db(0)->get('master_tipe');
-      $data['brand'] = $this->db(0)->get('master_brand');
-      $this->view(__CLASS__ . "/print", $data);
+      header('Location: ' . PV::BASE_URL . 'Gudang_Stok/print');
+      exit();
    }
 
-   function cek_barang($id)
+   public function cek_barang($id)
    {
-      $data['stok'] = $this->data('Barang')->stok_data($id, $this->userData['id_toko']);
-      $data['stok_gudang'] = $this->data('Barang')->stok_data($id, 0);
-      $this->view(__CLASS__ . "/data_cek", $data);
+      header('Location: ' . PV::BASE_URL . 'Gudang_Stok');
+      exit();
    }
 }
