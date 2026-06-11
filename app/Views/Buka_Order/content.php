@@ -898,13 +898,26 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     }
 
     function loadDetailPanel($panel, url) {
+        var prevXhr = $panel.data('detailLoadXhr');
+        if (prevXhr && prevXhr.readyState !== 4) {
+            prevXhr.abort();
+        }
         showDetailLoader($panel);
-        $panel.load(url, function(response, status) {
-            hideDetailLoader($panel);
-            if (status === 'error') {
-                $panel.html('<div class="text-danger small py-2">Gagal memuat detail produk.</div>');
+        var xhr = $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                hideDetailLoader($panel);
+                $panel.html(response);
+            },
+            error: function(_xhr, status) {
+                hideDetailLoader($panel);
+                if (status !== 'abort') {
+                    $panel.html('<div class="text-danger small py-2">Gagal memuat detail produk.</div>');
+                }
             }
         });
+        $panel.data('detailLoadXhr', xhr);
     }
 
     function openPickModal(target) {
@@ -914,7 +927,9 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         }
     }
 
-    $(document).on('click', '[data-bs-toggle="modal"]', function(e) {
+    var bukaOrderEvt = '.bukaOrder';
+
+    $(document).off('click' + bukaOrderEvt, '[data-bs-toggle="modal"]').on('click' + bukaOrderEvt, '[data-bs-toggle="modal"]', function(e) {
         var target = $(this).attr('data-bs-target');
         if (pickModalTargets.indexOf(target) === -1) {
             return;
@@ -1076,28 +1091,28 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             });
     })
 
-    $(document).on('change', 'select.loadDetail', function() {
+    $(document).off('change' + bukaOrderEvt, 'select.loadDetail').on('change' + bukaOrderEvt, 'select.loadDetail', function() {
         var produk = this.value;
         if (produk != "") {
             loadDetailPanel($("div#detail"), '<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
         }
     });
 
-    $(document).on('change', 'select.loadDetail_aff', function() {
+    $(document).off('change' + bukaOrderEvt, 'select.loadDetail_aff').on('change' + bukaOrderEvt, 'select.loadDetail_aff', function() {
         var produk = this.value;
         if (produk != "") {
             loadDetailPanel($("div#detail_aff"), '<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
         }
     });
 
-    $(document).on('change', 'select.loadDetail_Jasa', function() {
+    $(document).off('change' + bukaOrderEvt, 'select.loadDetail_Jasa').on('change' + bukaOrderEvt, 'select.loadDetail_Jasa', function() {
         var produk = this.value;
         if (produk != "") {
             loadDetailPanel($("div#detail_jasa"), '<?= PV::BASE_URL ?>Buka_Order/load_detail/' + produk);
         }
     });
 
-    $(document).on('change', 'select.loadDetail_Barang', function() {
+    $(document).off('change' + bukaOrderEvt, 'select.loadDetail_Barang').on('change' + bukaOrderEvt, 'select.loadDetail_Barang', function() {
         var produk = this.value;
         if (produk != "") {
             loadDetailPanel($("div#detail_barang"), '<?= PV::BASE_URL ?>Buka_Order/load_detail_barang/' + produk + '/<?= $id_pelanggan_jenis ?>');
@@ -1138,7 +1153,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         $("input[name=id_barang_diskon").val(id);
     })
 
-    $(document).on('click', 'a.aff', function() {
+    $(document).off('click' + bukaOrderEvt, 'a.aff').on('click' + bukaOrderEvt, 'a.aff', function() {
         $('input#aff_target').val($(this).attr("data-id"));
     });
 
@@ -1178,7 +1193,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         });
     })
 
-    $(document).on("submit", "form.ajax", function(e) {
+    $(document).off('submit' + bukaOrderEvt, 'form.ajax').on('submit' + bukaOrderEvt, 'form.ajax', function(e) {
         e.preventDefault();
         var $form = $(this);
         $.ajax({
@@ -1187,6 +1202,8 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             type: $form.attr("method"),
             success: function(res) {
                 if (res == 0) {
+                    formPickLoaded = false;
+                    $('#form-pick-modals').empty();
                     content();
                 } else {
                     showAlert(res, 'danger');
