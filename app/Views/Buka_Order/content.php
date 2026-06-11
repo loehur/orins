@@ -830,7 +830,15 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     var formPickLoaded = false;
     var formPickLoading = false;
     var formPickCallbacks = [];
+    var pendingAffTarget = null;
     var pickModalTargets = ['#exampleModal', '#exampleModalPaket', '#exampleModalJasa', '#exampleModalB', '#exampleModalAff'];
+
+    function applyAffTargetToForm() {
+        if (!pendingAffTarget) {
+            return;
+        }
+        $('#form-pick-modals input#aff_target, #form-pick-modals input[name="aff_target"]').val(pendingAffTarget);
+    }
 
     function initFormPickSelectize() {
         $('#form-pick-modals .tize').each(function() {
@@ -921,6 +929,9 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     }
 
     function openPickModal(target) {
+        if (target === '#exampleModalAff') {
+            applyAffTargetToForm();
+        }
         var modalEl = document.querySelector(target);
         if (modalEl) {
             bootstrap.Modal.getOrCreateInstance(modalEl).show();
@@ -935,7 +946,8 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             return;
         }
         if ($(this).hasClass('aff')) {
-            $('input#aff_target').val($(this).attr('data-id'));
+            pendingAffTarget = $(this).attr('data-id');
+            applyAffTargetToForm();
         }
         if (!formPickLoaded) {
             e.preventDefault();
@@ -1154,7 +1166,8 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     })
 
     $(document).off('click' + bukaOrderEvt, 'a.aff').on('click' + bukaOrderEvt, 'a.aff', function() {
-        $('input#aff_target').val($(this).attr("data-id"));
+        pendingAffTarget = $(this).attr('data-id');
+        applyAffTargetToForm();
     });
 
     $("a.deleteItem").click(function() {
