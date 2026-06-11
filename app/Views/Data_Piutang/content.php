@@ -25,7 +25,7 @@
 
                 foreach ($data['kas'] as $ref => $sd) {
                     foreach ($sd as $dk) {
-                        if ($dk['status_mutasi'] <> 2) {
+                        if ($dk['status_mutasi'] == 0 || $dk['status_mutasi'] == 1) {
                             $dibayar[$ref] += $dk['jumlah'];
                         }
                     }
@@ -46,6 +46,23 @@
                 foreach ($data['refs'] as $ref) {
                     $bill[$ref] = 0;
                     $lunas[$ref] = false;
+                    $pending_bayar[$ref] = false;
+
+                    if (isset($data['charge'][$ref])) {
+                        foreach ($data['charge'][$ref] as $ds) {
+                            if ($ds['cancel'] == 0) {
+                                $bill[$ref] += $ds['jumlah'];
+                            }
+                        }
+                    }
+
+                    if (isset($data['kas'][$ref])) {
+                        foreach ($data['kas'][$ref] as $dk) {
+                            if ($dk['status_mutasi'] == 0) {
+                                $pending_bayar[$ref] = true;
+                            }
+                        }
+                    }
 
                     if (isset($data['order'][$ref])) {
                         foreach ($data['order'][$ref] as $do) {
@@ -55,9 +72,21 @@
 
                             $paket_qty_val = isset($do['paket_qty']) && $do['paket_qty'] > 0 ? $do['paket_qty'] : 1;
                             $jumlah = ($do['harga'] * $do['jumlah']) + ($do['harga_paket'] * $paket_qty_val);
-                            if ($cancel == 0) {
+                            if ($cancel == 0 && $do['stok'] == 0) {
                                 $bill[$ref] += $jumlah;
-                                $bill[$ref] -= $do['diskon'];
+                            }
+
+                            $listDetail = unserialize($do['detail_harga']);
+                            $akum_diskon_unit = 0;
+                            if (is_array($listDetail)) {
+                                foreach ($listDetail as $ld_o) {
+                                    $disk = isset($ld_o['d']) ? $ld_o['d'] : 0;
+                                    $akum_diskon_unit += $disk;
+                                }
+                            }
+                            $total_diskon_row = $akum_diskon_unit * $do['jumlah'];
+                            if ($cancel == 0 && $do['stok'] == 0) {
+                                $bill[$ref] -= $total_diskon_row;
                             }
                         }
                     }
@@ -80,16 +109,19 @@
 
                     $sisa[$ref] = $bill[$ref] - $dibayar[$ref];
 
-                    if (isset($piutang[$id_pelanggan])) {
-                        $piutang[$id_pelanggan] += $sisa[$ref];
-                    } else {
-                        $piutang[$id_pelanggan] = $sisa[$ref];
-                    }
-
-                    if ($sisa[$ref] <= 0) {
+                    if ($sisa[$ref] <= 0 && ($pending_bayar[$ref] ?? false) == false) {
                         $lunas[$ref] = true;
                     } else {
                         $lunas[$ref] = false;
+                    }
+
+                    if ($sisa[$ref] > 0) {
+                        if (isset($piutang[$id_pelanggan])) {
+                            $piutang[$id_pelanggan] += $sisa[$ref];
+                        } else {
+                            $piutang[$id_pelanggan] = $sisa[$ref];
+                        }
+
                         if (isset($data['pelanggan'][$id_pelanggan])) {
                             if (isset($list[$id_pelanggan])) {
                                 if ($list[$id_pelanggan] > $dateTime) {
@@ -98,7 +130,7 @@
                             } else {
                                 $list[$id_pelanggan] = $dateTime;
                             }
-                        };
+                        }
                     }
                 }
 
