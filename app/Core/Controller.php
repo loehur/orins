@@ -1,6 +1,7 @@
 <?php
 
 require 'app/Config/PV.php';
+require_once 'app/Menu.php';
 
 class Controller extends PV
 {

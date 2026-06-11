@@ -29,7 +29,7 @@ $yearNow = date('Y');
 							</nav>
 						</div>
 					<?php } ?>
-					<?php foreach (Pv::MENU as $key => $md) { ?>
+					<?php foreach (Menu::items() as $key => $md) { ?>
 						<?php foreach ($md['access'] as $mda) { ?>
 							<?php if (in_array($this->userData['user_tipe'], PV::PRIV[$mda])) { ?>
 								<a class="nav-link <?= in_array($t, $md['active']) ? 'active' : 'collapsed' ?> py-2" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse<?= $key ?>">
