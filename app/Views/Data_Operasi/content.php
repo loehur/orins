@@ -33,6 +33,17 @@
         height: 1rem;
         border-width: 0.15em;
     }
+
+    #loadMulti .multi-pay-row td {
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    #loadMulti #bayarBill,
+    #loadMulti #kembalianBill {
+        font-size: 1.15rem;
+        font-weight: 700;
+    }
 </style>
 
 <main>
@@ -801,11 +812,11 @@
                                             <span data-total=''><b>Rp<span id="totalBill" data-total="<?= $totalTagihan ?>"><?= number_format($totalTagihan) ?></span></b>
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr class="multi-pay-row">
                                         <td>Jumlah Bayar</td>
                                         <td class="pb-2" colspan="3">
                                             <span class="bayarPasMulti text-danger" style="cursor:pointer"><small>Bayar Pas (Click)</small></span>
-                                            <input id="bayarBill" name="dibayar_multi" class="text-end form-control money-input" type="text" inputmode="numeric" value="" required />
+                                            <input id="bayarBill" name="dibayar_multi" class="text-end form-control money-input fw-bold" type="text" inputmode="numeric" value="" required />
                                         </td>
                                     </tr>
                                     <tr id="payment_account" class="border-top" style="display:none">
@@ -837,9 +848,9 @@
                                             </table>
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr class="multi-pay-row">
                                         <td>Kembalian</td>
-                                        <td colspan="2"><input id="kembalianBill" name="kembalianBill" class="text-end form form-control money-display" type="text" readonly /></td>
+                                        <td colspan="2"><input id="kembalianBill" name="kembalianBill" class="text-end form form-control money-display fw-bold" type="text" readonly /></td>
                                         <td class="text-end" nowrap>
                                             <button type="submit" id="btnBayarBill" class='btn btn-primary w-100'>Bayar</button>
                                         </td>
