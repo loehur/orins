@@ -32,6 +32,7 @@
         $arr_tuntas = [];
         $loadRekap = [];
         $markRekap = [];
+        $showBayarCard = false;
 
         $user_id = 0;
 
@@ -264,7 +265,7 @@
                                             $id_toko[$ref] = $do['id_toko'];
                                             $id_penerima[$ref] = $do['id_penerima'];
 
-                                            if ($id_afiliasi <> 0) {
+                                            if ($do['id_afiliasi'] <> 0) {
                                                 $id_afiliasi[$ref] = $do['id_afiliasi'];
                                                 $id_user_afiliasi[$ref] = $do['id_user_afiliasi'];
                                                 $readyAFF[$ref] = $do['ready_aff_cs'];
@@ -568,9 +569,13 @@
                                         $lunas = true;
                                     }
 
-                                    if ($sisa <> 0) {
+                                    $headRef = $data['head'][$ref] ?? [];
+                                    $refCanBayar = (($headRef['id_afiliasi'] ?? 0) == 0 || ($headRef['id_afiliasi'] ?? 0) != $this->userData['id_toko'])
+                                        && (int)($headRef['tuntas'] ?? 0) === 0;
+                                    if ($refCanBayar && $sisa > 0) {
                                         $loadRekap[$id_pelanggan . "_" . $ref] = $sisa;
                                         $markRekap[$id_pelanggan . "_" . $ref] = $mark;
+                                        $showBayarCard = true;
                                     }
 
                                     if ($dibayar > 0 && $lunas == false && $sisa > 0) {
@@ -692,8 +697,7 @@
     </div>
 
     <div class="row mx-0 px-2 mt-2">
-        <?php if (isset($dh)) { ?>
-            <?php if (($dh['id_afiliasi'] == 0 || $dh['id_afiliasi'] <> $this->userData['id_toko']) && $dh['tuntas'] == 0) { ?>
+        <?php if ($showBayarCard && count($loadRekap) > 0) { ?>
                 <div class="col px-1 text-sm" id="loadMulti" style="max-width: 600px;">
                     <form action="<?= PV::BASE_URL; ?>Data_Operasi/bayar_multi" method="POST">
                         <div class="border px-1 pb-1">
@@ -802,7 +806,6 @@
                         </div>
                     </form>
                 </div>
-            <?php } ?>
         <?php } ?>
 
         <?php if (count($data['r_kas']) > 0) { ?>
@@ -907,11 +910,11 @@
 
     $(document).ready(function() {
         // MULTI
-        json_rekap = [<?= json_encode($loadRekap) ?>];
+        json_rekap = <?= json_encode($loadRekap) ?>;
         updateTotalFromCheckboxes();
 
-        if (totalBill == 0) {
-            $("div#loadMulti").fadeOut('fast');
+        if (Object.keys(json_rekap || {}).length === 0) {
+            $("div#loadMulti").hide();
         }
         
         // Asynchronous initialization of Selectize to keep UI responsive
@@ -1138,9 +1141,9 @@
         var refRekap = $(this).attr("data-ref");
 
         if ($(this).is(':checked')) {
-            json_rekap[0][refRekap] = jumlah;
+            json_rekap[refRekap] = jumlah;
         } else {
-            delete json_rekap[0][refRekap];
+            delete json_rekap[refRekap];
         }
 
         updateTotalFromCheckboxes();

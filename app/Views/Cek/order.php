@@ -48,15 +48,14 @@
     }
 
     .status-cards {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
+        margin-top: 1rem;
+        padding: 0 0.25rem 0.5rem;
     }
 
     .status-card {
-        flex: 1 1 160px;
+        height: 100%;
         border-radius: 0.5rem;
-        padding: 0.65rem 0.75rem;
+        padding: 0.75rem 0.85rem;
         background: #fff;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     }
@@ -566,34 +565,40 @@
                             </table>
                         </small>
                     </div>
-                    <div class="status-cards px-1 pb-1">
-                        <div class="status-card <?= $lunas ? 'status-card-lunas border border-success' : 'status-card-belum border border-danger' ?>">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="status-card-icon">
-                                    <i class="fa-solid <?= $lunas ? 'fa-circle-check' : 'fa-clock' ?>"></i>
-                                </span>
-                                <div>
-                                    <div class="status-card-label">Status Pembayaran</div>
-                                    <div class="status-card-value <?= $lunas ? 'text-success' : 'text-danger' ?>">
-                                        <?= $lunas ? 'Lunas' : 'Belum Lunas' ?>
+                    <div class="status-cards">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="status-card <?= $lunas ? 'status-card-lunas border border-success' : 'status-card-belum border border-danger' ?>">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="status-card-icon">
+                                            <i class="fa-solid <?= $lunas ? 'fa-circle-check' : 'fa-clock' ?>"></i>
+                                        </span>
+                                        <div>
+                                            <div class="status-card-label">Status Pembayaran</div>
+                                            <div class="status-card-value <?= $lunas ? 'text-success' : 'text-danger' ?>">
+                                                <?= $lunas ? 'Lunas' : 'Belum Lunas' ?>
+                                            </div>
+                                            <?php if (!$lunas && $sisa > 0) { ?>
+                                                <small class="text-muted">Sisa Rp<?= number_format($sisa) ?></small>
+                                            <?php } elseif (!$lunas && $pending_bayar) { ?>
+                                                <small class="text-warning">Menunggu verifikasi office</small>
+                                            <?php } ?>
+                                        </div>
                                     </div>
-                                    <?php if (!$lunas && $sisa > 0) { ?>
-                                        <small class="text-muted">Sisa Rp<?= number_format($sisa) ?></small>
-                                    <?php } elseif (!$lunas && $pending_bayar) { ?>
-                                        <small class="text-warning">Menunggu verifikasi office</small>
-                                    <?php } ?>
                                 </div>
                             </div>
-                        </div>
-                        <div class="status-card <?= ($dh['tuntas'] == 1) ? 'status-card-tuntas border border-success' : 'status-card-berjalan border border-primary' ?>">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="status-card-icon">
-                                    <i class="fa-solid <?= ($dh['tuntas'] == 1) ? 'fa-flag-checkered' : 'fa-spinner' ?>"></i>
-                                </span>
-                                <div>
-                                    <div class="status-card-label">Status Order</div>
-                                    <div class="status-card-value <?= ($dh['tuntas'] == 1) ? 'text-success' : 'text-primary' ?>">
-                                        <?= ($dh['tuntas'] == 1) ? 'Tuntas' : 'Berjalan' ?>
+                            <div class="col-sm-6">
+                                <div class="status-card <?= ($dh['tuntas'] == 1) ? 'status-card-tuntas border border-success' : 'status-card-berjalan border border-primary' ?>">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="status-card-icon">
+                                            <i class="fa-solid <?= ($dh['tuntas'] == 1) ? 'fa-flag-checkered' : 'fa-spinner' ?>"></i>
+                                        </span>
+                                        <div>
+                                            <div class="status-card-label">Status Order</div>
+                                            <div class="status-card-value <?= ($dh['tuntas'] == 1) ? 'text-success' : 'text-primary' ?>">
+                                                <?= ($dh['tuntas'] == 1) ? 'Tuntas' : 'Berjalan' ?>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
