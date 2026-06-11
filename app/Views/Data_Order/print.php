@@ -520,6 +520,6 @@
 
         setTimeout(function() {
             self.close();
-        }, 20000);
+        }, 300000);
     });
 </script>

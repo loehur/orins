@@ -499,13 +499,13 @@
                         <div class="row mb-2">
                             <div class="col-sm-6">
                                 <label class="form-label">Bayar (Rp) <small><span style="cursor: pointer;" class="bayarPas text-danger">Bayar Pas (Click)</span></small></label>
-                                <input type="number" name="jumlah" class="form-control dibayar text-end" required>
+                                <input type="text" inputmode="numeric" name="jumlah" class="form-control dibayar money-input text-end" required>
                                 <input type="hidden" name="ref" id="refBayar" required>
                                 <input type="hidden" name="client" id="client" required>
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label">Kembalian (Rp)</label>
-                                <input type="number" name="kembalian" class="form-control kembalian text-end" readonly>
+                                <input type="text" name="kembalian" class="form-control kembalian money-display text-end" readonly>
                             </div>
                         </div>
                         <div class="row mb-2" id="noteBayar">

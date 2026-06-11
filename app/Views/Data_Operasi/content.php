@@ -1,26 +1,69 @@
+<style>
+    .filter-select-wrap {
+        position: relative;
+        max-width: 600px;
+        min-height: 38px;
+    }
+
+    .filter-select-wrap.is-loading .filter-select-fields {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .filter-select-mini-loader {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0 0.5rem;
+        z-index: 2;
+    }
+
+    .filter-select-wrap.is-ready .filter-select-mini-loader {
+        display: none;
+    }
+
+    .filter-select-wrap.is-ready .filter-select-fields {
+        opacity: 1;
+    }
+
+    .filter-select-mini-loader .spinner-border {
+        width: 1rem;
+        height: 1rem;
+        border-width: 0.15em;
+    }
+</style>
+
 <main>
-    <div class="row mx-2" style="max-width:600px">
-        <div class="col px-0">
-            <select class="border rounded tize ajax-pelanggan" name="id_pelanggan" required>
-                <option></option>
-                <?php foreach ($data['pelanggan'] as $p) { ?>
-                    <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= $this->dToko[$p['id_toko']]['inisial'] ?> <?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], -2) ?></option>
-                <?php } ?>
-            </select>
+    <div class="filter-select-wrap is-loading mx-2" id="filterSelectWrap">
+        <div class="filter-select-mini-loader" aria-live="polite" aria-busy="true">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            <small class="text-muted">Memuat pilihan...</small>
         </div>
-        <?php if ($data['parse_2'] <> 0) { ?>
-            <div class="col pe-0" style="min-width: 90px; max-width: 100px">
-                <select class="border tize" name="y" required>
-                    <?php
-                    $yNow = date("Y");
-                    for ($x = 2023; $x <= $yNow; $x++) { ?>
-                        <option value="<?= $x ?>" <?= ($data['parse_2'] == $x) ? "selected" : "" ?>><?= $x ?></option>
+        <div class="filter-select-fields row mx-0">
+            <div class="col px-0">
+                <select class="border rounded tize ajax-pelanggan" name="id_pelanggan" required>
+                    <option></option>
+                    <?php foreach ($data['pelanggan'] as $p) { ?>
+                        <option value="<?= $p['id_pelanggan'] ?>" <?= ($data['parse'] == $p['id_pelanggan'] ? "selected" : "") ?>><?= $this->dToko[$p['id_toko']]['inisial'] ?> <?= strtoupper($p['nama']) ?> #<?= substr($p['id_pelanggan'], -2) ?></option>
                     <?php } ?>
                 </select>
             </div>
-        <?php } ?>
-        <div class="col-auto pt-auto mt-auto pe-0">
-            <button type="submit" class="cek btn btn-light border">Cek</button>
+            <?php if ($data['parse_2'] <> 0) { ?>
+                <div class="col pe-0" style="min-width: 90px; max-width: 100px">
+                    <select class="border tize filter-year" name="y" required>
+                        <?php
+                        $yNow = date("Y");
+                        for ($x = 2023; $x <= $yNow; $x++) { ?>
+                            <option value="<?= $x ?>" <?= ($data['parse_2'] == $x) ? "selected" : "" ?>><?= $x ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            <?php } ?>
+            <div class="col-auto pt-auto mt-auto pe-0">
+                <button type="submit" class="cek btn btn-light border">Cek</button>
+            </div>
         </div>
     </div>
 
@@ -762,7 +805,7 @@
                                         <td>Jumlah Bayar</td>
                                         <td class="pb-2" colspan="3">
                                             <span class="bayarPasMulti text-danger" style="cursor:pointer"><small>Bayar Pas (Click)</small></span>
-                                            <input id="bayarBill" name="dibayar_multi" class="text-end form-control" type="number" min="1" value="" required />
+                                            <input id="bayarBill" name="dibayar_multi" class="text-end form-control money-input" type="text" inputmode="numeric" value="" required />
                                         </td>
                                     </tr>
                                     <tr id="payment_account" class="border-top" style="display:none">
@@ -796,7 +839,7 @@
                                     </tr>
                                     <tr>
                                         <td>Kembalian</td>
-                                        <td colspan="2"><input id='kembalianBill' name="kembalianBill" class="text-end form form-control" type="number" readonly /></td>
+                                        <td colspan="2"><input id="kembalianBill" name="kembalianBill" class="text-end form form-control money-display" type="text" readonly /></td>
                                         <td class="text-end" nowrap>
                                             <button type="submit" id="btnBayarBill" class='btn btn-primary w-100'>Bayar</button>
                                         </td>
@@ -900,6 +943,19 @@
     var printOrderBaseUrl = '<?= PV::BASE_URL ?>Data_Order/print/';
     var isKasirPrint = <?= in_array($this->userData['user_tipe'], PV::PRIV[2]) ? 'true' : 'false' ?>;
 
+    function parseMoneyNum(str) {
+        return parseInt(String(str).replace(/\D/g, ''), 10) || 0;
+    }
+
+    function formatMoneyNum(num) {
+        var n = parseInt(num, 10) || 0;
+        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function setMoneyVal($el, num) {
+        $el.val(formatMoneyNum(num));
+    }
+
     function openPrintOrder(ref) {
         window.open(printOrderBaseUrl + ref, '_blank');
     }
@@ -935,87 +991,114 @@
         bayarBill();
     }
 
+    function markFilterSelectReady() {
+        var wrap = document.getElementById('filterSelectWrap');
+        if (wrap) {
+            wrap.classList.remove('is-loading');
+            wrap.classList.add('is-ready');
+            wrap.querySelector('.filter-select-mini-loader')?.setAttribute('aria-busy', 'false');
+        }
+        if (typeof hideContentLoader === 'function') {
+            hideContentLoader();
+        }
+    }
+
+    function pelangganSelectizeOptions() {
+        return {
+            valueField: 'id',
+            labelField: 'nama',
+            searchField: ['nama', 'no_hp', 'id'],
+            create: false,
+            render: {
+                option: function(item, escape) {
+                    return '<div style="padding: 6px 15px;">' +
+                        '<span>' + escape(item.inisial || '') + ' ' + escape(item.nama) + '</span>' +
+                        ' #<small>' + (item.id ? escape(String(item.id)).substring(String(item.id).length - 2) : '') + '</small>' +
+                        ' <br><small>' + escape(item.no_hp || '') + '</small>' +
+                        '</div>';
+                },
+                item: function(item, escape) {
+                    return '<div style="padding: 2px 10px;">' + escape(item.inisial || '') + ' ' + escape(item.nama) + '</div>';
+                }
+            }
+        };
+    }
+
+    function initSelectizeOnce($el, options) {
+        if (!$el.length || $el[0].selectize) {
+            return;
+        }
+        $el.selectize(options || {});
+    }
+
+    function initFilterSelectize() {
+        initSelectizeOnce($('select.filter-year'));
+
+        var pelangganOpts = pelangganSelectizeOptions();
+        pelangganOpts.options = <?= $data['pelanggan_init'] ?>;
+        pelangganOpts.load = function(query, callback) {
+            if (query.length < 2) {
+                return callback();
+            }
+            $.ajax({
+                url: '<?= PV::BASE_URL ?>Data_Operasi/search_pelanggan',
+                type: 'GET',
+                dataType: 'json',
+                data: { q: query },
+                error: function() { callback(); },
+                success: function(res) { callback(res); }
+            });
+        };
+        initSelectizeOnce($('select.ajax-pelanggan'), pelangganOpts);
+        markFilterSelectReady();
+    }
+
+    function initModalSelectize() {
+        $('select.tize:not(.ajax-pelanggan):not(.ajax-pelanggan-ubah)').each(function() {
+            initSelectizeOnce($(this));
+        });
+
+        $('select.ajax-pelanggan-ubah').each(function() {
+            var $sel = $(this);
+            if ($sel[0].selectize) {
+                return;
+            }
+            var ubahOpts = pelangganSelectizeOptions();
+            ubahOpts.options = JSON.parse($sel.attr('data-options') || '[]');
+            ubahOpts.load = function(query, callback) {
+                if (query.length < 2) {
+                    return callback();
+                }
+                var pelangganJenis = $sel.attr('data-pelanggan-jenis') || '';
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>Data_Operasi/search_pelanggan_ubah',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { q: query, id_pelanggan_jenis: pelangganJenis },
+                    error: function() { callback(); },
+                    success: function(res) { callback(res); }
+                });
+            };
+            $sel.selectize(ubahOpts);
+        });
+    }
+
     $(document).ready(function() {
-        // MULTI
         json_rekap = <?= json_encode($loadRekap) ?>;
         updateTotalFromCheckboxes();
 
         if (Object.keys(json_rekap || {}).length === 0) {
             $("div#loadMulti").hide();
         }
-        
-        // Asynchronous initialization of Selectize to keep UI responsive
-        setTimeout(function() {
-            $('select.tize:not(.ajax-pelanggan):not(.ajax-pelanggan-ubah)').selectize();
 
-            $('select.ajax-pelanggan').selectize({
-                valueField: 'id',
-                labelField: 'nama',
-                searchField: ['nama', 'no_hp', 'id'],
-                options: <?= $data['pelanggan_init'] ?>,
-                create: false,
-                render: {
-                    option: function(item, escape) {
-                        return '<div style="padding: 6px 15px;">' +
-                            '<span>' + escape(item.inisial) + ' ' + escape(item.nama) + '</span>' +
-                            ' #<small>' + escape(item.id).substring(escape(item.id).length - 2) + '</small>' +
-                            ' <br><small>' + escape(item.no_hp) + '</small>' +
-                            '</div>';
-                    },
-                    item: function(item, escape) {
-                        return '<div style="padding: 2px 10px;">' + escape(item.inisial) + ' ' + escape(item.nama) + '</div>';
-                    }
-                },
-                load: function(query, callback) {
-                    if (query.length < 2) return callback();
-                    $.ajax({
-                        url: '<?= PV::BASE_URL ?>Data_Operasi/search_pelanggan',
-                        type: 'GET',
-                        dataType: 'json',
-                        data: { q: query },
-                        error: function() { callback(); },
-                        success: function(res) { callback(res); }
-                    });
-                }
-            });
+        initFilterSelectize();
 
-            $('select.ajax-pelanggan-ubah').selectize({
-                valueField: 'id',
-                labelField: 'nama',
-                searchField: ['nama', 'no_hp', 'id'],
-                options: JSON.parse($('select.ajax-pelanggan-ubah').attr('data-options') || '[]'),
-                create: false,
-                render: {
-                    option: function(item, escape) {
-                        return '<div style="padding: 6px 15px;">' +
-                            '<span>' + escape(item.inisial || '') + ' ' + escape(item.nama) + '</span>' +
-                            ' #<small>' + (item.id ? escape(item.id).substring(escape(item.id).length - 2) : '') + '</small>' +
-                            ' <br><small>' + escape(item.no_hp || '') + '</small>' +
-                            '</div>';
-                    },
-                    item: function(item, escape) {
-                        return '<div style="padding: 2px 10px;">' + escape(item.inisial || '') + ' ' + escape(item.nama) + '</div>';
-                    }
-                },
-                load: function(query, callback) {
-                    if (query.length < 2) return callback();
-                    var pelangganJenis = $('select.ajax-pelanggan-ubah').attr('data-pelanggan-jenis') || '';
-                    $.ajax({
-                        url: '<?= PV::BASE_URL ?>Data_Operasi/search_pelanggan_ubah',
-                        type: 'GET',
-                        dataType: 'json',
-                        data: { q: query, id_pelanggan_jenis: pelangganJenis },
-                        error: function() { callback(); },
-                        success: function(res) { callback(res); }
-                    });
-                }
-            });
-
-            // Hide the loader only after everything is ready
-            if (typeof hideContentLoader === 'function') {
-                hideContentLoader();
-            }
-        }, 500);
+        var deferModalSelect = window.requestIdleCallback || function(cb) {
+            setTimeout(cb, 1);
+        };
+        deferModalSelect(function() {
+            initModalSelectize();
+        });
     });
 
     $(document).on("click", "a.ajax", function(e) {
@@ -1081,9 +1164,19 @@
     });
 
     $(document).on("click", "span.bayarPas", function() {
-        var bill_input = $("input[name=bill]").val();
-        $("input.dibayar").val(bill_input);
+        var bill_input = parseMoneyNum($("input[name=bill]").val());
+        setMoneyVal($("input.dibayar"), bill_input);
         kembalian();
+    });
+
+    $(document).on("input", ".money-input", function() {
+        var raw = $(this).val().replace(/\D/g, '');
+        $(this).val(raw === '' ? '' : formatMoneyNum(raw));
+        if ($(this).is('#bayarBill')) {
+            bayarBill();
+        } else if ($(this).is('.dibayar')) {
+            kembalian();
+        }
     });
 
     $(document).on("click", "span.btnAmbil", function() {
@@ -1209,7 +1302,7 @@
     });
 
     $(document).on("click", "span.bayarPasMulti", function() {
-        $("input#bayarBill").val(totalBill);
+        setMoneyVal($("input#bayarBill"), totalBill);
         bayarBill();
     });
 
@@ -1226,16 +1319,8 @@
         updateTotalFromCheckboxes();
     });
 
-    $(document).on("keyup change", "input#bayarBill", function() {
-        bayarBill();
-    });
-
     $(document).on("keyup change", "input[name=charge]", function() {
         total_aftercas();
-    });
-
-    $(document).on("keyup change", "input.dibayar", function() {
-        kembalian();
     });
 
     $(document).on("keyup change", "select.metodeBayar_multi", function() {
@@ -1259,44 +1344,52 @@
         if ($(this).attr('action') && $(this).attr('action').indexOf('ubahPelanggan') >= 0) return;
 
         e.preventDefault();
+        var $form = $(this);
+        var moneyBackup = [];
+        $form.find('.money-input, .money-display').each(function() {
+            moneyBackup.push({ el: this, val: $(this).val() });
+            var raw = parseMoneyNum($(this).val());
+            $(this).val($(this).hasClass('money-input') && raw === 0 && $(this).val() === '' ? '' : raw);
+        });
+
         $.ajax({
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            type: $(this).attr("method"),
+            url: $form.attr('action'),
+            data: $form.serialize(),
+            type: $form.attr("method"),
             success: function(res) {
                 if (res == 0) {
                     content();
                 } else {
                     showToast(res, 'danger');
                 }
+            },
+            complete: function() {
+                moneyBackup.forEach(function(item) {
+                    $(item.el).val(item.val);
+                });
             }
         });
     });
 
     function kembalian() {
-        var kembalian = 0;
-        var dibayar = $("input.dibayar").val();
-        var bill_val = $("input.bill").val() || 0;
-        kembalian = dibayar - bill_val;
-        if (kembalian < 0) {
-            kembalian = 0;
+        var dibayar = parseMoneyNum($("input.dibayar").val());
+        var bill_val = parseMoneyNum($("input.bill").val());
+        var kembalianVal = dibayar - bill_val;
+        if (kembalianVal < 0) {
+            kembalianVal = 0;
         }
-        $("input.kembalian").val(kembalian);
+        setMoneyVal($("input.kembalian"), kembalianVal);
     }
 
     function bayarBill() {
-        var dibayar = parseInt($('input#bayarBill').val()) || 0;
-        var kembalian = parseInt(dibayar) - parseInt(totalBill);
-        if (kembalian > 0) {
-            $('input#kembalianBill').val(kembalian);
-        } else {
-            $('input#kembalianBill').val(0);
-        }
+        var dibayar = parseMoneyNum($('input#bayarBill').val());
+        var kembalianVal = dibayar - parseInt(totalBill, 10);
+        setMoneyVal($('input#kembalianBill'), kembalianVal > 0 ? kembalianVal : 0);
         total_aftercas();
     }
 
     function total_aftercas() {
-        var dibayar = parseInt($('input#bayarBill').val()) || 0;
+        var dibayar = parseMoneyNum($('input#bayarBill').val());
         var charge = $("input[name=charge]").val() || 0;
         $("input#total_aftercas").val(parseInt(dibayar) + (parseInt(dibayar) * (parseFloat(charge) / 100)));
         $("input#total_charge").val((parseInt(dibayar) * (parseFloat(charge) / 100)));
