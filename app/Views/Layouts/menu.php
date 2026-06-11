@@ -8,22 +8,6 @@ $yearNow = date('Y');
 	div {
 		scrollbar-color: pink white;
 	}
-
-	#accordionSidenav > #collapsePrioritas:not(.show) {
-		display: none !important;
-		margin: 0 !important;
-		padding: 0 !important;
-		min-height: 0 !important;
-	}
-
-	#accordionSidenav > a.nav-link[data-bs-target="#collapsePrioritas"] {
-		margin-bottom: 0;
-	}
-
-	#collapsePrioritas .sidenav-menu-nested {
-		margin-bottom: 0;
-		padding-bottom: 0;
-	}
 </style>
 
 
@@ -39,9 +23,7 @@ $yearNow = date('Y');
 							<span class="badge bg-danger-soft text-danger ms-2 d-none" id="menuPrioritasBadge"></span>
 							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 						</a>
-						<div class="collapse <?= $openPrioritasMenu ? 'show' : '' ?>" id="collapsePrioritas" data-bs-parent="#accordionSidenav">
-							<nav class="sidenav-menu-nested nav py-0" id="menuPrioritasContent"></nav>
-						</div>
+						<div class="collapse<?= $openPrioritasMenu ? ' show' : '' ?>" id="collapsePrioritas"></div>
 					<?php } ?>
 					<?php foreach (Menu::items() as $key => $md) { ?>
 						<?php foreach ($md['access'] as $mda) { ?>

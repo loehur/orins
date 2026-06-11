@@ -53,11 +53,6 @@ class Gudang_Stok extends Controller
 
    public function cek_barang($id)
    {
-      if (!self::canEditHarga($this->userData['user_tipe'])) {
-         http_response_code(403);
-         exit();
-      }
-
       $data['stok'] = $this->data('Barang')->stok_data($id, $this->userData['id_toko']);
       $data['stok_gudang'] = $this->data('Barang')->stok_data($id, 0);
       $this->view(__CLASS__ . '/data_cek', $data);

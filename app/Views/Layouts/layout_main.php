@@ -130,21 +130,30 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 		var prioritasLoaded = false;
 		var prioritasUrl = '<?= PV::BASE_URL ?>Home/menu_prioritas?t=' + encodeURIComponent(<?= json_encode($t) ?>);
 
+		function resetPrioritasCollapse() {
+			$collapse.removeClass('collapsing show').addClass('collapse');
+			$collapse[0].style.height = '';
+		}
+
+		function renderPrioritasMenu(html) {
+			$collapse.html('<nav class="sidenav-menu-nested nav">' + html + '</nav>');
+		}
+
 		function loadPrioritasMenu() {
 			if (prioritasLoaded) {
 				return;
 			}
-			$('#menuPrioritasContent').html('<span class="nav-link py-1 text-muted ps-3">Memuat...</span>');
+			renderPrioritasMenu('<span class="nav-link py-1 text-muted ps-3">Memuat...</span>');
 			$.ajax({
 				url: prioritasUrl,
 				type: 'GET',
 				cache: false,
 				success: function(response) {
 					if (!response || String(response).indexOf('menuPrioritasItems') === -1) {
-						$('#menuPrioritasContent').html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
+						renderPrioritasMenu('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
 						return;
 					}
-					$('#menuPrioritasContent').html(response);
+					renderPrioritasMenu(response);
 					prioritasLoaded = true;
 					var count = parseInt($('#menuPrioritasItems').data('count') || 0, 10);
 					var $badge = $('#menuPrioritasBadge');
@@ -158,7 +167,7 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 					}
 				},
 				error: function() {
-					$('#menuPrioritasContent').html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
+					renderPrioritasMenu('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
 				}
 			});
 		}
@@ -168,7 +177,7 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 		});
 
 		$collapse.on('hidden.bs.collapse', function() {
-			this.style.height = '';
+			resetPrioritasCollapse();
 		});
 
 		<?php if (!empty($openPrioritasMenu)) { ?>
@@ -177,9 +186,7 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 		});
 		<?php } else { ?>
 		$(function() {
-			if ($collapse.hasClass('show')) {
-				$collapse.removeClass('show');
-			}
+			resetPrioritasCollapse();
 		});
 		<?php } ?>
 	})();

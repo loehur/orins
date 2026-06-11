@@ -1160,8 +1160,16 @@
     });
 
     $(document).on("click", 'button.cek', function() {
-        var parse = $("select[name=id_pelanggan]").val();
-        var parse_2 = $("select[name=y]").val() || 0;
+        var parse = getSelectizeVal('select[name=id_pelanggan]');
+        var parse_2 = getSelectizeVal('select[name=y]') || 0;
+        if (!isValidPelangganId(parse)) {
+            alert('Pilih pelanggan terlebih dahulu');
+            var el = $('select[name=id_pelanggan]')[0];
+            if (el && el.selectize) {
+                el.selectize.focus();
+            }
+            return;
+        }
         location.href = "<?= PV::BASE_URL ?>Data_Operasi/index/" + parse + "/" + parse_2;
     });
 

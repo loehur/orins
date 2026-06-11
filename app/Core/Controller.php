@@ -283,4 +283,16 @@ class Controller extends PV
         $length = $endIndex - $startIndex;
         return substr($string, $startIndex, $length);
     }
+
+    protected function intParam($value, $default = 0)
+    {
+        if ($value === null || $value === '' || $value === false) {
+            return $default;
+        }
+        if (is_string($value) && !is_numeric($value)) {
+            return $default;
+        }
+
+        return (int)$value;
+    }
 }

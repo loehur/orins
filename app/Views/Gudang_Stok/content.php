@@ -1,6 +1,7 @@
 <?php
 $canEditHarga = in_array($this->userData['user_tipe'], PV::PRIV[2]);
-$canSnStok = $canEditHarga;
+$canSnStok = in_array($this->userData['user_tipe'], PV::PRIV[101])
+   || in_array($this->userData['user_tipe'], PV::PRIV[102]);
 ?>
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
 <style>
@@ -112,18 +113,7 @@ $canSnStok = $canEditHarga;
         });
     });
 
-    <?php if ($canEditHarga || $canSnStok) { ?>
-    var hargaEditClick = 0;
-
-    function parseHargaNum(str) {
-        return parseInt(String(str).replace(/\D/g, ''), 10) || 0;
-    }
-
-    function formatHargaNum(num) {
-        var n = parseInt(num, 10) || 0;
-        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    }
-
+    <?php if ($canSnStok) { ?>
     $(document).off('click.gudangStokSn', '.cek-sn').on('click.gudangStokSn', '.cek-sn', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -138,6 +128,19 @@ $canSnStok = $canEditHarga;
         modal.show();
         $('#snStokLoad').load('<?= PV::BASE_URL ?>Gudang_Stok/cek_barang/' + id);
     });
+    <?php } ?>
+
+    <?php if ($canEditHarga) { ?>
+    var hargaEditClick = 0;
+
+    function parseHargaNum(str) {
+        return parseInt(String(str).replace(/\D/g, ''), 10) || 0;
+    }
+
+    function formatHargaNum(num) {
+        var n = parseInt(num, 10) || 0;
+        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
 
     $(document).off('click.gudangStokHarga', '.cell_edit_harga').on('click.gudangStokHarga', '.cell_edit_harga', function() {
         if (hargaEditClick !== 0) {

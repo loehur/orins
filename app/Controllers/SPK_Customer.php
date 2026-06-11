@@ -38,12 +38,21 @@ class SPK_Customer extends Controller
 
    public function content($parse = 0, $customer = 0)
    {
+      $parse = $this->intParam($parse);
+      $customer = $this->intParam($customer);
+
       $data['parse'] = $parse;
       $data['customer'] = $customer;
       $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
 
-      if ($customer <> 0) {
+      if ($customer > 0) {
          $data['pelanggan'] = $this->db(0)->get_where('pelanggan', "id_pelanggan = " . $customer, 'id_pelanggan');
+         if (!isset($data['pelanggan'][$customer])) {
+            $customer = 0;
+            $data['customer'] = 0;
+            $data['pelanggan'] = [];
+            $data['pelanggan_init'] = "[]";
+         } else {
          $p = $data['pelanggan'][$customer];
          $data['pelanggan_init'] = json_encode([[
             'id' => $p['id_pelanggan'],
@@ -83,6 +92,7 @@ class SPK_Customer extends Controller
             $data_fix[$actif_col][$key] = $d;
          }
          $data['order'] = $data_fix;
+         }
       } else {
          $data['pelanggan'] = [];
          $data['pelanggan_init'] = "[]";

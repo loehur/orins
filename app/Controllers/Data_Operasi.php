@@ -45,6 +45,9 @@ class Data_Operasi extends Controller
 
    public function content($parse = 0, $parse_2 = 0)
    {
+      $parse = $this->intParam($parse);
+      $parse_2 = $this->intParam($parse_2);
+
       $data['spk_pending'] = $this->db(0)->get('spk_pending', 'id');
       $data['ea'] = $this->db(0)->get('expedisi_account', 'id');
 
@@ -56,14 +59,22 @@ class Data_Operasi extends Controller
 
       if ($parse > 0) {
          $data['pelanggan'] = $this->db(0)->get_where('pelanggan', 'id_pelanggan = ' . $parse, 'id_pelanggan');
-         $p = $data['pelanggan'][$parse];
-         $data['pelanggan_init'] = json_encode([[
-            'id' => $p['id_pelanggan'],
-            'nama' => strtoupper($p['nama']),
-            'no_hp' => $p['no_hp'],
-            'inisial' => $this->dToko[$p['id_toko']]['inisial']
-         ]]);
-         $data['pelanggan_ubah_init'] = $data['pelanggan_init'];
+         if (!isset($data['pelanggan'][$parse])) {
+            $parse = 0;
+            $data['parse'] = 0;
+            $data['pelanggan'] = [];
+            $data['pelanggan_init'] = "[]";
+            $data['pelanggan_ubah_init'] = "[]";
+         } else {
+            $p = $data['pelanggan'][$parse];
+            $data['pelanggan_init'] = json_encode([[
+               'id' => $p['id_pelanggan'],
+               'nama' => strtoupper($p['nama']),
+               'no_hp' => $p['no_hp'],
+               'inisial' => $this->dToko[$p['id_toko']]['inisial']
+            ]]);
+            $data['pelanggan_ubah_init'] = $data['pelanggan_init'];
+         }
       } else {
          $data['pelanggan'] = [];
          $data['pelanggan_init'] = "[]";

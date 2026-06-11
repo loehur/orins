@@ -97,6 +97,25 @@
         $content.children('.content-loader').addClass('d-none').attr('aria-busy', 'false');
     }
 
+    function getSelectizeVal(selector) {
+        var el = $(selector)[0];
+        if (!el) {
+            return '';
+        }
+        if (el.selectize) {
+            var v = el.selectize.getValue();
+            if (Array.isArray(v)) {
+                return v[0] || '';
+            }
+            return v || '';
+        }
+        return $(selector).val() || '';
+    }
+
+    function isValidPelangganId(id) {
+        return /^\d+$/.test(String(id || '').trim());
+    }
+
     $(document).ready(function() {
         content();
     });

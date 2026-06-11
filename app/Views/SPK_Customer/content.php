@@ -345,12 +345,26 @@
             });
         });
 
+        function getCustomerId() {
+            return getSelectizeVal('select[name=customer]');
+        }
+
         $(document).on('click', 'button.cek', function() {
-            parse_2 = $('select[name=customer]').val();
-            if (!parse_2) {
+            var customer = getCustomerId();
+            if (!isValidPelangganId(customer)) {
+                alert('Pilih pelanggan terlebih dahulu');
+                var el = $('select[name=customer]')[0];
+                if (el && el.selectize) {
+                    el.selectize.focus();
+                }
                 return;
             }
-            $("div#content").load('<?= PV::BASE_URL ?>SPK_Customer/content/' + parse + '/' + parse_2);
+            parse_2 = customer;
+            if (typeof loadAppContent === 'function') {
+                loadAppContent('<?= PV::BASE_URL ?>SPK_Customer/content/' + parse + '/' + customer);
+            } else {
+                $("div#content").load('<?= PV::BASE_URL ?>SPK_Customer/content/' + parse + '/' + customer);
+            }
         });
 
         $(".push").click(function() {
@@ -385,7 +399,11 @@
             e.preventDefault();
 
             var parse = <?= $parse ?>;
-            var parse_2 = $("select[name=customer]").val();
+            var parse_2 = getCustomerId();
+            if (!isValidPelangganId(parse_2)) {
+                alert('Pilih pelanggan terlebih dahulu');
+                return;
+            }
 
             $.ajax({
                 url: $(this).attr('action'),
