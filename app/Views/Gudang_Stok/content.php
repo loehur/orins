@@ -39,7 +39,7 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
                     <?php foreach (['harga_1', 'harga_2', 'harga_3'] as $hCol) { ?>
                         <td class="text-end align-top">
                             <?php if ($canKasirStok) { ?>
-                                <span class="cell_edit_harga" data-id="<?= $a['id'] ?>" data-primary="id" data-col="<?= $hCol ?>" data-tb="master_barang"><?= $a[$hCol] ?></span>
+                                <span class="cell_edit_harga" data-id="<?= $a['id'] ?>" data-primary="id" data-col="<?= $hCol ?>" data-tb="master_barang"><?= number_format((int)$a[$hCol], 0, ',', '.') ?></span>
                             <?php } else { ?>
                                 <?= number_format((int)$a[$hCol]) ?>
                             <?php } ?>
@@ -129,6 +129,15 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
     <?php if ($canKasirStok) { ?>
     var hargaEditClick = 0;
 
+    function parseHargaNum(str) {
+        return parseInt(String(str).replace(/\D/g, ''), 10) || 0;
+    }
+
+    function formatHargaNum(num) {
+        var n = parseInt(num, 10) || 0;
+        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
     $(document).off('click.gudangStokSn', '.cek-sn').on('click.gudangStokSn', '.cek-sn', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -155,17 +164,19 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
         var primary = $el.data('primary');
         var col = $el.data('col');
         var tb = $el.data('tb');
-        var value = $el.text();
-        var valueBefore = value;
-        if (value === '') {
-            value = '0';
-        }
+        var valueBefore = parseHargaNum($el.text());
+        var displayValue = formatHargaNum(valueBefore);
 
         var width = $el.parent().width();
         $el.parent().css('width', width);
-        $el.html('<input type="number" class="harga-edit-input" style="outline:none;border:none;width:100%;text-align:right">');
+        $el.html('<input type="text" inputmode="numeric" class="harga-edit-input" style="outline:none;border:none;width:100%;text-align:right">');
         var $input = $el.find('input');
-        $input.val(value).focus();
+        $input.val(displayValue).focus().select();
+
+        $input.on('input', function() {
+            var raw = $(this).val().replace(/\D/g, '');
+            $(this).val(raw === '' ? '' : formatHargaNum(raw));
+        });
 
         $input.on('keydown', function(ev) {
             if (ev.which === 13) {
@@ -175,11 +186,11 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
         });
 
         $input.on('blur', function() {
-            var valueAfter = $(this).val();
-            $input.off('keydown blur');
+            var valueAfter = parseHargaNum($(this).val());
+            $input.off('input keydown blur');
 
-            if (valueAfter === valueBefore || valueAfter === '') {
-                $el.text(value);
+            if (valueAfter === valueBefore) {
+                $el.text(formatHargaNum(valueBefore));
                 hargaEditClick = 0;
                 return;
             }
@@ -198,15 +209,15 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
                 success: function(res) {
                     hargaEditClick = 0;
                     if (res == 0) {
-                        $el.text(valueAfter);
+                        $el.text(formatHargaNum(valueAfter));
                     } else {
-                        $el.text(value);
+                        $el.text(formatHargaNum(valueBefore));
                         alert(res);
                     }
                 },
                 error: function() {
                     hargaEditClick = 0;
-                    $el.text(value);
+                    $el.text(formatHargaNum(valueBefore));
                 }
             });
         });
