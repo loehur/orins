@@ -133,7 +133,7 @@ class Export extends Controller
 
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
       $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
-      $lastKasPayDates = $this->loadLastKasPaymentDates(array_column($data, 'ref'));
+      $refPaymentSummary = $this->loadRefPaymentSummary(array_column($data, 'ref'));
 
       $tanggal = date("Y-m-d");
 
@@ -149,7 +149,7 @@ class Export extends Controller
          $db = $dBarang[$a['id_barang']];
          $barang = strtoupper($db['product_name'] . $db['brand'] . " " . $db['model']);
 
-         $order_status = $this->resolveMutasiStatStatus($a, $ref, $lastKasPayDates);
+         $order_status = $this->resolveMutasiStatStatus($a, $ref, $refPaymentSummary);
 
          if (isset($dKaryawan[$a['cs_id']]['nama'])) {
             $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
@@ -254,7 +254,7 @@ class Export extends Controller
          $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2";
          $data2 = $this->db(0)->get_where("master_mutasi", $where);
          $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data2, 'ref'));
-         $lastKasPayDates = $this->loadLastKasPaymentDates(array_column($data2, 'ref'));
+         $refPaymentSummary = $this->loadRefPaymentSummary(array_column($data2, 'ref'));
 
          foreach ($data2 as $a) {
             $jumlah = $a['paket_qty'];
@@ -272,7 +272,7 @@ class Export extends Controller
                $sumPaket[$paket_group] = 0;
             }
 
-            $order_status = $this->resolveMutasiStatStatus($a, $ref, $lastKasPayDates);
+            $order_status = $this->resolveMutasiStatStatus($a, $ref, $refPaymentSummary);
 
             if (isset($dKaryawan[$a['cs_id']]['nama'])) {
                $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
@@ -500,54 +500,160 @@ class Export extends Controller
       return '';
    }
 
-   private function loadLastKasPaymentDates(array $refs): array
+   private function emptyRefPaymentSummary(): array
+   {
+      return ['bill' => 0, 'paid' => 0, 'last_pay' => ''];
+   }
+
+   private function initRefPaymentSummary(array $refs): array
+   {
+      $summary = [];
+      foreach (array_unique(array_filter($refs)) as $ref) {
+         $summary[(string)$ref] = $this->emptyRefPaymentSummary();
+      }
+      return $summary;
+   }
+
+   private function refListSql(array $refs): string
    {
       $refs = array_unique(array_filter($refs));
       if (empty($refs)) {
-         return [];
+         return '';
       }
-      $escaped = array_map(function ($r) {
+      return implode(',', array_map(function ($r) {
          return "'" . addslashes((string) $r) . "'";
-      }, $refs);
-      $refList = implode(',', $escaped);
-      $rows = $this->db(0)->get_cols_where(
-         'kas',
-         'ref_transaksi, MAX(insertTime) as last_pay',
-         "ref_transaksi IN (" . $refList . ") AND status_mutasi <> 2 GROUP BY ref_transaksi",
+      }, $refs));
+   }
+
+   private function refPaymentSummaryEntry(array $summary, $ref): array
+   {
+      $refKey = (string)$ref;
+      if (!isset($summary[$refKey])) {
+         $summary[$refKey] = $this->emptyRefPaymentSummary();
+      }
+      return $summary;
+   }
+
+   private function applyPaidAmount(array $summary, $ref, int $amount, string $insertTime = ''): array
+   {
+      $summary = $this->refPaymentSummaryEntry($summary, $ref);
+      $refKey = (string)$ref;
+      $summary[$refKey]['paid'] += $amount;
+      if ($insertTime !== '') {
+         $payDate = substr($insertTime, 0, 10);
+         if ($summary[$refKey]['last_pay'] === '' || $payDate > $summary[$refKey]['last_pay']) {
+            $summary[$refKey]['last_pay'] = $payDate;
+         }
+      }
+      return $summary;
+   }
+
+   /** Tagihan + total bayar (kas + xtra_diskon) per ref, untuk status export barang. */
+   private function loadRefPaymentSummary(array $refs): array
+   {
+      $summary = $this->initRefPaymentSummary($refs);
+      $refList = $this->refListSql($refs);
+      if ($refList === '') {
+         return $summary;
+      }
+
+      $charges = $this->db(0)->get_cols_where(
+         'charge',
+         'ref_transaksi, SUM(jumlah) as jumlah',
+         "ref_transaksi IN (" . $refList . ") AND cancel = 0 GROUP BY ref_transaksi",
          1,
          'ref_transaksi'
       );
-      if (!is_array($rows)) {
-         return [];
-      }
-      $lastDates = [];
-      foreach ($rows as $ref => $row) {
-         if (!empty($row['last_pay'])) {
-            $lastDates[(string)$ref] = substr($row['last_pay'], 0, 10);
+      if (is_array($charges)) {
+         foreach ($charges as $ref => $row) {
+            $summary = $this->refPaymentSummaryEntry($summary, $ref);
+            $summary[(string)$ref]['bill'] += (int)($row['jumlah'] ?? 0);
          }
       }
-      return $lastDates;
-   }
 
-   private function lastKasPaymentDate($ref, array $lastKasPayDates): string
-   {
-      $refKey = (string)$ref;
-      return $lastKasPayDates[$refKey] ?? $lastKasPayDates[$ref] ?? '';
-   }
-
-   private function resolveMutasiStatStatus(array $row, $ref, array $lastKasPayDates): string
-   {
-      switch ((int)($row['stat'] ?? -1)) {
-         case 1:
-            $payDate = $this->lastKasPaymentDate($ref, $lastKasPayDates);
-            return $payDate !== '' ? 'LUNAS ' . $payDate : 'LUNAS';
-         case 2:
-            return 'BATAL';
-         case 0:
-            return 'PIUTANG';
-         default:
-            return 'PIUTANG';
+      $orders = $this->db(0)->get_where('order_data', "ref IN (" . $refList . ")", 'ref', 1);
+      if (is_array($orders)) {
+         foreach ($orders as $ref => $items) {
+            foreach ($items as $do) {
+               if ((int)$do['cancel'] === 0 && (int)$do['stok'] === 0) {
+                  $summary = $this->refPaymentSummaryEntry($summary, $ref);
+                  $summary[(string)$ref]['bill'] += ((int)$do['harga'] * (int)$do['jumlah'] + (int)$do['harga_paket']) - (int)$do['diskon'];
+               }
+            }
+         }
       }
+
+      $mutasi = $this->db(0)->get_where('master_mutasi', "ref IN (" . $refList . ")", 'ref', 1);
+      if (is_array($mutasi)) {
+         foreach ($mutasi as $ref => $items) {
+            foreach ($items as $dm) {
+               if ((int)$dm['stat'] !== 2) {
+                  $summary = $this->refPaymentSummaryEntry($summary, $ref);
+                  $summary[(string)$ref]['bill'] += ((int)$dm['qty'] * (int)$dm['harga_jual'] + (int)$dm['harga_paket']) - ((int)$dm['diskon'] * (int)$dm['qty']);
+               }
+            }
+         }
+      }
+
+      $kasRows = $this->db(0)->get_where(
+         'kas',
+         "ref_transaksi IN (" . $refList . ") AND status_mutasi <> 2",
+         'ref_transaksi',
+         1
+      );
+      if (is_array($kasRows)) {
+         foreach ($kasRows as $ref => $payments) {
+            foreach ($payments as $dk) {
+               $summary = $this->applyPaidAmount(
+                  $summary,
+                  $ref,
+                  (int)($dk['jumlah'] ?? 0),
+                  $dk['insertTime'] ?? ''
+               );
+            }
+         }
+      }
+
+      // xtra_diskon dihitung sebagai pembayaran (lihat Data_Operasi, Cron::run_cek_tuntas)
+      $diskonRows = $this->db(0)->get_where(
+         'xtra_diskon',
+         "ref_transaksi IN (" . $refList . ") AND cancel = 0",
+         'ref_transaksi',
+         1
+      );
+      if (is_array($diskonRows)) {
+         foreach ($diskonRows as $ref => $diskons) {
+            foreach ($diskons as $ds) {
+               $summary = $this->applyPaidAmount(
+                  $summary,
+                  $ref,
+                  (int)($ds['jumlah'] ?? 0),
+                  $ds['insertTime'] ?? ''
+               );
+            }
+         }
+      }
+
+      return $summary;
+   }
+
+   private function resolveMutasiStatStatus(array $row, $ref, array $refPaymentSummary): string
+   {
+      if ((int)($row['stat'] ?? -1) === 2) {
+         return 'BATAL';
+      }
+
+      $refKey = (string)$ref;
+      $sum = $refPaymentSummary[$refKey] ?? $refPaymentSummary[$ref] ?? $this->emptyRefPaymentSummary();
+      $bill = (int)($sum['bill'] ?? 0);
+      $paid = (int)($sum['paid'] ?? 0);
+
+      if ($paid >= $bill) {
+         $payDate = $sum['last_pay'] ?? '';
+         return $payDate !== '' ? 'LUNAS ' . $payDate : 'LUNAS';
+      }
+
+      return 'PIUTANG';
    }
 
    private function resolveExportStatus($ref, array $row, array $ref_data): string

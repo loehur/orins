@@ -2,6 +2,8 @@
 
 class Cron extends Controller
 {
+   private const CEK_TUNTAS_BATCH = 200;
+
    public function unser()
    {
       $data = unserialize('a:5:{i:0;a:7:{s:3:"c_h";s:10:"#500-#163-";s:3:"c_b";s:12:"#500&-#163&-";s:3:"n_b";s:17:"100CM X 60CM LPS ";s:3:"n_v";s:17:"100CM X 60CM LPS ";s:1:"g";s:7:"#1-#27-";s:1:"h";i:0;s:1:"d";i:0;}i:1;a:7:{s:3:"c_h";s:9:"#500-#51-";s:3:"c_b";s:11:"#500&-#51&-";s:3:"n_b";s:20:"100CM X 60CM LIQUID ";s:3:"n_v";s:20:"100CM X 60CM LIQUID ";s:1:"g";s:6:"#1-#7-";s:1:"h";i:0;s:1:"d";i:0;}i:2;a:7:{s:3:"c_h";s:9:"#500-#63-";s:3:"c_b";s:13:"#500&-#63&34-";s:3:"n_b";s:20:"100CM X 60CM 101050 ";s:3:"n_v";s:22:"100CM X 60CM 101050-c ";s:1:"g";s:6:"#1-#5-";s:1:"h";i:0;s:1:"d";i:0;}i:3;a:7:{s:3:"c_h";s:10:"#500-#377-";s:3:"c_b";s:15:"#500&-#377&150-";s:3:"n_b";s:20:"100CM X 60CM 101060 ";s:3:"n_v";s:22:"100CM X 60CM 101060-w ";s:1:"g";s:6:"#1-#6-";s:1:"h";i:0;s:1:"d";i:0;}i:4;a:7:{s:3:"c_h";s:9:"#500-#56-";s:3:"c_b";s:11:"#500&-#56&-";s:3:"n_b";s:17:"100CM X 60CM 6MM ";s:3:"n_v";s:17:"100CM X 60CM 6MM ";s:1:"g";s:7:"#1-#10-";s:1:"h";i:0;s:1:"d";i:0;}}');
@@ -88,37 +90,52 @@ class Cron extends Controller
 
    function run_cek_tuntas()
    {
-      $where_ref = "tuntas = 0";
-      $cek = $this->db(0)->get_where('ref', $where_ref, "ref");
+      $batchLimit = self::CEK_TUNTAS_BATCH;
+      $refRows = $this->db(0)->get_where_order('ref', 'tuntas = 0', 'ref ASC LIMIT ' . $batchLimit);
       $ref_tuntas = [];
+      $refs = [];
 
-      $refs = array_keys($cek);
-      $tuntas_date = date("Y-m-d");
-
-      if (count($refs) > 0) {
-         $ref_list = "";
-         foreach ($refs as $r) {
-            $ref_list .= $r . ",";
+      if (is_array($refRows)) {
+         foreach ($refRows as $row) {
+            if (isset($row['ref']) && $row['ref'] !== '') {
+               $refs[] = $row['ref'];
+            }
          }
-         $ref_list = rtrim($ref_list, ',');
+      }
 
-         $where = "ref IN (" . $ref_list . ")";
+      $tuntas_date = date("Y-m-d");
+      $checked = count($refs);
 
-         $dOrder = $this->db(0)->get_where('order_data', $where, 'ref', 1);
-         $dMutasi = $this->db(0)->get_where('master_mutasi', $where, 'ref', 1);
+      if ($checked === 0) {
+         echo "0 ref dicek\n";
+         return;
+      }
 
-         $where_kas = "jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ") AND status_mutasi = 1";
-         $dKas = $this->db(0)->get_where('kas', $where_kas, 'ref_transaksi', 1);
+      echo $checked . " ref dicek (max " . $batchLimit . " per eksekusi)\n";
 
-         $where_kasKecil = "ref IN (" . $ref_list . ") AND tipe = 0";
-         $dKasKecil = $this->db(0)->get_where('kas_kecil', $where_kasKecil, 'ref', 1);
+      $ref_list = "";
+      foreach ($refs as $r) {
+         $ref_list .= $r . ",";
+      }
+      $ref_list = rtrim($ref_list, ',');
 
-         $cols = "ref_transaksi, cancel, SUM(jumlah) as jumlah";
-         $where = "ref_transaksi IN (" . $ref_list . ") AND cancel = 0 GROUP BY ref_transaksi";
-         $dDiskon = $this->db(0)->get_cols_where('xtra_diskon', $cols, $where, 1, 'ref_transaksi');
-         $dCharge = $this->db(0)->get_cols_where('charge', $cols, $where, 1, 'ref_transaksi');
+      $where = "ref IN (" . $ref_list . ")";
 
-         foreach ($refs as $r) {
+      $dOrder = $this->db(0)->get_where('order_data', $where, 'ref', 1);
+      $dMutasi = $this->db(0)->get_where('master_mutasi', $where, 'ref', 1);
+
+      $where_kas = "jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ") AND status_mutasi = 1";
+      $dKas = $this->db(0)->get_where('kas', $where_kas, 'ref_transaksi', 1);
+
+      $where_kasKecil = "ref IN (" . $ref_list . ") AND tipe = 0";
+      $dKasKecil = $this->db(0)->get_where('kas_kecil', $where_kasKecil, 'ref', 1);
+
+      $cols = "ref_transaksi, cancel, SUM(jumlah) as jumlah";
+      $where = "ref_transaksi IN (" . $ref_list . ") AND cancel = 0 GROUP BY ref_transaksi";
+      $dDiskon = $this->db(0)->get_cols_where('xtra_diskon', $cols, $where, 1, 'ref_transaksi');
+      $dCharge = $this->db(0)->get_cols_where('charge', $cols, $where, 1, 'ref_transaksi');
+
+      foreach ($refs as $r) {
 
             $charge[$r] = 0;
             if (isset($dCharge[$r]['jumlah'])) {
@@ -131,7 +148,7 @@ class Cron extends Controller
 
             if (isset($dKasKecil[$r]) && count($dKasKecil[$r]) > 0) {
                foreach ($dKasKecil[$r] as $kk) {
-                  if ($kk['kas_kecil']['st'] <> 1) {
+                  if ($kk['st'] <> 1) {
                      $verify_kas_kecil[$r] = false;
                      break;
                   }
@@ -230,28 +247,35 @@ class Cron extends Controller
                   }
                }
             }
+      }
+
+      $total_tuntas = count($ref_tuntas);
+      if ($total_tuntas > 0) {
+         $rt_list = "";
+         foreach ($ref_tuntas as $r) {
+            $rt_list .= $r . ",";
          }
+         $rt_list = rtrim($rt_list, ',');
 
-         $total_tuntas = count($ref_tuntas);
-         if ($total_tuntas > 0) {
-            $rt_list = "";
-            foreach ($ref_tuntas as $r) {
-               $rt_list .= $r . ",";
+         $where = "ref IN (" . $rt_list . ")";
+         $set = "tuntas = 1, tuntas_date = '" . $tuntas_date . "'";
+         $up = $this->db(0)->update("ref", $set, $where);
+         if ($up['errno'] <> 0) {
+            echo $up['error'] . "\n";
+         } else {
+            $up = $this->db(0)->update("order_data", $set, $where);
+            if ($up['errno'] <> 0) {
+               echo $up['error'] . "\n";
             }
-            $rt_list = rtrim($rt_list, ',');
-
-            $where = "ref IN (" . $rt_list . ")";
-            $set = "tuntas = 1, tuntas_date = '" . $tuntas_date . "'";
-            $up = $this->db(0)->update("ref", $set, $where);
+            $up = $this->db(0)->update("master_mutasi", $set, $where);
             if ($up['errno'] <> 0) {
                echo $up['error'] . "\n";
             } else {
-               $set = "tuntas = 1, tuntas_date = '" . $tuntas_date . "'";
-               $up = $this->db(0)->update("order_data", $set, $where);
-               $up = $this->db(0)->update("master_mutasi", $set, $where);
-               echo $total_tuntas . " ORDER TUNTAS \n";
+               echo $total_tuntas . " ORDER TUNTAS dari " . $checked . " ref dicek\n";
             }
          }
+      } else {
+         echo "0 ORDER TUNTAS dari " . $checked . " ref dicek\n";
       }
    }
 
@@ -472,12 +496,10 @@ class Cron extends Controller
       $today = date("Y-m-d");
       $set = "tuntas = 1, tuntas_date = '" . $today . "'";
       $where = "ref = '" . $ref . "'";
-      $up = $this->db(0)->update("order_data", $set, $where);
+      $this->db(0)->update("order_data", $set, $where);
+      $up = $this->db(0)->update("master_mutasi", $set, $where);
       if ($up['errno'] == 0) {
-         $up = $this->db(0)->update("master_mutasi", $set, $where);
-         if ($up['errno'] == 0) {
-            $this->update_ref($ref, $today);
-         }
+         $this->update_ref($ref, $today);
       }
    }
 
