@@ -80,20 +80,7 @@ class Export extends Controller
 
          $main_order = strtoupper($a['produk']);
 
-         if ($a['cancel'] == 0) {
-            if ($a['tuntas'] == 1) {
-               $order_status = "LUNAS " . substr($a['tuntas_date'], 0, 10);
-            } else {
-               if ($a['id_ambil'] == 0) {
-                  $order_status = "AKTIF";
-               }
-               if ($a['id_ambil'] <> 0) {
-                  $order_status = "PIUTANG";
-               }
-            }
-         } else {
-            $order_status = "BATAL";
-         }
+         $order_status = $this->resolveExportStatus($ref, $a, $ref_data);
 
          $mark = $this->getMark($a['ref'], $ref_data);
 
@@ -161,16 +148,7 @@ class Export extends Controller
          $db = $dBarang[$a['id_barang']];
          $barang = strtoupper($db['product_name'] . $db['brand'] . " " . $db['model']);
 
-         if ($a['stat'] <> 2) {
-            if ($a['tuntas'] == 1) {
-               $order_status = "LUNAS " . substr($a['tuntas_date'], 0, 10);
-            } else {
-               $order_status = "PIUTANG";
-            }
-         } else {
-            $order_status = "BATAL";
-         }
-
+         $order_status = $this->resolveExportStatus($ref, $a, $ref_data);
 
          if (isset($dKaryawan[$a['cs_id']]['nama'])) {
             $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
@@ -264,20 +242,7 @@ class Export extends Controller
                $tgl_order[$ref] = substr($a['insertTime'], 0, 10);
             }
 
-            if ($a['cancel'] == 0) {
-               if ($a['tuntas'] == 1) {
-                  $order_status = "LUNAS " . substr($a['tuntas_date'], 0, 10);
-               } else {
-                  if ($a['id_ambil'] == 0) {
-                     $order_status = "AKTIF";
-                  }
-                  if ($a['id_ambil'] <> 0) {
-                     $order_status = "PIUTANG";
-                  }
-               }
-            } else {
-               $order_status = "BATAL";
-            }
+            $order_status = $this->resolveExportStatus($ref, $a, $ref_data);
 
             $mark = $this->getMark($a['ref'], $ref_data);
 
@@ -305,15 +270,7 @@ class Export extends Controller
                $sumPaket[$paket_group] = 0;
             }
 
-            if ($a['stat'] <> 2) {
-               if ($a['tuntas'] == 1) {
-                  $order_status = "LUNAS " . substr($a['tuntas_date'] ?? '', 0, 10);
-               } else {
-                  $order_status = "PIUTANG";
-               }
-            } else {
-               $order_status = "BATAL";
-            }
+            $order_status = $this->resolveExportStatus($ref, $a, $ref_data);
 
             if (isset($dKaryawan[$a['cs_id']]['nama'])) {
                $cs = strtoupper($dKaryawan[$a['cs_id']]['nama']);
@@ -507,6 +464,58 @@ class Export extends Controller
       $where = "ref IN (" . implode(",", $escaped) . ")";
       $extra = $this->db(0)->get_where('ref', $where, 'ref');
       return $ref_data + (is_array($extra) ? $extra : []);
+   }
+
+   private function isRefTuntas($ref, array $row, array $ref_data): bool
+   {
+      if ((int)($row['tuntas'] ?? 0) === 1) {
+         return true;
+      }
+
+      $refKey = (string)$ref;
+      if (isset($ref_data[$refKey]) && (int)($ref_data[$refKey]['tuntas'] ?? 0) === 1) {
+         return true;
+      }
+      if (isset($ref_data[$ref]) && (int)($ref_data[$ref]['tuntas'] ?? 0) === 1) {
+         return true;
+      }
+
+      return false;
+   }
+
+   private function tuntasDate($ref, array $row, array $ref_data): string
+   {
+      $refKey = (string)$ref;
+      if (!empty($ref_data[$refKey]['tuntas_date'])) {
+         return substr($ref_data[$refKey]['tuntas_date'], 0, 10);
+      }
+      if (!empty($ref_data[$ref]['tuntas_date'])) {
+         return substr($ref_data[$ref]['tuntas_date'], 0, 10);
+      }
+      if (!empty($row['tuntas_date'])) {
+         return substr($row['tuntas_date'], 0, 10);
+      }
+      return '';
+   }
+
+   private function resolveExportStatus($ref, array $row, array $ref_data): string
+   {
+      if (isset($row['stat']) && (int)$row['stat'] === 2) {
+         return 'BATAL';
+      }
+      if (isset($row['cancel']) && (int)$row['cancel'] === 1) {
+         return 'BATAL';
+      }
+
+      if ($this->isRefTuntas($ref, $row, $ref_data)) {
+         return 'LUNAS ' . $this->tuntasDate($ref, $row, $ref_data);
+      }
+
+      if (isset($row['id_ambil'])) {
+         return (int)$row['id_ambil'] === 0 ? 'AKTIF' : 'PIUTANG';
+      }
+
+      return 'PIUTANG';
    }
 
    private function getMark($ref, array $ref_data)
