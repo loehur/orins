@@ -74,48 +74,10 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
 </div>
 <?php } ?>
 
+<script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
+
 <script>
 (function() {
-    function loadDataTables(done) {
-        if ($.fn.DataTable || $.fn.dataTable) {
-            done();
-            return;
-        }
-        var script = document.createElement('script');
-        script.src = '<?= PV::ASSETS_URL ?>js/dataTables.min.js';
-        script.onload = done;
-        script.onerror = function() {
-            console.error('Gagal memuat DataTables');
-        };
-        document.body.appendChild(script);
-    }
-
-    function initGudangStokTable() {
-        var $table = $('#tb_barang');
-        if (!$table.length) {
-            return;
-        }
-
-        if ($.fn.DataTable && $.fn.DataTable.isDataTable($table[0])) {
-            $table.DataTable().destroy();
-            $table.removeClass('dataTable');
-        }
-
-        $table.DataTable({
-            order: [],
-            lengthChange: false,
-            searching: true,
-            info: false,
-            autoWidth: false,
-            pageLength: -1,
-            scrollY: 600,
-            dom: 'frti',
-            columnDefs: [
-                { searchable: false, targets: [1, 2, 3, 4] }
-            ]
-        });
-    }
-
     function showSnModal() {
         var modalEl = document.getElementById('modalSnStok');
         if (!modalEl || typeof bootstrap === 'undefined') {
@@ -124,7 +86,30 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
         return bootstrap.Modal.getOrCreateInstance(modalEl);
     }
 
-    loadDataTables(initGudangStokTable);
+    $(document).ready(function() {
+        var $table = $('#tb_barang');
+        if (!$table.length || !$.fn.dataTable) {
+            return;
+        }
+
+        if ($.fn.dataTable.isDataTable($table[0])) {
+            $table.DataTable().destroy();
+        }
+
+        $table.dataTable({
+            order: [],
+            bLengthChange: false,
+            bFilter: true,
+            bInfo: false,
+            bAutoWidth: false,
+            pageLength: 50,
+            scrollY: 600,
+            dom: 'lfrti',
+            columnDefs: [
+                { searchable: false, targets: [1, 2, 3, 4] }
+            ]
+        });
+    });
 
     <?php if ($canKasirStok) { ?>
     var hargaEditClick = 0;
