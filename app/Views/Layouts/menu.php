@@ -17,13 +17,15 @@ $yearNow = date('Y');
 			<div class="sidenav-menu">
 				<div class="nav accordion pt-3" id="accordionSidenav">
 					<?php if ($canPrioritasMenu) { ?>
-						<a class="nav-link <?= $openPrioritasMenu ? 'active' : 'collapsed' ?> py-2" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#collapsePrioritas" aria-expanded="<?= $openPrioritasMenu ? 'true' : 'false' ?>" aria-controls="collapsePrioritas">
+						<a class="nav-link <?= $openPrioritasMenu ? 'active' : 'collapsed' ?> py-2" href="javascript:void(0)" id="prioritasToggle" aria-expanded="<?= $openPrioritasMenu ? 'true' : 'false' ?>">
 							<div class="nav-link-icon text-danger"><i data-feather="alert-triangle"></i></div>
 							Prioritas
 							<span class="badge bg-danger-soft text-danger ms-2 d-none" id="menuPrioritasBadge"></span>
 							<div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
 						</a>
-						<div class="collapse<?= $openPrioritasMenu ? ' show' : '' ?>" id="collapsePrioritas"></div>
+						<?php if (!empty($openPrioritasMenu)) { ?>
+							<nav class="sidenav-menu-nested nav" id="prioritasSubmenu"></nav>
+						<?php } ?>
 					<?php } ?>
 					<?php foreach (Menu::items() as $key => $md) { ?>
 						<?php foreach ($md['access'] as $mda) { ?>

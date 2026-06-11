@@ -122,38 +122,52 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 	});
 
 	(function() {
-		var $collapse = $('#collapsePrioritas');
-		if ($collapse.length === 0) {
+		var $toggle = $('#prioritasToggle');
+		if ($toggle.length === 0) {
 			return;
 		}
 
+		var $submenu = $('#prioritasSubmenu');
 		var prioritasLoaded = false;
 		var prioritasUrl = '<?= PV::BASE_URL ?>Home/menu_prioritas?t=' + encodeURIComponent(<?= json_encode($t) ?>);
 
-		function resetPrioritasCollapse() {
-			$collapse.removeClass('collapsing show').addClass('collapse');
-			$collapse[0].style.height = '';
+		function ensureSubmenu() {
+			$submenu = $('#prioritasSubmenu');
+			if ($submenu.length === 0) {
+				$toggle.after('<nav class="sidenav-menu-nested nav" id="prioritasSubmenu"></nav>');
+				$submenu = $('#prioritasSubmenu');
+			}
+			return $submenu;
 		}
 
-		function renderPrioritasMenu(html) {
-			$collapse.html('<nav class="sidenav-menu-nested nav">' + html + '</nav>');
+		function setPrioritasOpen(open) {
+			$toggle.toggleClass('collapsed', !open);
+			$toggle.toggleClass('active', open);
+			$toggle.attr('aria-expanded', open ? 'true' : 'false');
+			if (!open) {
+				$('#prioritasSubmenu').remove();
+				$submenu = $();
+				return;
+			}
+			ensureSubmenu();
 		}
 
 		function loadPrioritasMenu() {
+			var $menu = ensureSubmenu();
 			if (prioritasLoaded) {
 				return;
 			}
-			renderPrioritasMenu('<span class="nav-link py-1 text-muted ps-3">Memuat...</span>');
+			$menu.html('<span class="nav-link py-1 text-muted ps-3">Memuat...</span>');
 			$.ajax({
 				url: prioritasUrl,
 				type: 'GET',
 				cache: false,
 				success: function(response) {
 					if (!response || String(response).indexOf('menuPrioritasItems') === -1) {
-						renderPrioritasMenu('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
+						$menu.html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
 						return;
 					}
-					renderPrioritasMenu(response);
+					$menu.html(response);
 					prioritasLoaded = true;
 					var count = parseInt($('#menuPrioritasItems').data('count') || 0, 10);
 					var $badge = $('#menuPrioritasBadge');
@@ -167,26 +181,24 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 					}
 				},
 				error: function() {
-					renderPrioritasMenu('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
+					$menu.html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
 				}
 			});
 		}
 
-		$collapse.on('show.bs.collapse', function() {
-			loadPrioritasMenu();
-		});
-
-		$collapse.on('hidden.bs.collapse', function() {
-			resetPrioritasCollapse();
+		$toggle.on('click', function(e) {
+			e.preventDefault();
+			var opening = $('#prioritasSubmenu').length === 0;
+			setPrioritasOpen(opening);
+			if (opening) {
+				loadPrioritasMenu();
+			}
 		});
 
 		<?php if (!empty($openPrioritasMenu)) { ?>
 		$(function() {
+			setPrioritasOpen(true);
 			loadPrioritasMenu();
-		});
-		<?php } else { ?>
-		$(function() {
-			resetPrioritasCollapse();
 		});
 		<?php } ?>
 	})();
