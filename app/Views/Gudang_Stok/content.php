@@ -9,17 +9,19 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
 </style>
 
 <main>
-    <!-- Main page content-->
     <div class="container text-sm">
         <a href="<?= PV::BASE_URL ?>Gudang_Stok/print" target="_blank"><span class="btn btn-sm btn-primary">Print Stok</span></a>
         <table id="tb_barang" class="hover text-sm stripe">
             <thead>
-                <th>Barang</th>
-                <th class="text-end">U</th>
-                <th class="text-end">D</th>
-                <th class="text-end">O</th>
-                <th>Stok</th>
+                <tr>
+                    <th>Barang</th>
+                    <th class="text-end">U</th>
+                    <th class="text-end">D</th>
+                    <th class="text-end">O</th>
+                    <th>Stok</th>
+                </tr>
             </thead>
+            <tbody>
             <?php foreach ($data['barang'] as $a) {
                 $qtyToko = isset($data['stok'][$a['id']]) ? (int)$data['stok'][$a['id']]['qty'] : 0;
                 $qtyGudang = isset($data['stok_gudang'][$a['id']]) ? (int)$data['stok_gudang'][$a['id']]['qty'] : 0;
@@ -30,7 +32,7 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
                 $snQty = max($qtyToko, $qtyGudang);
             ?>
                 <tr>
-                    <td class="">
+                    <td>
                         <small><?= strtoupper($a['grup'] . " " . $a['tipe']) ?></small><br>
                         <small class="fw-bold"><span class="text-success"><?= $a['id'] ?></span> <?= strtoupper($a['brand'] . " " . $a['model']) ?><?= $a['product_name'] ?></small>
                     </td>
@@ -45,7 +47,7 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
                     <?php } ?>
                     <td class="text-end align-top">
                         <?php if ($canKasirStok && (int)$a['sn'] === 1 && $snQty > 0) { ?>
-                            <i class="fa-solid fa-magnifying-glass text-primary cek-sn" data-id="<?= $a['id'] ?>" data-bs-target="#modalSnStok" data-bs-toggle="modal" style="cursor: pointer;"></i>
+                            <i class="fa-solid fa-magnifying-glass text-primary cek-sn" data-id="<?= $a['id'] ?>" style="cursor: pointer;" title="Lihat SN"></i>
                         <?php } ?>
                         <?= number_format($qtyToko, 0) ?>/<?= number_format($qtyGudang, 0) ?><br>
                         <span class="text-success"><?= isset($data['stok_sds'][$a['id'] . "#0"]) ? number_format($data['stok_sds'][$a['id'] . "#0"]['qty'], 0) : 0 ?>/<?= isset($data['stok_sds_gudang'][$a['id'] . "#0"]) ? number_format($data['stok_sds_gudang'][$a['id'] . "#0"]['qty'], 0) : 0 ?></span>&nbsp;
@@ -53,15 +55,17 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
                     </td>
                 </tr>
             <?php } ?>
+            </tbody>
         </table>
     </div>
 </main>
 
 <?php if ($canKasirStok) { ?>
-<div class="modal" id="modalSnStok">
+<div class="modal fade" id="modalSnStok" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header py-2 px-2">
+                <h6 class="modal-title text-sm mb-0">Detail SN</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body px-0 py-2" id="snStokLoad"></div>
@@ -70,92 +74,143 @@ $canKasirStok = in_array($this->userData['user_tipe'], PV::PRIV[2]);
 </div>
 <?php } ?>
 
-<script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#tb_barang').dataTable({
-            "bLengthChange": false,
-            "bFilter": true,
-            "bInfo": false,
-            "bAutoWidth": false,
-            "pageLength": -1,
-            "scrollY": 600,
-            "dom": "lfrti",
-            "columnDefs": [
-                { "searchable": false, "targets": [1, 2, 3, 4] }
+(function() {
+    function loadDataTables(done) {
+        if ($.fn.DataTable || $.fn.dataTable) {
+            done();
+            return;
+        }
+        var script = document.createElement('script');
+        script.src = '<?= PV::ASSETS_URL ?>js/dataTables.min.js';
+        script.onload = done;
+        script.onerror = function() {
+            console.error('Gagal memuat DataTables');
+        };
+        document.body.appendChild(script);
+    }
+
+    function initGudangStokTable() {
+        var $table = $('#tb_barang');
+        if (!$table.length) {
+            return;
+        }
+
+        if ($.fn.DataTable && $.fn.DataTable.isDataTable($table[0])) {
+            $table.DataTable().destroy();
+            $table.removeClass('dataTable');
+        }
+
+        $table.DataTable({
+            order: [],
+            lengthChange: false,
+            searching: true,
+            info: false,
+            autoWidth: false,
+            pageLength: -1,
+            scrollY: 600,
+            dom: 'frti',
+            columnDefs: [
+                { searchable: false, targets: [1, 2, 3, 4] }
             ]
         });
-    });
+    }
+
+    function showSnModal() {
+        var modalEl = document.getElementById('modalSnStok');
+        if (!modalEl || typeof bootstrap === 'undefined') {
+            return null;
+        }
+        return bootstrap.Modal.getOrCreateInstance(modalEl);
+    }
+
+    loadDataTables(initGudangStokTable);
 
     <?php if ($canKasirStok) { ?>
     var hargaEditClick = 0;
 
-    $(document).on('click', '.cek-sn', function() {
-        var id = $(this).attr('data-id');
-        $('#snStokLoad').load('<?= PV::BASE_URL ?>Load/spinner/2', function() {
-            $('#snStokLoad').load('<?= PV::BASE_URL ?>Gudang_Stok/cek_barang/' + id);
-        });
-    });
+    $(document).off('click.gudangStokSn', '.cek-sn').on('click.gudangStokSn', '.cek-sn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
 
-    $(document).on('click', '.cell_edit_harga', function() {
-        hargaEditClick += 1;
-        if (hargaEditClick !== 1) {
+        var id = $(this).data('id');
+        var modal = showSnModal();
+        if (!modal) {
             return;
         }
 
-        var id = $(this).attr('data-id');
-        var primary = $(this).attr('data-primary');
-        var col = $(this).attr('data-col');
-        var tb = $(this).attr('data-tb');
-        var value = $(this).html();
-        var value_before = value;
-        if (value === '') {
-            value = 0;
+        $('#snStokLoad').html('<div class="text-center text-muted small py-3">Memuat...</div>');
+        modal.show();
+        $('#snStokLoad').load('<?= PV::BASE_URL ?>Gudang_Stok/cek_barang/' + id);
+    });
+
+    $(document).off('click.gudangStokHarga', '.cell_edit_harga').on('click.gudangStokHarga', '.cell_edit_harga', function() {
+        if (hargaEditClick !== 0) {
+            return;
         }
-        var el = $(this);
-        var width = el.parent().width();
-        var align = 'right';
+        hargaEditClick = 1;
 
-        el.parent().css('width', width);
-        el.html("<input required type='number' style='outline:none;border:none;width:" + width + "px;text-align:" + align + "' id='value_harga_edit' value=''>");
+        var $el = $(this);
+        var id = $el.data('id');
+        var primary = $el.data('primary');
+        var col = $el.data('col');
+        var tb = $el.data('tb');
+        var value = $el.text();
+        var valueBefore = value;
+        if (value === '') {
+            value = '0';
+        }
 
-        $('#value_harga_edit').val(value).focus();
-        $('#value_harga_edit').on('keypress', function(e) {
-            if (e.which === 13) {
+        var width = $el.parent().width();
+        $el.parent().css('width', width);
+        $el.html('<input type="number" class="harga-edit-input" style="outline:none;border:none;width:100%;text-align:right">');
+        var $input = $el.find('input');
+        $input.val(value).focus();
+
+        $input.on('keydown', function(ev) {
+            if (ev.which === 13) {
+                ev.preventDefault();
                 $(this).blur();
             }
         });
-        $('#value_harga_edit').on('focusout', function() {
-            var value_after = $(this).val();
-            if (value_after === value_before || value_after === '') {
-                el.html(value);
+
+        $input.on('blur', function() {
+            var valueAfter = $(this).val();
+            $input.off('keydown blur');
+
+            if (valueAfter === valueBefore || valueAfter === '') {
+                $el.text(value);
                 hargaEditClick = 0;
-            } else {
-                $.ajax({
-                    url: '<?= PV::BASE_URL ?>Functions/updateCell',
-                    data: {
-                        id: id,
-                        value: value_after,
-                        col: col,
-                        primary: primary,
-                        tb: tb
-                    },
-                    type: 'POST',
-                    dataType: 'html',
-                    success: function(res) {
-                        hargaEditClick = 0;
-                        if (res == 0) {
-                            el.html(value_after);
-                        } else {
-                            el.html(value);
-                            alert(res);
-                        }
-                    },
-                });
+                return;
             }
+
+            $.ajax({
+                url: '<?= PV::BASE_URL ?>Functions/updateCell',
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    id: id,
+                    value: valueAfter,
+                    col: col,
+                    primary: primary,
+                    tb: tb
+                },
+                success: function(res) {
+                    hargaEditClick = 0;
+                    if (res == 0) {
+                        $el.text(valueAfter);
+                    } else {
+                        $el.text(value);
+                        alert(res);
+                    }
+                },
+                error: function() {
+                    hargaEditClick = 0;
+                    $el.text(value);
+                }
+            });
         });
     });
     <?php } ?>
-
-    var click = 0;
+})();
 </script>
