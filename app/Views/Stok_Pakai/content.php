@@ -3,6 +3,44 @@
     .dt-search {
         float: right !important;
     }
+
+    #tb_barang tbody td,
+    #tb_barang thead th {
+        padding: 0.2rem 0.45rem;
+        line-height: 1.15;
+        vertical-align: middle;
+    }
+
+    #tb_barang .btn-sm {
+        padding: 0.1rem 0.35rem;
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+
+    #tb_barang_wrapper .dt-scroll-body,
+    #tb_barang_wrapper .dataTables_scrollBody {
+        max-height: 300px !important;
+    }
+
+    .riwayat-pakai-scroll {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+
+    .riwayat-pakai-scroll thead th {
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 1;
+        padding: 0.25rem 0.45rem;
+        line-height: 1.15;
+    }
+
+    .riwayat-pakai-scroll tbody td {
+        padding: 0.2rem 0.45rem;
+        line-height: 1.15;
+        vertical-align: middle;
+    }
 </style>
 
 <main>
@@ -34,6 +72,19 @@
             <?php }
             } ?>
         </table>
+
+        <div class="mt-3 pt-2 border-top">
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                <span class="fw-bold">Riwayat Pakai</span>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-dark riwayat-filter active" data-period="this">Bulan ini</button>
+                    <button type="button" class="btn btn-outline-dark riwayat-filter" data-period="last">Bulan lalu</button>
+                </div>
+            </div>
+            <div id="riwayat-pakai-panel">
+                <div class="text-muted small py-2">Memuat riwayat...</div>
+            </div>
+        </div>
     </div>
 </main>
 
@@ -100,6 +151,19 @@
     var id = 0;
     var snList = [];
     var hasSnItem = false;
+    var riwayatPeriod = 'this';
+
+    function setRiwayatFilterActive(period) {
+        $('.riwayat-filter').removeClass('btn-dark active').addClass('btn-outline-dark');
+        $('.riwayat-filter[data-period="' + period + '"]').removeClass('btn-outline-dark').addClass('btn-dark active');
+    }
+
+    function loadRiwayatPakai(period) {
+        riwayatPeriod = period || 'this';
+        setRiwayatFilterActive(riwayatPeriod);
+        $('#riwayat-pakai-panel').html('<div class="text-muted small py-2">Memuat riwayat...</div>');
+        $('#riwayat-pakai-panel').load('<?= PV::BASE_URL ?>Stok_Pakai/riwayat_pakai/' + riwayatPeriod);
+    }
 
     function setSnMode(useSelect) {
         hasSnItem = useSelect;
@@ -148,10 +212,16 @@
             "bInfo": false,
             "bAutoWidth": false,
             "pageLength": 50,
-            "scrollY": 615,
+            "scrollY": 300,
             "dom": "lfrti"
         });
+
+        loadRiwayatPakai('this');
     })
+
+    $(document).on('click', '.riwayat-filter', function() {
+        loadRiwayatPakai($(this).data('period'));
+    });
 
     $("select[name=sds]").on("change", function() {
         if (hasSnItem) {
@@ -183,6 +253,7 @@
                     var new_qty = (qty - qty_in);
                     alert("Pakai Success!");
                     $("span#" + id).html(new_qty);
+                    loadRiwayatPakai(riwayatPeriod);
                 } else {
                     alert(res);
                 }

@@ -38,4 +38,24 @@ class Stok_Pakai extends Controller
       $data['akun_pakai'] = $this->db(0)->get('akun_pakai');
       $this->view($this->v_content, $data);
    }
+
+   public function riwayat_pakai($period = 'this')
+   {
+      $period = ($period === 'last') ? 'last' : 'this';
+      if ($period === 'last') {
+         $startTime = date('Y-m-01 00:00:00', strtotime('first day of last month'));
+         $endTime = date('Y-m-t 23:59:59', strtotime('last day of last month'));
+      } else {
+         $startTime = date('Y-m-01 00:00:00');
+         $endTime = date('Y-m-t 23:59:59');
+      }
+
+      $where = "jenis = 4 AND id_sumber = 0 AND stat = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' ORDER BY insertTime DESC";
+      $data['riwayat'] = $this->db(0)->get_where('master_mutasi', $where);
+      $data['barang'] = $this->db(0)->get('master_barang', 'id');
+      $data['akun_pakai'] = $this->db(0)->get('akun_pakai', 'id');
+      $data['karyawan'] = $this->db(0)->get('karyawan', 'id_karyawan');
+      $data['period'] = $period;
+      $this->view(__CLASS__ . '/riwayat_pakai', $data);
+   }
 }
