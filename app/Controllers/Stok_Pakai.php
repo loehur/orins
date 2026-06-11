@@ -58,4 +58,22 @@ class Stok_Pakai extends Controller
       $data['period'] = $period;
       $this->view(__CLASS__ . '/riwayat_pakai', $data);
    }
+
+   public function hapus_pakai()
+   {
+      $id = (int)($_POST['id'] ?? 0);
+      if ($id <= 0) {
+         echo 'Data tidak valid';
+         exit();
+      }
+
+      $row = $this->db(0)->get_where_row('master_mutasi', "id = " . $id . " AND jenis = 4 AND id_sumber = 0 AND stat = 1");
+      if (!$row) {
+         echo 'Riwayat pakai tidak ditemukan atau sudah dihapus';
+         exit();
+      }
+
+      $update = $this->db(0)->update('master_mutasi', 'stat = 2', 'id = ' . $id);
+      echo $update['errno'] == 0 ? 0 : $update['error'];
+   }
 }

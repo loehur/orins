@@ -144,6 +144,26 @@
         </div>
 </form>
 
+<div class="modal fade" id="modalHapusPakai" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-warning bg-gradient text-dark py-2">
+                <h6 class="modal-title">Hapus Riwayat Pakai</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-sm">
+                <p class="mb-2">Yakin ingin menghapus riwayat pakai ini?</p>
+                <div id="hapus-pakai-detail" class="border rounded p-2 bg-light small"></div>
+                <p class="mb-0 mt-2 text-danger"><strong>Stok gudang akan dikembalikan.</strong></p>
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-sm btn-danger" id="btnHapusPakaiConfirm">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 
 <script>
@@ -152,6 +172,8 @@
     var snList = [];
     var hasSnItem = false;
     var riwayatPeriod = 'this';
+    var hapusPakaiPending = null;
+    var modalHapusPakai = null;
 
     function setRiwayatFilterActive(period) {
         $('.riwayat-filter').removeClass('btn-dark active').addClass('btn-outline-dark');
@@ -186,7 +208,7 @@
         var count = 0;
         $.each(snList, function(i, item) {
             if (String(item.sds) === String(sds)) {
-                $sel.append('<option value="' + item.sn + '" data-qty="' + item.qty + '">' + item.sn + ' (' + item.qty + ')</option>');
+                $sel.append('<option value="' + item.sn + '" data-qty="' + item.qty + '">' + item.sn + '</option>');
                 count++;
             }
         });
@@ -203,6 +225,34 @@
         });
     }
 
+    function updateStokGudang(idBarang, qtyDelta) {
+        var $btn = $('span#b' + idBarang);
+        if (!$btn.length) {
+            return;
+        }
+        var cur = parseInt(String($btn.text()).replace(/,/g, ''), 10) || 0;
+        $btn.text(cur + qtyDelta);
+    }
+
+    function showHapusPakaiModal($el) {
+        hapusPakaiPending = {
+            id: $el.data('id'),
+            id_barang: $el.data('id_barang'),
+            qty: parseInt($el.data('qty'), 10) || 0,
+            barang: $el.data('barang'),
+            tanggal: $el.data('tanggal')
+        };
+        $('#hapus-pakai-detail').html(
+            '<div><strong>' + hapusPakaiPending.barang + '</strong></div>' +
+            '<div>Qty: ' + hapusPakaiPending.qty + '</div>' +
+            '<div>Tanggal: ' + hapusPakaiPending.tanggal + '</div>'
+        );
+        if (!modalHapusPakai) {
+            modalHapusPakai = new bootstrap.Modal(document.getElementById('modalHapusPakai'));
+        }
+        modalHapusPakai.show();
+    }
+
     $(document).ready(function() {
         $('select.tize').selectize();
 
@@ -213,7 +263,10 @@
             "bAutoWidth": false,
             "pageLength": 50,
             "scrollY": 300,
-            "dom": "lfrti"
+            "dom": "lfrti",
+            "columnDefs": [
+                { "searchable": false, "targets": [0, 2] }
+            ]
         });
 
         loadRiwayatPakai('this');
@@ -221,6 +274,39 @@
 
     $(document).on('click', '.riwayat-filter', function() {
         loadRiwayatPakai($(this).data('period'));
+    });
+
+    $(document).on('click', '.hapus-riwayat-pakai', function() {
+        showHapusPakaiModal($(this));
+    });
+
+    $('#btnHapusPakaiConfirm').on('click', function() {
+        if (!hapusPakaiPending) {
+            return;
+        }
+        var $btn = $(this).prop('disabled', true);
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Stok_Pakai/hapus_pakai',
+            type: 'POST',
+            data: {
+                id: hapusPakaiPending.id
+            },
+            success: function(res) {
+                if (res == 0) {
+                    if (modalHapusPakai) {
+                        modalHapusPakai.hide();
+                    }
+                    updateStokGudang(hapusPakaiPending.id_barang, hapusPakaiPending.qty);
+                    hapusPakaiPending = null;
+                    loadRiwayatPakai(riwayatPeriod);
+                } else {
+                    alert(res);
+                }
+            },
+            complete: function() {
+                $btn.prop('disabled', false);
+            }
+        });
     });
 
     $("select[name=sds]").on("change", function() {

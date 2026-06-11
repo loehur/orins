@@ -79,7 +79,10 @@
             "bAutoWidth": false,
             "pageLength": -1,
             "scrollY": 600,
-            "dom": "lfrti"
+            "dom": "lfrti",
+            "columnDefs": [
+                { "searchable": false, "targets": [1, 2, 3, 4] }
+            ]
         });
     })
 
