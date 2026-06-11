@@ -1,5 +1,5 @@
 <?php
-$canPrioritasMenu = in_array($this->userData['user_tipe'], PV::PRIV[3]) || in_array($this->userData['user_tipe'], PV::PRIV[4]);
+$canPrioritasMenu = in_array($this->userData['user_tipe'], PV::PRIV[4]);
 $yearNow = date('Y');
 ?>
 
