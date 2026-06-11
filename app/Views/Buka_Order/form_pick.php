@@ -46,7 +46,7 @@ switch ($id_pelanggan_jenis) {
                     <?php } ?>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill" data-bs-dismiss="modal">Tambah</button>
+                    <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill">Tambah</button>
                 </div>
             </form>
         </div>
@@ -79,7 +79,7 @@ switch ($id_pelanggan_jenis) {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill" data-bs-dismiss="modal">Tambah</button>
+                    <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill">Tambah</button>
                 </div>
             </form>
         </div>
@@ -116,7 +116,7 @@ switch ($id_pelanggan_jenis) {
                     <?php } ?>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill" data-bs-dismiss="modal">Tambah</button>
+                    <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill">Tambah</button>
                 </div>
             </form>
         </div>
@@ -195,7 +195,7 @@ switch ($id_pelanggan_jenis) {
                     <?php } ?>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill" data-bs-dismiss="modal">Tambah</button>
+                    <button type="submit" class="btn btn-primary bg-primary bg-gradient rounded-pill">Tambah</button>
                 </div>
             </form>
         </div>

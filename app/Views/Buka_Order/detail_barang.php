@@ -39,7 +39,7 @@
                                 <input type="hidden" name="sds" value="<?= $ds['sds'] ?>">
                                 <input type="hidden" name="sn" value="<?= $ds['sn'] ?>">
                                 <input type="hidden" name="kode" value="<?= $ds['id_barang'] ?>">
-                                <input type="number" style="width: 50px;" min="1" value="1" name="qty" class="border-0 h-100 rounded text-center" <?= (!empty($data['limited']) && $ds['qty'] > 0) ? 'max="' . $ds['qty'] . '"' : '' ?> <?= (!empty($data['limited']) && $ds['qty'] == 0) ? 'disabled' : '' ?>> <button data-bs-dismiss="modal" type="submit" class="btn btn-sm btn-primary" <?= (!empty($data['limited']) && $ds['qty'] == 0) ? 'disabled' : '' ?>>Tambah</button>
+                                <input type="number" style="width: 50px;" min="1" value="1" name="qty" class="border-0 h-100 rounded text-center" <?= (!empty($data['limited']) && $ds['qty'] > 0) ? 'max="' . $ds['qty'] . '"' : '' ?> <?= (!empty($data['limited']) && $ds['qty'] == 0) ? 'disabled' : '' ?>> <button type="submit" class="btn btn-sm btn-primary" <?= (!empty($data['limited']) && $ds['qty'] == 0) ? 'disabled' : '' ?>>Tambah</button>
                             </form>
                         </td>
                     </tr>
@@ -84,19 +84,36 @@
         $('select.tize').selectize();
     });
 
-    $("form").on("submit", function(e) {
-        $(".modal").hide();
+    $("#detail_barang").off("submit.barangDetail", "form").on("submit.barangDetail", "form", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $form = $(this);
+        if ($form.data('ajaxSubmitting')) {
+            return false;
+        }
         var id_paket = $("#paket_barang").val();
         if (typeof id_paket == "undefined") {
             id_paket = "";
         }
-        e.preventDefault();
+        var $btn = $form.find('button[type="submit"]');
+        $form.data('ajaxSubmitting', true);
+        $btn.prop('disabled', true);
         $.ajax({
-            url: $(this).attr('action'),
-            data: $(this).serialize() + "&id_paket=" + id_paket,
-            type: $(this).attr("method"),
+            url: $form.attr('action'),
+            data: $form.serialize() + "&id_paket=" + id_paket,
+            type: $form.attr("method"),
+            complete: function() {
+                $form.data('ajaxSubmitting', false);
+                $btn.prop('disabled', false);
+            },
             success: function(res) {
                 if (res == 0) {
+                    var modalEl = $form.closest('.modal')[0];
+                    if (modalEl) {
+                        bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                    }
+                    formPickLoaded = false;
+                    $('#form-pick-modals').empty();
                     content();
                 } else {
                     showToast(res, 'danger');

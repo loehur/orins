@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Tetapkan HARGA</button>
+                    <button type="submit" class="btn btn-success">Tetapkan HARGA</button>
                 </div>
             </form>
         </div>
@@ -39,7 +39,7 @@
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-dark" data-bs-dismiss="modal">Update Catatan</button>
+                    <button type="submit" class="btn btn-dark">Update Catatan</button>
                 </div>
             </form>
         </div>
@@ -64,7 +64,7 @@
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Tetapkan HARGA</button>
+                    <button type="submit" class="btn btn-success">Tetapkan HARGA</button>
                 </div>
             </form>
         </div>
@@ -87,7 +87,7 @@
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Tetapkan Nama Produk</button>
+                    <button type="submit" class="btn btn-success">Tetapkan Nama Produk</button>
                 </div>
             </form>
         </div>
@@ -110,7 +110,7 @@
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn text-purple border-purple" data-bs-dismiss="modal">Tetapkan Diskon</button>
+                    <button type="submit" class="btn text-purple border-purple">Tetapkan Diskon</button>
                 </div>
             </form>
         </div>
@@ -133,7 +133,7 @@
                     </div>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn text-purple border-purple" data-bs-dismiss="modal">Tetapkan Diskon</button>
+                    <button type="submit" class="btn text-purple border-purple">Tetapkan Diskon</button>
                 </div>
             </form>
         </div>

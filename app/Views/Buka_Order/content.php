@@ -1206,15 +1206,34 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         });
     })
 
+    function closeFormModal($form) {
+        var modalEl = $form.closest('.modal')[0];
+        if (modalEl) {
+            bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+        }
+    }
+
     $(document).off('submit' + bukaOrderEvt, 'form.ajax').on('submit' + bukaOrderEvt, 'form.ajax', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         var $form = $(this);
+        if ($form.data('ajaxSubmitting')) {
+            return false;
+        }
+        var $btn = $form.find('button[type="submit"]');
+        $form.data('ajaxSubmitting', true);
+        $btn.prop('disabled', true);
         $.ajax({
             url: $form.attr('action'),
             data: $form.serialize(),
             type: $form.attr("method"),
+            complete: function() {
+                $form.data('ajaxSubmitting', false);
+                $btn.prop('disabled', false);
+            },
             success: function(res) {
                 if (res == 0) {
+                    closeFormModal($form);
                     formPickLoaded = false;
                     $('#form-pick-modals').empty();
                     content();
