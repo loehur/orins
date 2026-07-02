@@ -1003,6 +1003,13 @@
 
 <script>
     var refFinanceCache = <?= json_encode($refFinanceCache ?? []) ?>;
+    var paymentAccountsMulti = <?= json_encode(array_values(array_map(function ($pa) {
+        return [
+            'id' => (string)$pa['id'],
+            'name' => strtoupper($pa['payment_account']),
+            'sds' => (int)($pa['sds'] ?? 0),
+        ];
+    }, $data['payment_account'] ?? []))) ?>;
 </script>
 
 <span data-custom-loader="true" class="d-none"></span>
@@ -1095,7 +1102,7 @@
 
     function refreshPaymentAccountOptions(mode) {
         var $sel = $("#paymentAccountMulti");
-        if (!$sel.length) {
+        if (!$sel.length || !paymentAccountsMulti || !paymentAccountsMulti.length) {
             return;
         }
 
@@ -1106,39 +1113,40 @@
             currentVal = $sel.val() || "";
         }
 
-        $sel.find("option").each(function() {
-            var val = $(this).val();
-            if (!val) {
-                $(this).prop("disabled", false).show();
-                return;
+        var filtered = paymentAccountsMulti.filter(function(pa) {
+            if (mode === "MIX") {
+                return true;
             }
-            var paSds = String($(this).attr("data-sds")) === "1";
-            var show = mode === "MIX" || (mode === "SDS" && paSds) || (mode === "TOKO" && !paSds);
-            $(this).prop("disabled", !show);
-            if (show) {
-                $(this).show();
-            } else {
-                $(this).hide();
+            if (mode === "SDS") {
+                return pa.sds === 1;
             }
+            return pa.sds === 0;
+        });
+
+        $sel.empty().append('<option value=""></option>');
+        filtered.forEach(function(pa) {
+            $sel.append(
+                $('<option></option>')
+                    .val(pa.id)
+                    .attr("data-sds", pa.sds)
+                    .text(pa.name)
+            );
         });
 
         if ($sel[0].selectize) {
             var selize = $sel[0].selectize;
             selize.clearOptions();
             selize.addOption({ value: "", text: "" });
-            $sel.find("option").each(function() {
-                var val = $(this).val();
-                if (!val || $(this).prop("disabled")) {
-                    return;
-                }
-                selize.addOption({ value: val, text: $(this).text() });
+            filtered.forEach(function(pa) {
+                selize.addOption({ value: pa.id, text: pa.name });
             });
+            selize.refreshOptions(false);
             if (currentVal && selize.options[currentVal]) {
                 selize.setValue(currentVal, true);
             } else {
                 selize.clear(true);
             }
-        } else if (currentVal && $sel.find('option[value="' + currentVal + '"]').prop("disabled")) {
+        } else if (currentVal && !filtered.some(function(pa) { return pa.id === currentVal; })) {
             $sel.val("");
         }
     }
@@ -1262,8 +1270,8 @@
         deferModalSelect(function() {
             initModalSelectize();
             if ($("#paymentAccountMulti").length) {
-                updateMultiPayLokasi();
                 initSelectizeOnce($("#paymentAccountMulti"));
+                updateMultiPayLokasi();
             }
         });
     });
