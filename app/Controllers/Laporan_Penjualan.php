@@ -6,7 +6,7 @@ class Laporan_Penjualan extends Controller
    {
       $this->session_cek();
       $this->dataBootstrap();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[1])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[1]) && !in_array($this->userData['user_tipe'], PV::PRIV[108])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }

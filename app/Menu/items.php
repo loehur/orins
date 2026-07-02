@@ -253,7 +253,7 @@ return [
             ]
         ],
         [
-            'access' => [1],
+            'access' => [1, 108],
             'name' => 'Laporan',
             'active' => ['Laporan - Penjualan', 'Audit - Data Export'],
             'icon' => 'trello',
@@ -288,7 +288,7 @@ return [
         [
             'access' => [8],
             'name' => 'Tax',
-            'active' => ['Audit - Afiliasi', 'Audit - Afiliasi Riwayat', 'Audit - Data Export', 'MyOB - Code'],
+            'active' => ['Audit - Afiliasi', 'Audit - Afiliasi Riwayat', 'MyOB - Code'],
             'icon' => 'anchor',
             'icon-color' => "danger",
             'sub' => [
@@ -301,11 +301,6 @@ return [
                     'name' => 'Riwayat Afiliasi',
                     'link' => 'Afiliasi_Riwayat',
                     'active' => 'Audit - Afiliasi Riwayat'
-                ],
-                [
-                    'name' => 'Data Export',
-                    'link' => 'Export',
-                    'active' => 'Audit - Data Export'
                 ],
                 [
                     'name' => 'MyOB Code',
@@ -381,7 +376,7 @@ return [
         [
             'access' => [6],
             'name' => 'Audit',
-            'active' => ['Audit - Barang Masuk', 'Audit - Kas Kecil', 'Barang - Riwayat Audit', 'Audit - Barang Keluar', 'Audit - Data Export'],
+            'active' => ['Audit - Barang Masuk', 'Audit - Kas Kecil', 'Barang - Riwayat Audit', 'Audit - Barang Keluar'],
             'icon' => 'check-square',
             'icon-color' => "info",
             'sub' => [
@@ -404,11 +399,6 @@ return [
                     'name' => 'Riwayat Barang (A)',
                     'link' => 'Barang_Riwayat_A',
                     'active' => 'Barang - Riwayat Audit'
-                ],
-                [
-                    'name' => 'Data Export',
-                    'link' => 'Export',
-                    'active' => 'Audit - Data Export'
                 ],
             ]
         ],
