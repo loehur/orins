@@ -880,13 +880,13 @@
                                         $totalTagihan += $value;
                                     } ?>
                                     <tr>
-                                        <td class="pb-2 pr-2" nowrap>
+                                        <td colspan="2" class="pb-2 pr-2" nowrap>
                                             <b>TOTAL TAGIHAN</b>
                                         </td>
-                                        <td></td>
-                                        <td></td>
+                                        <td class="text-end align-middle">
+                                            <span id="multiPayLokasi" class="badge bg-info d-none">SDS</span>
+                                        </td>
                                         <td class="text-end">
-                                            <span id="multiPayLokasi" class="badge bg-info me-1 d-none">SDS</span>
                                             <span data-total=''><b>Rp<span id="totalBill" data-total="<?= $totalTagihan ?>"><?= number_format($totalTagihan) ?></span></b></span>
                                         </td>
                                     </tr>
