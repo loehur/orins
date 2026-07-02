@@ -124,37 +124,6 @@ class Tiket extends Controller
       $this->view(__CLASS__ . '/detail', $data);
    }
 
-   public function create()
-   {
-      $id_karyawan = (int) ($_POST['id_karyawan'] ?? 0);
-      $judul = trim($_POST['judul'] ?? '');
-      $tipe = (int) ($_POST['tipe'] ?? 0);
-      $isi = trim($_POST['isi'] ?? '');
-
-      if ($id_karyawan <= 0 || $judul === '' || !in_array($tipe, [1, 2, 3], true) || $isi === '') {
-         echo 'Lengkapi semua data tiket.';
-         exit();
-      }
-
-      $karyawan = $this->db(0)->get_where_row('karyawan', "id_karyawan = " . $id_karyawan . " AND id_toko = " . (int) $this->userData['id_toko']);
-      if (!isset($karyawan['id_karyawan'])) {
-         echo 'Karyawan tidak valid.';
-         exit();
-      }
-
-      if ($this->isRecentTiketDuplicate($id_karyawan, $judul, $tipe, $isi)) {
-         echo 0;
-         exit();
-      }
-
-      $cols = 'id_karyawan, id_user, id_toko, judul, tipe, isi, status';
-      $vals = $id_karyawan . "," . (int) $this->userData['id_user'] . "," . (int) $this->userData['id_toko']
-         . ",'" . addslashes($judul) . "'," . $tipe . ",'" . addslashes($isi) . "',0";
-
-      $do = $this->db(0)->insertCols('tiket', $cols, $vals);
-      echo $do['errno'] == 0 ? 0 : $do['error'];
-   }
-
    private function isRecentTiketDuplicate($id_karyawan, $judul, $tipe, $isi, $seconds = 90)
    {
       $since = date('Y-m-d H:i:s', time() - (int) $seconds);
@@ -169,55 +138,147 @@ class Tiket extends Controller
       return $this->db(0)->count_where('tiket', $where) > 0;
    }
 
+   private function tiketBadgeClass($tipe)
+   {
+      if ((int) $tipe === 2) {
+         return 'tiket-badge-fitur';
+      }
+      if ((int) $tipe === 3) {
+         return 'tiket-badge-usulan';
+      }
+      return 'tiket-badge-perbaikan';
+   }
+
+   private function tiketTipeLabel($tipe)
+   {
+      $labels = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
+      return $labels[(int) $tipe] ?? '-';
+   }
+
+   private function formatTicketRow(array $ticket, array $karyawanMap, array $userMap)
+   {
+      $idToko = (int) $ticket['id_toko'];
+      $tokoInisial = $this->dToko[$idToko]['inisial'] ?? (string) $idToko;
+
+      return [
+         'id_tiket' => (int) $ticket['id_tiket'],
+         'waktu' => date('d/m/y H:i', strtotime($ticket['insertTime'])),
+         'judul' => $ticket['judul'],
+         'tipe' => (int) $ticket['tipe'],
+         'tipe_label' => $this->tiketTipeLabel($ticket['tipe']),
+         'badge_class' => $this->tiketBadgeClass($ticket['tipe']),
+         'karyawan' => $karyawanMap[$ticket['id_karyawan']]['nama'] ?? '-',
+         'pembuat' => $userMap[$ticket['id_user']]['nama'] ?? $userMap[$ticket['id_user']]['user'] ?? '-',
+         'toko' => $tokoInisial,
+      ];
+   }
+
+   private function jsonOut(array $payload)
+   {
+      header('Content-Type: application/json; charset=utf-8');
+      echo json_encode($payload);
+      exit();
+   }
+
+   public function create()
+   {
+      $id_karyawan = (int) ($_POST['id_karyawan'] ?? 0);
+      $judul = trim($_POST['judul'] ?? '');
+      $tipe = (int) ($_POST['tipe'] ?? 0);
+      $isi = trim($_POST['isi'] ?? '');
+
+      if ($id_karyawan <= 0 || $judul === '' || !in_array($tipe, [1, 2, 3], true) || $isi === '') {
+         $this->jsonOut(['ok' => 0, 'error' => 'Lengkapi semua data tiket.']);
+      }
+
+      $karyawan = $this->db(0)->get_where_row('karyawan', "id_karyawan = " . $id_karyawan . " AND id_toko = " . (int) $this->userData['id_toko']);
+      if (!isset($karyawan['id_karyawan'])) {
+         $this->jsonOut(['ok' => 0, 'error' => 'Karyawan tidak valid.']);
+      }
+
+      if ($this->isRecentTiketDuplicate($id_karyawan, $judul, $tipe, $isi)) {
+         $this->jsonOut(['ok' => 1, 'duplicate' => 1]);
+      }
+
+      $cols = 'id_karyawan, id_user, id_toko, judul, tipe, isi, status';
+      $vals = $id_karyawan . "," . (int) $this->userData['id_user'] . "," . (int) $this->userData['id_toko']
+         . ",'" . addslashes($judul) . "'," . $tipe . ",'" . addslashes($isi) . "',0";
+
+      $do = $this->db(0)->insertCols('tiket', $cols, $vals);
+      if ($do['errno'] != 0) {
+         $this->jsonOut(['ok' => 0, 'error' => $do['error']]);
+      }
+
+      $id_tiket = (int) $this->db(0)->scalar("SELECT LAST_INSERT_ID()");
+      $ticket = $this->db(0)->get_where_row('tiket', "id_tiket = " . $id_tiket);
+      $karyawanMap = $this->db(0)->get('karyawan', 'id_karyawan');
+      $userMap = $this->db(0)->get('user', 'id_user');
+
+      $this->jsonOut([
+         'ok' => 1,
+         'tiket' => $this->formatTicketRow($ticket, $karyawanMap, $userMap),
+      ]);
+   }
+
    public function reply()
    {
       $id_tiket = (int) ($_POST['id_tiket'] ?? 0);
       $isi = trim($_POST['isi'] ?? '');
 
       if ($id_tiket <= 0 || $isi === '') {
-         echo 'Balasan tidak boleh kosong.';
-         exit();
+         $this->jsonOut(['ok' => 0, 'error' => 'Balasan tidak boleh kosong.']);
       }
 
       $ticket = $this->getTicketRow($id_tiket);
       if (!isset($ticket['id_tiket'])) {
-         echo 'Tiket tidak ditemukan.';
-         exit();
+         $this->jsonOut(['ok' => 0, 'error' => 'Tiket tidak ditemukan.']);
       }
 
       if (!$this->canReply($ticket)) {
-         echo 'Anda tidak dapat membalas tiket ini.';
-         exit();
+         $this->jsonOut(['ok' => 0, 'error' => 'Anda tidak dapat membalas tiket ini.']);
       }
 
       $cols = 'id_tiket, id_user, isi';
       $vals = $id_tiket . "," . (int) $this->userData['id_user'] . ",'" . addslashes($isi) . "'";
       $do = $this->db(0)->insertCols('tiket_reply', $cols, $vals);
-      echo $do['errno'] == 0 ? 0 : $do['error'];
+      if ($do['errno'] != 0) {
+         $this->jsonOut(['ok' => 0, 'error' => $do['error']]);
+      }
+
+      $this->jsonOut([
+         'ok' => 1,
+         'reply' => [
+            'nama' => $this->userData['nama'] ?? $this->userData['user'],
+            'is_dev' => $this->isDev() ? 1 : 0,
+            'waktu' => date('d/m/y H:i'),
+            'isi' => $isi,
+         ],
+      ]);
    }
 
    public function selesai()
    {
       if (!$this->isDev()) {
-         echo 'Hanya developer yang dapat menyelesaikan tiket.';
-         exit();
+         $this->jsonOut(['ok' => 0, 'error' => 'Hanya developer yang dapat menyelesaikan tiket.']);
       }
 
       $id_tiket = (int) ($_POST['id_tiket'] ?? 0);
       $ticket = $this->getTicketRow($id_tiket);
 
       if (!isset($ticket['id_tiket'])) {
-         echo 'Tiket tidak ditemukan.';
-         exit();
+         $this->jsonOut(['ok' => 0, 'error' => 'Tiket tidak ditemukan.']);
       }
 
       if ((int) $ticket['status'] === 1) {
-         echo 'Tiket sudah selesai.';
-         exit();
+         $this->jsonOut(['ok' => 0, 'error' => 'Tiket sudah selesai.']);
       }
 
       $set = "status = 1, selesai_oleh = " . (int) $this->userData['id_user'] . ", selesai_time = NOW()";
       $up = $this->db(0)->update('tiket', $set, "id_tiket = " . $id_tiket);
-      echo $up['errno'] == 0 ? 0 : $up['error'];
+      if ($up['errno'] != 0) {
+         $this->jsonOut(['ok' => 0, 'error' => $up['error']]);
+      }
+
+      $this->jsonOut(['ok' => 1, 'id_tiket' => $id_tiket]);
    }
 }

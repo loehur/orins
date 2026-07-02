@@ -87,9 +87,7 @@ if ((int) $t['selesai_oleh'] > 0) {
     </div>
 
     <div class="mb-2 fw-bold">Balasan</div>
-    <?php if (count($data['replies']) === 0) { ?>
-        <div class="text-muted small mb-3">Belum ada balasan.</div>
-    <?php } else { ?>
+    <div id="tiketReplyList">
         <?php foreach ($data['replies'] as $r) {
             $replyUser = $data['users'][$r['id_user']] ?? [];
             $replyName = $replyUser['nama'] ?? $replyUser['user'] ?? 'User';
@@ -105,14 +103,15 @@ if ((int) $t['selesai_oleh'] > 0) {
                 <div class="tiket-isi small"><?= htmlspecialchars($r['isi']) ?></div>
             </div>
         <?php } ?>
-    <?php } ?>
+    </div>
+    <div id="tiketReplyEmpty" class="text-muted small mb-3 <?= count($data['replies']) > 0 ? 'd-none' : '' ?>">Belum ada balasan.</div>
 
     <?php if ($canReply) { ?>
         <form id="formTiketReply" class="mt-3" action="<?= PV::BASE_URL ?>Tiket/reply" method="POST">
             <input type="hidden" name="id_tiket" value="<?= $t['id_tiket'] ?>">
             <label class="form-label fw-bold">Tulis Balasan</label>
-            <textarea name="isi" class="form-control form-control-sm mb-2" rows="4" required placeholder="Tulis balasan..."></textarea>
-            <button type="submit" class="btn btn-sm btn-primary">Kirim Balasan</button>
+            <textarea name="isi" id="tiketReplyIsi" class="form-control form-control-sm mb-2" rows="4" required placeholder="Tulis balasan..."></textarea>
+            <button type="submit" class="btn btn-sm btn-primary" id="btnTiketReply">Kirim Balasan</button>
         </form>
     <?php } ?>
 </div>
@@ -124,65 +123,3 @@ if ((int) $t['selesai_oleh'] > 0) {
         </button>
     </div>
 <?php } ?>
-
-<script>
-    $('#formTiketReply').off('submit.tiketReply').on('submit.tiketReply', function(e) {
-        e.preventDefault();
-        var $form = $(this);
-        var $btn = $form.find('button[type=submit]');
-        $btn.prop('disabled', true);
-        $.ajax({
-            url: $form.attr('action'),
-            type: 'POST',
-            data: $form.serialize(),
-            success: function(res) {
-                if (res == 0) {
-                    tiketOpenDetail(<?= (int) $t['id_tiket'] ?>);
-                    if (typeof content === 'function') {
-                        content('proses');
-                    }
-                } else {
-                    if (typeof tiketShowAlert === 'function') {
-                        tiketShowAlert(res, 'danger');
-                    } else {
-                        alert(res);
-                    }
-                }
-                $btn.prop('disabled', false);
-            },
-            error: function() {
-                alert('Gagal mengirim balasan.');
-                $btn.prop('disabled', false);
-            }
-        });
-    });
-
-    $('#btnTiketSelesai').off('click.tiketDone').on('click.tiketDone', function() {
-        if (!confirm('Tandai tiket ini sebagai selesai?')) {
-            return;
-        }
-        var id = $(this).data('id');
-        var $btn = $(this);
-        $btn.prop('disabled', true);
-        $.ajax({
-            url: '<?= PV::BASE_URL ?>Tiket/selesai',
-            type: 'POST',
-            data: { id_tiket: id },
-            success: function(res) {
-                if (res == 0) {
-                    bootstrap.Modal.getInstance(document.getElementById('modalTiketDetail')).hide();
-                    if (typeof content === 'function') {
-                        content('proses');
-                    }
-                } else {
-                    alert(res);
-                    $btn.prop('disabled', false);
-                }
-            },
-            error: function() {
-                alert('Gagal menyelesaikan tiket.');
-                $btn.prop('disabled', false);
-            }
-        });
-    });
-</script>

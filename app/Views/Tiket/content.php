@@ -45,10 +45,8 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                 </div>
             </div>
 
-            <?php if (count($data['tiket']) === 0) { ?>
-                <div class="alert alert-light border text-center">Belum ada tiket berjalan.</div>
-            <?php } else { ?>
-                <table class="table table-sm table-hover text-sm">
+            <div id="tiketProsesWrap">
+                <table class="table table-sm table-hover text-sm <?= count($data['tiket']) === 0 ? 'd-none' : '' ?>" id="tiketProsesTable">
                     <thead>
                         <tr>
                             <th style="width:130px">Tanggal</th>
@@ -61,7 +59,7 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                             <?php } ?>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tiketProsesList">
                         <?php foreach ($data['tiket'] as $t) {
                             $namaKaryawan = $data['karyawan'][$t['id_karyawan']]['nama'] ?? '-';
                             $namaUser = $data['users'][$t['id_user']]['nama'] ?? $data['users'][$t['id_user']]['user'] ?? '-';
@@ -86,7 +84,8 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                         <?php } ?>
                     </tbody>
                 </table>
-            <?php } ?>
+                <div class="alert alert-light border text-center <?= count($data['tiket']) > 0 ? 'd-none' : '' ?>" id="tiketProsesEmpty">Belum ada tiket berjalan.</div>
+            </div>
 
             <div class="modal fade" id="modalTiketBaru" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -203,14 +202,34 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
 
 <script>
     var tiketCreateSubmitting = false;
+    var tiketReplySubmitting = false;
+    var tiketIsDev = <?= !empty($isDev) ? 'true' : 'false' ?>;
+
+    function tiketEscapeHtml(text) {
+        return $('<div>').text(text || '').html();
+    }
+
+    function tiketParseRes(res) {
+        if (typeof res === 'object') {
+            return res;
+        }
+        try {
+            return JSON.parse(res);
+        } catch (e) {
+            if (res == 0) {
+                return { ok: 1 };
+            }
+            return { ok: 0, error: res };
+        }
+    }
 
     function tiketCleanupModalBackdrop() {
         $('body').removeClass('modal-open').css({ overflow: '', paddingRight: '' });
         $('.modal-backdrop').remove();
     }
 
-    function tiketCloseModalBaru(done) {
-        var modalEl = document.getElementById('modalTiketBaru');
+    function tiketCloseModal(modalId, done) {
+        var modalEl = document.getElementById(modalId);
         if (!modalEl) {
             tiketCleanupModalBackdrop();
             if (typeof done === 'function') {
@@ -228,13 +247,61 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
             return;
         }
 
-        $(modalEl).one('hidden.bs.modal.tiketBaru', function() {
+        $(modalEl).one('hidden.bs.modal.tiketClose', function() {
             tiketCleanupModalBackdrop();
             if (typeof done === 'function') {
                 done();
             }
         });
         inst.hide();
+    }
+
+    function tiketCloseModalBaru(done) {
+        tiketCloseModal('modalTiketBaru', done);
+    }
+
+    function tiketCloseModalDetail(done) {
+        tiketCloseModal('modalTiketDetail', done);
+    }
+
+    function tiketBuildRow(t) {
+        var cols = '<td>' + tiketEscapeHtml(t.waktu) + '</td>'
+            + '<td class="fw-bold">' + tiketEscapeHtml(t.judul) + '</td>'
+            + '<td><span class="badge ' + tiketEscapeHtml(t.badge_class) + '">' + tiketEscapeHtml(t.tipe_label) + '</span></td>'
+            + '<td>' + tiketEscapeHtml(t.karyawan) + '</td>'
+            + '<td>' + tiketEscapeHtml(t.pembuat) + '</td>';
+        if (tiketIsDev) {
+            cols += '<td>' + tiketEscapeHtml(t.toko) + '</td>';
+        }
+        return '<tr class="tiket-row" data-id="' + t.id_tiket + '">' + cols + '</tr>';
+    }
+
+    function tiketPrependRow(t) {
+        $('#tiketProsesEmpty').addClass('d-none');
+        $('#tiketProsesTable').removeClass('d-none');
+        $('#tiketProsesList').prepend(tiketBuildRow(t));
+    }
+
+    function tiketRemoveRow(id) {
+        $('.tiket-row[data-id="' + id + '"]').remove();
+        if ($('#tiketProsesList tr').length === 0) {
+            $('#tiketProsesTable').addClass('d-none');
+            $('#tiketProsesEmpty').removeClass('d-none');
+        }
+    }
+
+    function tiketBuildReplyHtml(reply) {
+        var replyClass = reply.is_dev ? 'tiket-reply-dev' : 'tiket-reply-user';
+        var devBadge = reply.is_dev ? '<span class="badge bg-primary ms-1">Dev</span>' : '';
+        return '<div class="p-2 mb-2 rounded ' + replyClass + '">'
+            + '<div class="small fw-bold mb-1">' + tiketEscapeHtml(reply.nama) + devBadge
+            + '<span class="text-muted fw-normal">· ' + tiketEscapeHtml(reply.waktu) + '</span></div>'
+            + '<div class="tiket-isi small">' + tiketEscapeHtml(reply.isi) + '</div></div>';
+    }
+
+    function tiketAppendReply(reply) {
+        $('#tiketReplyEmpty').addClass('d-none');
+        $('#tiketReplyList').append(tiketBuildReplyHtml(reply));
     }
 
     function initTiketKaryawanSelectize() {
@@ -261,6 +328,7 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
 
     $(document).off('shown.bs.modal.tiketBaru', '#modalTiketBaru').on('shown.bs.modal.tiketBaru', '#modalTiketBaru', initTiketKaryawanSelectize);
     $(document).off('hidden.bs.modal.tiketBaru', '#modalTiketBaru').on('hidden.bs.modal.tiketBaru', '#modalTiketBaru', tiketCleanupModalBackdrop);
+    $(document).off('hidden.bs.modal.tiketDetail', '#modalTiketDetail').on('hidden.bs.modal.tiketDetail', '#modalTiketDetail', tiketCleanupModalBackdrop);
 
     function tiketShowAlert(msg, type) {
         if (typeof showAlert === 'function') {
@@ -274,8 +342,17 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
 
     function tiketOpenDetail(id) {
         var $modal = $('#modalTiketDetail');
-        $('#tiketDetailBody').html('<div class="modal-body text-center py-5 text-muted">Memuat...</div>');
-        bootstrap.Modal.getOrCreateInstance($modal[0]).show();
+        var modalEl = $modal[0];
+        if (!modalEl) {
+            return;
+        }
+
+        var inst = bootstrap.Modal.getOrCreateInstance(modalEl);
+        if (!$modal.hasClass('show')) {
+            $('#tiketDetailBody').html('<div class="modal-body text-center py-5 text-muted">Memuat...</div>');
+            inst.show();
+        }
+
         $('#tiketDetailBody').load('<?= PV::BASE_URL ?>Tiket/detail/' + id);
     }
 
@@ -299,20 +376,24 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
         $.ajax({
             url: $form.attr('action'),
             type: 'POST',
+            dataType: 'json',
             data: $form.serialize(),
             success: function(res) {
-                if (res == 0) {
+                var data = tiketParseRes(res);
+                if (data.ok) {
                     resetTiketKaryawanSelectize();
                     tiketDestroyKaryawanSelectize();
                     $form[0].reset();
+                    if (data.tiket) {
+                        tiketPrependRow(data.tiket);
+                    }
                     tiketCloseModalBaru(function() {
                         tiketCreateSubmitting = false;
-                        content('proses');
                     });
                 } else {
                     tiketCreateSubmitting = false;
                     $btn.prop('disabled', false);
-                    tiketShowAlert(res, 'danger');
+                    tiketShowAlert(data.error || 'Gagal menyimpan tiket.', 'danger');
                 }
             },
             error: function() {
@@ -323,5 +404,77 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
         });
 
         return false;
+    });
+
+    $(document).off('submit.tiketReply', '#formTiketReply').on('submit.tiketReply', '#formTiketReply', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        if (tiketReplySubmitting) {
+            return false;
+        }
+
+        var $form = $(this);
+        var $btn = $('#btnTiketReply');
+        tiketReplySubmitting = true;
+        $btn.prop('disabled', true);
+
+        $.ajax({
+            url: $form.attr('action'),
+            type: 'POST',
+            dataType: 'json',
+            data: $form.serialize(),
+            success: function(res) {
+                var data = tiketParseRes(res);
+                if (data.ok && data.reply) {
+                    tiketAppendReply(data.reply);
+                    $form.find('textarea[name=isi]').val('');
+                    tiketReplySubmitting = false;
+                    $btn.prop('disabled', false);
+                } else {
+                    tiketReplySubmitting = false;
+                    $btn.prop('disabled', false);
+                    tiketShowAlert(data.error || 'Gagal mengirim balasan.', 'danger');
+                }
+            },
+            error: function() {
+                tiketReplySubmitting = false;
+                $btn.prop('disabled', false);
+                tiketShowAlert('Gagal mengirim balasan.', 'danger');
+            }
+        });
+
+        return false;
+    });
+
+    $(document).off('click.tiketDone', '#btnTiketSelesai').on('click.tiketDone', '#btnTiketSelesai', function() {
+        if (!confirm('Tandai tiket ini sebagai selesai?')) {
+            return;
+        }
+
+        var id = $(this).data('id');
+        var $btn = $(this);
+        $btn.prop('disabled', true);
+
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Tiket/selesai',
+            type: 'POST',
+            dataType: 'json',
+            data: { id_tiket: id },
+            success: function(res) {
+                var data = tiketParseRes(res);
+                if (data.ok) {
+                    tiketRemoveRow(data.id_tiket);
+                    tiketCloseModalDetail();
+                } else {
+                    $btn.prop('disabled', false);
+                    tiketShowAlert(data.error || 'Gagal menyelesaikan tiket.', 'danger');
+                }
+            },
+            error: function() {
+                $btn.prop('disabled', false);
+                tiketShowAlert('Gagal menyelesaikan tiket.', 'danger');
+            }
+        });
     });
 </script>
