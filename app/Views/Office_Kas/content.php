@@ -122,7 +122,7 @@
             <div class="modal-header">
                 Topup PetyCash
             </div>
-            <form class="ajax" action="<?= PV::BASE_URL ?>Office_Kas/topupPety" method="POST">
+            <form id="formOfficeTopup" class="ajax" action="<?= PV::BASE_URL ?>Office_Kas/topupPety" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" required>Jumlah</label>
@@ -135,7 +135,7 @@
                     </select>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Proses</button>
+                    <button type="submit" id="btnOfficeTopup" class="btn btn-success">Proses</button>
                 </div>
             </form>
         </div>
@@ -163,17 +163,46 @@
 
     $("form").on("submit", function(e) {
         e.preventDefault();
-        $.ajax({
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            type: $(this).attr("method"),
-            success: function(res) {
-                if (res == 0) {
-                    content();
-                } else {
-                    alert(res);
-                }
-            }
-        });
     });
+
+    (function() {
+        var submitting = false;
+        $("#formOfficeTopup").off("submit.petty").on("submit.petty", function(e) {
+            e.preventDefault();
+            if (submitting) {
+                return false;
+            }
+            submitting = true;
+            var $form = $(this);
+            var $btn = $("#btnOfficeTopup");
+            $btn.prop("disabled", true);
+            $.ajax({
+                url: $form.attr("action"),
+                data: $form.serialize(),
+                type: $form.attr("method") || "POST",
+                complete: function() {
+                    submitting = false;
+                    $btn.prop("disabled", false);
+                },
+                success: function(res) {
+                    if (res == 0) {
+                        var modalEl = document.getElementById("exampleModal");
+                        if (modalEl) {
+                            var modal = bootstrap.Modal.getInstance(modalEl);
+                            if (modal) {
+                                modal.hide();
+                            }
+                        }
+                        $form[0].reset();
+                        content();
+                    } else {
+                        alert(res);
+                    }
+                },
+                error: function() {
+                    alert("Gagal memproses. Coba lagi.");
+                }
+            });
+        });
+    })();
 </script>

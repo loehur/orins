@@ -59,22 +59,39 @@ class Petty_Cash_F extends Controller
 
    function topupPety()
    {
-      $jumlah = $_POST['jumlah'];
-      $target = $this->userData['id_toko'];
-      $ref = date('ymd');
+      $jumlah = (int)($_POST['jumlah'] ?? 0);
+      $target = (int)$this->userData['id_toko'];
+
+      if ($jumlah <= 0) {
+         echo "Jumlah tidak valid";
+         exit();
+      }
+
+      $dupWhere = "id_sumber = 100 AND id_target = " . $target . " AND tipe = 1 AND jumlah = " . $jumlah;
+      if ($this->recentKasKecilDuplicate($dupWhere)) {
+         echo "Data sudah di input";
+         exit();
+      }
+
+      $ref = date('ymdHis') . rand(10, 99);
       $cols = 'id_sumber, id_target, tipe, ref, jumlah, st';
-      $vals =  "100," . $target . ",1,'" . $ref . "'," . $jumlah . ",0";
+      $vals = "100," . $target . ",1,'" . $ref . "'," . $jumlah . ",0";
       $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
       if ($do['errno'] == 1062) {
          echo "data sudah di input";
          exit();
-      } else {
-         if ($do['errno'] <> 0) {
-            echo $do['error'];
-            exit();
-         }
+      }
+      if ($do['errno'] <> 0) {
+         echo $do['error'];
+         exit();
       }
 
       echo 0;
+   }
+
+   private function recentKasKecilDuplicate($whereExtra, $seconds = 90)
+   {
+      $since = date('Y-m-d H:i:s', time() - (int)$seconds);
+      return $this->db(0)->count_where('kas_kecil', $whereExtra . " AND insertTime >= '" . $since . "'") > 0;
    }
 }

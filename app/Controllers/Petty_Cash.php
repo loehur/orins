@@ -71,28 +71,40 @@ class Petty_Cash extends Controller
 
    function pakai()
    {
-      $jumlah = $_POST['jumlah'];
-      $jenis = $_POST['jenis'];
-      $note = $_POST['note'];
-      $tanggal = $_POST['tanggal'];
+      $jumlah = (int)($_POST['jumlah'] ?? 0);
+      $jenis = (int)($_POST['jenis'] ?? 0);
+      $note = addslashes(trim($_POST['note'] ?? ''));
+      $tanggal = addslashes(trim($_POST['tanggal'] ?? ''));
 
-      $ref = date('ymdHi');
-      $cols = 'id_sumber, id_target, tipe, ref, jumlah, st, note, tanggal';
-      $vals =  "'" . $this->userData['id_toko'] . "','" . $jenis . "',2,'" . $ref . "'," . $jumlah . ",0,'" . $note . "','" . $tanggal . "'";
+      if ($jumlah <= 0 || $jenis <= 0 || $tanggal === '') {
+         echo "Data tidak valid";
+         exit();
+      }
 
-      $cek = $this->db(0)->count_where("kas_kecil", "jumlah = " . $jumlah . " AND ref = '" . $ref . "' AND tipe = '" . $jenis . "'");
-      if ($cek == 0) {
-         $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
-         if ($do['errno'] <> 0) {
-            echo $do['error'];
-            exit();
-         }
-      } else {
+      $dupWhere = "id_sumber = " . $this->userData['id_toko'] . " AND tipe = 2 AND id_target = " . $jenis
+         . " AND jumlah = " . $jumlah . " AND note = '" . $note . "' AND tanggal = '" . $tanggal . "'";
+      if ($this->recentKasKecilDuplicate($dupWhere)) {
          echo "Data sudah di input";
          exit();
       }
 
+      $ref = date('ymdHis') . rand(10, 99);
+      $cols = 'id_sumber, id_target, tipe, ref, jumlah, st, note, tanggal';
+      $vals = "'" . $this->userData['id_toko'] . "','" . $jenis . "',2,'" . $ref . "'," . $jumlah . ",0,'" . $note . "','" . $tanggal . "'";
+
+      $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
+      if ($do['errno'] <> 0) {
+         echo $do['error'];
+         exit();
+      }
+
       echo 0;
+   }
+
+   private function recentKasKecilDuplicate($whereExtra, $seconds = 90)
+   {
+      $since = date('Y-m-d H:i:s', time() - (int)$seconds);
+      return $this->db(0)->count_where('kas_kecil', $whereExtra . " AND insertTime >= '" . $since . "'") > 0;
    }
 
    function update()

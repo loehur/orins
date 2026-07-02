@@ -113,7 +113,7 @@
     </div>
 </main>
 
-<form action="<?= PV::BASE_URL; ?>Petty_Cash/pakai" method="POST">
+<form id="formPettyPakai" action="<?= PV::BASE_URL; ?>Petty_Cash/pakai" method="POST">
     <div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -152,7 +152,7 @@
                         </div>
                         <div class="row mb-2">
                             <div class="col-sm-6">
-                                <button type="submit" data-bs-dismiss="modal" class="btn btn-danger">Pakai</button>
+                                <button type="submit" id="btnPettyPakai" class="btn btn-danger">Pakai</button>
                             </div>
                         </div>
                     </div>
@@ -183,19 +183,48 @@
 
     $("form").on("submit", function(e) {
         e.preventDefault();
-        $.ajax({
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            type: $(this).attr("method"),
-            success: function(res) {
-                if (res == 0) {
-                    content();
-                } else {
-                    alert(res);
-                }
-            }
-        });
     });
+
+    (function() {
+        var submitting = false;
+        $("#formPettyPakai").off("submit.petty").on("submit.petty", function(e) {
+            e.preventDefault();
+            if (submitting) {
+                return false;
+            }
+            submitting = true;
+            var $form = $(this);
+            var $btn = $("#btnPettyPakai");
+            $btn.prop("disabled", true);
+            $.ajax({
+                url: $form.attr("action"),
+                data: $form.serialize(),
+                type: $form.attr("method") || "POST",
+                complete: function() {
+                    submitting = false;
+                    $btn.prop("disabled", false);
+                },
+                success: function(res) {
+                    if (res == 0) {
+                        var modalEl = document.getElementById("exampleModal");
+                        if (modalEl) {
+                            var modal = bootstrap.Modal.getInstance(modalEl);
+                            if (modal) {
+                                modal.hide();
+                            }
+                        }
+                        $form[0].reset();
+                        content('<?= $date ?>');
+                    } else {
+                        alert(res);
+                    }
+                },
+                error: function() {
+                    alert("Gagal memproses. Coba lagi.");
+                }
+            });
+        });
+    })();
 
     $(".cell_delete").dblclick(function() {
         var id = $(this).attr('data-id');
