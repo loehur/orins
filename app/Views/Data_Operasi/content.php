@@ -108,6 +108,7 @@
         $arr_tuntas = [];
         $loadRekap = [];
         $markRekap = [];
+        $sdsRekap = [];
         $showBayarCard = false;
         $refFinanceCache = [];
 
@@ -650,8 +651,34 @@
                                     $refCanBayar = (($headRef['id_afiliasi'] ?? 0) == 0 || ($headRef['id_afiliasi'] ?? 0) != $this->userData['id_toko'])
                                         && (int)($headRef['tuntas'] ?? 0) === 0;
                                     if ($refCanBayar && $sisa > 0) {
+                                        $refHasSds = false;
+                                        $refHasToko = false;
+                                        if (($charge[$ref] ?? 0) > 0) {
+                                            $refHasToko = true;
+                                        }
+                                        if (isset($data['order'][$ref])) {
+                                            foreach ($data['order'][$ref] as $doSds) {
+                                                if ($doSds['cancel'] == 0 && $doSds['stok'] == 0) {
+                                                    $refHasToko = true;
+                                                }
+                                            }
+                                        }
+                                        if (isset($data['mutasi'][$ref])) {
+                                            foreach ($data['mutasi'][$ref] as $doSds) {
+                                                if ($doSds['stat'] <> 2) {
+                                                    if ((int)($doSds['sds'] ?? 0) === 1) {
+                                                        $refHasSds = true;
+                                                    } else {
+                                                        $refHasToko = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        $refSdsProfile = ($refHasSds && $refHasToko) ? 'MIX' : ($refHasSds ? 'SDS' : 'TOKO');
+
                                         $loadRekap[$id_pelanggan . "_" . $ref] = $sisa;
                                         $markRekap[$id_pelanggan . "_" . $ref] = $mark;
+                                        $sdsRekap[$id_pelanggan . "_" . $ref] = $refSdsProfile;
                                         $showBayarCard = true;
                                     }
 
@@ -845,7 +872,7 @@
                                             <td colspan="2"><span class='text-dark'><?= $key ?></span></td>
                                             <td class="text-end align-middle">
                                                 <span class="fw-bold text-success me-1"><small><?= $markRekap[$key] ?></small></span>
-                                                <input type='checkbox' class='cek_multi form-check-input' name="ref_multi[]" value="<?= $key ?>_<?= $value ?>" data-jumlah='<?= $value ?>' data-ref='<?= $key ?>' checked>
+                                                <input type='checkbox' class='cek_multi form-check-input' name="ref_multi[]" value="<?= $key ?>_<?= $value ?>" data-jumlah='<?= $value ?>' data-ref='<?= $key ?>' data-sds-profile='<?= $sdsRekap[$key] ?? 'TOKO' ?>' checked>
                                             </td>
                                             <td class='text-end ps-2'>Rp<?= number_format($value) ?></td>
                                         </tr>
@@ -854,6 +881,7 @@
                                     } ?>
                                     <tr>
                                         <td class="pb-2 pr-2" nowrap>
+                                            <span id="multiPayLokasi" class="badge bg-secondary me-1">TOKO</span>
                                             <b>TOTAL TAGIHAN</b>
                                         </td>
                                         <td></td>
@@ -887,10 +915,10 @@
                                                     </td>
                                                     <td class="ps-1">
                                                         <span class="text-success"><small>Akun Pembayaran</small></span>
-                                                        <select name="payment_account" class="border border-success rounded tize">
+                                                        <select name="payment_account" id="paymentAccountMulti" class="border border-success rounded tize">
                                                             <option value=""></option>
                                                             <?php foreach ($data['payment_account'] as $pa) { ?>
-                                                                <option value="<?= $pa['id'] ?>"><?= strtoupper($pa['payment_account']) ?></option>
+                                                                <option value="<?= $pa['id'] ?>" data-sds="<?= (int)($pa['sds'] ?? 0) ?>"><?= strtoupper($pa['payment_account']) ?></option>
                                                             <?php } ?>
                                                         </select>
                                                     </td>
@@ -1025,6 +1053,93 @@
         $el.val(formatMoneyNum(num));
     }
 
+    function updateMultiPayLokasi() {
+        var profiles = [];
+        $("input.cek_multi:checked").each(function() {
+            profiles.push($(this).attr("data-sds-profile") || "TOKO");
+        });
+
+        var mode = "TOKO";
+        if (profiles.length === 0) {
+            mode = "TOKO";
+        } else if (profiles.indexOf("MIX") >= 0) {
+            mode = "MIX";
+        } else {
+            var hasSds = profiles.indexOf("SDS") >= 0;
+            var hasToko = profiles.indexOf("TOKO") >= 0;
+            if (hasSds && hasToko) {
+                mode = "MIX";
+            } else if (hasSds) {
+                mode = "SDS";
+            } else {
+                mode = "TOKO";
+            }
+        }
+
+        var $badge = $("#multiPayLokasi");
+        $badge.text(mode);
+        $badge.removeClass("bg-secondary bg-info bg-warning text-dark");
+        if (mode === "SDS") {
+            $badge.addClass("bg-info");
+        } else if (mode === "MIX") {
+            $badge.addClass("bg-warning text-dark");
+        } else {
+            $badge.addClass("bg-secondary");
+        }
+
+        refreshPaymentAccountOptions(mode);
+    }
+
+    function refreshPaymentAccountOptions(mode) {
+        var $sel = $("#paymentAccountMulti");
+        if (!$sel.length) {
+            return;
+        }
+
+        var currentVal = "";
+        if ($sel[0].selectize) {
+            currentVal = $sel[0].selectize.getValue();
+        } else {
+            currentVal = $sel.val() || "";
+        }
+
+        $sel.find("option").each(function() {
+            var val = $(this).val();
+            if (!val) {
+                $(this).prop("disabled", false).show();
+                return;
+            }
+            var paSds = String($(this).attr("data-sds")) === "1";
+            var show = mode === "MIX" || (mode === "SDS" && paSds) || (mode === "TOKO" && !paSds);
+            $(this).prop("disabled", !show);
+            if (show) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+
+        if ($sel[0].selectize) {
+            var selize = $sel[0].selectize;
+            selize.clearOptions();
+            selize.addOption({ value: "", text: "" });
+            $sel.find("option").each(function() {
+                var val = $(this).val();
+                if (!val || $(this).prop("disabled")) {
+                    return;
+                }
+                selize.addOption({ value: val, text: $(this).text() });
+            });
+            if (currentVal && selize.options[currentVal]) {
+                selize.setValue(currentVal, true);
+            } else {
+                selize.clear(true);
+            }
+        } else if (currentVal && $sel.find('option[value="' + currentVal + '"]').prop("disabled")) {
+            $sel.val("");
+        }
+    }
+
     function updateTotalFromCheckboxes() {
         var sum = 0;
         $("input.cek_multi:checked").each(function() {
@@ -1032,6 +1147,7 @@
         });
         totalBill = sum;
         $("span#totalBill").html(sum.toLocaleString('en-US')).attr("data-total", sum);
+        updateMultiPayLokasi();
         bayarBill();
     }
 
@@ -1098,7 +1214,7 @@
     }
 
     function initModalSelectize() {
-        $('select.tize:not(.ajax-pelanggan):not(.ajax-pelanggan-ubah)').each(function() {
+        $('select.tize:not(.ajax-pelanggan):not(.ajax-pelanggan-ubah):not(#paymentAccountMulti)').each(function() {
             initSelectizeOnce($(this));
         });
 
@@ -1142,6 +1258,10 @@
         };
         deferModalSelect(function() {
             initModalSelectize();
+            if ($("#paymentAccountMulti").length) {
+                updateMultiPayLokasi();
+                initSelectizeOnce($("#paymentAccountMulti"));
+            }
         });
     });
 
@@ -1596,6 +1716,7 @@
 
         if ($(this).val() == 2) {
             $("tr#payment_account").show();
+            updateMultiPayLokasi();
         } else {
             $("input[name=charge]").val("");
             total_aftercas();

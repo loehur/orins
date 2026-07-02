@@ -229,11 +229,88 @@ class Data_Operasi extends Controller
             return 'Pembayaran gagal: tidak ada tagihan yang dipilih.<br><br><b>Solusi:</b> centang minimal satu tagihan di daftar <b>Pembayaran Multi</b>.';
          case 'akun_pembayaran':
             return 'Pembayaran gagal: akun pembayaran belum dipilih.<br><br><b>Solusi:</b> pilih <b>Akun Pembayaran</b> pada metode Non Tunai.';
+         case 'akun_sds':
+            $mode = $ctx['mode'] ?? 'TOKO';
+            if ($mode === 'SDS') {
+               $solusi = 'Tagihan terpilih hanya item <b>SDS</b>. Pilih akun pembayaran SDS.';
+            } elseif ($mode === 'TOKO') {
+               $solusi = 'Tagihan terpilih hanya item <b>TOKO</b>. Pilih akun pembayaran selain SDS.';
+            } else {
+               $solusi = 'Periksa kembali akun pembayaran yang dipilih.';
+            }
+            return 'Pembayaran gagal: akun pembayaran tidak sesuai lokasi item (' . $mode . ').<br><br><b>Solusi:</b> ' . $solusi;
          case 'db':
             return 'Pembayaran gagal: ' . ($ctx['msg'] ?? 'terjadi kesalahan database.') . '<br><br><b>Solusi:</b> coba lagi. Jika berulang, hubungi admin.';
          default:
             return $ctx['msg'] ?? 'Pembayaran gagal.';
       }
+   }
+
+   private function refSdsProfile($ref)
+   {
+      $refEsc = addslashes($ref);
+      $hasSds = false;
+      $hasToko = false;
+
+      $charges = $this->db(0)->get_where('charge', "ref_transaksi = '" . $refEsc . "'");
+      foreach ($charges as $ds) {
+         if ($ds['cancel'] == 0) {
+            $hasToko = true;
+         }
+      }
+
+      $orders = $this->db(0)->get_where('order_data', "ref = '" . $refEsc . "'");
+      foreach ($orders as $do) {
+         if ($do['cancel'] == 0 && $do['stok'] == 0) {
+            $hasToko = true;
+         }
+      }
+
+      $mutasi = $this->db(0)->get_where('master_mutasi', "ref = '" . $refEsc . "'");
+      foreach ($mutasi as $do) {
+         if ($do['stat'] <> 2) {
+            if ((int)($do['sds'] ?? 0) === 1) {
+               $hasSds = true;
+            } else {
+               $hasToko = true;
+            }
+         }
+      }
+
+      if ($hasSds && $hasToko) {
+         return 'MIX';
+      }
+      if ($hasSds) {
+         return 'SDS';
+      }
+      return 'TOKO';
+   }
+
+   private function multiPayLokasiMode(array $ref_multi)
+   {
+      $profiles = [];
+      foreach ($ref_multi as $value) {
+         $parts = explode('_', $value);
+         if (!isset($parts[1]) || $parts[1] === '') {
+            continue;
+         }
+         $profiles[] = $this->refSdsProfile($parts[1]);
+      }
+
+      if (count($profiles) === 0) {
+         return 'TOKO';
+      }
+
+      if (in_array('MIX', $profiles, true)) {
+         return 'MIX';
+      }
+
+      $unique = array_unique($profiles);
+      if (count($unique) === 1) {
+         return $profiles[0];
+      }
+
+      return 'MIX';
    }
 
    public function bayar_multi()
@@ -271,7 +348,23 @@ class Data_Operasi extends Controller
          } else {
             $payment_account = $_POST['payment_account'];
             $dPa = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "'", 'id');
-            $sds = $dPa[$payment_account]['sds'];
+            if (!isset($dPa[$payment_account])) {
+               echo $this->msgBayarGagal('akun_pembayaran');
+               exit();
+            }
+
+            $lokasiMode = $this->multiPayLokasiMode($ref_multi);
+            $paSds = (int)($dPa[$payment_account]['sds'] ?? 0);
+            if ($lokasiMode === 'SDS' && $paSds !== 1) {
+               echo $this->msgBayarGagal('akun_sds', ['mode' => 'SDS']);
+               exit();
+            }
+            if ($lokasiMode === 'TOKO' && $paSds === 1) {
+               echo $this->msgBayarGagal('akun_sds', ['mode' => 'TOKO']);
+               exit();
+            }
+
+            $sds = $paSds;
             //updateFreq
             $this->db(0)->update("payment_account", "freq = freq+1", "id = " . $payment_account);
          }
