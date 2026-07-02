@@ -882,12 +882,12 @@
                                     <tr>
                                         <td class="pb-2 pr-2" nowrap>
                                             <b>TOTAL TAGIHAN</b>
-                                            <span id="multiPayLokasi" class="badge bg-info ms-1 d-none">SDS</span>
                                         </td>
                                         <td></td>
                                         <td></td>
                                         <td class="text-end">
-                                            <span data-total=''><b>Rp<span id="totalBill" data-total="<?= $totalTagihan ?>"><?= number_format($totalTagihan) ?></span></b>
+                                            <span id="multiPayLokasi" class="badge bg-info me-1 d-none">SDS</span>
+                                            <span data-total=''><b>Rp<span id="totalBill" data-total="<?= $totalTagihan ?>"><?= number_format($totalTagihan) ?></span></b></span>
                                         </td>
                                     </tr>
                                     <tr class="multi-pay-row">
