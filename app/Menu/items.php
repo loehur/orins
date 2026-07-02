@@ -2,25 +2,6 @@
 
 return [
         [
-            'access' => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            'name' => 'Tiker',
-            'active' => ['Tiker - Proses', 'Tiker - Selesai'],
-            'icon' => 'life-buoy',
-            'icon-color' => "info",
-            'sub' => [
-                [
-                    'name' => 'Proses',
-                    'link' => 'Tiker/index/proses',
-                    'active' => 'Tiker - Proses'
-                ],
-                [
-                    'name' => 'Selesai',
-                    'link' => 'Tiker/index/selesai',
-                    'active' => 'Tiker - Selesai'
-                ],
-            ]
-        ],
-        [
             'access' => [9],
             'name' => 'Driver',
             'active' => ['Driver - Pickup List'],
@@ -268,6 +249,25 @@ return [
                     'name' => 'Retur Barang',
                     'link' => 'Retur_Barang_C',
                     'active' => 'Cashier - Retur Barang'
+                ],
+            ]
+        ],
+        [
+            'access' => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            'name' => 'Tiket',
+            'active' => ['Tiket - Proses', 'Tiket - Selesai'],
+            'icon' => 'life-buoy',
+            'icon-color' => "info",
+            'sub' => [
+                [
+                    'name' => 'Proses',
+                    'link' => 'Tiket/index/proses',
+                    'active' => 'Tiket - Proses'
+                ],
+                [
+                    'name' => 'Selesai',
+                    'link' => 'Tiket/index/selesai',
+                    'active' => 'Tiket - Selesai'
                 ],
             ]
         ],

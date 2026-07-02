@@ -1,5 +1,5 @@
 -- ============================================================
--- Fitur Tiker — jalankan di database Orins (copy-paste)
+-- Fitur Tiket — jalankan di database Orins (copy-paste)
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS `tiket` (
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `tiket` (
   `id_user` int(11) NOT NULL DEFAULT 0 COMMENT 'user pembuat tiket',
   `id_toko` int(11) NOT NULL DEFAULT 0,
   `judul` varchar(255) NOT NULL DEFAULT '',
-  `tipe` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=Perbaikan, 2=Fitur Baru',
+  `tipe` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=Perbaikan, 2=Fitur Baru, 3=Usulan',
   `isi` text NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0=Proses, 1=Selesai',
   `selesai_oleh` int(11) NOT NULL DEFAULT 0,

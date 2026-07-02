@@ -3,8 +3,14 @@ $t = $data['ticket'];
 $isDev = !empty($data['is_dev']);
 $canReply = !empty($data['can_reply']);
 $canComplete = !empty($data['can_complete']);
-$tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru'];
-$badgeClass = (int) $t['tipe'] === 2 ? 'tiker-badge-fitur' : 'tiker-badge-perbaikan';
+$tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
+if ((int) $t['tipe'] === 2) {
+    $badgeClass = 'tiket-badge-fitur';
+} elseif ((int) $t['tipe'] === 3) {
+    $badgeClass = 'tiket-badge-usulan';
+} else {
+    $badgeClass = 'tiket-badge-perbaikan';
+}
 
 $namaKaryawan = $data['karyawan'][$t['id_karyawan']]['nama'] ?? '-';
 $namaUser = $data['users'][$t['id_user']]['nama'] ?? $data['users'][$t['id_user']]['user'] ?? '-';
@@ -15,27 +21,32 @@ if ((int) $t['selesai_oleh'] > 0) {
 ?>
 
 <style>
-    .tiker-badge-perbaikan {
+    .tiket-badge-perbaikan {
         background-color: #fff3cd;
         color: #856404;
     }
 
-    .tiker-badge-fitur {
+    .tiket-badge-fitur {
         background-color: #d1ecf1;
         color: #0c5460;
     }
 
-    .tiker-reply-dev {
+    .tiket-badge-usulan {
+        background-color: #e2e3f3;
+        color: #414497;
+    }
+
+    .tiket-reply-dev {
         background: #e8f4fd;
         border-left: 3px solid #0d6efd;
     }
 
-    .tiker-reply-user {
+    .tiket-reply-user {
         background: #f8f9fa;
         border-left: 3px solid #6c757d;
     }
 
-    .tiker-isi {
+    .tiket-isi {
         white-space: pre-wrap;
         word-break: break-word;
     }
@@ -72,7 +83,7 @@ if ((int) $t['selesai_oleh'] > 0) {
 
     <div class="card mb-3">
         <div class="card-header py-2 fw-bold">Isi Tiket</div>
-        <div class="card-body tiker-isi"><?= htmlspecialchars($t['isi']) ?></div>
+        <div class="card-body tiket-isi"><?= htmlspecialchars($t['isi']) ?></div>
     </div>
 
     <div class="mb-2 fw-bold">Balasan</div>
@@ -83,7 +94,7 @@ if ((int) $t['selesai_oleh'] > 0) {
             $replyUser = $data['users'][$r['id_user']] ?? [];
             $replyName = $replyUser['nama'] ?? $replyUser['user'] ?? 'User';
             $replyIsDev = isset($replyUser['user_tipe']) && in_array((int) $replyUser['user_tipe'], PV::PRIV[0]);
-            $replyClass = $replyIsDev ? 'tiker-reply-dev' : 'tiker-reply-user';
+            $replyClass = $replyIsDev ? 'tiket-reply-dev' : 'tiket-reply-user';
         ?>
             <div class="p-2 mb-2 rounded <?= $replyClass ?>">
                 <div class="small fw-bold mb-1">
@@ -91,13 +102,13 @@ if ((int) $t['selesai_oleh'] > 0) {
                     <?php if ($replyIsDev) { ?><span class="badge bg-primary ms-1">Dev</span><?php } ?>
                     <span class="text-muted fw-normal">· <?= date('d/m/y H:i', strtotime($r['insertTime'])) ?></span>
                 </div>
-                <div class="tiker-isi small"><?= htmlspecialchars($r['isi']) ?></div>
+                <div class="tiket-isi small"><?= htmlspecialchars($r['isi']) ?></div>
             </div>
         <?php } ?>
     <?php } ?>
 
     <?php if ($canReply) { ?>
-        <form id="formTiketReply" class="mt-3" action="<?= PV::BASE_URL ?>Tiker/reply" method="POST">
+        <form id="formTiketReply" class="mt-3" action="<?= PV::BASE_URL ?>Tiket/reply" method="POST">
             <input type="hidden" name="id_tiket" value="<?= $t['id_tiket'] ?>">
             <label class="form-label fw-bold">Tulis Balasan</label>
             <textarea name="isi" class="form-control form-control-sm mb-2" rows="4" required placeholder="Tulis balasan..."></textarea>
@@ -115,7 +126,7 @@ if ((int) $t['selesai_oleh'] > 0) {
 <?php } ?>
 
 <script>
-    $('#formTiketReply').off('submit.tikerReply').on('submit.tikerReply', function(e) {
+    $('#formTiketReply').off('submit.tiketReply').on('submit.tiketReply', function(e) {
         e.preventDefault();
         var $form = $(this);
         var $btn = $form.find('button[type=submit]');
@@ -126,13 +137,13 @@ if ((int) $t['selesai_oleh'] > 0) {
             data: $form.serialize(),
             success: function(res) {
                 if (res == 0) {
-                    tikerOpenDetail(<?= (int) $t['id_tiket'] ?>);
+                    tiketOpenDetail(<?= (int) $t['id_tiket'] ?>);
                     if (typeof content === 'function') {
                         content('proses');
                     }
                 } else {
-                    if (typeof tikerShowAlert === 'function') {
-                        tikerShowAlert(res, 'danger');
+                    if (typeof tiketShowAlert === 'function') {
+                        tiketShowAlert(res, 'danger');
                     } else {
                         alert(res);
                     }
@@ -146,7 +157,7 @@ if ((int) $t['selesai_oleh'] > 0) {
         });
     });
 
-    $('#btnTiketSelesai').off('click.tikerDone').on('click.tikerDone', function() {
+    $('#btnTiketSelesai').off('click.tiketDone').on('click.tiketDone', function() {
         if (!confirm('Tandai tiket ini sebagai selesai?')) {
             return;
         }
@@ -154,7 +165,7 @@ if ((int) $t['selesai_oleh'] > 0) {
         var $btn = $(this);
         $btn.prop('disabled', true);
         $.ajax({
-            url: '<?= PV::BASE_URL ?>Tiker/selesai',
+            url: '<?= PV::BASE_URL ?>Tiket/selesai',
             type: 'POST',
             data: { id_tiket: id },
             success: function(res) {

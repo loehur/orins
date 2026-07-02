@@ -1,13 +1,12 @@
 <?php
 
-class Tiker extends Controller
+class Tiket extends Controller
 {
    public function __construct()
    {
       $this->session_cek();
       $this->dataBootstrap();
 
-      // Semua user yang sudah login boleh akses Tiker
       $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";
    }
@@ -46,7 +45,7 @@ class Tiker extends Controller
          $mode = 'proses';
       }
 
-      $title = $mode === 'selesai' ? 'Tiker - Selesai' : 'Tiker - Proses';
+      $title = $mode === 'selesai' ? 'Tiket - Selesai' : 'Tiket - Proses';
 
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
@@ -127,7 +126,7 @@ class Tiker extends Controller
       $tipe = (int) ($_POST['tipe'] ?? 0);
       $isi = trim($_POST['isi'] ?? '');
 
-      if ($id_karyawan <= 0 || $judul === '' || !in_array($tipe, [1, 2], true) || $isi === '') {
+      if ($id_karyawan <= 0 || $judul === '' || !in_array($tipe, [1, 2, 3], true) || $isi === '') {
          echo 'Lengkapi semua data tiket.';
          exit();
       }
