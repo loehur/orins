@@ -4,6 +4,8 @@ $isDev = !empty($data['is_dev']);
 $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
 ?>
 
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
+
 <style>
     .tiket-badge-perbaikan {
         background-color: #fff3cd;
@@ -98,10 +100,10 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                                 <div class="row mb-2">
                                     <div class="col-md-6 mb-2">
                                         <label class="form-label">Karyawan</label>
-                                        <select name="id_karyawan" class="form-select form-select-sm" required>
-                                            <option value="">Pilih karyawan</option>
-                                            <?php foreach ($data['karyawan'] as $k) { ?>
-                                                <option value="<?= $k['id_karyawan'] ?>"><?= htmlspecialchars($k['nama']) ?></option>
+                                        <select class="tize shadow-none" name="id_karyawan" id="tiketKaryawan" required>
+                                            <option value="">CS Name</option>
+                                            <?php foreach ($data['karyawan_form'] as $k) { ?>
+                                                <option value="<?= $k['id_karyawan'] ?>"><?= strtoupper($k['nama']) ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>
@@ -200,6 +202,23 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
 </div>
 
 <script>
+    function initTiketKaryawanSelectize() {
+        var el = document.getElementById('tiketKaryawan');
+        if (!el || el.selectize) {
+            return;
+        }
+        $(el).selectize();
+    }
+
+    function resetTiketKaryawanSelectize() {
+        var el = document.getElementById('tiketKaryawan');
+        if (el && el.selectize) {
+            el.selectize.clear(true);
+        }
+    }
+
+    $('#modalTiketBaru').on('shown.bs.modal', initTiketKaryawanSelectize);
+
     function tiketShowAlert(msg, type) {
         if (typeof showAlert === 'function') {
             showAlert(msg, type || 'danger');
@@ -234,6 +253,7 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                 if (res == 0) {
                     bootstrap.Modal.getInstance(document.getElementById('modalTiketBaru')).hide();
                     $form[0].reset();
+                    resetTiketKaryawanSelectize();
                     content('proses');
                 } else {
                     tiketShowAlert(res, 'danger');

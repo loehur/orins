@@ -72,6 +72,11 @@ class Tiket extends Controller
 
       $data['mode'] = $mode;
       $data['is_dev'] = $this->isDev();
+      $data['karyawan_form'] = $this->db(0)->get_where(
+         'karyawan',
+         "id_toko = " . (int) $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC",
+         'id_karyawan'
+      );
       if ($this->isDev()) {
          $data['karyawan'] = $this->db(0)->get_where('karyawan', "en = 1 ORDER BY nama ASC", 'id_karyawan');
       } else {
