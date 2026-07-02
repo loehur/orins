@@ -590,22 +590,22 @@
     </div>
 </form>
 
-<div class="modal fade" id="modalReprintOrder" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
+<div class="modal fade" id="modalPrintPreview" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
-            <div class="modal-header bg-warning py-2">
-                <h6 class="modal-title mb-0">Cetak Ulang Order</h6>
+            <div class="modal-header py-2">
+                <h6 class="modal-title mb-0">Preview Nota Order</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <p class="small mb-2">Order ini sudah pernah dicetak. Cetak ulang hanya untuk Kasir dan wajib isi alasan.</p>
-                <input type="hidden" name="reprint_ref">
-                <label class="form-label small mb-1">Alasan cetak ulang</label>
-                <input type="text" name="reprint_reason_input" class="form-control form-control-sm" required>
+            <div class="modal-body p-0 d-flex flex-column overflow-hidden">
+                <div id="printPreviewWarning" class="alert alert-warning small mb-0 rounded-0 d-none" role="alert">
+                    Cetak Nota sudah lebih dari 1x, pastikan tidak berdampak pada double order produksi.
+                </div>
+                <iframe id="printPreviewFrame" class="flex-grow-1 w-100 border-0" style="min-height:0; height:100%;" title="Preview Nota Order"></iframe>
             </div>
             <div class="modal-footer py-2">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-sm btn-warning" id="btnConfirmReprint">Cetak</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-sm btn-primary" id="btnConfirmPrintOrder"><i class="fa-solid fa-print me-1"></i> Cetak</button>
             </div>
         </div>
     </div>

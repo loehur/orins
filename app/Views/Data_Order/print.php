@@ -491,14 +491,17 @@
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        window.print();
+        var isPreview = <?= !empty($data['preview']) ? 'true' : 'false' ?>;
+
+        if (!isPreview) {
+            window.print();
+            setTimeout(function() {
+                self.close();
+            }, 300000);
+        }
 
         $(".hilang").dblclick(function() {
             $(this).css("display", "none");
-        })
-
-        setTimeout(function() {
-            self.close();
-        }, 300000);
+        });
     });
 </script>

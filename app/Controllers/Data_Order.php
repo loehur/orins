@@ -470,6 +470,7 @@ class Data_Order extends Controller
       $data['payment_account'] = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
       $data['parse'] = $parse;
+      $data['preview'] = isset($_GET['preview']) && $_GET['preview'] == '1';
 
       $where = "ref = '" . $parse . "' AND cancel = 0";
       $where_mutasi = "id_sumber = " . $this->userData['id_toko'] . " AND ref = '" . $parse . "'";

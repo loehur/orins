@@ -663,7 +663,7 @@
                                         <td class="text-end text border-0 pb-0" colspan="3">
                                             <table>
                                                 <tr>
-                                                    <td class="text-end pe-1"><small><a href="#" class="btnPrintOrder rounded border-0 px-1 text-dark text-decoration-none" data-ref="<?= $ref ?>" data-printed="<?= (int)($dRef['printed'] ?? 0) ?>" title="Cetak Order<?= (int)($dRef['printed'] ?? 0) > 0 ? ' (x' . (int)$dRef['printed'] . ')' : '' ?>"><i class="fa-solid fa-print"></i></a></small></td>
+                                                    <td class="text-end pe-1"><small><a href="#" class="btnPreviewOrder rounded border-0 px-1 text-dark text-decoration-none" data-ref="<?= $ref ?>" data-printed="<?= (int)($dRef['printed'] ?? 0) ?>" title="Preview Order<?= (int)($dRef['printed'] ?? 0) > 0 ? ' (x' . (int)$dRef['printed'] . ')' : '' ?>"><i class="fa-solid fa-eye"></i></a></small></td>
                                                     <?php if ($ambil_all[$ref] == false) { ?>
                                                         <?php if ($id_toko[$ref] == $this->userData['id_toko']) { ?>
                                                             <td class="text-end pe-1"><span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btnAmbilSemua rounded badge text-primary px-0" data-ref="<?= $do['ref'] ?>">Ambil</span></td>
@@ -976,7 +976,7 @@
     var totalBill = 0;
     var json_rekap = [];
     var printOrderBaseUrl = '<?= PV::BASE_URL ?>Data_Order/print/';
-    var isKasirPrint = <?= in_array($this->userData['user_tipe'], PV::PRIV[2]) ? 'true' : 'false' ?>;
+    var previewPrintRef = '';
 
     function parseMoneyNum(str) {
         return parseInt(String(str).replace(/\D/g, ''), 10) || 0;
@@ -991,21 +991,31 @@
         $el.val(formatMoneyNum(num));
     }
 
-    function openPrintOrder(ref) {
-        window.open(printOrderBaseUrl + ref, '_blank');
+    function openPrintPreview(ref, printed) {
+        previewPrintRef = ref;
+        var $warning = $('#printPreviewWarning');
+        if (printed >= 1) {
+            $warning.removeClass('d-none');
+        } else {
+            $warning.addClass('d-none');
+        }
+        $('#printPreviewFrame').attr('src', printOrderBaseUrl + ref + '?preview=1');
+        var modalEl = document.getElementById('modalPrintPreview');
+        if (modalEl) {
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        }
     }
 
-    function markPrintAndOpen(ref, reason, done) {
+    function markPrint(ref, done) {
         $.ajax({
             url: '<?= PV::BASE_URL ?>Data_Operasi/mark_print',
             type: 'POST',
             data: {
                 ref: ref,
-                reprint_reason: reason || ''
+                reprint_reason: ''
             },
             success: function(res) {
                 if (res == 0) {
-                    openPrintOrder(ref);
                     if (typeof done === 'function') {
                         done();
                     }
@@ -1014,6 +1024,15 @@
                 }
             }
         });
+    }
+
+    function printPreviewFrame() {
+        var frame = document.getElementById('printPreviewFrame');
+        if (!frame || !frame.contentWindow) {
+            return;
+        }
+        frame.contentWindow.focus();
+        frame.contentWindow.print();
     }
 
     function updateTotalFromCheckboxes() {
@@ -1451,54 +1470,36 @@
         $("input[name=batal_ambil_ref]").val(ref);
     });
 
-    $(document).on('click', 'a.btnPrintOrder', function(e) {
+    $(document).on('click', 'a.btnPreviewOrder', function(e) {
         e.preventDefault();
         var $btn = $(this);
         var ref = $btn.data('ref');
         var printed = parseInt($btn.data('printed'), 10) || 0;
-
-        if (printed === 0) {
-            markPrintAndOpen(ref, '', function() {
-                $btn.data('printed', 1).attr('data-printed', 1).attr('title', 'Cetak Order (x1)');
-            });
-            return;
-        }
-
-        if (!isKasirPrint) {
-            showToast('Cetak ulang hanya boleh oleh Kasir', 'warning');
-            return;
-        }
-
-        $('input[name=reprint_ref]').val(ref);
-        $('input[name=reprint_reason_input]').val('');
-        var modalEl = document.getElementById('modalReprintOrder');
-        if (modalEl) {
-            bootstrap.Modal.getOrCreateInstance(modalEl).show();
-        }
+        openPrintPreview(ref, printed);
     });
 
-    $(document).on('click', '#btnConfirmReprint', function() {
-        var ref = $('input[name=reprint_ref]').val();
-        var reason = $('input[name=reprint_reason_input]').val().trim();
-        if (!reason) {
-            showToast('Alasan cetak ulang wajib diisi', 'warning');
+    $(document).on('click', '#btnConfirmPrintOrder', function() {
+        var ref = previewPrintRef;
+        if (!ref) {
             return;
         }
 
-        var $btn = $('a.btnPrintOrder[data-ref="' + ref + '"]');
+        var $btn = $('a.btnPreviewOrder[data-ref="' + ref + '"]');
         var printed = parseInt($btn.data('printed'), 10) || 0;
-        var modalEl = document.getElementById('modalReprintOrder');
 
-        markPrintAndOpen(ref, reason, function() {
+        markPrint(ref, function() {
             var next = printed + 1;
-            $btn.data('printed', next).attr('data-printed', next).attr('title', 'Cetak Order (x' + next + ')');
-            if (modalEl) {
-                var modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) {
-                    modal.hide();
-                }
+            $btn.data('printed', next).attr('data-printed', next).attr('title', 'Preview Order (x' + next + ')');
+            if (next >= 1) {
+                $('#printPreviewWarning').removeClass('d-none');
             }
+            printPreviewFrame();
         });
+    });
+
+    $('#modalPrintPreview').on('hidden.bs.modal', function() {
+        previewPrintRef = '';
+        $('#printPreviewFrame').attr('src', 'about:blank');
     });
 
     $(document).on("click", "a.ubahPelanggan", function() {

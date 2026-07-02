@@ -704,17 +704,10 @@ class Data_Operasi extends Controller
          exit();
       }
 
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
-         echo 'Cetak ulang hanya boleh oleh Kasir';
-         exit();
+      $line = '[' . date('Y-m-d H:i') . '] ' . $userLabel;
+      if ($reason !== '') {
+         $line .= ': ' . $reason;
       }
-
-      if ($reason === '') {
-         echo 'Alasan cetak ulang wajib diisi';
-         exit();
-      }
-
-      $line = '[' . date('Y-m-d H:i') . '] ' . $userLabel . ': ' . $reason;
       $existing = trim($row['reprint_reason'] ?? '');
       $newReason = $existing === '' ? $line : $existing . "\n" . $line;
       $newCount = $printed + 1;
@@ -726,7 +719,11 @@ class Data_Operasi extends Controller
          exit();
       }
 
-      $this->model('Log')->write($this->userData['user'] . " Cetak ulang ref " . $ref . " (#" . $newCount . "): " . $reason);
+      $logMsg = $this->userData['user'] . " Cetak ulang ref " . $ref . " (#" . $newCount . ")";
+      if ($reason !== '') {
+         $logMsg .= ": " . $reason;
+      }
+      $this->model('Log')->write($logMsg);
       echo 0;
    }
 
