@@ -604,7 +604,7 @@ class Buka_Order extends Controller
 
       $id_produk = $_POST['id_produk'];
       $jumlah = $_POST['jumlah'];
-      $note = $_POST['note'];
+      $note = $_POST['note'] ?? '';
 
       //update freq
       $this->db(0)->update("produk", "freq = freq+1", "id_produk = " . $id_produk);
@@ -804,7 +804,7 @@ class Buka_Order extends Controller
 
       try {
          if ($this->isDuplicateOrderRow($ref, $produk_code, $paket_ref, $jumlah, $note)) {
-            echo 0;
+            echo "Produk dengan qty yang sama sudah ada di cart. Gunakan catatan utama yang berbeda jika ingin menambah baris baru.";
             exit();
          }
 
@@ -889,7 +889,7 @@ class Buka_Order extends Controller
 
       try {
          if ($this->isDuplicateBarangRow($ref, $id_barang, $sn, $sds, $qty, $paket_ref)) {
-            echo 0;
+            echo "Barang dengan qty yang sama sudah ada di cart.";
             exit();
          }
 
