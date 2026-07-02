@@ -2,6 +2,25 @@
 
 return [
         [
+            'access' => [109],
+            'name' => 'Tiker',
+            'active' => ['Tiker - Proses', 'Tiker - Selesai'],
+            'icon' => 'life-buoy',
+            'icon-color' => "info",
+            'sub' => [
+                [
+                    'name' => 'Proses',
+                    'link' => 'Tiker/index/proses',
+                    'active' => 'Tiker - Proses'
+                ],
+                [
+                    'name' => 'Selesai',
+                    'link' => 'Tiker/index/selesai',
+                    'active' => 'Tiker - Selesai'
+                ],
+            ]
+        ],
+        [
             'access' => [9],
             'name' => 'Driver',
             'active' => ['Driver - Pickup List'],
