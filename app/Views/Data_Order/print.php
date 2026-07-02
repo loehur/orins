@@ -489,9 +489,9 @@
 </div>
 
 <?php if (!empty($data['preview'])) { ?>
-<div id="previewToolbar" style="position:fixed; bottom:0; left:0; right:0; z-index:9999; background:#f8f9fa; border-top:1px solid #dee2e6; padding:12px 16px; font-family:system-ui;">
+<div id="previewToolbar" style="position:fixed; bottom:0; left:0; right:0; z-index:9999; background:#f8f9fa; border-top:1px solid #dee2e6; padding:12px 16px; font-family:system-ui; text-align:center;">
     <?php if ((int)($data['printed'] ?? 0) >= 1) { ?>
-        <div style="background:#fff3cd; border:1px solid #ffecb5; color:#664d03; padding:8px 12px; border-radius:4px; font-size:13px; margin-bottom:10px;">
+        <div style="background:#fff3cd; border:1px solid #ffecb5; color:#664d03; padding:8px 12px; border-radius:4px; font-size:13px; margin:0 auto 10px; max-width:720px; text-align:center;">
             Cetak Nota sudah lebih dari 1x, pastikan tidak berdampak pada double order produksi.
         </div>
     <?php } ?>
