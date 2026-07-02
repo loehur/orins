@@ -44,7 +44,7 @@ $yearNow = date('Y');
 						$prioritasPanelClass = $prioritasShow ? ' show' : '';
 					?><a class="nav-link <?= $prioritasState ?> py-2" href="javascript:void(0)" id="prioritasToggle" aria-expanded="<?= $prioritasExpanded ?>"><div class="nav-link-icon text-danger"><i data-feather="alert-triangle"></i></div>Prioritas<span class="badge bg-danger-soft text-danger ms-2 d-none" id="menuPrioritasBadge"></span><div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div></a><div class="collapse<?= $prioritasPanelClass ?>" id="collapsePrioritas"><nav class="sidenav-menu-nested nav" id="prioritasSubmenu"></nav></div><?php } ?><?php foreach (Menu::items() as $key => $md) { ?>
 						<?php foreach ($md['access'] as $mda) { ?>
-							<?php if (in_array($this->userData['user_tipe'], PV::PRIV[$mda])) { ?>
+							<?php if (isset(PV::PRIV[$mda]) && in_array($this->userData['user_tipe'], PV::PRIV[$mda])) { ?>
 								<a class="nav-link <?= in_array($t, $md['active']) ? 'active' : 'collapsed' ?> py-2" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse<?= $key ?>">
 									<div class="nav-link-icon text-<?= $md['icon-color'] ?>"><i data-feather="<?= $md['icon'] ?>"></i></div>
 									<?= $md['name'] ?>

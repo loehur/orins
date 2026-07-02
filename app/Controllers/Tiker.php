@@ -7,11 +7,7 @@ class Tiker extends Controller
       $this->session_cek();
       $this->dataBootstrap();
 
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[109])) {
-         $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
-         $this->logout();
-      }
-
+      // Semua user yang sudah login boleh akses Tiker
       $this->v_content = __CLASS__ . "/content";
       $this->v_viewer = "Layouts/viewer";
    }
