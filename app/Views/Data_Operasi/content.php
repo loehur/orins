@@ -976,7 +976,10 @@
     var totalBill = 0;
     var json_rekap = [];
     var printOrderBaseUrl = '<?= PV::BASE_URL ?>Data_Order/print/';
-    var previewPrintRef = '';
+
+    function openPrintPreview(ref) {
+        window.open(printOrderBaseUrl + ref + '?preview=1', '_blank');
+    }
 
     function parseMoneyNum(str) {
         return parseInt(String(str).replace(/\D/g, ''), 10) || 0;
@@ -989,50 +992,6 @@
 
     function setMoneyVal($el, num) {
         $el.val(formatMoneyNum(num));
-    }
-
-    function openPrintPreview(ref, printed) {
-        previewPrintRef = ref;
-        var $warning = $('#printPreviewWarning');
-        if (printed >= 1) {
-            $warning.removeClass('d-none');
-        } else {
-            $warning.addClass('d-none');
-        }
-        $('#printPreviewFrame').attr('src', printOrderBaseUrl + ref + '?preview=1');
-        var modalEl = document.getElementById('modalPrintPreview');
-        if (modalEl) {
-            bootstrap.Modal.getOrCreateInstance(modalEl).show();
-        }
-    }
-
-    function markPrint(ref, done) {
-        $.ajax({
-            url: '<?= PV::BASE_URL ?>Data_Operasi/mark_print',
-            type: 'POST',
-            data: {
-                ref: ref,
-                reprint_reason: ''
-            },
-            success: function(res) {
-                if (res == 0) {
-                    if (typeof done === 'function') {
-                        done();
-                    }
-                } else {
-                    showToast(res, 'danger');
-                }
-            }
-        });
-    }
-
-    function printPreviewFrame() {
-        var frame = document.getElementById('printPreviewFrame');
-        if (!frame || !frame.contentWindow) {
-            return;
-        }
-        frame.contentWindow.focus();
-        frame.contentWindow.print();
     }
 
     function updateTotalFromCheckboxes() {
@@ -1472,34 +1431,7 @@
 
     $(document).on('click', 'a.btnPreviewOrder', function(e) {
         e.preventDefault();
-        var $btn = $(this);
-        var ref = $btn.data('ref');
-        var printed = parseInt($btn.data('printed'), 10) || 0;
-        openPrintPreview(ref, printed);
-    });
-
-    $(document).on('click', '#btnConfirmPrintOrder', function() {
-        var ref = previewPrintRef;
-        if (!ref) {
-            return;
-        }
-
-        var $btn = $('a.btnPreviewOrder[data-ref="' + ref + '"]');
-        var printed = parseInt($btn.data('printed'), 10) || 0;
-
-        markPrint(ref, function() {
-            var next = printed + 1;
-            $btn.data('printed', next).attr('data-printed', next).attr('title', 'Preview Order (x' + next + ')');
-            if (next >= 1) {
-                $('#printPreviewWarning').removeClass('d-none');
-            }
-            printPreviewFrame();
-        });
-    });
-
-    $('#modalPrintPreview').on('hidden.bs.modal', function() {
-        previewPrintRef = '';
-        $('#printPreviewFrame').attr('src', 'about:blank');
+        openPrintPreview($(this).data('ref'));
     });
 
     $(document).on("click", "a.ubahPelanggan", function() {

@@ -484,7 +484,8 @@ class Data_Order extends Controller
       $where_ref = "ref = '" . $parse . "'";
       $refRow = $this->db(0)->get_where_row('ref', $where_ref, 'ref');
       $data['mark'] = $refRow['mark'] ?? '';
-      $data['is_reprint'] = (int)($refRow['printed'] ?? 0) >= 2;
+      $data['printed'] = (int)($refRow['printed'] ?? 0);
+      $data['is_reprint'] = $data['printed'] >= 2;
 
       $where = "ref_transaksi = '" . $parse . "' AND cancel = 0";
       $data['charge'] = $this->db(0)->get_where_row('charge', $where);

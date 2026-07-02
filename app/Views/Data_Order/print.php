@@ -1,4 +1,4 @@
-<div style="margin:auto; width: 190mm; font-family: system-ui; position: relative;">
+<div style="margin:auto; width: 190mm; font-family: system-ui; position: relative;<?= !empty($data['preview']) ? ' padding-bottom:80px;' : '' ?>">
     <div class="header">
         <table style="width:100%; border-collapse:collapse;">
             <tr>
@@ -488,6 +488,24 @@
     </table>
 </div>
 
+<?php if (!empty($data['preview'])) { ?>
+<div id="previewToolbar" style="position:fixed; bottom:0; left:0; right:0; z-index:9999; background:#f8f9fa; border-top:1px solid #dee2e6; padding:12px 16px; font-family:system-ui;">
+    <?php if ((int)($data['printed'] ?? 0) >= 1) { ?>
+        <div style="background:#fff3cd; border:1px solid #ffecb5; color:#664d03; padding:8px 12px; border-radius:4px; font-size:13px; margin-bottom:10px;">
+            Cetak Nota sudah lebih dari 1x, pastikan tidak berdampak pada double order produksi.
+        </div>
+    <?php } ?>
+    <button type="button" id="btnConfirmPrintOrder" style="background:#0d6efd; color:#fff; border:0; border-radius:4px; padding:8px 16px; font-size:14px; cursor:pointer;">Cetak</button>
+</div>
+<style>
+    @media print {
+        #previewToolbar {
+            display: none !important;
+        }
+    }
+</style>
+<?php } ?>
+
 <script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -498,6 +516,37 @@
             setTimeout(function() {
                 self.close();
             }, 300000);
+        }
+
+        if (isPreview) {
+            setTimeout(function() {
+                window.close();
+            }, 300000);
+
+            $('#btnConfirmPrintOrder').on('click', function() {
+                var $btn = $(this);
+                $btn.prop('disabled', true);
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>Data_Operasi/mark_print',
+                    type: 'POST',
+                    data: {
+                        ref: '<?= $data['parse'] ?>',
+                        reprint_reason: ''
+                    },
+                    success: function(res) {
+                        $btn.prop('disabled', false);
+                        if (res == 0) {
+                            window.print();
+                        } else {
+                            alert(res);
+                        }
+                    },
+                    error: function() {
+                        $btn.prop('disabled', false);
+                        alert('Gagal mencatat cetak');
+                    }
+                });
+            });
         }
 
         $(".hilang").dblclick(function() {
