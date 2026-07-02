@@ -129,7 +129,7 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary bg-gradient">Simpan Tiket</button>
+                                <button type="submit" class="btn btn-primary bg-gradient" id="btnTiketSimpan">Simpan Tiket</button>
                             </div>
                         </form>
                     </div>
@@ -202,6 +202,41 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
 </div>
 
 <script>
+    var tiketCreateSubmitting = false;
+
+    function tiketCleanupModalBackdrop() {
+        $('body').removeClass('modal-open').css({ overflow: '', paddingRight: '' });
+        $('.modal-backdrop').remove();
+    }
+
+    function tiketCloseModalBaru(done) {
+        var modalEl = document.getElementById('modalTiketBaru');
+        if (!modalEl) {
+            tiketCleanupModalBackdrop();
+            if (typeof done === 'function') {
+                done();
+            }
+            return;
+        }
+
+        var inst = bootstrap.Modal.getInstance(modalEl);
+        if (!inst) {
+            tiketCleanupModalBackdrop();
+            if (typeof done === 'function') {
+                done();
+            }
+            return;
+        }
+
+        $(modalEl).one('hidden.bs.modal.tiketBaru', function() {
+            tiketCleanupModalBackdrop();
+            if (typeof done === 'function') {
+                done();
+            }
+        });
+        inst.hide();
+    }
+
     function initTiketKaryawanSelectize() {
         var el = document.getElementById('tiketKaryawan');
         if (!el || el.selectize) {
@@ -217,7 +252,15 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
         }
     }
 
-    $('#modalTiketBaru').on('shown.bs.modal', initTiketKaryawanSelectize);
+    function tiketDestroyKaryawanSelectize() {
+        var el = document.getElementById('tiketKaryawan');
+        if (el && el.selectize) {
+            el.selectize.destroy();
+        }
+    }
+
+    $(document).off('shown.bs.modal.tiketBaru', '#modalTiketBaru').on('shown.bs.modal.tiketBaru', '#modalTiketBaru', initTiketKaryawanSelectize);
+    $(document).off('hidden.bs.modal.tiketBaru', '#modalTiketBaru').on('hidden.bs.modal.tiketBaru', '#modalTiketBaru', tiketCleanupModalBackdrop);
 
     function tiketShowAlert(msg, type) {
         if (typeof showAlert === 'function') {
@@ -240,30 +283,45 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
         tiketOpenDetail($(this).data('id'));
     });
 
-    $('#formTiketBaru').off('submit.tiketCreate').on('submit.tiketCreate', function(e) {
+    $(document).off('submit.tiketCreate', '#formTiketBaru').on('submit.tiketCreate', '#formTiketBaru', function(e) {
         e.preventDefault();
+        e.stopImmediatePropagation();
+
+        if (tiketCreateSubmitting) {
+            return false;
+        }
+
         var $form = $(this);
-        var $btn = $form.find('button[type=submit]');
+        var $btn = $('#btnTiketSimpan');
+        tiketCreateSubmitting = true;
         $btn.prop('disabled', true);
+
         $.ajax({
             url: $form.attr('action'),
             type: 'POST',
             data: $form.serialize(),
             success: function(res) {
                 if (res == 0) {
-                    bootstrap.Modal.getInstance(document.getElementById('modalTiketBaru')).hide();
-                    $form[0].reset();
                     resetTiketKaryawanSelectize();
-                    content('proses');
+                    tiketDestroyKaryawanSelectize();
+                    $form[0].reset();
+                    tiketCloseModalBaru(function() {
+                        tiketCreateSubmitting = false;
+                        content('proses');
+                    });
                 } else {
+                    tiketCreateSubmitting = false;
+                    $btn.prop('disabled', false);
                     tiketShowAlert(res, 'danger');
                 }
-                $btn.prop('disabled', false);
             },
             error: function() {
-                tiketShowAlert('Gagal menyimpan tiket.', 'danger');
+                tiketCreateSubmitting = false;
                 $btn.prop('disabled', false);
+                tiketShowAlert('Gagal menyimpan tiket.', 'danger');
             }
         });
+
+        return false;
     });
 </script>

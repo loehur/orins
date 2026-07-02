@@ -142,12 +142,31 @@ class Tiket extends Controller
          exit();
       }
 
+      if ($this->isRecentTiketDuplicate($id_karyawan, $judul, $tipe, $isi)) {
+         echo 0;
+         exit();
+      }
+
       $cols = 'id_karyawan, id_user, id_toko, judul, tipe, isi, status';
       $vals = $id_karyawan . "," . (int) $this->userData['id_user'] . "," . (int) $this->userData['id_toko']
          . ",'" . addslashes($judul) . "'," . $tipe . ",'" . addslashes($isi) . "',0";
 
       $do = $this->db(0)->insertCols('tiket', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
+   }
+
+   private function isRecentTiketDuplicate($id_karyawan, $judul, $tipe, $isi, $seconds = 90)
+   {
+      $since = date('Y-m-d H:i:s', time() - (int) $seconds);
+      $where = "id_user = " . (int) $this->userData['id_user']
+         . " AND id_karyawan = " . (int) $id_karyawan
+         . " AND judul = '" . addslashes($judul) . "'"
+         . " AND tipe = " . (int) $tipe
+         . " AND isi = '" . addslashes($isi) . "'"
+         . " AND status = 0"
+         . " AND insertTime >= '" . $since . "'";
+
+      return $this->db(0)->count_where('tiket', $where) > 0;
    }
 
    public function reply()
