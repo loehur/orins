@@ -29,6 +29,14 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
     .tiket-row:hover {
         background-color: rgba(0, 0, 0, 0.03);
     }
+
+    #modalTiketConfirm {
+        z-index: 1065;
+    }
+
+    #modalTiketConfirm + .modal-backdrop {
+        z-index: 1060;
+    }
 </style>
 
 <main>
@@ -200,6 +208,24 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
     </div>
 </div>
 
+<div class="modal fade" id="modalTiketConfirm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-success bg-gradient text-white border-0" id="modalTiketConfirmHeader">
+                <h6 class="modal-title d-flex align-items-center gap-2 mb-0" id="modalTiketConfirmTitle">
+                    <i class="fa-solid fa-circle-check"></i> Konfirmasi
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4 text-center" id="modalTiketConfirmText"></div>
+            <div class="modal-footer border-0 pt-0 justify-content-center gap-2">
+                <button type="button" class="btn btn-sm btn-light px-3" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-sm btn-success px-3" id="modalTiketConfirmYes">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     var tiketCreateSubmitting = false;
     var tiketReplySubmitting = false;
@@ -340,6 +366,51 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
         }
     }
 
+    function tiketShowConfirm(message, onConfirm, options) {
+        options = options || {};
+        var title = options.title || 'Konfirmasi';
+        var confirmText = options.confirmText || 'Ya, Lanjutkan';
+        var confirmClass = options.confirmClass || 'btn-success';
+        var type = options.type || 'success';
+        var icon = options.icon || 'fa-circle-check';
+
+        $('#modalTiketConfirmText').html(message);
+        $('#modalTiketConfirmTitle').html('<i class="fa-solid ' + icon + '"></i> ' + tiketEscapeHtml(title));
+        $('#modalTiketConfirmYes').text(confirmText);
+        $('#modalTiketConfirmYes')
+            .removeClass('btn-danger btn-success btn-primary btn-warning btn-secondary')
+            .addClass(confirmClass);
+
+        var $header = $('#modalTiketConfirmHeader');
+        var $close = $header.find('.btn-close');
+        $header.removeClass('bg-danger bg-success bg-warning bg-info bg-primary text-white text-dark');
+        $close.removeClass('btn-close-white');
+
+        if (type === 'success') {
+            $header.addClass('bg-success bg-gradient text-white');
+            $close.addClass('btn-close-white');
+        } else if (type === 'danger') {
+            $header.addClass('bg-danger bg-gradient text-white');
+            $close.addClass('btn-close-white');
+        } else if (type === 'warning') {
+            $header.addClass('bg-warning bg-gradient text-dark');
+        } else {
+            $header.addClass('bg-primary bg-gradient text-white');
+            $close.addClass('btn-close-white');
+        }
+
+        var modalEl = document.getElementById('modalTiketConfirm');
+        var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+
+        $('#modalTiketConfirmYes').off('click.tiketConfirm').on('click.tiketConfirm', function() {
+            modal.hide();
+            if (typeof onConfirm === 'function') {
+                onConfirm();
+            }
+        });
+    }
+
     function tiketOpenDetail(id) {
         var $modal = $('#modalTiketDetail');
         var modalEl = $modal[0];
@@ -448,33 +519,41 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
     });
 
     $(document).off('click.tiketDone', '#btnTiketSelesai').on('click.tiketDone', '#btnTiketSelesai', function() {
-        if (!confirm('Tandai tiket ini sebagai selesai?')) {
-            return;
-        }
-
         var id = $(this).data('id');
         var $btn = $(this);
-        $btn.prop('disabled', true);
 
-        $.ajax({
-            url: '<?= PV::BASE_URL ?>Tiket/selesai',
-            type: 'POST',
-            dataType: 'json',
-            data: { id_tiket: id },
-            success: function(res) {
-                var data = tiketParseRes(res);
-                if (data.ok) {
-                    tiketRemoveRow(data.id_tiket);
-                    tiketCloseModalDetail();
-                } else {
-                    $btn.prop('disabled', false);
-                    tiketShowAlert(data.error || 'Gagal menyelesaikan tiket.', 'danger');
-                }
+        tiketShowConfirm(
+            'Tiket akan dipindahkan ke daftar <strong>Selesai</strong> dan tidak dapat dibalas lagi.',
+            function() {
+                $btn.prop('disabled', true);
+                $.ajax({
+                    url: '<?= PV::BASE_URL ?>Tiket/selesai',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { id_tiket: id },
+                    success: function(res) {
+                        var data = tiketParseRes(res);
+                        if (data.ok) {
+                            tiketRemoveRow(data.id_tiket);
+                            tiketCloseModalDetail();
+                        } else {
+                            $btn.prop('disabled', false);
+                            tiketShowAlert(data.error || 'Gagal menyelesaikan tiket.', 'danger');
+                        }
+                    },
+                    error: function() {
+                        $btn.prop('disabled', false);
+                        tiketShowAlert('Gagal menyelesaikan tiket.', 'danger');
+                    }
+                });
             },
-            error: function() {
-                $btn.prop('disabled', false);
-                tiketShowAlert('Gagal menyelesaikan tiket.', 'danger');
+            {
+                title: 'Selesaikan Tiket?',
+                confirmText: 'Ya, Selesai',
+                confirmClass: 'btn-success',
+                type: 'success',
+                icon: 'fa-check-double'
             }
-        });
+        );
     });
 </script>
