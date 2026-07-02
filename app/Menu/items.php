@@ -255,7 +255,7 @@ return [
         [
             'access' => [1],
             'name' => 'Laporan',
-            'active' => ['Laporan - Penjualan'],
+            'active' => ['Laporan - Penjualan', 'Audit - Data Export'],
             'icon' => 'trello',
             'icon-color' => "success",
             'sub' => [
@@ -263,6 +263,11 @@ return [
                     'name' => 'Penjualan',
                     'link' => 'Laporan_Penjualan',
                     'active' => 'Laporan - Penjualan'
+                ],
+                [
+                    'name' => 'Data Export',
+                    'link' => 'Export',
+                    'active' => 'Audit - Data Export'
                 ],
             ]
         ],
@@ -496,7 +501,7 @@ return [
             ]
         ],
         [
-            'access' => [1],
+            'access' => [1, 2],
             'name' => 'List Paket',
             'active' => ['Paket - Umum', 'Paket - Rekanan', 'Paket - Online'],
             'icon' => 'plus-square',
