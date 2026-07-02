@@ -881,7 +881,7 @@
                                     } ?>
                                     <tr>
                                         <td class="pb-2 pr-2" nowrap>
-                                            <span id="multiPayLokasi" class="badge bg-secondary me-1">TOKO</span>
+                                            <span id="multiPayLokasi" class="badge bg-info me-1 d-none">SDS</span>
                                             <b>TOTAL TAGIHAN</b>
                                         </td>
                                         <td></td>
@@ -1077,14 +1077,17 @@
         }
 
         var $badge = $("#multiPayLokasi");
-        $badge.text(mode);
-        $badge.removeClass("bg-secondary bg-info bg-warning text-dark");
-        if (mode === "SDS") {
-            $badge.addClass("bg-info");
-        } else if (mode === "MIX") {
-            $badge.addClass("bg-warning text-dark");
+        if (mode === "TOKO") {
+            $badge.addClass("d-none");
         } else {
-            $badge.addClass("bg-secondary");
+            $badge.removeClass("d-none");
+            $badge.text(mode);
+            $badge.removeClass("bg-secondary bg-info bg-warning text-dark");
+            if (mode === "SDS") {
+                $badge.addClass("bg-info");
+            } else if (mode === "MIX") {
+                $badge.addClass("bg-warning text-dark");
+            }
         }
 
         refreshPaymentAccountOptions(mode);
