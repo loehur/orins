@@ -808,4 +808,240 @@ class Data_Operasi extends Controller
          'qty' => (int) $sisa_stok,
       ]);
    }
+
+   private function assertKasirPriv()
+   {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+         echo 'Akses ditolak';
+         exit();
+      }
+   }
+
+   private function getKasRow($id_kas)
+   {
+      $row = $this->db(0)->get_where_row('kas', "id_kas = " . (int)$id_kas);
+      if (!isset($row['id_kas']) || (int)$row['id_toko'] !== (int)$this->userData['id_toko']) {
+         echo 'Data pembayaran tidak ditemukan';
+         exit();
+      }
+      return $row;
+   }
+
+   private function refFinance($ref)
+   {
+      $refEsc = addslashes($ref);
+      $bill = 0;
+
+      $charges = $this->db(0)->get_where('charge', "ref_transaksi = '" . $refEsc . "'");
+      foreach ($charges as $ds) {
+         if ($ds['cancel'] == 0) {
+            $bill += (int)$ds['jumlah'];
+         }
+      }
+
+      $orders = $this->db(0)->get_where('order_data', "ref = '" . $refEsc . "'");
+      foreach ($orders as $do) {
+         if ($do['cancel'] == 0 && $do['stok'] == 0) {
+            $paket_qty_val = isset($do['paket_qty']) && $do['paket_qty'] > 0 ? (int)$do['paket_qty'] : 1;
+            $bill += (int)(($do['harga'] * $do['jumlah']) + ($do['harga_paket'] * $paket_qty_val));
+            $listDetail = @unserialize($do['detail_harga']);
+            $akum_diskon_unit = 0;
+            if (is_array($listDetail)) {
+               foreach ($listDetail as $ld_o) {
+                  $akum_diskon_unit += isset($ld_o['d']) ? (int)$ld_o['d'] : 0;
+               }
+            }
+            $bill -= $akum_diskon_unit * (int)$do['jumlah'];
+         }
+      }
+
+      $mutasi = $this->db(0)->get_where('master_mutasi', "ref = '" . $refEsc . "'");
+      foreach ($mutasi as $do) {
+         if ($do['stat'] <> 2) {
+            $paket_qty_val = isset($do['paket_qty']) && $do['paket_qty'] > 0 ? (int)$do['paket_qty'] : 1;
+            $bill += (int)((($do['harga_jual'] * $do['qty']) + ($do['harga_paket'] * $paket_qty_val)) - ($do['diskon'] * $do['qty']));
+         }
+      }
+
+      $dibayar = 0;
+      $kasRows = $this->db(0)->get_where('kas', "id_toko = " . $this->userData['id_toko'] . " AND jenis_transaksi = 1 AND ref_transaksi = '" . $refEsc . "'");
+      foreach ($kasRows as $dk) {
+         if ($dk['status_mutasi'] == 0 || $dk['status_mutasi'] == 1) {
+            $dibayar += (int)$dk['jumlah'];
+         }
+      }
+
+      $diskonRows = $this->db(0)->get_where('xtra_diskon', "id_toko = " . $this->userData['id_toko'] . " AND ref_transaksi = '" . $refEsc . "'");
+      foreach ($diskonRows as $ds) {
+         if ($ds['cancel'] == 0) {
+            $dibayar += (int)$ds['jumlah'];
+         }
+      }
+
+      return [
+         'bill' => $bill,
+         'dibayar' => $dibayar,
+         'sisa' => $bill - $dibayar,
+      ];
+   }
+
+   private function refBelongsToClient($ref, $id_client)
+   {
+      $refEsc = addslashes($ref);
+      $c1 = $this->db(0)->count_where('order_data', "ref = '" . $refEsc . "' AND id_pelanggan = " . (int)$id_client);
+      $c2 = $this->db(0)->count_where('master_mutasi', "ref = '" . $refEsc . "' AND id_target = " . (int)$id_client);
+      return ($c1 + $c2) > 0;
+   }
+
+   private function insertKasFromTemplate(array $kas, $target_ref, $jumlah)
+   {
+      $note = addslashes($kas['note'] ?? '');
+      $ref_bayar = addslashes($kas['ref_bayar'] ?? '');
+      $pa = addslashes($kas['pa'] ?? '');
+      $targetEsc = addslashes($target_ref);
+      $jumlah = (int)$jumlah;
+
+      $cols = "id_toko, jenis_transaksi, jenis_mutasi, ref_transaksi, metode_mutasi, status_mutasi, jumlah, id_user, id_client, note, ref_bayar, bayar, kembali, id_finance_nontunai, pa, sds, charge";
+      $vals = (int)$kas['id_toko'] . ",1,1,'" . $targetEsc . "'," . (int)$kas['metode_mutasi'] . "," . (int)$kas['status_mutasi'] . "," . $jumlah . "," . $this->userData['id_user'] . "," . (int)$kas['id_client'] . ",'" . $note . "','" . $ref_bayar . "'," . $jumlah . ",0," . (int)($kas['id_finance_nontunai'] ?? 0) . ",'" . $pa . "'," . (int)($kas['sds'] ?? 0) . "," . (int)($kas['charge'] ?? 0);
+      return $this->db(0)->insertCols('kas', $cols, $vals);
+   }
+
+   private function updateKasJumlah(array $kas, $new_jumlah)
+   {
+      $new_jumlah = (int)$new_jumlah;
+      $new_bayar = (int)$kas['bayar'];
+      if ($new_bayar > $new_jumlah) {
+         $new_bayar = $new_jumlah;
+      }
+      $new_kembali = max(0, $new_bayar - $new_jumlah);
+      $set = "jumlah = " . $new_jumlah . ", bayar = " . $new_bayar . ", kembali = " . $new_kembali;
+      return $this->db(0)->update('kas', $set, "id_kas = " . (int)$kas['id_kas']);
+   }
+
+   public function fix_bayar_adjust()
+   {
+      $this->assertKasirPriv();
+
+      $id_kas = (int)($_POST['id_kas'] ?? 0);
+      $source_ref = trim($_POST['source_ref'] ?? '');
+      if ($id_kas <= 0 || $source_ref === '') {
+         echo 'Data tidak lengkap';
+         exit();
+      }
+
+      $kas = $this->getKasRow($id_kas);
+      if ($kas['ref_transaksi'] !== $source_ref) {
+         echo 'Ref pembayaran tidak sesuai';
+         exit();
+      }
+
+      $fin = $this->refFinance($source_ref);
+      if ($fin['sisa'] >= 0) {
+         echo 'Tidak ada pembayaran berlebih pada ref ini';
+         exit();
+      }
+
+      $excess = abs($fin['sisa']);
+      if ((int)$kas['jumlah'] < $excess) {
+         echo 'Kelebihan bayar melebihi jumlah pada pembayaran terpilih';
+         exit();
+      }
+
+      $new_jumlah = (int)$kas['jumlah'] - $excess;
+      $up = $this->updateKasJumlah($kas, $new_jumlah);
+      if ($up['errno'] <> 0) {
+         echo $up['error'];
+         exit();
+      }
+
+      $this->model('Log')->write($this->userData['user'] . " Fix bayar adjust ref " . $source_ref . " kas#" . $id_kas . " -" . $excess);
+      echo 0;
+   }
+
+   public function fix_bayar_split()
+   {
+      $this->assertKasirPriv();
+
+      $id_kas = (int)($_POST['id_kas'] ?? 0);
+      $source_ref = trim($_POST['source_ref'] ?? '');
+      $target_refs = $_POST['target_refs'] ?? [];
+      if ($id_kas <= 0 || $source_ref === '' || !is_array($target_refs) || count($target_refs) === 0) {
+         echo 'Data tidak lengkap';
+         exit();
+      }
+
+      $kas = $this->getKasRow($id_kas);
+      if ($kas['ref_transaksi'] !== $source_ref) {
+         echo 'Ref pembayaran tidak sesuai';
+         exit();
+      }
+
+      $fin = $this->refFinance($source_ref);
+      if ($fin['sisa'] >= 0) {
+         echo 'Tidak ada pembayaran berlebih pada ref ini';
+         exit();
+      }
+
+      $excess = abs($fin['sisa']);
+      if ((int)$kas['jumlah'] < $excess) {
+         echo 'Kelebihan bayar melebihi jumlah pada pembayaran terpilih';
+         exit();
+      }
+
+      $allocated = 0;
+      $id_client = (int)$kas['id_client'];
+      foreach ($target_refs as $target_ref) {
+         $target_ref = trim($target_ref);
+         if ($target_ref === '' || $target_ref === $source_ref) {
+            continue;
+         }
+
+         if (!$this->refBelongsToClient($target_ref, $id_client)) {
+            echo 'Ref tujuan bukan milik pelanggan yang sama';
+            exit();
+         }
+
+         $refRow = $this->db(0)->get_where_row('ref', "ref = '" . addslashes($target_ref) . "'");
+         if (isset($refRow['tuntas']) && (int)$refRow['tuntas'] === 1) {
+            continue;
+         }
+
+         $tfin = $this->refFinance($target_ref);
+         if ($tfin['sisa'] <= 0) {
+            continue;
+         }
+
+         $alloc = min($tfin['sisa'], $excess - $allocated);
+         if ($alloc <= 0) {
+            break;
+         }
+
+         $ins = $this->insertKasFromTemplate($kas, $target_ref, $alloc);
+         if ($ins['errno'] <> 0) {
+            echo $ins['error'];
+            exit();
+         }
+         $allocated += $alloc;
+      }
+
+      if ($allocated <= 0) {
+         echo 'Tidak ada tagihan tujuan yang bisa dibayar';
+         exit();
+      }
+
+      if ($allocated < $excess) {
+         echo 'Total tagihan tujuan kurang dari kelebihan bayar. Pilih ref lain atau tambahkan ref tujuan.';
+         exit();
+      }
+
+      $new_jumlah = (int)$kas['jumlah'] - $allocated;
+      $up = $this->updateKasJumlah($kas, $new_jumlah);
+      if ($up['errno'] <> 0) {
+         echo $up['error'];
+         exit();
+      }
+
+      $this->model('Log')->write($this->userData['user'] . " Fix bayar split ref " . $source_ref . " kas#" . $id_kas . " alokasi " . $allocated . " ke " . implode(',', $target_refs));
+      echo 0;
+   }
 }

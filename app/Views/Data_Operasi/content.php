@@ -109,6 +109,7 @@
         $loadRekap = [];
         $markRekap = [];
         $showBayarCard = false;
+        $refFinanceCache = [];
 
         $user_id = 0;
 
@@ -657,6 +658,33 @@
                                     if ($dibayar > 0 && $lunas == false && $sisa > 0) {
                                         $showMutasi .= "<span class='text-danger'><b>Sisa Rp" . number_format($sisa) . "</b></span>";
                                     }
+
+                                    $fixKasId = 0;
+                                    $fixKasJumlah = 0;
+                                    if (isset($data['kas'][$ref])) {
+                                        foreach ($data['kas'][$ref] as $dkFix) {
+                                            if ($dkFix['status_mutasi'] == 0 || $dkFix['status_mutasi'] == 1) {
+                                                if ((int)$dkFix['jumlah'] > $fixKasJumlah) {
+                                                    $fixKasJumlah = (int)$dkFix['jumlah'];
+                                                    $fixKasId = (int)$dkFix['id_kas'];
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    $refFinanceCache[$ref] = [
+                                        'bill' => (int)$bill,
+                                        'dibayar' => (int)$dibayar,
+                                        'sisa' => (int)$sisa,
+                                        'fixKasId' => $fixKasId,
+                                        'tuntas' => (int)($data['ref'][$ref]['tuntas'] ?? 0),
+                                    ];
+
+                                    $overpay = ($sisa < 0 && $fixKasId > 0 && (int)($data['ref'][$ref]['tuntas'] ?? 0) === 0);
+                                    if ($overpay && in_array($this->userData['user_tipe'], PV::PRIV[2])) {
+                                        $lebihBayar = abs($sisa);
+                                        $showMutasi .= "<br><span class='badge bg-warning text-dark btnFixBayar' style='cursor:pointer' data-bs-toggle='modal' data-bs-target='#modalFixBayar' data-ref='" . $ref . "' data-id-kas='" . $fixKasId . "' data-bill='" . (int)$bill . "' data-dibayar='" . (int)$dibayar . "' data-lebih='" . $lebihBayar . "'><i class='fa-solid fa-wrench'></i> Fix Bayar (Lebih Rp" . number_format($lebihBayar) . ")</span>";
+                                    }
                                     ?>
 
                                     <tr class="border-top">
@@ -945,6 +973,9 @@
 
 <?php require_once('form.php') ?>
 
+<script>
+    var refFinanceCache = <?= json_encode($refFinanceCache ?? []) ?>;
+</script>
 
 <span data-custom-loader="true" class="d-none"></span>
 <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
@@ -1450,6 +1481,88 @@
     $(document).on("click", "td#clearCheck", function() {
         $("input.cek_multi").prop('checked', false);
         updateTotalFromCheckboxes();
+    });
+
+    $(document).on('click', 'span.btnFixBayar', function() {
+        var $btn = $(this);
+        var ref = $btn.data('ref');
+        var idKas = $btn.data('id-kas');
+        var bill = parseInt($btn.data('bill'), 10) || 0;
+        var dibayar = parseInt($btn.data('dibayar'), 10) || 0;
+        var lebih = parseInt($btn.data('lebih'), 10) || 0;
+
+        $('#fixBayarRef').val(ref);
+        $('#fixBayarKasId').val(idKas);
+        $('#fixBayarLebih').val(lebih);
+        $('#fixBayarInfo').html('Ref <b>' + ref + '</b> — Tagihan <b>Rp' + bill.toLocaleString('en-US') + '</b>, Terbayar <b>Rp' + dibayar.toLocaleString('en-US') + '</b>, Kelebihan <b class="text-danger">Rp' + lebih.toLocaleString('en-US') + '</b>');
+
+        var html = '';
+        $.each(refFinanceCache, function(targetRef, fin) {
+            if (targetRef === ref) return;
+            if (!fin || fin.tuntas !== 0 || fin.sisa <= 0) return;
+            html += '<div class="form-check">' +
+                '<input class="form-check-input fix-bayar-target" type="checkbox" value="' + targetRef + '" id="fixTarget_' + targetRef + '">' +
+                '<label class="form-check-label" for="fixTarget_' + targetRef + '">' +
+                'Ref ' + targetRef.substr(-4) + ' — Sisa <b>Rp' + parseInt(fin.sisa, 10).toLocaleString('en-US') + '</b>' +
+                '</label></div>';
+        });
+        if (!html) {
+            html = '<span class="text-muted">Tidak ada tagihan lain yang belum lunas.</span>';
+        }
+        $('#fixBayarTargetList').html(html);
+        $('#fixBayarModeSplit').prop('checked', true);
+    });
+
+    $(document).on('click', '#btnConfirmFixBayar', function() {
+        var mode = $('input[name=fix_bayar_mode]:checked').val();
+        var ref = $('#fixBayarRef').val();
+        var idKas = $('#fixBayarKasId').val();
+        var lebih = parseInt($('#fixBayarLebih').val(), 10) || 0;
+        var url = mode === 'split'
+            ? '<?= PV::BASE_URL ?>Data_Operasi/fix_bayar_split'
+            : '<?= PV::BASE_URL ?>Data_Operasi/fix_bayar_adjust';
+        var postData = {
+            source_ref: ref,
+            id_kas: idKas
+        };
+
+        if (mode === 'split') {
+            var targets = [];
+            $('input.fix-bayar-target:checked').each(function() {
+                targets.push($(this).val());
+            });
+            if (targets.length === 0) {
+                showToast('Pilih minimal satu ref tujuan pembayaran', 'warning');
+                return;
+            }
+            postData.target_refs = targets;
+        }
+
+        var $btn = $(this);
+        $btn.prop('disabled', true);
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: postData,
+            success: function(res) {
+                $btn.prop('disabled', false);
+                if (res == 0) {
+                    var modalEl = document.getElementById('modalFixBayar');
+                    if (modalEl) {
+                        var modal = bootstrap.Modal.getInstance(modalEl);
+                        if (modal) modal.hide();
+                    }
+                    showToast('Pembayaran berhasil diperbaiki', 'success');
+                    setTimeout(function() { location.reload(); }, 800);
+                } else {
+                    showToast(res, 'danger');
+                }
+            },
+            error: function() {
+                $btn.prop('disabled', false);
+                showToast('Gagal memproses perbaikan pembayaran', 'danger');
+            }
+        });
     });
 
     $(document).on("click", "span.bayarPasMulti", function() {

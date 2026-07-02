@@ -590,6 +590,49 @@
     </div>
 </form>
 
+<div class="modal fade" id="modalFixBayar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning py-2">
+                <h6 class="modal-title mb-0">Perbaikan Pembayaran Berlebih</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="fixBayarRef">
+                <input type="hidden" id="fixBayarKasId">
+                <input type="hidden" id="fixBayarLebih">
+                <p class="small mb-2" id="fixBayarInfo"></p>
+
+                <div class="border rounded p-2 mb-3">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="fix_bayar_mode" id="fixBayarModeSplit" value="split" checked>
+                        <label class="form-check-label small" for="fixBayarModeSplit">
+                            <b>Split Bayar</b> — sisa pembayaran berlebih dialihkan ke tagihan lain (metode &amp; note sama)
+                        </label>
+                    </div>
+                    <div id="fixBayarSplitWrap" class="ms-4">
+                        <p class="small text-muted mb-1">Pilih ref tujuan pembayaran:</p>
+                        <div id="fixBayarTargetList" class="small"></div>
+                    </div>
+                </div>
+
+                <div class="border rounded p-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="fix_bayar_mode" id="fixBayarModeAdjust" value="adjust">
+                        <label class="form-check-label small" for="fixBayarModeAdjust">
+                            <b>Ubah Jumlah Bayar</b> — sesuaikan jumlah pembayaran dengan tagihan ref ini
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-sm btn-warning" id="btnConfirmFixBayar">Proses</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <form action="<?= PV::BASE_URL; ?>Data_Order/batal_ambil" method="POST">
     <div class="modal" id="modalBatalAmbil">
         <div class="modal-dialog modal-sm">
