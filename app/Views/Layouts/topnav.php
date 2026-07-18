@@ -1,6 +1,12 @@
 <nav class="topnav navbar navbar-expand shadow-sm border-1 border-bottom border-light bg-light bg-gradient px-2 pb-1" id="sidenavAccordion">
 	<button class="border-0 bg-transparent text-dark" id="sidebarToggle"><i class="fa-solid fa-bars"></i> Menu #<?= $this->userData['id_user'] ?></button>
-	<a class="ps-lg-2 ms-auto text-end me-2 text-purple fw-bold p-2 rounded text-decoration-none" href="<?= PV::BASE_URL ?>Home">ORINS</a>
+	<div class="ms-auto d-flex align-items-center">
+		<button type="button" class="btn btn-link text-dark text-decoration-none me-1" id="btnPusatNotifikasi" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNotifikasi" aria-controls="offcanvasNotifikasi" title="Pusat Notifikasi">
+			<i class="fa-solid fa-bell"></i>
+			<span class="badge rounded-pill bg-danger d-none" id="notifBadge">0</span>
+		</button>
+		<a class="ps-lg-2 text-end me-2 text-purple fw-bold p-2 rounded text-decoration-none" href="<?= PV::BASE_URL ?>Home">ORINS</a>
+	</div>
 	<?php if ($this->userData['user_tipe'] <> 9) { ?>
 		<a class="ps-lg-2 text-end me-2 fw-bold text-success py-2 ps-2 pe-0 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></a>
 	<?php } else { ?>

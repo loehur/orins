@@ -90,6 +90,7 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 <body class="nav-fixed">
 	<?php include_once('topnav.php'); ?>
 	<?php include_once('menu.php'); ?>
+	<?php include_once('notifikasi_offcanvas.php'); ?>
 	<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 	<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 	<script src="<?= PV::ASSETS_URL ?>plugins/bootstrap-5.1/bootstrap.bundle.min.js"></script>
@@ -122,17 +123,19 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 	});
 
 	(function() {
+		var NOTIF_INTERVAL_MS = 10000; // uji coba; ganti ke 300000 (5 menit) setelah OK
+		var pollUrl = '<?= PV::BASE_URL ?>Notifikasi/poll?t=' + encodeURIComponent(<?= json_encode($t) ?>);
+		var $body = $('#notifOffcanvasBody');
+		var $badge = $('#notifBadge');
 		var $toggle = $('#prioritasToggle');
 		var $panel = $('#collapsePrioritas');
 		var $submenu = $('#prioritasSubmenu');
-		if ($toggle.length === 0 || $panel.length === 0) {
-			return;
-		}
-
-		var prioritasLoaded = false;
-		var prioritasUrl = '<?= PV::BASE_URL ?>Home/menu_prioritas?t=' + encodeURIComponent(<?= json_encode($t) ?>);
+		var polling = false;
 
 		function setPrioritasOpen(open) {
+			if ($toggle.length === 0 || $panel.length === 0) {
+				return;
+			}
 			$toggle.toggleClass('collapsed', !open);
 			$toggle.toggleClass('active', open);
 			$toggle.attr('aria-expanded', open ? 'true' : 'false');
@@ -142,58 +145,105 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 			}
 		}
 
-		function loadPrioritasMenu() {
-			if (prioritasLoaded) {
+		function applyPrioritasBadge(count) {
+			var $prioBadge = $('#menuPrioritasBadge');
+			if ($prioBadge.length === 0) {
 				return;
 			}
-			$submenu.html('<span class="nav-link py-1 text-muted ps-3">Memuat...</span>');
+			if (count > 0) {
+				$prioBadge.text(count).removeClass('d-none');
+			} else {
+				$prioBadge.addClass('d-none');
+			}
+		}
+
+		function applyNotifBadge(count) {
+			if (count > 0) {
+				$badge.text(count > 99 ? '99+' : count).removeClass('d-none');
+			} else {
+				$badge.addClass('d-none');
+			}
+		}
+
+		function applyPollResponse(response) {
+			if (!response || String(response).indexOf('pusatNotifikasiPayload') === -1) {
+				return false;
+			}
+			$body.html(response);
+
+			var $payload = $('#pusatNotifikasiPayload');
+			var notifCount = parseInt($payload.attr('data-notif-count') || 0, 10);
+			applyNotifBadge(notifCount);
+
+			var $prioItems = $payload.find('#menuPrioritasItems');
+			if ($prioItems.length && $submenu.length) {
+				$submenu.html($prioItems.prop('outerHTML'));
+				applyPrioritasBadge(parseInt($prioItems.attr('data-count') || 0, 10));
+			}
+
+			if (typeof feather !== 'undefined') {
+				feather.replace();
+			}
+			return true;
+		}
+
+		function loadPusatNotifikasi(showLoading) {
+			if (polling) {
+				return;
+			}
+			polling = true;
+			if (showLoading) {
+				$body.html('<div class="text-muted small py-2">Memuat...</div>');
+			}
 			$.ajax({
-				url: prioritasUrl,
+				url: pollUrl,
 				type: 'GET',
 				cache: false,
 				success: function(response) {
-					if (!response || String(response).indexOf('menuPrioritasItems') === -1) {
-						$submenu.html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
-						return;
-					}
-					$submenu.html(response);
-					prioritasLoaded = true;
-					var count = parseInt($('#menuPrioritasItems').data('count') || 0, 10);
-					var $badge = $('#menuPrioritasBadge');
-					if (count > 0) {
-						$badge.text(count).removeClass('d-none');
-					} else {
-						$badge.addClass('d-none');
-					}
-					if (typeof feather !== 'undefined') {
-						feather.replace();
+					if (!applyPollResponse(response)) {
+						if (showLoading) {
+							$body.html('<div class="text-danger small py-2">Gagal memuat notifikasi</div>');
+						}
 					}
 				},
 				error: function() {
-					$submenu.html('<span class="nav-link py-1 text-danger">Gagal memuat menu</span>');
+					if (showLoading) {
+						$body.html('<div class="text-danger small py-2">Gagal memuat notifikasi</div>');
+					}
+				},
+				complete: function() {
+					polling = false;
 				}
 			});
 		}
 
-		$toggle.on('click', function(e) {
-			e.preventDefault();
-			var opening = !$panel.hasClass('show');
-			setPrioritasOpen(opening);
-			if (opening) {
-				loadPrioritasMenu();
-			}
+		if ($toggle.length && $panel.length) {
+			$toggle.on('click', function(e) {
+				e.preventDefault();
+				var opening = !$panel.hasClass('show');
+				setPrioritasOpen(opening);
+				if (opening && $submenu.children().length === 0) {
+					$submenu.html('<span class="nav-link py-1 text-muted ps-3">Memuat...</span>');
+					loadPusatNotifikasi(false);
+				}
+			});
+		}
+
+		$('#offcanvasNotifikasi').on('show.bs.offcanvas', function() {
+			loadPusatNotifikasi(true);
 		});
 
-		<?php if (!empty($openPrioritasMenu)) { ?>
 		$(function() {
-			loadPrioritasMenu();
+			loadPusatNotifikasi(<?= !empty($openPrioritasMenu) ? 'true' : 'false' ?>);
+			setInterval(function() {
+				loadPusatNotifikasi(false);
+			}, NOTIF_INTERVAL_MS);
 		});
-		<?php } ?>
 	})();
 
 	(function() {
 		var base = '<?= PV::BASE_URL ?>';
-		$(document).on('click', '#layoutSidenav a.nav-link[href^="' + base + '"]', function(e) {
+		$(document).on('click', '#layoutSidenav a.nav-link[href^="' + base + '"], #offcanvasNotifikasi a.nav-link[href^="' + base + '"]', function(e) {
 			var href = $(this).attr('href');
 			if (!href || href.indexOf('javascript') === 0) {
 				return;
@@ -202,6 +252,13 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 				e.preventDefault();
 				$('#layoutSidenav a.nav-link.active').removeClass('active');
 				$(this).addClass('active');
+				var oc = document.getElementById('offcanvasNotifikasi');
+				if (oc && typeof bootstrap !== 'undefined') {
+					var inst = bootstrap.Offcanvas.getInstance(oc);
+					if (inst) {
+						inst.hide();
+					}
+				}
 			}
 		});
 		window.addEventListener('popstate', function(ev) {
