@@ -89,10 +89,10 @@
 </main>
 
 
-<form action="<?= PV::BASE_URL; ?>Stok_Bahan_Baku/pakai" method="POST">
-    <div class="modal" id="exampleModal4">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content" style="min-height: 350px;">
+<div class="modal fade" id="exampleModal4" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="min-height: 350px;">
+            <form id="formPakaiStok" action="<?= PV::BASE_URL; ?>Stok_Bahan_Baku/pakai" method="POST">
                 <div class="modal-body">
                     <div class="container">
                         <div class="row mb-3">
@@ -135,14 +135,15 @@
                         </div>
                         <div class="row mb-2 mt-3">
                             <div class="col">
-                                <button type="submit" data-bs-dismiss="modal" class="btn w-100 btn-dark">Pakai</button>
+                                <button type="submit" class="btn w-100 btn-dark">Pakai</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
-</form>
+    </div>
+</div>
 
 <div class="modal fade" id="modalHapusPakai" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
@@ -234,6 +235,14 @@
         $btn.text(cur + qtyDelta);
     }
 
+    function cleanupModalBackdrops() {
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open').css({
+            overflow: '',
+            paddingRight: ''
+        });
+    }
+
     function showHapusPakaiModal($el) {
         hapusPakaiPending = {
             id: $el.data('id'),
@@ -247,13 +256,30 @@
             '<div>Qty: ' + hapusPakaiPending.qty + '</div>' +
             '<div>Tanggal: ' + hapusPakaiPending.tanggal + '</div>'
         );
-        if (!modalHapusPakai) {
-            modalHapusPakai = new bootstrap.Modal(document.getElementById('modalHapusPakai'));
+        var el = document.getElementById('modalHapusPakai');
+        if (el && el.parentElement !== document.body) {
+            document.body.appendChild(el);
         }
+        modalHapusPakai = bootstrap.Modal.getOrCreateInstance(el);
         modalHapusPakai.show();
     }
 
     $(document).ready(function() {
+        var modalPakai = document.getElementById('exampleModal4');
+        var modalHapus = document.getElementById('modalHapusPakai');
+        if (modalPakai && modalPakai.parentElement !== document.body) {
+            document.body.appendChild(modalPakai);
+        }
+        if (modalHapus && modalHapus.parentElement !== document.body) {
+            document.body.appendChild(modalHapus);
+        }
+
+        $('#modalHapusPakai').on('hidden.bs.modal', function() {
+            if ($('.modal.show').length === 0) {
+                cleanupModalBackdrops();
+            }
+        });
+
         $('select.tize').selectize();
 
         $('#tb_barang').dataTable({
@@ -276,11 +302,13 @@
         loadRiwayatPakai($(this).data('period'));
     });
 
-    $(document).on('click', '.hapus-riwayat-pakai', function() {
+    $(document).on('click', '.hapus-riwayat-pakai', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         showHapusPakaiModal($(this));
     });
 
-    $('#btnHapusPakaiConfirm').on('click', function() {
+    $(document).on('click', '#btnHapusPakaiConfirm', function() {
         if (!hapusPakaiPending) {
             return;
         }
@@ -292,7 +320,8 @@
                 id: hapusPakaiPending.id
             },
             success: function(res) {
-                if (res == 0) {
+                res = String(res).trim();
+                if (res === '0') {
                     if (modalHapusPakai) {
                         modalHapusPakai.hide();
                     }
@@ -300,8 +329,11 @@
                     hapusPakaiPending = null;
                     loadRiwayatPakai(riwayatPeriod);
                 } else {
-                    alert(res);
+                    alert(res || 'Gagal menghapus');
                 }
+            },
+            error: function() {
+                alert('Gagal menghapus riwayat pakai');
             },
             complete: function() {
                 $btn.prop('disabled', false);
@@ -327,18 +359,22 @@
         }
     });
 
-    $("form").on("submit", function(e) {
+    $(document).on("submit", "#formPakaiStok", function(e) {
         e.preventDefault();
         $.ajax({
             url: $(this).attr('action'),
             data: $(this).serialize(),
             type: $(this).attr("method"),
             success: function(res) {
-                if (res == 0) {
+                if (String(res).trim() === '0') {
                     qty_in = $("input[name=qty]").val();
                     var new_qty = (qty - qty_in);
                     alert("Pakai Success!");
                     $("span#" + id).html(new_qty);
+                    var pakaiModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal4'));
+                    if (pakaiModal) {
+                        pakaiModal.hide();
+                    }
                     loadRiwayatPakai(riwayatPeriod);
                 } else {
                     alert(res);

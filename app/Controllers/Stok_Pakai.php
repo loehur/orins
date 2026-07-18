@@ -68,7 +68,7 @@ class Stok_Pakai extends Controller
       }
 
       $row = $this->db(0)->get_where_row('master_mutasi', "id = " . $id . " AND jenis = 4 AND id_sumber = 0 AND stat = 1");
-      if (!$row) {
+      if (!is_array($row) || empty($row['id'])) {
          echo 'Riwayat pakai tidak ditemukan atau sudah dihapus';
          exit();
       }
