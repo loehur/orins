@@ -46,6 +46,19 @@ class Notifikasi extends Controller
          ];
       }
 
+      // CS: semua Afiliasi Order masuk → 1 notifikasi (klik ke order pertama)
+      $whereAff = "id_afiliasi = " . $this->userData['id_toko'] . " AND id_penerima <> 0 AND (id_user_afiliasi = 0 OR status_order = 1) AND cancel = 0 GROUP BY id_toko, id_pelanggan, ref";
+      $affList = $this->db(0)->get_cols_where('order_data', 'ref', $whereAff, 1);
+      $affCount = (is_array($affList) && !isset($affList['errno'])) ? count($affList) : 0;
+      if ($affCount > 0) {
+         $firstRef = $affList[0]['ref'] ?? '';
+         $data['notifs_cs'][] = [
+            'title' => 'Afiliasi Order masuk',
+            'body' => $affCount . ' order menunggu proses',
+            'link' => PV::BASE_URL . 'Buka_Order_Aff/index/' . $firstRef,
+         ];
+      }
+
       $data['notif_cashier_c'] = count($data['notifs_cashier']);
       $data['notif_cs_c'] = count($data['notifs_cs']);
       $data['notif_driver_c'] = count($data['notifs_driver']);
