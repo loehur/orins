@@ -18,16 +18,6 @@
 	#offcanvasNotifikasi .offcanvas-body {
 		padding-top: .75rem;
 	}
-
-	#offcanvasNotifikasi .notif-prioritas-wrap .nav-link {
-		padding-left: .25rem;
-		padding-right: .25rem;
-	}
-
-	#offcanvasNotifikasi .notif-prioritas-wrap a.nav-link:hover {
-		background: rgba(0, 0, 0, .04);
-		border-radius: .25rem;
-	}
 </style>
 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNotifikasi" aria-labelledby="offcanvasNotifikasiLabel">
