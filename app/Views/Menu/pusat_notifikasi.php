@@ -10,14 +10,28 @@ $notifs_driver = $data['notifs_driver'] ?? [];
 
 $renderNotifList = function (array $items, int $count, string $emptyLabel) {
 	if ($count > 0 && count($items) > 0) {
-		foreach ($items as $n) { ?>
-			<a class="d-block text-decoration-none border-bottom py-2 px-1 text-dark" href="<?= htmlspecialchars($n['link'] ?? '#') ?>">
-				<div class="fw-semibold" style="font-size: .9rem;"><?= htmlspecialchars($n['title'] ?? '') ?></div>
-				<?php if (!empty($n['body'])) { ?>
-					<div class="text-muted small"><?= htmlspecialchars($n['body']) ?></div>
+		foreach ($items as $n) {
+			$canOpen = !isset($n['can_open']) || !empty($n['can_open']);
+			$title = htmlspecialchars($n['title'] ?? '');
+			$body = htmlspecialchars($n['body'] ?? '');
+			$link = htmlspecialchars($n['link'] ?? '#');
+			if ($canOpen) { ?>
+			<a class="d-block text-decoration-none border-bottom py-2 px-1 text-dark" href="<?= $link ?>">
+				<div class="fw-semibold" style="font-size: .9rem;"><?= $title ?></div>
+				<?php if ($body !== '') { ?>
+					<div class="text-muted small"><?= $body ?></div>
 				<?php } ?>
 			</a>
-		<?php }
+			<?php } else { ?>
+			<div class="border-bottom py-2 px-1 text-muted" title="Privilege kasir diperlukan untuk membuka" style="cursor: not-allowed; opacity: .75;">
+				<div class="fw-semibold" style="font-size: .9rem;"><?= $title ?></div>
+				<?php if ($body !== '') { ?>
+					<div class="small"><?= $body ?></div>
+				<?php } ?>
+				<div class="small"><i class="fa-solid fa-lock me-1"></i>Hanya kasir yang dapat membuka</div>
+			</div>
+			<?php }
+		}
 	} else { ?>
 		<div class="text-muted small py-2 px-1"><?= htmlspecialchars($emptyLabel) ?></div>
 	<?php }

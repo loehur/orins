@@ -27,6 +27,7 @@ class Notifikasi extends Controller
          'notif_driver_c' => 0,
          'notif_c' => 0,
          'can_prioritas' => in_array($this->userData['user_tipe'], PV::PRIV[4]),
+         'can_open_cashier' => in_array($this->userData['user_tipe'], PV::PRIV[2]),
          'show_aff' => false,
          'show_spk' => false,
          'aff' => [],
@@ -36,6 +37,7 @@ class Notifikasi extends Controller
       ];
 
       // Cashier: Barang Masuk status Checking → 1 notifikasi (klik ke Barang_Masuk)
+      // Tampil untuk semua; buka hanya jika minimal privilege kasir (PRIV[2])
       $whereBm = "(tipe = 1 OR tipe = 2) AND id_target = '" . $this->userData['id_toko'] . "' AND cek = 0";
       $bmChecking = (int) $this->db(0)->count_where('master_input', $whereBm);
       if ($bmChecking > 0) {
@@ -43,6 +45,7 @@ class Notifikasi extends Controller
             'title' => 'Barang Masuk perlu dicek',
             'body' => $bmChecking . ' dokumen menunggu konfirmasi',
             'link' => PV::BASE_URL . 'Barang_Masuk',
+            'can_open' => $data['can_open_cashier'],
          ];
       }
 
