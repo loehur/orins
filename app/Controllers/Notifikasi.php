@@ -35,8 +35,16 @@ class Notifikasi extends Controller
          'lanjut_c' => 0,
       ];
 
-      // Slot sumber notifikasi (belum diisi) — prioritas tidak masuk count.
-      // Isi $data['notifs_cashier'] / $data['notifs_cs'] / $data['notifs_driver'] lalu update count-nya.
+      // Cashier: Barang Masuk status Checking → 1 notifikasi (klik ke Barang_Masuk)
+      $whereBm = "(tipe = 1 OR tipe = 2) AND id_target = '" . $this->userData['id_toko'] . "' AND cek = 0";
+      $bmChecking = (int) $this->db(0)->count_where('master_input', $whereBm);
+      if ($bmChecking > 0) {
+         $data['notifs_cashier'][] = [
+            'title' => 'Barang Masuk perlu dicek',
+            'body' => $bmChecking . ' dokumen menunggu konfirmasi',
+            'link' => PV::BASE_URL . 'Barang_Masuk',
+         ];
+      }
 
       $data['notif_cashier_c'] = count($data['notifs_cashier']);
       $data['notif_cs_c'] = count($data['notifs_cs']);

@@ -243,7 +243,7 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 
 	(function() {
 		var base = '<?= PV::BASE_URL ?>';
-		$(document).on('click', '#layoutSidenav a.nav-link[href^="' + base + '"], #offcanvasNotifikasi a.nav-link[href^="' + base + '"]', function(e) {
+		$(document).on('click', '#layoutSidenav a.nav-link[href^="' + base + '"], #offcanvasNotifikasi a[href^="' + base + '"]', function(e) {
 			var href = $(this).attr('href');
 			if (!href || href.indexOf('javascript') === 0) {
 				return;
