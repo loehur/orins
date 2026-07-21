@@ -123,7 +123,7 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 	});
 
 	(function() {
-		var NOTIF_INTERVAL_MS = 10000; // uji coba; ganti ke 300000 (5 menit) setelah OK
+		var NOTIF_INTERVAL_MS = 300000; // 5 menit
 		var pollUrl = '<?= PV::BASE_URL ?>Notifikasi/poll?t=' + encodeURIComponent(<?= json_encode($t) ?>);
 		var $body = $('#notifOffcanvasBody');
 		var $badge = $('#notifBadge');
