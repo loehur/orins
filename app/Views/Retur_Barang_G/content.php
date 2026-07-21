@@ -23,14 +23,6 @@
                     <label>Note</label><br>
                     <input class="text-end border-bottom border-0 w-100" required name="note">
                 </div>
-                <div class="col-auto px-1 mb-2">
-                    <div class="pt-4">
-                        <input name="sds" class="form-check-input" type="checkbox" value="1">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            SDS
-                        </label>
-                    </div>
-                </div>
                 <div class="col mt-auto mb-2">
                     <button type="submit" class="btn btn-outline-success">Create</button>
                 </div>
