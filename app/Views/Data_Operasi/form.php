@@ -689,3 +689,20 @@
         </div>
     </div>
 </form>
+
+<div class="modal fade" id="modalAnalisaNota" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white py-2">
+                <h6 class="modal-title mb-0">Analisa Nota <span id="analisaNotaRefLabel" class="fw-normal text-white-50"></span></h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-sm" id="analisaNotaBody">
+                <div class="text-muted small py-3 text-center">Memuat analisa...</div>
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>

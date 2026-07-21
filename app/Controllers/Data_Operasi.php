@@ -1137,4 +1137,416 @@ class Data_Operasi extends Controller
       $this->model('Log')->write($this->userData['user'] . " Fix bayar split ref " . $source_ref . " kas#" . $id_kas . " alokasi " . $allocated . " ke " . implode(',', $target_refs));
       echo 0;
    }
+
+   /**
+    * Analisa lengkap 1 nota (ref) — untuk diagnose kenapa belum tuntas, dll.
+    */
+   public function analisa($ref = '')
+   {
+      $ref = trim(urldecode((string) $ref));
+      if ($ref === '') {
+         echo '<div class="alert alert-danger mb-0">Ref tidak valid.</div>';
+         exit();
+      }
+
+      $refEsc = addslashes($ref);
+      $idToko = (int) $this->userData['id_toko'];
+
+      $dRef = $this->db(0)->get_where_row('ref', "ref = '" . $refEsc . "'");
+      $orders = $this->db(0)->get_where('order_data', "ref = '" . $refEsc . "' ORDER BY id_order_data ASC");
+      if (!is_array($orders) || isset($orders['errno'])) {
+         $orders = [];
+      }
+      $mutasi = $this->db(0)->get_where('master_mutasi', "ref = '" . $refEsc . "' ORDER BY id ASC");
+      if (!is_array($mutasi) || isset($mutasi['errno'])) {
+         $mutasi = [];
+      }
+
+      // Scope: toko sendiri atau afiliasi
+      $allowed = false;
+      foreach ($orders as $o) {
+         if ((int)($o['id_toko'] ?? 0) === $idToko || (int)($o['id_afiliasi'] ?? 0) === $idToko) {
+            $allowed = true;
+            break;
+         }
+      }
+      foreach ($mutasi as $m) {
+         if ((int)($m['id_sumber'] ?? 0) === $idToko) {
+            $allowed = true;
+            break;
+         }
+      }
+      if (!$allowed && is_array($dRef) && !empty($dRef['ref'])) {
+         // ref exists but no matching rows for this toko
+         echo '<div class="alert alert-warning mb-0">Nota tidak ditemukan untuk toko ini.</div>';
+         exit();
+      }
+      if (!$allowed && (count($orders) + count($mutasi)) === 0) {
+         echo '<div class="alert alert-warning mb-0">Data nota tidak ditemukan.</div>';
+         exit();
+      }
+
+      $kas = $this->db(0)->get_where('kas', "ref_transaksi = '" . $refEsc . "' AND (jenis_transaksi = 1 OR jenis_transaksi = 4) ORDER BY id_kas ASC");
+      if (!is_array($kas) || isset($kas['errno'])) {
+         $kas = [];
+      }
+      $diskon = $this->db(0)->get_where('xtra_diskon', "ref_transaksi = '" . $refEsc . "'");
+      if (!is_array($diskon) || isset($diskon['errno'])) {
+         $diskon = [];
+      }
+      $charge = $this->db(0)->get_where('charge', "ref_transaksi = '" . $refEsc . "'");
+      if (!is_array($charge) || isset($charge['errno'])) {
+         $charge = [];
+      }
+      $kasKecil = $this->db(0)->get_where('kas_kecil', "ref = '" . $refEsc . "' AND tipe = 0");
+      if (!is_array($kasKecil) || isset($kasKecil['errno'])) {
+         $kasKecil = [];
+      }
+
+      $bill = 0;
+      $dibayarUi = 0;
+      $verifyPayment = 0;
+      $refundTotal = 0;
+      $ambilAll = true;
+      $spkPending = [];
+      $cancelCount = 0;
+      $itemCount = 0;
+      $hasStok = false;
+      $hasDiskonItem = false;
+      $insertTime = '';
+      $idPelanggan = 0;
+      $idPenerima = 0;
+      $idUser = 0;
+      $idAfiliasi = 0;
+      $idUserAfiliasi = 0;
+      $idTokoNota = 0;
+      $orderLines = [];
+      $mutasiLines = [];
+
+      foreach ($charge as $c) {
+         if ((int)($c['cancel'] ?? 0) === 0) {
+            $bill += (int) $c['jumlah'];
+         }
+      }
+
+      foreach ($orders as $do) {
+         $itemCount++;
+         if ((int)$do['tuntas'] === 1) {
+            // tracked in dRef mainly
+         }
+         if ((int)$do['stok'] === 1) {
+            $hasStok = true;
+         }
+         if ((int)$do['diskon'] > 0) {
+            $hasDiskonItem = true;
+         }
+         if ($insertTime === '' && !empty($do['insertTime'])) {
+            $insertTime = $do['insertTime'];
+         }
+         if ($idPelanggan === 0) {
+            $idPelanggan = (int) $do['id_pelanggan'];
+         }
+         if ($idPenerima === 0) {
+            $idPenerima = (int) $do['id_penerima'];
+         }
+         if ($idUser === 0) {
+            $idUser = (int) $do['id_user'];
+         }
+         if ((int)$do['id_afiliasi'] !== 0) {
+            $idAfiliasi = (int) $do['id_afiliasi'];
+         }
+         if ((int)$do['id_user_afiliasi'] !== 0) {
+            $idUserAfiliasi = (int) $do['id_user_afiliasi'];
+         }
+         if ($idTokoNota === 0) {
+            $idTokoNota = (int) $do['id_toko'];
+         }
+
+         $cancel = (int) $do['cancel'];
+         if ($cancel === 1) {
+            $cancelCount++;
+         }
+
+         $spkRaw = $do['spk_dvs'] ?? '';
+         $spkArr = (strlen($spkRaw) > 1) ? @unserialize($spkRaw) : [];
+         if (!is_array($spkArr)) {
+            $spkArr = [];
+         }
+         $spkCount = count($spkArr);
+         if ((int)$do['id_ambil'] === 0 && $cancel === 0 && $spkCount > 0) {
+            $ambilAll = false;
+         }
+
+         $spkStatusLines = [];
+         foreach ($spkArr as $idDiv => $dv) {
+            $status = (int)($dv['status'] ?? 0);
+            $cm = (int)($dv['cm'] ?? 0);
+            $cmStatus = (int)($dv['cm_status'] ?? 0);
+            $done = ($status === 1 && ($cm !== 1 || $cmStatus === 1));
+            $divName = isset($this->dDvs_all[$idDiv]['divisi']) ? $this->dDvs_all[$idDiv]['divisi'] : (isset($this->dDvs[$idDiv]['divisi']) ? $this->dDvs[$idDiv]['divisi'] : ('D-' . $idDiv));
+            $spkStatusLines[] = [
+               'divisi' => $divName,
+               'done' => $done,
+               'status' => $status,
+               'cm' => $cm,
+               'cm_status' => $cmStatus,
+            ];
+            if ($cancel === 0 && !$done) {
+               $spkPending[$divName] = true;
+            }
+         }
+
+         $lineBill = 0;
+         if ($cancel === 0 && (int)$do['stok'] === 0) {
+            $paketQty = isset($do['paket_qty']) && $do['paket_qty'] > 0 ? (int)$do['paket_qty'] : 1;
+            $lineBill = (int)(($do['harga'] * $do['jumlah']) + ($do['harga_paket'] * $paketQty));
+            $listDetail = @unserialize($do['detail_harga']);
+            $akumDiskon = 0;
+            if (is_array($listDetail)) {
+               foreach ($listDetail as $ld) {
+                  $akumDiskon += isset($ld['d']) ? (int)$ld['d'] : 0;
+               }
+            }
+            $lineBill -= $akumDiskon * (int)$do['jumlah'];
+            $bill += $lineBill;
+         }
+
+         $orderLines[] = [
+            'id' => (int)$do['id_order_data'],
+            'produk' => $do['produk'] ?? '',
+            'jumlah' => (int)$do['jumlah'],
+            'harga' => (int)$do['harga'],
+            'cancel' => $cancel,
+            'tuntas' => (int)$do['tuntas'],
+            'id_ambil' => (int)$do['id_ambil'],
+            'stok' => (int)$do['stok'],
+            'line_bill' => $lineBill,
+            'spk' => $spkStatusLines,
+            'insertTime' => $do['insertTime'] ?? '',
+            'note' => $do['note'] ?? '',
+         ];
+      }
+
+      foreach ($mutasi as $dm) {
+         $itemCount++;
+         if ($insertTime === '' && !empty($dm['insertTime'])) {
+            $insertTime = $dm['insertTime'];
+         }
+         if ($idPelanggan === 0) {
+            $idPelanggan = (int) $dm['id_target'];
+         }
+         if ($idPenerima === 0 && isset($dm['cs_id'])) {
+            $idPenerima = (int) $dm['cs_id'];
+         }
+         if ($idUser === 0) {
+            $idUser = (int) $dm['user_id'];
+         }
+         if ($idTokoNota === 0) {
+            $idTokoNota = (int) $dm['id_sumber'];
+         }
+         if ((int)$dm['diskon'] > 0) {
+            $hasDiskonItem = true;
+         }
+
+         $stat = (int)$dm['stat'];
+         $lineBill = 0;
+         if ($stat !== 2) {
+            $paketQty = isset($dm['paket_qty']) && $dm['paket_qty'] > 0 ? (int)$dm['paket_qty'] : 1;
+            $lineBill = (int)((($dm['harga_jual'] * $dm['qty']) + ($dm['harga_paket'] * $paketQty)) - ($dm['diskon'] * $dm['qty']));
+            $bill += $lineBill;
+         } else {
+            $cancelCount++;
+         }
+
+         $barangName = '#' . $dm['id_barang'];
+         $mb = $this->db(0)->get_where_row('master_barang', 'id = ' . (int)$dm['id_barang']);
+         if (is_array($mb) && !empty($mb['id'])) {
+            $barangName = strtoupper(trim(($mb['brand'] ?? '') . ' ' . ($mb['model'] ?? '') . ($mb['product_name'] ?? '')));
+         }
+
+         $mutasiLines[] = [
+            'id' => (int)$dm['id'],
+            'barang' => $barangName,
+            'qty' => (int)$dm['qty'],
+            'sn' => $dm['sn'] ?? '',
+            'stat' => $stat,
+            'tuntas' => (int)$dm['tuntas'],
+            'line_bill' => $lineBill,
+            'insertTime' => $dm['insertTime'] ?? '',
+         ];
+      }
+
+      $kasLines = [];
+      foreach ($kas as $dk) {
+         $jenis = (int)$dk['jenis_transaksi'];
+         if ($jenis === 4) {
+            if ((int)$dk['status_mutasi'] !== 2) {
+               $refundTotal += (int)$dk['jumlah'];
+            }
+         } else {
+            if ((int)$dk['status_mutasi'] === 0 || (int)$dk['status_mutasi'] === 1) {
+               $dibayarUi += (int)$dk['jumlah'];
+            }
+            if ((int)$dk['metode_mutasi'] === 1 && (int)$dk['status_mutasi'] === 1 && (int)$dk['status_setoran'] === 1) {
+               $verifyPayment += (int)$dk['jumlah'];
+            }
+            if (in_array((int)$dk['metode_mutasi'], [2, 3, 4], true) && (int)$dk['status_mutasi'] === 1) {
+               $verifyPayment += (int)$dk['jumlah'];
+            }
+         }
+
+         $metod = 'Lain';
+         switch ((int)$dk['metode_mutasi']) {
+            case 1: $metod = 'Tunai'; break;
+            case 2: $metod = 'NonTunai'; break;
+            case 3: $metod = 'Afiliasi'; break;
+            case 4: $metod = 'Saldo'; break;
+         }
+         $stLabel = 'Batal';
+         switch ((int)$dk['status_mutasi']) {
+            case 0: $stLabel = 'Office Checking'; break;
+            case 1: $stLabel = 'OK'; break;
+         }
+
+         $kasLines[] = [
+            'id' => (int)$dk['id_kas'],
+            'jenis' => $jenis === 4 ? 'Refund' : 'Bayar',
+            'metode' => $metod,
+            'jumlah' => (int)$dk['jumlah'],
+            'status' => $stLabel,
+            'status_mutasi' => (int)$dk['status_mutasi'],
+            'status_setoran' => (int)($dk['status_setoran'] ?? 0),
+            'note' => $dk['note'] ?? '',
+            'insertTime' => $dk['insertTime'] ?? '',
+            'counts_verify' => ($jenis === 1) && (
+               ((int)$dk['metode_mutasi'] === 1 && (int)$dk['status_mutasi'] === 1 && (int)$dk['status_setoran'] === 1)
+               || (in_array((int)$dk['metode_mutasi'], [2, 3, 4], true) && (int)$dk['status_mutasi'] === 1)
+            ),
+         ];
+      }
+
+      $diskonTotal = 0;
+      $diskonLines = [];
+      foreach ($diskon as $ds) {
+         if ((int)$ds['cancel'] === 0) {
+            $diskonTotal += (int)$ds['jumlah'];
+            $verifyPayment += (int)$ds['jumlah'];
+            $dibayarUi += (int)$ds['jumlah'];
+         }
+         $diskonLines[] = $ds;
+      }
+
+      $chargeLines = $charge;
+      $verifyKasKecil = true;
+      foreach ($kasKecil as $kk) {
+         if ((int)$kk['st'] !== 1) {
+            $verifyKasKecil = false;
+         }
+      }
+
+      $paymentOk = ($verifyPayment == $bill);
+      $readyToTuntas = false;
+      $reasons = [];
+      if ($paymentOk && $ambilAll && $verifyKasKecil) {
+         if ($bill > 0 && $verifyPayment > 0) {
+            $readyToTuntas = true;
+            $reasons[] = 'Siap tuntas: pembayaran match + sudah ambil + kas kecil OK';
+         } elseif ($hasStok || $hasDiskonItem) {
+            $readyToTuntas = true;
+            $reasons[] = 'Siap tuntas: bill 0 (stok/diskon)';
+         } elseif ($itemCount > 0 && $itemCount === $cancelCount) {
+            $readyToTuntas = true;
+            $reasons[] = 'Siap tuntas: semua item cancel';
+         } else {
+            $reasons[] = 'Bill 0 tapi belum memenuhi syarat stok/diskon/all-cancel';
+         }
+      } else {
+         if (!$paymentOk) {
+            $diff = $bill - $verifyPayment;
+            $reasons[] = 'Pembayaran verify belum match (selisih Rp' . number_format($diff) . '). Catatan: Tunai hanya dihitung jika sudah setor (status_setoran=1); NonTunai/Afiliasi/Saldo harus status OK.';
+         }
+         if (!$ambilAll) {
+            $reasons[] = 'Masih ada order produksi yang belum diambil (id_ambil = 0)';
+         }
+         if (!$verifyKasKecil) {
+            $reasons[] = 'Ada kas kecil yang belum valid (st <> 1)';
+         }
+      }
+
+      if (count($spkPending) > 0) {
+         $reasons[] = 'SPK belum selesai di divisi: ' . implode(', ', array_keys($spkPending));
+      }
+
+      $tuntasInduk = is_array($dRef) ? (int)($dRef['tuntas'] ?? 0) : 0;
+      if ($tuntasInduk === 1) {
+         array_unshift($reasons, 'Ref induk sudah tuntas di DB');
+      } elseif ($readyToTuntas) {
+         array_unshift($reasons, 'Seharusnya siap dituntaskan oleh cron cek_tuntas');
+      } else {
+         array_unshift($reasons, 'Belum siap tuntas');
+      }
+
+      $pelangganNama = '#' . $idPelanggan;
+      if ($idPelanggan > 0) {
+         $p = $this->db(0)->get_where_row('pelanggan', 'id_pelanggan = ' . $idPelanggan);
+         if (is_array($p) && !empty($p['nama'])) {
+            $pelangganNama = strtoupper($p['nama']) . ' (#' . $idPelanggan . ')';
+         }
+      }
+
+      $csNama = $idPenerima > 0 && isset($this->dKaryawanAll[$idPenerima])
+         ? ucwords($this->dKaryawanAll[$idPenerima]['nama']) . ' (#' . $idPenerima . ')'
+         : ($idPenerima > 0 ? '#' . $idPenerima : '-');
+      $csAffNama = $idUserAfiliasi > 0 && isset($this->dKaryawanAll[$idUserAfiliasi])
+         ? ucwords($this->dKaryawanAll[$idUserAfiliasi]['nama']) . ' (#' . $idUserAfiliasi . ')'
+         : ($idUserAfiliasi > 0 ? '#' . $idUserAfiliasi : '-');
+      $creatorNama = '-';
+      if ($idUser > 0) {
+         $u = $this->db(0)->get_where_row('user', 'id_user = ' . $idUser);
+         if (is_array($u) && !empty($u['nama'])) {
+            $creatorNama = $u['nama'] . ' (#' . $idUser . ')';
+         } else {
+            $creatorNama = '#' . $idUser;
+         }
+      }
+
+      $tokoNama = isset($this->dToko[$idTokoNota]) ? $this->dToko[$idTokoNota]['nama_toko'] : ('#' . $idTokoNota);
+      $affNama = $idAfiliasi > 0
+         ? (isset($this->dToko[$idAfiliasi]) ? $this->dToko[$idAfiliasi]['nama_toko'] : ('#' . $idAfiliasi))
+         : '-';
+
+      $data = [
+         'ref' => $ref,
+         'dRef' => is_array($dRef) ? $dRef : [],
+         'insertTime' => $insertTime,
+         'pelanggan' => $pelangganNama,
+         'cs' => $csNama,
+         'cs_aff' => $csAffNama,
+         'creator' => $creatorNama,
+         'toko' => $tokoNama,
+         'afiliasi' => $affNama,
+         'bill' => $bill,
+         'dibayar_ui' => $dibayarUi,
+         'verify_payment' => $verifyPayment,
+         'sisa_ui' => $bill - $dibayarUi,
+         'sisa_verify' => $bill - $verifyPayment,
+         'refund_total' => $refundTotal,
+         'diskon_total' => $diskonTotal,
+         'ambil_all' => $ambilAll,
+         'verify_kas_kecil' => $verifyKasKecil,
+         'payment_ok' => $paymentOk,
+         'ready_to_tuntas' => $readyToTuntas,
+         'tuntas_induk' => $tuntasInduk,
+         'reasons' => $reasons,
+         'spk_pending' => array_keys($spkPending),
+         'order_lines' => $orderLines,
+         'mutasi_lines' => $mutasiLines,
+         'kas_lines' => $kasLines,
+         'diskon_lines' => $diskonLines,
+         'charge_lines' => $chargeLines,
+         'kas_kecil' => $kasKecil,
+      ];
+
+      $this->view(__CLASS__ . '/analisa', $data);
+   }
 }

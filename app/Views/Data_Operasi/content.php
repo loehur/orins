@@ -760,6 +760,8 @@
                                                                 <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2]) && $do['tuntas'] == 0) { ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#modalUbahPelanggan" class="dropdown-item ubahPelanggan px-2" data-ref="<?= $ref ?>" data-pelanggan="<?= $id_pelanggan ?>" data-pelanggan-jenis="<?= (int)($data['pelanggan'][$id_pelanggan]['id_pelanggan_jenis'] ?? 0) ?>" href="#"><small>Ubah Pelanggan</small></a></li>
                                                                 <?php } ?>
+                                                                <li><hr class="dropdown-divider my-1"></li>
+                                                                <li><a data-bs-toggle="modal" data-bs-target="#modalAnalisaNota" class="dropdown-item analisaNota px-2" data-ref="<?= $ref ?>" href="#"><small>Analisa</small></a></li>
                                                             </ul>
                                                         </td>
                                                         <td class="text-sm pe-1">
@@ -1607,6 +1609,28 @@
         if ($sel[0] && $sel[0].selectize) {
             $sel[0].selectize.clear();
         }
+    });
+
+    $(document).on("click", "a.analisaNota", function() {
+        var ref = $(this).attr("data-ref");
+        var modalEl = document.getElementById("modalAnalisaNota");
+        if (modalEl && modalEl.parentElement !== document.body) {
+            document.body.appendChild(modalEl);
+        }
+        var $body = $("#analisaNotaBody");
+        $body.html('<div class="text-muted small py-3 text-center">Memuat analisa...</div>');
+        $("#analisaNotaRefLabel").text(ref || "");
+        $.ajax({
+            url: "<?= PV::BASE_URL ?>Data_Operasi/analisa/" + encodeURIComponent(ref),
+            type: "GET",
+            cache: false,
+            success: function(html) {
+                $body.html(html);
+            },
+            error: function() {
+                $body.html('<div class="alert alert-danger mb-0">Gagal memuat analisa nota.</div>');
+            }
+        });
     });
 
     $(document).on("click", "td#clearCheck", function() {
