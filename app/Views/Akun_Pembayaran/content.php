@@ -17,13 +17,12 @@ $sdsLabel = [
                         <th style="width: 70px;">ID</th>
                         <th>Nama Akun</th>
                         <th style="width: 140px;">Target</th>
-                        <th style="width: 70px;" class="text-end">Freq</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($data['list'])) { ?>
                         <tr>
-                            <td colspan="4" class="text-muted text-center py-3">Belum ada akun pembayaran untuk toko ini.</td>
+                            <td colspan="3" class="text-muted text-center py-3">Belum ada akun pembayaran untuk toko ini.</td>
                         </tr>
                     <?php } else {
                         foreach ($data['list'] as $pa) {
@@ -48,7 +47,6 @@ $sdsLabel = [
                                         data-sds="<?= $sds ?>"
                                         title="Double-click untuk ubah"><?= $sdsLabel[$sds] ?></span>
                                 </td>
-                                <td class="text-end"><?= (int)($pa['freq'] ?? 0) ?></td>
                             </tr>
                         <?php }
                     } ?>
