@@ -1482,46 +1482,113 @@ class Data_Operasi extends Controller
 
       // Diagnosa sistem cron (collation / antrian batch)
       $systemChecks = [];
+      $baseUrl = PV::BASE_URL;
       $collationProbe = $this->db(0)->count_where(
          'master_mutasi',
          "`ref` <> '' AND CONVERT(`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci IN (SELECT CONVERT(`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci FROM `ref` WHERE tuntas = 1)"
       );
-      // Probe tanpa COLLATE — jika gagal, tampilkan error asli ke UI
       $collationRaw = $this->db(0)->count_where(
          'master_mutasi',
          "`ref` <> '' AND `ref` IN (SELECT `ref` FROM `ref` WHERE tuntas = 1)"
       );
+
+      // Ambil definisi kolom ref untuk SQL ALTER yang akurat
+      $colDefs = [];
+      foreach (['ref', 'order_data', 'master_mutasi'] as $tbl) {
+         $row = $this->db(0)->get_where_row('INFORMATION_SCHEMA.COLUMNS', "TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" . $tbl . "' AND COLUMN_NAME = 'ref'");
+         if (is_array($row) && !empty($row['COLUMN_TYPE'])) {
+            $colDefs[$tbl] = [
+               'type' => $row['COLUMN_TYPE'],
+               'collation' => $row['COLLATION_NAME'] ?? '',
+               'nullable' => strtoupper($row['IS_NULLABLE'] ?? '') === 'YES',
+            ];
+         }
+      }
+
+      $alterSql = [];
+      foreach (['ref' => 'ref', 'order_data' => 'ref', 'master_mutasi' => 'ref'] as $tbl => $col) {
+         $type = $colDefs[$tbl]['type'] ?? 'VARCHAR(20)';
+         $nullSql = !empty($colDefs[$tbl]['nullable']) ? 'NULL' : 'NOT NULL';
+         $alterSql[] = "ALTER TABLE `{$tbl}` MODIFY `{$col}` {$type} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci {$nullSql};";
+      }
+      $checkCollationSql = "SELECT TABLE_NAME, COLUMN_NAME, CHARACTER_SET_NAME, COLLATION_NAME\nFROM INFORMATION_SCHEMA.COLUMNS\nWHERE TABLE_SCHEMA = DATABASE()\n  AND COLUMN_NAME = 'ref'\n  AND TABLE_NAME IN ('ref','order_data','master_mutasi');";
+
       if (is_array($collationRaw)) {
          $errInfo = (string)($collationRaw['info'] ?? 'unknown');
          $systemChecks[] = [
             'level' => 'error',
-            'title' => 'Error database (cron sync)',
+            'code' => 'COLLATION',
+            'title' => '1) Error collation kolom `ref`',
             'text' => $errInfo,
-            'fix' => 'Kolom `ref` antar tabel beda collation (mis. utf8mb4_general_ci vs utf8mb4_0900_ai_ci). Perbaikan: samakan collation kolom `ref` di tabel `ref`, `order_data`, `master_mutasi`, atau pastikan cron memakai CONVERT/COLLATE (sudah di-patch).',
+            'fix' => 'Samakan collation kolom `ref` di 3 tabel ke utf8mb4_unicode_ci.',
+            'steps' => [
+               'Cek collation saat ini (jalankan di MySQL):',
+               $checkCollationSql,
+               'Samakan collation (jalankan satu per satu, backup dulu):',
+               implode("\n", $alterSql),
+               'Deploy patch Cron yang memakai CONVERT/COLLATE (sudah ada di kode).',
+               'Ulangi cron: ' . $baseUrl . 'Cron/run_cek_tuntas',
+               'Buka ulang Analisa nota ini — error collation harus hilang.',
+            ],
          ];
-         $flags[] = ['level' => 'error', 'text' => 'Sistem: cron sync detail bisa gagal karena collation — ' . $errInfo];
+         $flags[] = ['level' => 'error', 'text' => 'Sistem: cron sync detail gagal karena collation — perbaiki dulu error #1 di section Sistem/Cron'];
       } elseif (is_array($collationProbe)) {
          $systemChecks[] = [
             'level' => 'warn',
-            'title' => 'Probe collation (patched) masih gagal',
+            'code' => 'COLLATION_PATCH',
+            'title' => '1) Probe collation (patched) masih gagal',
             'text' => (string)($collationProbe['info'] ?? 'unknown'),
-            'fix' => 'Cek ulang query cron / hak akses DB.',
+            'fix' => 'Query dengan COLLATE masih error — cek hak akses / versi MySQL.',
+            'steps' => [
+               'Pastikan user DB punya SELECT ke tabel ref, order_data, master_mutasi.',
+               'Jalankan SQL cek collation di atas.',
+               'Jika perlu, tetap jalankan ALTER TABLE samakan collation.',
+            ],
          ];
       } else {
          $systemChecks[] = [
             'level' => 'ok',
-            'title' => 'Collation join `ref`',
-            'text' => 'Perbandingan antar-tabel OK (dengan COLLATE unicode).',
+            'code' => 'COLLATION',
+            'title' => '1) Collation join `ref`',
+            'text' => 'Perbandingan antar-tabel OK' . (is_array($collationRaw) ? '' : ' (raw join juga OK atau sudah di-patch).'),
             'fix' => '',
+            'steps' => [],
          ];
+         // Tetap tampilkan info collation berbeda jika ada, meski query patched OK
+         $collations = [];
+         foreach ($colDefs as $tbl => $def) {
+            if ($def['collation'] !== '') {
+               $collations[$def['collation']][] = $tbl;
+            }
+         }
+         if (count($collations) > 1) {
+            $detail = [];
+            foreach ($colDefs as $tbl => $def) {
+               $detail[] = $tbl . '=' . $def['collation'];
+            }
+            $systemChecks[] = [
+               'level' => 'warn',
+               'code' => 'COLLATION_DIFF',
+               'title' => '1b) Collation masih beda antar tabel',
+               'text' => implode(', ', $detail),
+               'fix' => 'Cron patched bisa jalan, tapi samakan collation agar query lain tidak rawan error.',
+               'steps' => [
+                  'Backup database.',
+                  implode("\n", $alterSql),
+                  'Verifikasi ulang dengan SQL cek collation.',
+               ],
+            ];
+         }
       }
 
       if ($tuntasInduk === 1) {
          array_unshift($flags, ['level' => 'ok', 'text' => 'Ref induk sudah tuntas di DB']);
       } elseif ($readyToTuntas) {
-         array_unshift($flags, ['level' => 'warn', 'text' => 'Nota siap tuntas menurut kriteria bisnis, tapi status induk masih BELUM']);
+         array_unshift($flags, [
+            'level' => 'warn',
+            'text' => 'Nota siap tuntas menurut kriteria bisnis, tapi status induk masih BELUM',
+         ]);
 
-         // Posisi antrian cron (max 200 / run, urut ref ASC)
          $batchLimit = 200;
          $antrian = $this->db(0)->count_where('ref', "tuntas = 0 AND CONVERT(`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci < CONVERT('" . $refEsc . "' USING utf8mb4) COLLATE utf8mb4_unicode_ci");
          if (is_array($antrian)) {
@@ -1529,22 +1596,90 @@ class Data_Operasi extends Controller
          }
          if (!is_array($antrian)) {
             $pos = (int)$antrian + 1;
+            $cekUrl = $baseUrl . 'Cron/cek_tuntas/' . rawurlencode($ref);
+            $cekPrintUrl = $baseUrl . 'Cron/cek_tuntas/' . rawurlencode($ref) . '/1';
+            $runUrl = $baseUrl . 'Cron/run_cek_tuntas';
+
             $systemChecks[] = [
-               'level' => $pos > $batchLimit ? 'warn' : 'info',
-               'title' => 'Antrian cron cek_tuntas',
-               'text' => 'Posisi kira-kira #' . $pos . ' dari ref yang belum tuntas (cron max ' . $batchLimit . ' per eksekusi, urut ASC).',
+               'level' => $pos > $batchLimit ? 'warn' : 'warn',
+               'code' => 'QUEUE',
+               'title' => '2) Antrian cron cek_tuntas',
+               'text' => 'Posisi kira-kira #' . number_format($pos) . ' dari ref yang belum tuntas (cron max ' . $batchLimit . ' per eksekusi, urut ASC).',
                'fix' => $pos > $batchLimit
-                  ? 'Nota ini belum masuk batch saat ini. Tunggu cron berikutnya, atau naikkan batch / jalankan cron lebih sering.'
-                  : 'Seharusnya sudah masuk batch. Jika tetap belum tuntas, cek log cron (0 ORDER TUNTAS) — kemungkinan hitung bill cron beda atau error lain.',
+                  ? 'Nota ini di luar batch 200 pertama — tuntaskan manual dulu, atau naikkan batch / kurangi backlog.'
+                  : 'Sudah di rentang batch. Jika cron tetap 0 ORDER TUNTAS, paksa cek per-ref.',
+               'steps' => [
+                  'LANGKAH A — Tuntaskan nota ini saja sekarang (paling cepat): buka URL ' . $cekUrl,
+                  'LANGKAH A2 — Debug detail hitung cron: buka ' . $cekPrintUrl,
+                  'LANGKAH B — Setelah collation beres, jalankan batch: ' . $runUrl,
+                  'LANGKAH C (opsional) — Naikkan batch di Cron.php: const CEK_TUNTAS_BATCH = 200 → 1000 (hati-hati beban server).',
+                  'LANGKAH D — Kurangi backlog: cari/refaktor kenapa ada ~' . number_format($pos) . '+ ref belum tuntas (banyak order lama?).',
+               ],
             ];
-            if ($pos > $batchLimit) {
-               $flags[] = ['level' => 'warn', 'text' => 'Antri cron: posisi ~#' . $pos . ' (di luar batch ' . $batchLimit . ' pertama)'];
-            } else {
-               $flags[] = ['level' => 'warn', 'text' => 'Sudah di rentang batch cron, tapi belum tuntas — cek log cron / beda perhitungan bill'];
-            }
+            $flags[] = [
+               'level' => 'warn',
+               'text' => 'Antri cron ~#' . number_format($pos) . ' — solusi cepat: jalankan Cron/cek_tuntas/' . $ref,
+            ];
          }
+
+         $systemChecks[] = [
+            'level' => 'info',
+            'code' => 'FORCE_TUNTAS',
+            'title' => '3) Paksa analisa+tuntas nota ini',
+            'text' => 'Karena kriteria bisnis sudah OK, nota ini bisa diproses langsung tanpa menunggu antrian.',
+            'fix' => 'Jalankan cek_tuntas untuk ref ini.',
+            'steps' => [
+               'Buka: ' . $baseUrl . 'Cron/cek_tuntas/' . rawurlencode($ref),
+               'Atau debug: ' . $baseUrl . 'Cron/cek_tuntas/' . rawurlencode($ref) . '/1',
+               'Refresh Data Operasi / Analisa — Tuntas Induk harus jadi Ya.',
+            ],
+         ];
       } else {
          array_unshift($flags, ['level' => 'error', 'text' => 'Belum siap tuntas']);
+
+         if (!$paymentOk) {
+            $systemChecks[] = [
+               'level' => 'error',
+               'code' => 'PAYMENT',
+               'title' => 'Pembayaran belum verify-match',
+               'text' => 'Bill Rp' . number_format($bill) . ' vs Verify Rp' . number_format($verifyPayment),
+               'fix' => 'Samakan pembayaran yang dihitung cron.',
+               'steps' => [
+                  'Cek baris pembayaran di section Keuangan: status harus OK (bukan Office Checking).',
+                  'Jika Tunai: pastikan status_setoran = 1 (sudah disetor).',
+                  'Jika NonTunai/Afiliasi: pastikan status_mutasi = 1 (bukan checking/batal).',
+                  'Jika ada kelebihan/kekurangan bayar: perbaiki via Fix Bayar / bayar ulang / refund.',
+               ],
+            ];
+         }
+         if (!$ambilAll) {
+            $systemChecks[] = [
+               'level' => 'error',
+               'code' => 'AMBIL',
+               'title' => 'Belum ambil semua',
+               'text' => 'Ada item produksi id_ambil = 0.',
+               'fix' => 'Ambil barang/jasa di Data Operasi.',
+               'steps' => [
+                  'Di kartu nota, klik Ambil (Ambil Semua) setelah order ready.',
+                  'Pastikan item produksi tidak cancel dan punya SPK.',
+                  'Refresh Analisa — Ambil Semua harus OK.',
+               ],
+            ];
+         }
+         if (!$verifyKasKecil) {
+            $systemChecks[] = [
+               'level' => 'error',
+               'code' => 'KAS_KECIL',
+               'title' => 'Kas kecil belum valid',
+               'text' => 'Ada baris kas_kecil dengan st <> 1.',
+               'fix' => 'Selesaikan/validasi kas kecil terkait ref ini.',
+               'steps' => [
+                  'Cek section Kas Kecil di Analisa.',
+                  'Validasi di modul Kas Kecil hingga st = 1.',
+                  'Refresh Analisa.',
+               ],
+            ];
+         }
       }
 
       $pelangganNama = '#' . $idPelanggan;

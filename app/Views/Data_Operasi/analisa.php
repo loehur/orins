@@ -40,6 +40,21 @@ $dRef = $data['dRef'] ?? [];
         border-left-color: #0d6efd;
         background: #f0f6ff;
     }
+    .analisa-steps {
+        padding-left: 1.2rem;
+        font-size: 12px;
+    }
+    .analisa-steps li { margin-bottom: .35rem; }
+    .analisa-code {
+        background: #212529;
+        color: #f8f9fa;
+        border-radius: .25rem;
+        padding: .5rem .65rem;
+        font-size: 11px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        margin: .25rem 0 0;
+    }
     .analisa-table th, .analisa-table td {
         padding: .25rem .4rem;
         font-size: 12px;
@@ -58,16 +73,33 @@ $dRef = $data['dRef'] ?? [];
 
 <?php if (!empty($data['system_checks'])) { ?>
 <div class="analisa-section">
-    <h6>Sistem / Cron</h6>
+    <h6>Sistem / Cron — Perbaiki satu per satu</h6>
     <?php foreach ($data['system_checks'] as $sc) {
         $level = $sc['level'] ?? 'info';
         $cls = $level === 'ok' ? 'ok' : ($level === 'warn' ? 'warn' : ($level === 'error' ? '' : 'info'));
         ?>
         <div class="analisa-flag <?= $cls ?>">
             <div class="fw-bold"><?= htmlspecialchars($sc['title'] ?? '') ?></div>
-            <div><?= htmlspecialchars($sc['text'] ?? '') ?></div>
+            <?php if (!empty($sc['text'])) { ?>
+                <div class="mt-1"><?= nl2br(htmlspecialchars($sc['text'])) ?></div>
+            <?php } ?>
             <?php if (!empty($sc['fix'])) { ?>
-                <div class="mt-1"><small><b>Perbaikan:</b> <?= htmlspecialchars($sc['fix']) ?></small></div>
+                <div class="mt-1"><small><b>Ringkas:</b> <?= htmlspecialchars($sc['fix']) ?></small></div>
+            <?php } ?>
+            <?php if (!empty($sc['steps']) && is_array($sc['steps'])) { ?>
+                <ol class="analisa-steps mb-0 mt-2">
+                    <?php foreach ($sc['steps'] as $step) {
+                        $isCode = str_contains($step, 'ALTER ') || str_contains($step, 'SELECT ') || str_contains($step, 'INFORMATION_SCHEMA') || str_contains($step, "const CEK_");
+                        ?>
+                        <li>
+                            <?php if ($isCode) { ?>
+                                <pre class="analisa-code mb-1"><?= htmlspecialchars($step) ?></pre>
+                            <?php } else { ?>
+                                <?= htmlspecialchars($step) ?>
+                            <?php } ?>
+                        </li>
+                    <?php } ?>
+                </ol>
             <?php } ?>
         </div>
     <?php } ?>
