@@ -243,22 +243,38 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 
 	(function() {
 		var base = '<?= PV::BASE_URL ?>';
+
+		function closeMobileSidenav() {
+			if (window.innerWidth < 992 && document.body.classList.contains('sidenav-toggled')) {
+				document.body.classList.remove('sidenav-toggled');
+				localStorage.setItem('sb|sidebar-toggle', 'false');
+			}
+		}
+
+		function closeNotifOffcanvas() {
+			var oc = document.getElementById('offcanvasNotifikasi');
+			if (oc && typeof bootstrap !== 'undefined') {
+				var inst = bootstrap.Offcanvas.getInstance(oc);
+				if (inst) {
+					inst.hide();
+				}
+			}
+		}
+
 		$(document).on('click', '#layoutSidenav a.nav-link[href^="' + base + '"], #offcanvasNotifikasi a[href^="' + base + '"]', function(e) {
 			var href = $(this).attr('href');
 			if (!href || href.indexOf('javascript') === 0) {
 				return;
 			}
+
+			// Tutup menu overlay (mobile) saat pilih halaman — dulu otomatis karena full reload
+			closeMobileSidenav();
+			closeNotifOffcanvas();
+
 			if (typeof appNavigateFromHref === 'function' && appNavigateFromHref(href)) {
 				e.preventDefault();
 				$('#layoutSidenav a.nav-link.active').removeClass('active');
 				$(this).addClass('active');
-				var oc = document.getElementById('offcanvasNotifikasi');
-				if (oc && typeof bootstrap !== 'undefined') {
-					var inst = bootstrap.Offcanvas.getInstance(oc);
-					if (inst) {
-						inst.hide();
-					}
-				}
 			}
 		});
 		window.addEventListener('popstate', function(ev) {
