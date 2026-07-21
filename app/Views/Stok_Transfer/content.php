@@ -80,6 +80,8 @@
     </div>
 </main>
 
+<?php require __DIR__ . '/cancel_modal.php'; ?>
+
 <form action="<?= PV::BASE_URL; ?>Stok_Transfer/req_antar" method="POST">
     <div class="modal" id="exampleModalReq">
         <div class="modal-dialog modal-sm">
@@ -130,28 +132,8 @@
 
     $(document).on("click", ".btn-cancel-transfer", function() {
         var id = $(this).attr('data-id');
-        var msg = "Pembatalan surat transfer #" + id + " akan menghapus surat beserta SEMUA item di dalamnya secara permanen.\n\nPastikan surat dan seluruh item masih berstatus Checking.\n\nLanjutkan pembatalan?";
-        if (!confirm(msg)) {
-            return;
-        }
-        if (!confirm("Konfirmasi sekali lagi: Anda YAKIN ingin membatalkan surat transfer #" + id + "?")) {
-            return;
-        }
-
-        $.ajax({
-            url: '<?= PV::BASE_URL ?>Stok_Transfer/cancel',
-            data: {
-                id: id
-            },
-            type: 'POST',
-            dataType: 'html',
-            success: function(res) {
-                if (res == 0) {
-                    $("tr#" + id).remove();
-                } else {
-                    alert(res);
-                }
-            },
+        showStokTransferCancelModal(id, function(cancelId) {
+            $("tr#" + cancelId).remove();
         });
     });
 

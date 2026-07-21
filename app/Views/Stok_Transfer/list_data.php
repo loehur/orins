@@ -63,6 +63,8 @@
     </div>
 </main>
 
+<?php require __DIR__ . '/cancel_modal.php'; ?>
+
 <script>
     $(document).ready(function() {
         $('select.tize').selectize();
@@ -101,28 +103,8 @@
 
     $(document).on("click", ".btn-cancel-transfer", function() {
         var id = $(this).attr('data-id');
-        var msg = "Pembatalan surat transfer #" + id + " akan menghapus surat beserta SEMUA item di dalamnya secara permanen.\n\nPastikan surat dan seluruh item masih berstatus Checking.\n\nLanjutkan pembatalan?";
-        if (!confirm(msg)) {
-            return;
-        }
-        if (!confirm("Konfirmasi sekali lagi: Anda YAKIN ingin membatalkan surat transfer #" + id + "?")) {
-            return;
-        }
-
-        $.ajax({
-            url: '<?= PV::BASE_URL ?>Stok_Transfer/cancel',
-            data: {
-                id: id
-            },
-            type: 'POST',
-            dataType: 'html',
-            success: function(res) {
-                if (res == 0) {
-                    window.location.href = '<?= PV::BASE_URL ?>Stok_Transfer';
-                } else {
-                    alert(res);
-                }
-            },
+        showStokTransferCancelModal(id, function() {
+            window.location.href = '<?= PV::BASE_URL ?>Stok_Transfer';
         });
     });
 </script>
