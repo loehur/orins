@@ -1627,11 +1627,16 @@ class Data_Operasi extends Controller
             'code' => 'FORCE_TUNTAS',
             'title' => '3) Paksa analisa+tuntas nota ini',
             'text' => 'Karena kriteria bisnis sudah OK, nota ini bisa diproses langsung tanpa menunggu antrian.',
-            'fix' => 'Jalankan cek_tuntas untuk ref ini.',
+            'fix' => 'Klik tombol Fix di bawah untuk menjalankan cek_tuntas sekarang.',
             'steps' => [
-               'Buka: ' . $baseUrl . 'Cron/cek_tuntas/' . rawurlencode($ref),
-               'Atau debug: ' . $baseUrl . 'Cron/cek_tuntas/' . rawurlencode($ref) . '/1',
-               'Refresh Data Operasi / Analisa — Tuntas Induk harus jadi Ya.',
+               'Klik tombol Fix Tuntas.',
+               'Tunggu proses selesai, Analisa akan dimuat ulang.',
+               'Pastikan Tuntas Induk menjadi Ya. Jika gagal, coba debug: ' . $baseUrl . 'Cron/cek_tuntas/' . rawurlencode($ref) . '/1',
+            ],
+            'action' => [
+               'label' => 'Fix Tuntas',
+               'type' => 'fix_tuntas',
+               'ref' => $ref,
             ],
          ];
       } else {
@@ -1745,5 +1750,60 @@ class Data_Operasi extends Controller
       ];
 
       $this->view(__CLASS__ . '/analisa', $data);
+   }
+
+   /**
+    * Paksa cek_tuntas untuk 1 ref dari tombol Fix di Analisa.
+    */
+   public function fix_tuntas()
+   {
+      header('Content-Type: application/json; charset=utf-8');
+      $ref = trim((string)($_POST['ref'] ?? ''));
+      if ($ref === '') {
+         echo json_encode(['ok' => 0, 'error' => 'Ref tidak valid']);
+         exit();
+      }
+
+      $refEsc = addslashes($ref);
+      $idToko = (int)$this->userData['id_toko'];
+      $c1 = (int)$this->db(0)->count_where('order_data', "ref = '" . $refEsc . "' AND (id_toko = " . $idToko . " OR id_afiliasi = " . $idToko . ")");
+      $c2 = (int)$this->db(0)->count_where('master_mutasi', "ref = '" . $refEsc . "' AND id_sumber = " . $idToko);
+      if (is_array($c1) || is_array($c2) || ($c1 + $c2) <= 0) {
+         echo json_encode(['ok' => 0, 'error' => 'Nota tidak ditemukan untuk toko ini']);
+         exit();
+      }
+
+      if (!class_exists('Cron', false)) {
+         require_once 'app/Controllers/Cron.php';
+      }
+      $cron = new Cron();
+      try {
+         $result = $cron->cek_tuntas($ref, false, true);
+      } catch (\Throwable $e) {
+         echo json_encode(['ok' => 0, 'error' => 'Gagal proses: ' . $e->getMessage()]);
+         exit();
+      }
+
+      $row = $this->db(0)->get_where_row('ref', "ref = '" . $refEsc . "'");
+      $tuntasOk = is_array($row) && (int)($row['tuntas'] ?? 0) === 1;
+      if ($tuntasOk || (is_array($result) && (int)($result['ok'] ?? 0) === 1)) {
+         $this->model('Log')->write($this->userData['user'] . " Fix tuntas via Analisa ref " . $ref);
+         echo json_encode([
+            'ok' => 1,
+            'message' => is_array($result) && !empty($result['message'])
+               ? $result['message']
+               : 'Nota berhasil dituntaskan',
+         ]);
+         exit();
+      }
+
+      $err = is_array($result) && !empty($result['error'])
+         ? $result['error']
+         : 'Belum tuntas. Cron menilai nota belum memenuhi syarat (bill/verify/ambil).';
+      echo json_encode([
+         'ok' => 0,
+         'error' => $err,
+         'debug_url' => PV::BASE_URL . 'Cron/cek_tuntas/' . rawurlencode($ref) . '/1',
+      ]);
    }
 }

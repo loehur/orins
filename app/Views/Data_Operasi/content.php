@@ -1613,6 +1613,10 @@
 
     $(document).on("click", "a.analisaNota", function() {
         var ref = $(this).attr("data-ref");
+        loadAnalisaNota(ref);
+    });
+
+    function loadAnalisaNota(ref) {
         var modalEl = document.getElementById("modalAnalisaNota");
         if (modalEl && modalEl.parentElement !== document.body) {
             document.body.appendChild(modalEl);
@@ -1629,6 +1633,40 @@
             },
             error: function() {
                 $body.html('<div class="alert alert-danger mb-0">Gagal memuat analisa nota.</div>');
+            }
+        });
+    }
+
+    $(document).on("click", ".btnAnalisaFixTuntas", function() {
+        var $btn = $(this);
+        var ref = $btn.data("ref");
+        var $status = $btn.siblings(".analisa-fix-status");
+        if (!ref) {
+            return;
+        }
+        $btn.prop("disabled", true);
+        $status.removeClass("text-success text-danger").addClass("text-muted").text("Memproses...");
+        $.ajax({
+            url: "<?= PV::BASE_URL ?>Data_Operasi/fix_tuntas",
+            type: "POST",
+            dataType: "json",
+            data: { ref: ref },
+            success: function(res) {
+                if (res && res.ok == 1) {
+                    $status.removeClass("text-muted text-danger").addClass("text-success").text(res.message || "Berhasil");
+                    loadAnalisaNota(ref);
+                } else {
+                    var msg = (res && res.error) ? res.error : "Gagal menuntaskan";
+                    if (res && res.debug_url) {
+                        msg += " — Debug: " + res.debug_url;
+                    }
+                    $status.removeClass("text-muted text-success").addClass("text-danger").text(msg);
+                    $btn.prop("disabled", false);
+                }
+            },
+            error: function() {
+                $status.removeClass("text-muted text-success").addClass("text-danger").text("Gagal koneksi ke server");
+                $btn.prop("disabled", false);
             }
         });
     });

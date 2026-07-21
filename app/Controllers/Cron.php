@@ -357,13 +357,16 @@ class Cron extends Controller
       }
    }
 
-   public function cek_tuntas($ref = "", $print = false)
+   public function cek_tuntas($ref = "", $print = false, $returnMode = false)
    {
       $where_ref = "ref = '" . $ref . "'";
       $cek = $this->db(0)->get_where_row('ref', $where_ref, 'ref');
 
       if (!isset($cek['ref'])) {
          if ($print) echo "Ref not found in DB.<br>";
+         if ($returnMode) {
+            return ['ok' => 0, 'error' => 'Ref not found'];
+         }
          exit();
       }
 
@@ -379,6 +382,9 @@ class Cron extends Controller
             echo "Sync detail gagal: " . $sync['error'] . "<br>";
          }
          if (!$print) {
+            if ($returnMode) {
+               return ['ok' => 1, 'already' => 1, 'message' => 'Sudah tuntas'];
+            }
             exit();
          }
       }
@@ -531,10 +537,18 @@ class Cron extends Controller
                : $tuntas_date;
             $this->sync_tuntas_children_for_ref($ref, $syncDate);
             $this->update_ref($ref, $syncDate);
+            if ($returnMode) {
+               return ['ok' => 1, 'message' => 'Synced dari item tuntas'];
+            }
             exit();
          }
          if ($ready_to_tuntas) {
             $this->clearTuntas($ref);
+            if ($returnMode) {
+               return ['ok' => 1, 'message' => 'Nota dituntaskan', 'reason' => $reason];
+            }
+         } elseif ($returnMode) {
+            return ['ok' => 0, 'error' => $reason, 'ready' => false];
          }
       } else {
          // Echo Robust Info

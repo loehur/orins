@@ -101,6 +101,16 @@ $dRef = $data['dRef'] ?? [];
                     <?php } ?>
                 </ol>
             <?php } ?>
+            <?php if (!empty($sc['action']['type']) && ($sc['action']['type'] ?? '') === 'fix_tuntas') { ?>
+                <div class="mt-2">
+                    <button type="button"
+                        class="btn btn-sm btn-primary btnAnalisaFixTuntas"
+                        data-ref="<?= htmlspecialchars($sc['action']['ref'] ?? $data['ref'] ?? '', ENT_QUOTES) ?>">
+                        <?= htmlspecialchars($sc['action']['label'] ?? 'Fix Tuntas') ?>
+                    </button>
+                    <span class="analisa-fix-status small ms-2 text-muted"></span>
+                </div>
+            <?php } ?>
         </div>
     <?php } ?>
 </div>
