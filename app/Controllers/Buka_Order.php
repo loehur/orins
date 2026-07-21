@@ -52,8 +52,10 @@ class Buka_Order extends Controller
 
    private function acquireOrderAddLock(array $parts)
    {
+      // timeout 0 = jangan antre. Request ganda yang menunggu lock
+      // sebelumnya justru lanjut & merge qty (1 jadi 2/6).
       $key = addslashes($this->orderAddLockKey($parts));
-      return (int) $this->db(0)->scalar("SELECT GET_LOCK('" . $key . "', 10)") === 1;
+      return (int) $this->db(0)->scalar("SELECT GET_LOCK('" . $key . "', 0)") === 1;
    }
 
    private function releaseOrderAddLock(array $parts)
@@ -611,8 +613,13 @@ class Buka_Order extends Controller
       }
 
       $id_produk = $_POST['id_produk'];
-      $jumlah = $_POST['jumlah'];
+      $jumlah = (int) ($_POST['jumlah'] ?? 0);
       $note = $_POST['note'] ?? '';
+
+      if ($jumlah < 1) {
+         echo "Jumlah minimal 1";
+         exit();
+      }
 
       //update freq
       $this->db(0)->update("produk", "freq = freq+1", "id_produk = " . $id_produk);
@@ -882,12 +889,17 @@ class Buka_Order extends Controller
       }
 
       $id_barang = $_POST['kode'];
-      $qty = $_POST['qty'];
+      $qty = (int) ($_POST['qty'] ?? 0);
       $sds = $_POST['sds'];
       $sn =  $_POST['sn'];
       $sn_c = 0;
       if (strlen($sn) > 0) {
          $sn_c = 1;
+      }
+
+      if ($qty < 1) {
+         echo "Jumlah minimal 1";
+         exit();
       }
 
       if ($id_sumber == 0) {

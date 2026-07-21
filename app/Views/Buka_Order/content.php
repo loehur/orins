@@ -939,15 +939,16 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     }
 
     var bukaOrderEvt = '.bukaOrder';
-    if (typeof window.bukaOrderAddBusy === 'undefined') {
-        window.bukaOrderAddBusy = false;
-    }
+    // Setiap kali content reload selesai, buka lagi kunci submit
+    window.bukaOrderAddBusy = false;
+    window.bukaOrderAddXhr = null;
     if (typeof window.bukaOrderLastSubmitAt === 'undefined') {
         window.bukaOrderLastSubmitAt = 0;
     }
 
     window.resetBukaOrderSubmit = function($el) {
         window.bukaOrderAddBusy = false;
+        window.bukaOrderAddXhr = null;
         if (!$el || !$el.length) {
             return;
         }
@@ -956,13 +957,13 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             $el.find('button[type="submit"]').prop('disabled', false);
         } else {
             $('#exampleModalB .btnAddBarangRow').each(function() {
-                if ($(this).data('stockDisabled')) {
+                if ($(this).data('stockDisabled') || $(this).attr('data-stock-disabled') === '1') {
                     return;
                 }
                 $(this).prop('disabled', false);
             });
             $('#exampleModalB .barang-qty-input').each(function() {
-                if ($(this).data('stockDisabled')) {
+                if ($(this).data('stockDisabled') || $(this).attr('data-stock-disabled') === '1') {
                     return;
                 }
                 $(this).prop('disabled', false);
@@ -976,7 +977,8 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         if (window.bukaOrderAddBusy) {
             return false;
         }
-        if (now - (window.bukaOrderLastSubmitAt || 0) < 600) {
+        // Debounce lebih ketat: 1.2s untuk cegah double-fire dari handler ganda
+        if (now - (window.bukaOrderLastSubmitAt || 0) < 1200) {
             return false;
         }
         if ($el && $el.data('ajaxSubmitting')) {
@@ -999,6 +1001,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     };
 
     function finishBukaOrderAddSuccess($el) {
+        // Tetap lock sampai content reload selesai — jangan reset di sini
         if ($el && $el.is('form')) {
             closeFormModal($el);
         } else if ($el && $el.length) {
@@ -1013,7 +1016,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     }
 
     function submitBarangRow($btn) {
-        if (!$btn || !$btn.length) {
+        if (!$btn || !$btn.length || $btn.prop('disabled')) {
             return;
         }
         if (!window.beginBukaOrderSubmit($btn)) {
@@ -1027,7 +1030,10 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             return;
         }
         var idPaket = $('#paket_barang').val() || '';
-        $.ajax({
+        if (window.bukaOrderAddXhr && window.bukaOrderAddXhr.readyState !== 4) {
+            window.bukaOrderAddXhr.abort();
+        }
+        window.bukaOrderAddXhr = $.ajax({
             url: $btn.data('action'),
             type: 'POST',
             data: {
@@ -1040,22 +1046,25 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             success: function(res) {
                 if (res == 0) {
                     finishBukaOrderAddSuccess($btn);
+                    // busy tetap true; content() reload akan set ulang halaman
                 } else {
                     if (typeof showToast === 'function') {
                         showToast(res, 'danger');
                     } else {
                         showAlert(res, 'danger');
                     }
+                    window.resetBukaOrderSubmit($btn);
                 }
             },
-            error: function() {
+            error: function(_xhr, status) {
+                if (status === 'abort') {
+                    return;
+                }
                 if (typeof showToast === 'function') {
                     showToast('Gagal menambahkan barang. Coba lagi.', 'danger');
                 } else {
                     showAlert('Gagal menambahkan barang. Coba lagi.', 'danger');
                 }
-            },
-            complete: function() {
                 window.resetBukaOrderSubmit($btn);
             }
         });
@@ -1334,32 +1343,53 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         }
     }
 
-    $(document).off('click' + bukaOrderEvt, '.btnAddBarangRow').on('click' + bukaOrderEvt, '.btnAddBarangRow', function(e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        submitBarangRow($(this));
-    });
+    // Handler document hanya sekali — cegah stacking tiap content() reload
+    if (!window.bukaOrderDocHandlersBound) {
+        window.bukaOrderDocHandlersBound = true;
 
-    $(document).off('keydown' + bukaOrderEvt, '#detail_barang .barang-qty-input').on('keydown' + bukaOrderEvt, '#detail_barang .barang-qty-input', function(e) {
-        if (e.which === 13) {
+        $(document).on('click.bukaOrderAdd', '.btnAddBarangRow', function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
-            var $btn = $(this).closest('tr').find('.btnAddBarangRow');
-            if ($btn.length && !$btn.prop('disabled')) {
-                submitBarangRow($btn);
+            if (typeof window.submitBarangRowFn === 'function') {
+                window.submitBarangRowFn($(this));
             }
-        }
-    });
+        });
 
-    $(document).off('submit' + bukaOrderEvt, 'form.ajax').on('submit' + bukaOrderEvt, 'form.ajax', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        var $form = $(this);
-        if (!window.beginBukaOrderSubmit($form)) {
+        $(document).on('keydown.bukaOrderAdd', '#detail_barang .barang-qty-input', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                var $btn = $(this).closest('tr').find('.btnAddBarangRow');
+                if ($btn.length && !$btn.prop('disabled') && typeof window.submitBarangRowFn === 'function') {
+                    window.submitBarangRowFn($btn);
+                }
+            }
+        });
+
+        $(document).on('submit.bukaOrderAdd', 'form.ajax', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            if (typeof window.submitAjaxFormFn === 'function') {
+                window.submitAjaxFormFn($(this));
+            }
             return false;
+        });
+    }
+
+    // Update fungsi yang dipanggil handler (tiap reload content)
+    window.submitBarangRowFn = submitBarangRow;
+    window.submitAjaxFormFn = function($form) {
+        if (!$form || !$form.length) {
+            return;
         }
-        $.ajax({
+        if (!window.beginBukaOrderSubmit($form)) {
+            return;
+        }
+        if (window.bukaOrderAddXhr && window.bukaOrderAddXhr.readyState !== 4) {
+            window.bukaOrderAddXhr.abort();
+        }
+        window.bukaOrderAddXhr = $.ajax({
             url: $form.attr('action'),
             data: $form.serialize(),
             type: $form.attr("method"),
@@ -1368,16 +1398,23 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                     finishBukaOrderAddSuccess($form);
                 } else {
                     showAlert(res, 'danger');
+                    window.resetBukaOrderSubmit($form);
                 }
             },
-            error: function() {
+            error: function(_xhr, status) {
+                if (status === 'abort') {
+                    return;
+                }
                 showAlert('Gagal menambahkan item. Coba lagi.', 'danger');
-            },
-            complete: function() {
                 window.resetBukaOrderSubmit($form);
             }
         });
-    });
+    };
+
+    // Hapus handler lama ber-namespace .bukaOrder (versi sebelumnya)
+    $(document).off('click.bukaOrder', '.btnAddBarangRow');
+    $(document).off('keydown.bukaOrder', '#detail_barang .barang-qty-input');
+    $(document).off('submit.bukaOrder', 'form.ajax');
 
     $("form.proses").on("submit", function(e) {
         e.preventDefault();
