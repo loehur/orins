@@ -25,6 +25,29 @@
     </table>
 
     <?php
+    if (!function_exists('print_disc_pct_label')) {
+        function print_disc_pct_label($discAmt, $baseAmt)
+        {
+            $disc = (float)$discAmt;
+            $base = (float)$baseAmt;
+            if ($disc <= 0) {
+                return 'Disc. ' . number_format($disc);
+            }
+            $pct = ($base > 0) ? (int)round(($disc / $base) * 100) : 0;
+            return 'Disc. ' . $pct . '% ' . number_format($disc);
+        }
+    }
+
+    if (!function_exists('print_xtra_disc_label')) {
+        function print_xtra_disc_label($discAmt, $baseAmt)
+        {
+            $disc = (float)$discAmt;
+            $base = (float)$baseAmt;
+            $pct = ($base > 0 && $disc > 0) ? (int)round(($disc / $base) * 100) : 0;
+            return '* Extra Diskon' . ($pct > 0 ? ' ' . $pct . '%' : '');
+        }
+    }
+
     $jP = "U";
     $countProduksi = count($data['order']) + count($data['paket']);
     $countBarang = count($data['mutasi']);
@@ -129,6 +152,7 @@
 
         $total_disc = 0;
         $xtraDiskon = 0;
+        $xtraDiskonRows = [];
         $showMutasi = "";
         $total_charge = 0;
 
@@ -182,11 +206,9 @@
         }
 
         foreach ($data['diskon'] as $ds) {
-            if ($ds['ref_transaksi'] == $data['parse']) {
-                if ($ds['cancel'] == 0) {
-                    $xtraDiskon += $ds['jumlah'];
-                    $showMutasi .= "<tr><td><small>* Extra Diskon </small></td><td><small>" . date('d/m/y H:i', strtotime($ds['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($ds['jumlah']) . "</small></tr>";
-                }
+            if ($ds['ref_transaksi'] == $data['parse'] && $ds['cancel'] == 0) {
+                $xtraDiskon += $ds['jumlah'];
+                $xtraDiskonRows[] = $ds;
             }
         }
 
@@ -276,7 +298,8 @@
                         <?php
                         $paket_harga_display = $paket_harga > 0 ? $paket_harga : ($do['harga'] / $do['qty']);
                         if ($akum_diskon > 0) {
-                            echo "<del>" . number_format($paket_harga_display) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format($paket_harga_display - $akum_diskon);
+                            $baseUnit = $paket_harga_display;
+                            echo "<del>" . number_format($paket_harga_display) . "</del><br><small>" . print_disc_pct_label($akum_diskon, $baseUnit) . "</small><br>" . number_format($paket_harga_display - $akum_diskon);
                         } else {
                             echo number_format($paket_harga_display);
                         } ?>
@@ -285,7 +308,8 @@
                         <?php
                         $paket_total_display = ($paket_harga > 0 && $paket_qty_val > 0) ? ($paket_harga * $paket_qty_val) : $do['harga'];
                         if ($akum_diskon > 0) {
-                            echo "<del>" . number_format($paket_total_display) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format($paket_total_display - $akum_diskon);
+                            $baseTotal = $paket_total_display;
+                            echo "<del>" . number_format($paket_total_display) . "</del><br><small>" . print_disc_pct_label($akum_diskon * $jumlah, $baseTotal) . "</small><br>" . number_format($paket_total_display - ($akum_diskon * $jumlah));
                         } else {
                             echo number_format($paket_total_display);
                         } ?>
@@ -343,7 +367,8 @@
                         <td style="text-align: right;vertical-align:text-top; padding-left:7px;">
                             <?php
                             if ($akum_diskon > 0) {
-                                echo "<del>" . number_format(($do['harga'] + $do['harga_paket'])) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format(($do['harga'] + $do['harga_paket']) - $akum_diskon);
+                                $baseUnit = ($do['harga'] + $do['harga_paket']);
+                                echo "<del>" . number_format($baseUnit) . "</del><br><small>" . print_disc_pct_label($akum_diskon, $baseUnit) . "</small><br>" . number_format($baseUnit - $akum_diskon);
                             } else {
                                 echo number_format(($do['harga'] + $do['harga_paket']));
                             } ?>
@@ -351,7 +376,8 @@
                         <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                             <?php
                             if ($akum_diskon > 0) {
-                                echo "<del>" . number_format(($do['harga'] + $do['harga_paket']) * $do['jumlah']) . "</del><br><small>Disc. " . number_format($akum_diskon * $do['jumlah']) . "</small><br>" . number_format((($do['harga'] + $do['harga_paket']) * $do['jumlah']) - ($akum_diskon * $do['jumlah']));
+                                $baseTotal = ($do['harga'] + $do['harga_paket']) * $do['jumlah'];
+                                echo "<del>" . number_format($baseTotal) . "</del><br><small>" . print_disc_pct_label($akum_diskon * $do['jumlah'], $baseTotal) . "</small><br>" . number_format($baseTotal - ($akum_diskon * $do['jumlah']));
                             } else {
                                 echo number_format(($do['harga'] + $do['harga_paket']) * $do['jumlah']);
                             } ?>
@@ -395,7 +421,8 @@
                     <td style="text-align: right;vertical-align:text-top; padding-left:7px;">
                         <?php
                         if ($akum_diskon > 0) {
-                            echo "<del>" . number_format(($do['harga_jual'] + $do['harga_paket'])) . "</del><br><small>Disc. " . number_format($akum_diskon) . "</small><br>" . number_format(($do['harga_jual'] + $do['harga_paket']) - $akum_diskon);
+                            $baseUnit = ($do['harga_jual'] + $do['harga_paket']);
+                            echo "<del>" . number_format($baseUnit) . "</del><br><small>" . print_disc_pct_label($akum_diskon, $baseUnit) . "</small><br>" . number_format($baseUnit - $akum_diskon);
                         } else {
                             echo number_format(($do['harga_jual'] + $do['harga_paket']));
                         } ?>
@@ -404,13 +431,19 @@
                         <?php
                         if ($akum_diskon > 0) {
                             $total_disc += $akum_diskon * $do['qty'];
-                            echo "<del>" . number_format(($do['harga_jual'] * $do['qty']) + $do['harga_paket']) . "</del><br><small>Disc. " . number_format($akum_diskon * $do['qty']) . "</small><br>" . number_format((($do['harga_jual'] * $do['qty']) + $do['harga_paket']) - ($akum_diskon * $do['qty']));
+                            $baseTotal = ($do['harga_jual'] * $do['qty']) + $do['harga_paket'];
+                            echo "<del>" . number_format($baseTotal) . "</del><br><small>" . print_disc_pct_label($akum_diskon * $do['qty'], $baseTotal) . "</small><br>" . number_format($baseTotal - ($akum_diskon * $do['qty']));
                         } else {
                             echo number_format(($do['harga_jual'] * $do['qty']) + $do['harga_paket']);
                         } ?>
                     </td>
                 </tr>
         <?php }
+        }
+
+        $orderSubtotal = $total - $total_disc;
+        foreach ($xtraDiskonRows as $ds) {
+            $showMutasi .= "<tr><td><small>" . print_xtra_disc_label($ds['jumlah'], $orderSubtotal) . " </small></td><td><small>" . date('d/m/y H:i', strtotime($ds['insertTime'])) . "</small></td><td align='right'><small>Rp" . number_format($ds['jumlah']) . "</small></tr>";
         }
 
         $sisa = $total - $dibayar - $xtraDiskon;
@@ -450,9 +483,11 @@
                             <?php } ?>
                         </td>
                     </tr>
-                    <?php if ($total_disc > 0) { ?>
+                    <?php if ($total_disc > 0) {
+                        $diskPct = ($total > 0) ? (int)round(($total_disc / $total) * 100) : 0;
+                    ?>
                         <tr style="<?= $showR ?>">
-                            <td style="text-align:right">Diskon : </td>
+                            <td style="text-align:right">Diskon<?= $diskPct > 0 ? ' ' . $diskPct . '%' : '' ?> : </td>
                             <td style="text-align:right">-Rp<?= number_format($total_disc) ?></td>
                         </tr>
                     <?php } ?>
@@ -468,9 +503,11 @@
                             <td style="text-align:right">Rp<?= number_format($data['charge']['jumlah']) ?></td>
                         </tr>
                     <?php } ?>
-                    <?php if ($xtraDiskon > 0) { ?>
+                    <?php if ($xtraDiskon > 0) {
+                        $xtraPct = ($orderSubtotal > 0) ? (int)round(($xtraDiskon / $orderSubtotal) * 100) : 0;
+                    ?>
                         <tr style="<?= $showR ?>">
-                            <td style="text-align:right">Extra Diskon : </td>
+                            <td style="text-align:right">Extra Diskon<?= $xtraPct > 0 ? ' ' . $xtraPct . '%' : '' ?> : </td>
                             <td style="text-align:right">-Rp<?= number_format($xtraDiskon) ?></td>
                         </tr>
                     <?php } ?>
