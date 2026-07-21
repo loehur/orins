@@ -247,11 +247,15 @@ class DB extends DBC
         $query = "SELECT COUNT(*) FROM $table WHERE $where";
         $result = $this->mysqli->query($query);
 
+        if ($result === false) {
+            return array('query' => $query, 'info' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
+        }
+
         $reply = $result->fetch_array();
         if ($reply) {
             return $reply[0];
         } else {
-            return array('query' => $query, 'info' => $this->mysqli->error);
+            return array('query' => $query, 'info' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
         }
     }
 
@@ -260,11 +264,15 @@ class DB extends DBC
         $query =  "SELECT COUNT(DISTINCT $distinct) as count FROM $table WHERE $where";
         $result = $this->mysqli->query($query);
 
+        if ($result === false) {
+            return array('query' => $query, 'info' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
+        }
+
         $reply = $result->fetch_array();
         if ($reply) {
             return $reply['count'];
         } else {
-            return array('query' => $query, 'info' => $this->mysqli->error);
+            return array('query' => $query, 'info' => $this->mysqli->error, 'errno' => $this->mysqli->errno);
         }
     }
 

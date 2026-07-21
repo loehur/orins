@@ -108,10 +108,26 @@ class Cron extends Controller
       $batchLimit = max(1, (int)$batchLimit);
       $today = date('Y-m-d');
       $dateExpr = "IF(r.tuntas_date IS NOT NULL AND r.tuntas_date <> '' AND r.tuntas_date <> '0000-00-00', r.tuntas_date, '" . $today . "')";
-      $pendingWhere = "tuntas = 0 AND ref <> '' AND ref IN (SELECT ref FROM ref WHERE tuntas = 1)";
+      // backtick `ref` — nama tabel/kolom reserved-prone di MySQL
+      $pendingWhereMutasi = "tuntas = 0 AND `ref` <> '' AND `ref` IN (SELECT `ref` FROM `ref` WHERE tuntas = 1)";
+      $pendingWhereOrder = "tuntas = 0 AND `ref` <> '' AND `ref` IN (SELECT `ref` FROM `ref` WHERE tuntas = 1)";
 
-      $pendingMutasi = (int)$this->db(0)->count_where('master_mutasi', $pendingWhere);
-      $pendingOrder = (int)$this->db(0)->count_where('order_data', "tuntas = 0 AND ref IN (SELECT ref FROM ref WHERE tuntas = 1)");
+      $pendingMutasiRaw = $this->db(0)->count_where('master_mutasi', $pendingWhereMutasi);
+      $pendingOrderRaw = $this->db(0)->count_where('order_data', $pendingWhereOrder);
+
+      if (is_array($pendingMutasiRaw)) {
+         echo "Gagal hitung pending mutasi: " . ($pendingMutasiRaw['info'] ?? 'unknown') . "\n";
+         $pendingMutasi = 0;
+      } else {
+         $pendingMutasi = (int) $pendingMutasiRaw;
+      }
+
+      if (is_array($pendingOrderRaw)) {
+         echo "Gagal hitung pending order: " . ($pendingOrderRaw['info'] ?? 'unknown') . "\n";
+         $pendingOrder = 0;
+      } else {
+         $pendingOrder = (int) $pendingOrderRaw;
+      }
 
       if ($pendingMutasi === 0 && $pendingOrder === 0) {
          echo "0 baris disinkronkan (ref tuntas vs detail)\n";
@@ -121,14 +137,14 @@ class Cron extends Controller
       $syncMutasi = min($pendingMutasi, $batchLimit);
       $syncOrder = min($pendingOrder, $batchLimit);
 
-      $sqlMutasi = "UPDATE master_mutasi mm
-         INNER JOIN ref r ON r.ref = mm.ref
+      $sqlMutasi = "UPDATE `master_mutasi` mm
+         INNER JOIN `ref` r ON r.`ref` = mm.`ref`
          SET mm.tuntas = 1, mm.tuntas_date = " . $dateExpr . "
-         WHERE r.tuntas = 1 AND mm.tuntas = 0 AND mm.ref <> ''
+         WHERE r.tuntas = 1 AND mm.tuntas = 0 AND mm.`ref` <> ''
          LIMIT " . $batchLimit;
 
-      $sqlOrder = "UPDATE order_data od
-         INNER JOIN ref r ON r.ref = od.ref
+      $sqlOrder = "UPDATE `order_data` od
+         INNER JOIN `ref` r ON r.`ref` = od.`ref`
          SET od.tuntas = 1, od.tuntas_date = " . $dateExpr . "
          WHERE r.tuntas = 1 AND od.tuntas = 0
          LIMIT " . $batchLimit;
