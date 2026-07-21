@@ -17,6 +17,13 @@
                 <label>Tanggal</label><br>
                 <input type="date" name="tanggal" readonly class="text-center border-bottom border-0" value="<?= $d['tanggal'] ?>">
             </div>
+            <?php if (in_array($this->userData['user_tipe'], PV::PRIV[7]) && $data['can_cancel'] == 1) { ?>
+                <div class="col-auto px-1 mb-2 text-end mt-auto">
+                    <span class="text-danger btn-cancel-transfer" style="cursor: pointer;" data-id="<?= $d['id'] ?>">
+                        <i class="fa-regular fa-circle-xmark"></i> Cancel Surat
+                    </span>
+                </div>
+            <?php } ?>
         </div>
 
         <?php if ($d['cek'] == 0) { ?>
@@ -91,4 +98,31 @@
             $('#stok_data').load('<?= PV::BASE_URL ?>Stok_Transfer/stok_data/' + get + '/' + '<?= $d['id'] ?>');
         }
     })
+
+    $(document).on("click", ".btn-cancel-transfer", function() {
+        var id = $(this).attr('data-id');
+        var msg = "Pembatalan surat transfer #" + id + " akan menghapus surat beserta SEMUA item di dalamnya secara permanen.\n\nPastikan surat dan seluruh item masih berstatus Checking.\n\nLanjutkan pembatalan?";
+        if (!confirm(msg)) {
+            return;
+        }
+        if (!confirm("Konfirmasi sekali lagi: Anda YAKIN ingin membatalkan surat transfer #" + id + "?")) {
+            return;
+        }
+
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Stok_Transfer/cancel',
+            data: {
+                id: id
+            },
+            type: 'POST',
+            dataType: 'html',
+            success: function(res) {
+                if (res == 0) {
+                    window.location.href = '<?= PV::BASE_URL ?>Stok_Transfer';
+                } else {
+                    alert(res);
+                }
+            },
+        });
+    });
 </script>

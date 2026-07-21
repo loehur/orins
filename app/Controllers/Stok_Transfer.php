@@ -29,10 +29,17 @@ class Stok_Transfer extends Controller
       $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse, "page" => $page]);
    }
 
-   public function content()
+   public    function content()
    {
       $data['tujuan'] = $this->db(0)->get_cols_where('toko', 'id_toko, id_toko as id, nama_toko as nama', 'en = 1', 1, 'id_toko');
       $data['input'] = $this->db(0)->get_where("master_input", "tipe = 1 AND id_target = '" . $this->userData['id_toko'] . "' ORDER BY id DESC");
+      foreach ($data['input'] as $key => $row) {
+         $data['input'][$key]['can_cancel'] = 0;
+         if ($row['cek'] == 0) {
+            $verified = $this->db(0)->count_where('master_mutasi', "ref = '" . $row['id'] . "' AND stat <> 0");
+            $data['input'][$key]['can_cancel'] = ($verified == 0) ? 1 : 0;
+         }
+      }
       $this->view(__CLASS__ . '/content', $data);
    }
 
@@ -52,6 +59,11 @@ class Stok_Transfer extends Controller
       $cols = "id, code, CONCAT(brand,' ',model) as nama, product_name";
       $data['barang'] = $this->db(0)->get_cols_where('master_barang', $cols, "en = 1", 1, 'id');
       $data['id'] = $id;
+      $data['can_cancel'] = 0;
+      if ($data['input']['cek'] == 0) {
+         $verified = $this->db(0)->count_where('master_mutasi', "ref = '" . $id . "' AND stat <> 0");
+         $data['can_cancel'] = ($verified == 0) ? 1 : 0;
+      }
       $this->view(__CLASS__ . '/list_data', $data);
    }
 
@@ -152,5 +164,46 @@ class Stok_Transfer extends Controller
             echo 0;
          }
       }
+   }
+
+   function cancel()
+   {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[7])) {
+         echo "Hanya Gudang yang dapat membatalkan surat transfer.";
+         exit();
+      }
+
+      $id = $_POST['id'];
+      $head = $this->db(0)->get_where_row('master_input', "id = '" . $id . "' AND tipe = 1");
+      if (!$head) {
+         echo "Surat transfer tidak ditemukan.";
+         exit();
+      }
+
+      if ($head['cek'] != 0) {
+         echo "Surat (" . $id . ") sudah terverifikasi dan tidak dapat dibatalkan.";
+         exit();
+      }
+
+      $verified = $this->db(0)->count_where('master_mutasi', "ref = '" . $id . "' AND stat <> 0");
+      if ($verified > 0) {
+         echo "Masih ada item yang sudah terverifikasi. Pembatalan tidak diizinkan.";
+         exit();
+      }
+
+      $del = $this->db(0)->delete_where('master_mutasi', "ref = '" . $id . "'");
+      if ($del['errno'] <> 0) {
+         echo $del['error'];
+         exit();
+      }
+
+      $del = $this->db(0)->delete_where('master_input', "id = '" . $id . "'");
+      if ($del['errno'] <> 0) {
+         echo $del['error'];
+         exit();
+      }
+
+      $this->model('Log')->write($this->userData['user'] . " Cancel Stok Transfer #" . $id);
+      echo 0;
    }
 }

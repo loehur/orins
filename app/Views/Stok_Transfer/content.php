@@ -40,7 +40,7 @@
                     }
                 } ?>
 
-                <tr>
+                <tr id="<?= $a['id'] ?>">
                     <td class="align-middle">
                         <a href="<?= PV::BASE_URL ?>Stok_Transfer/list/<?= $a['id'] ?>"> <?= $a['id'] ?></a><br>
                         <?= $a['tanggal'] ?>
@@ -49,6 +49,11 @@
                     <td class="align-middle">
                         <?php if ($a['cek'] == 0) { ?>
                             <span class=""><i class="fa-regular fa-circle text-warning"></i> Checking</span><br>
+                            <?php if (in_array($this->userData['user_tipe'], PV::PRIV[7]) && $a['can_cancel'] == 1) { ?>
+                                <span class="text-danger btn-cancel-transfer" style="cursor: pointer;" data-id="<?= $a['id'] ?>">
+                                    <i class="fa-regular fa-circle-xmark"></i> Cancel
+                                </span><br>
+                            <?php } ?>
                             <?php if ($a['delivery'] == 0) { ?>
                                 <span style="cursor: pointer;" class="reqAntar" data-bs-toggle="modal" data-bs-target="#exampleModalReq" data-id="<?= $a['id'] ?>">
                                     <i class="fa-solid fa-truck-arrow-right"></i> Minta Antar
@@ -122,6 +127,33 @@
     $(".reqAntar").click(function() {
         $('input[name=id]').val($(this).attr('data-id'));
     })
+
+    $(document).on("click", ".btn-cancel-transfer", function() {
+        var id = $(this).attr('data-id');
+        var msg = "Pembatalan surat transfer #" + id + " akan menghapus surat beserta SEMUA item di dalamnya secara permanen.\n\nPastikan surat dan seluruh item masih berstatus Checking.\n\nLanjutkan pembatalan?";
+        if (!confirm(msg)) {
+            return;
+        }
+        if (!confirm("Konfirmasi sekali lagi: Anda YAKIN ingin membatalkan surat transfer #" + id + "?")) {
+            return;
+        }
+
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Stok_Transfer/cancel',
+            data: {
+                id: id
+            },
+            type: 'POST',
+            dataType: 'html',
+            success: function(res) {
+                if (res == 0) {
+                    $("tr#" + id).remove();
+                } else {
+                    alert(res);
+                }
+            },
+        });
+    });
 
     $("form").on("submit", function(e) {
         e.preventDefault();
