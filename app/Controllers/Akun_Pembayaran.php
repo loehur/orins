@@ -6,7 +6,7 @@ class Akun_Pembayaran extends Controller
    {
       $this->session_cek();
       $this->dataBootstrap();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[5])) {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[8])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
@@ -19,7 +19,7 @@ class Akun_Pembayaran extends Controller
    {
       $this->view("Layouts/layout_main", [
          "content" => $this->v_content,
-         "title" => "Finance - Akun Pembayaran"
+         "title" => "Tax - Akun Pembayaran"
       ]);
       $this->viewer();
    }

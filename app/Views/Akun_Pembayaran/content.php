@@ -9,14 +9,14 @@ $sdsLabel = [
     <div class="row mx-0">
         <div class="col" style="max-width: 720px;">
             <div class="fw-bold mb-2">Akun Pembayaran</div>
-            <div class="small text-muted mb-2">Hanya ubah nama & tipe lokasi (TOKO / SDS / HYBRID). Tidak bisa menambah atau menghapus.</div>
+            <div class="small text-muted mb-2">Hanya ubah nama & target (TOKO / SDS / HYBRID). Tidak bisa menambah atau menghapus. Double-click Target untuk ubah.</div>
 
             <table class="table table-sm table-bordered text-sm align-middle mb-0">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 70px;">ID</th>
                         <th>Nama Akun</th>
-                        <th style="width: 140px;">Lokasi</th>
+                        <th style="width: 140px;">Target</th>
                         <th style="width: 70px;" class="text-end">Freq</th>
                     </tr>
                 </thead>
@@ -42,11 +42,11 @@ $sdsLabel = [
                                         data-tipe="text"><?= htmlspecialchars(strtoupper($pa['payment_account'] ?? '')) ?></span>
                                 </td>
                                 <td>
-                                    <select class="form-select form-select-sm pa-sds" data-id="<?= $id ?>">
-                                        <?php foreach ($sdsLabel as $val => $label) { ?>
-                                            <option value="<?= $val ?>" <?= $sds === $val ? 'selected' : '' ?>><?= $label ?></option>
-                                        <?php } ?>
-                                    </select>
+                                    <span class="pa-sds-text text-primary fw-bold"
+                                        style="cursor: pointer;"
+                                        data-id="<?= $id ?>"
+                                        data-sds="<?= $sds ?>"
+                                        title="Double-click untuk ubah"><?= $sdsLabel[$sds] ?></span>
                                 </td>
                                 <td class="text-end"><?= (int)($pa['freq'] ?? 0) ?></td>
                             </tr>
@@ -59,6 +59,8 @@ $sdsLabel = [
 </main>
 
 <script>
+    var sdsLabels = <?= json_encode($sdsLabel) ?>;
+
     function savePaField(id, col, value, onOk, onFail) {
         $.ajax({
             url: "<?= PV::BASE_URL ?>Akun_Pembayaran/update",
@@ -79,6 +81,15 @@ $sdsLabel = [
                 else alert("Gagal koneksi ke server");
             }
         });
+    }
+
+    function renderSdsText($td, id, sds) {
+        var label = sdsLabels[sds] || sdsLabels[0];
+        $td.html(
+            '<span class="pa-sds-text text-primary fw-bold" style="cursor: pointer;" data-id="' + id + '" data-sds="' + sds + '" title="Double-click untuk ubah">' +
+            label +
+            '</span>'
+        );
     }
 
     var click = 0;
@@ -121,21 +132,57 @@ $sdsLabel = [
         });
     });
 
-    $(document).on("change", "select.pa-sds", function() {
-        var $sel = $(this);
-        var id = $sel.data("id");
-        var value = $sel.val();
-        var prev = $sel.data("prev");
-        if (prev === undefined) {
-            prev = $sel.find("option").filter(function() {
-                return this.defaultSelected;
-            }).val();
+    $(document).on("dblclick", ".pa-sds-text", function() {
+        var $span = $(this);
+        var $td = $span.closest("td");
+        if ($td.find("select.pa-sds").length) {
+            return;
         }
-        savePaField(id, "sds", value, function() {
-            $sel.data("prev", value);
-        }, function(msg) {
-            alert(msg);
-            $sel.val(prev);
+
+        var id = $span.data("id");
+        var current = String($span.data("sds"));
+        var opts = "";
+        $.each(sdsLabels, function(val, label) {
+            opts += '<option value="' + val + '"' + (String(val) === current ? " selected" : "") + ">" + label + "</option>";
+        });
+
+        $td.html('<select class="form-select form-select-sm pa-sds" data-id="' + id + '" data-prev="' + current + '">' + opts + "</select>");
+        var $sel = $td.find("select.pa-sds");
+        var closing = false;
+        $sel.focus();
+
+        function closeToText(sdsVal) {
+            if (closing) return;
+            closing = true;
+            renderSdsText($td, id, sdsVal);
+        }
+
+        $sel.on("change", function() {
+            var value = String($(this).val());
+            var prev = String($(this).data("prev"));
+            if (value === prev) {
+                closeToText(prev);
+                return;
+            }
+            $sel.prop("disabled", true);
+            savePaField(id, "sds", value, function() {
+                closeToText(value);
+            }, function(msg) {
+                alert(msg);
+                closeToText(prev);
+            });
+        });
+
+        $sel.on("blur", function() {
+            setTimeout(function() {
+                if (closing || !$td.find("select.pa-sds").length) {
+                    return;
+                }
+                if ($sel.prop("disabled")) {
+                    return;
+                }
+                closeToText(String($sel.data("prev")));
+            }, 180);
         });
     });
 </script>

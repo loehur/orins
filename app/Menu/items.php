@@ -307,7 +307,7 @@ return [
         [
             'access' => [8],
             'name' => 'Tax',
-            'active' => ['Audit - Afiliasi', 'Audit - Afiliasi Riwayat', 'MyOB - Code'],
+            'active' => ['Audit - Afiliasi', 'Audit - Afiliasi Riwayat', 'MyOB - Code', 'Tax - Akun Pembayaran'],
             'icon' => 'anchor',
             'icon-color' => "danger",
             'sub' => [
@@ -325,6 +325,11 @@ return [
                     'name' => 'MyOB Code',
                     'link' => 'MyOB_Code',
                     'active' => 'MyOB - Code'
+                ],
+                [
+                    'name' => 'Akun Pembayaran',
+                    'link' => 'Akun_Pembayaran',
+                    'active' => 'Tax - Akun Pembayaran'
                 ],
             ]
         ],
@@ -424,7 +429,7 @@ return [
         [
             'access' => [5],
             'name' => 'Finance',
-            'active' => ['Finance - Non Tunai', 'Finance - Non Tunai Riwayat', 'Finance - Setoran', 'Finance - Akun Pembayaran', 'CodGen', 'Audit - Gudang Jual', 'Office - Kas', 'Petty Cash Finance', 'Penjualan SDS'],
+            'active' => ['Finance - Non Tunai', 'Finance - Non Tunai Riwayat', 'Finance - Setoran', 'CodGen', 'Audit - Gudang Jual', 'Office - Kas', 'Petty Cash Finance', 'Penjualan SDS'],
             'icon' => 'dollar-sign',
             'icon-color' => "success",
             'sub' => [
@@ -437,11 +442,6 @@ return [
                     'name' => 'Setoran Kasir',
                     'link' => 'Setoran_F',
                     'active' => 'Finance - Setoran'
-                ],
-                [
-                    'name' => 'Akun Pembayaran',
-                    'link' => 'Akun_Pembayaran',
-                    'active' => 'Finance - Akun Pembayaran'
                 ],
                 [
                     'name' => 'Kas Kantor',
