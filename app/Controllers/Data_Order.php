@@ -232,6 +232,8 @@ class Data_Order extends Controller
 
    function tukarSN()
    {
+      $this->verifySpvPin($_POST['pin'] ?? '');
+
       $id = $_POST['tukarSN_id'];
       $reason = $_POST['reason'];
       $sn_baru = $_POST['sn_baru'];
@@ -265,6 +267,8 @@ class Data_Order extends Controller
 
    function tukarBarang()
    {
+      $this->verifySpvPin($_POST['pin'] ?? '');
+
       $id = $_POST['tukarBarang_id'];
       $reason = trim($_POST['reason'] ?? '');
       $sn_baru = trim($_POST['sn_baru'] ?? '');
@@ -545,5 +549,36 @@ class Data_Order extends Controller
       $data['diskon'] = $this->db(0)->get_where('xtra_diskon', $where);
 
       $this->view(__CLASS__ . "/print", $data);
+   }
+
+   private function verifySpvPin($pinInput)
+   {
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[1])) {
+         echo "Akses ditolak. Hanya SPV yang dapat melakukan aksi ini.";
+         exit();
+      }
+
+      $pinInput = trim((string)$pinInput);
+      if ($pinInput === '') {
+         echo "PIN wajib diisi.";
+         exit();
+      }
+
+      if (!preg_match('/^\d{4}$/', $pinInput)) {
+         echo "PIN harus 4 digit angka.";
+         exit();
+      }
+
+      $userRow = $this->db(0)->get_where_row('user', "id_user = '" . $this->userData['id_user'] . "'");
+      $storedPin = trim((string)($userRow['pin'] ?? ''));
+      if ($storedPin === '') {
+         echo "PIN belum diatur. Atur PIN di menu Akun terlebih dahulu.";
+         exit();
+      }
+
+      if ($this->model('Enc')->enc($pinInput) !== $storedPin) {
+         echo "PIN salah!";
+         exit();
+      }
    }
 }

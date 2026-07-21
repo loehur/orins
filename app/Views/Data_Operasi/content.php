@@ -618,8 +618,10 @@
 
                                                             <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { ?>
                                                                 <?php if ($do['stat'] == 1) { ?>
-                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarSN" class="dropdown-item tukarSN px-2" data-id="<?= $do['id'] ?>" data-id_barang="<?= $do['id_barang'] ?>" data-id_sumber="<?= $do['id_sumber'] ?>" data-sds="<?= (int)($do['sds'] ?? 0) ?>" data-has_sn="<?= (int)($dp['sn'] ?? 0) ?>" data-sn="<?= htmlspecialchars($do['sn'] ?? '', ENT_QUOTES) ?>" href="#">Tukar SN</a></li>
-                                                                    <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarBarang" class="dropdown-item tukarBarang px-2" data-id="<?= $do['id'] ?>" data-id_sumber="<?= $do['id_sumber'] ?>" data-sds="<?= (int)($do['sds'] ?? 0) ?>" href="#">Tukar Barang</a></li>
+                                                                    <?php if (in_array($this->userData['user_tipe'], PV::PRIV[1])) { ?>
+                                                                        <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarSN" class="dropdown-item tukarSN px-2" data-id="<?= $do['id'] ?>" data-id_barang="<?= $do['id_barang'] ?>" data-id_sumber="<?= $do['id_sumber'] ?>" data-sds="<?= (int)($do['sds'] ?? 0) ?>" data-has_sn="<?= (int)($dp['sn'] ?? 0) ?>" data-sn="<?= htmlspecialchars($do['sn'] ?? '', ENT_QUOTES) ?>" href="#">Tukar SN</a></li>
+                                                                        <li><a data-bs-toggle="modal" data-bs-target="#exampleModalTukarBarang" class="dropdown-item tukarBarang px-2" data-id="<?= $do['id'] ?>" data-id_sumber="<?= $do['id_sumber'] ?>" data-sds="<?= (int)($do['sds'] ?? 0) ?>" href="#">Tukar Barang</a></li>
+                                                                    <?php } ?>
                                                                     <li><a data-bs-toggle="modal" data-bs-target="#exampleModalCancel" class="dropdown-item cancelBarang px-2" data-id="<?= $do['id'] ?>" href="#">Cancel (+)</a></li>
                                                                 <?php } else { ?>
                                                                     <li><a class="dropdown-item px-2 ajax" href="<?= PV::BASE_URL ?>Data_Operasi/jadikan/<?= $do['id'] ?>">Cancel (-)</a></li>
@@ -1431,6 +1433,7 @@
         tukarSnCurrent = $(this).attr("data-sn") || "";
         $("input[name=tukarSN_id]").val(id);
         $("#exampleModalTukarSN input[name=reason]").val("");
+        $("#exampleModalTukarSN input[name=pin]").val("");
         if (has_sn == "1") {
             setTukarSnMode(true);
             loadTukarSnList(id_barang, id_sumber);
@@ -1513,6 +1516,7 @@
             $modal.find("#tukarBarang_id_baru").val('');
             $modal.find("#tukarBarang_sn").val('');
             $modal.find("#tukarBarang_reason").val('');
+            $modal.find('input[name=pin]').val('');
             tukarBarangPending = null;
         }
         resetTukarBarangCek($modal);

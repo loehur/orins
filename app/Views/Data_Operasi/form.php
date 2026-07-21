@@ -151,6 +151,12 @@
                                 <input type="text" name="reason" class="form-control form-control-sm" required>
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">PIN SPV <small class="text-muted">(4 digit)</small></label>
+                                <input type="password" name="pin" class="form-control form-control-sm" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required autocomplete="off" placeholder="Masukkan PIN">
+                            </div>
+                        </div>
                         <div class="row mb-2">
                             <div class="col-sm-6">
                                 <button type="submit" data-bs-dismiss="modal" class="btn btn-success">Tukar SN</button>
@@ -204,6 +210,12 @@
                             <div class="col">
                                 <label class="form-label">Alasan Tukar Barang</label>
                                 <input type="text" name="reason" id="tukarBarang_reason" class="form-control form-control-sm" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">PIN SPV <small class="text-muted">(4 digit)</small></label>
+                                <input type="password" name="pin" class="form-control form-control-sm" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required autocomplete="off" placeholder="Masukkan PIN">
                             </div>
                         </div>
                         <div class="row mb-2">

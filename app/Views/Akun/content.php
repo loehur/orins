@@ -12,6 +12,16 @@ $tokoNama = $this->dToko[$this->userData['id_toko']]['nama_toko'] ?? '-';
         position: relative;
     }
 
+    .akun-hero h4,
+    .akun-hero .small,
+    .akun-hero i {
+        color: #fff !important;
+    }
+
+    .akun-hero .text-white-50 {
+        color: rgba(255, 255, 255, 0.75) !important;
+    }
+
     .akun-hero::after {
         content: "";
         position: absolute;
@@ -33,6 +43,7 @@ $tokoNama = $this->dToko[$this->userData['id_toko']]['nama_toko'] ?? '-';
         justify-content: center;
         font-size: 1.75rem;
         border: 2px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
     }
 
     .akun-card {
@@ -75,8 +86,8 @@ $tokoNama = $this->dToko[$this->userData['id_toko']]['nama_toko'] ?? '-';
                 </div>
                 <div class="col">
                     <div class="small text-white-50 mb-1">Pengaturan Akun</div>
-                    <h4 class="mb-1"><?= htmlspecialchars($this->userData['nama']) ?></h4>
-                    <div class="small">
+                    <h4 class="mb-1 text-white"><?= htmlspecialchars($this->userData['nama']) ?></h4>
+                    <div class="small text-white">
                         <span class="me-3"><i class="fa-solid fa-user me-1"></i><?= htmlspecialchars($this->userData['user']) ?></span>
                         <span><i class="fa-solid fa-store me-1"></i><?= htmlspecialchars($tokoNama) ?></span>
                     </div>

@@ -73,16 +73,17 @@ class Akun extends Controller
       }
 
       $pin = str_pad((string)random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+      $pinEnc = $this->model('Enc')->enc($pin);
       $where = "id_user = '" . $this->userData['id_user'] . "'";
-      $set = "pin = '" . $pin . "'";
+      $set = "pin = '" . $pinEnc . "'";
       $update = $this->db(0)->update("user", $set, $where);
       if ($update['errno'] <> 0) {
          echo json_encode(['ok' => 0, 'error' => $update['error']]);
          exit();
       }
 
-      $_SESSION['user_data']['pin'] = $pin;
-      $this->userData['pin'] = $pin;
+      $_SESSION['user_data']['pin'] = $pinEnc;
+      $this->userData['pin'] = $pinEnc;
       $this->model('Log')->write($this->userData['user'] . " Generate PIN Success");
       echo json_encode(['ok' => 1, 'pin' => $pin]);
    }
