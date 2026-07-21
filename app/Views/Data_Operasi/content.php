@@ -115,7 +115,7 @@
         $user_id = 0;
 
         foreach ($data['refs'] as $ref) { ?>
-            <div class="col px-1 text-sm" style="min-width:400px;">
+            <div class="col px-1 text-sm operasi-nota-card" data-operasi-ref="<?= htmlspecialchars($ref, ENT_QUOTES) ?>" style="min-width:400px;">
                 <?php
                 $ada_produksi[$ref] = false;
                 $no = 0;
@@ -1637,6 +1637,40 @@
         });
     }
 
+    function removeOperasiNotaFromView(ref) {
+        if (!ref) return;
+        var $card = $('.operasi-nota-card[data-operasi-ref="' + ref + '"]');
+        if ($card.length) {
+            $card.fadeOut(280, function() {
+                $(this).remove();
+            });
+        }
+        $("input.cek_multi").each(function() {
+            var dr = String($(this).attr("data-ref") || $(this).data("ref") || "");
+            if (dr === String(ref) || dr.endsWith("_" + ref)) {
+                $(this).closest("tr.hoverBill").remove();
+            }
+        });
+        if (typeof refFinanceCache === "object" && refFinanceCache[ref]) {
+            delete refFinanceCache[ref];
+        }
+        if (typeof json_rekap === "object") {
+            Object.keys(json_rekap).forEach(function(k) {
+                if (k === String(ref) || k.endsWith("_" + ref)) {
+                    delete json_rekap[k];
+                }
+            });
+        }
+        if (typeof updateTotalFromCheckboxes === "function") {
+            updateTotalFromCheckboxes();
+        }
+        var modalEl = document.getElementById("modalAnalisaNota");
+        if (modalEl) {
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        }
+    }
+
     $(document).on("click", ".btnAnalisaFixTuntas", function() {
         var $btn = $(this);
         var ref = $btn.data("ref");
@@ -1654,7 +1688,10 @@
             success: function(res) {
                 if (res && res.ok == 1) {
                     $status.removeClass("text-muted text-danger").addClass("text-success").text(res.message || "Berhasil");
-                    loadAnalisaNota(ref);
+                    if (typeof showToast === "function") {
+                        showToast(res.message || "Nota dituntaskan", "success");
+                    }
+                    removeOperasiNotaFromView(ref);
                 } else {
                     var msg = (res && res.error) ? res.error : "Gagal menuntaskan";
                     if (res && res.debug_url) {
