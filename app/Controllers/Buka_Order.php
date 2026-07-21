@@ -62,31 +62,39 @@ class Buka_Order extends Controller
       $this->db(0)->scalar("SELECT RELEASE_LOCK('" . $key . "')");
    }
 
-   private function isDuplicateOrderRow($ref, $produk_code, $paket_ref, $jumlah, $note)
+   private function findExistingOrderRow($ref, $produk_code, $paket_ref, $note)
    {
       $where = "ref = '" . addslashes($ref) . "'"
          . " AND id_user = " . (int) $this->userData['id_user']
          . " AND produk_code = '" . addslashes($produk_code) . "'"
          . " AND paket_ref = '" . addslashes($paket_ref) . "'"
-         . " AND jumlah = " . (int) $jumlah
          . " AND note = '" . addslashes($note) . "'"
-         . " AND tuntas = 0 AND cancel = 0";
+         . " AND tuntas = 0 AND cancel = 0"
+         . " ORDER BY id_order_data DESC";
 
-      return $this->db(0)->count_where('order_data', $where) > 0;
+      $row = $this->db(0)->get_where_row('order_data', $where);
+      if (!is_array($row) || empty($row['id_order_data'])) {
+         return null;
+      }
+      return $row;
    }
 
-   private function isDuplicateBarangRow($ref, $id_barang, $sn, $sds, $qty, $paket_ref)
+   private function findExistingBarangRow($ref, $id_barang, $sn, $sds, $paket_ref)
    {
       $where = "ref = '" . addslashes($ref) . "'"
          . " AND user_id = " . (int) $this->userData['id_user']
          . " AND id_barang = " . (int) $id_barang
          . " AND sn = '" . addslashes($sn) . "'"
          . " AND sds = " . (int) $sds
-         . " AND qty = " . (int) $qty
          . " AND paket_ref = '" . addslashes($paket_ref) . "'"
-         . " AND tuntas = 0 AND stat <> 2";
+         . " AND tuntas = 0 AND stat <> 2"
+         . " ORDER BY id DESC";
 
-      return $this->db(0)->count_where('master_mutasi', $where) > 0;
+      $row = $this->db(0)->get_where_row('master_mutasi', $where);
+      if (!is_array($row) || empty($row['id'])) {
+         return null;
+      }
+      return $row;
    }
 
    /**
@@ -796,16 +804,29 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
-      $lockParts = [$ref, 'order', $produk_code, $paket_ref, $jumlah, $note];
+      $lockParts = [$ref, 'order', $produk_code, $paket_ref, $note];
       if (!$this->acquireOrderAddLock($lockParts)) {
          echo "Input masih diproses. Tunggu sebentar lalu coba lagi.";
          exit();
       }
 
       try {
-         if ($this->isDuplicateOrderRow($ref, $produk_code, $paket_ref, $jumlah, $note)) {
-            echo "Produk dengan qty yang sama sudah ada di cart. Gunakan catatan utama yang berbeda jika ingin menambah baris baru.";
-            exit();
+         $existing = $this->findExistingOrderRow($ref, $produk_code, $paket_ref, $note);
+         if ($existing) {
+            $newJumlah = (int) $existing['jumlah'] + (int) $jumlah;
+            $set = "jumlah = " . $newJumlah;
+            if ((int) $paket_qty > 0) {
+               $set .= ", paket_qty = " . ((int) ($existing['paket_qty'] ?? 0) + (int) $paket_qty);
+            }
+            $do = $this->db(0)->update('order_data', $set, 'id_order_data = ' . (int) $existing['id_order_data']);
+            if ($do['errno'] == 0) {
+               $this->model('Log')->write($this->userData['user'] . " Add Order Qty +" . (int) $jumlah . " Success!");
+               echo $do['errno'];
+            } else {
+               print_r($do['error']);
+               exit();
+            }
+            return;
          }
 
          // If this is part of a paket, ensure harga field is set to 0 at insert time
@@ -881,17 +902,14 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
-      $lockParts = [$ref, 'barang', $id_barang, $sn, $sds, $qty, $paket_ref];
+      $lockParts = [$ref, 'barang', $id_barang, $sn, $sds, $paket_ref];
       if (!$this->acquireOrderAddLock($lockParts)) {
          echo "Input masih diproses. Tunggu sebentar lalu coba lagi.";
          exit();
       }
 
       try {
-         if ($this->isDuplicateBarangRow($ref, $id_barang, $sn, $sds, $qty, $paket_ref)) {
-            echo "Barang dengan qty yang sama sudah ada di cart.";
-            exit();
-         }
+         $existing = $this->findExistingBarangRow($ref, $id_barang, $sn, $sds, $paket_ref);
 
       $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $id_barang . "'");
       $harga = $barang['harga_' . $id_jenis_pelanggan];
@@ -908,6 +926,23 @@ class Buka_Order extends Controller
             exit();
          }
       }
+
+         if ($existing) {
+            // SN unik: tidak boleh ditambah / digabung qty
+            if ($sn_c === 1 || strlen(trim($sn)) > 0) {
+               echo "Barang dengan SN yang sama sudah ada di cart.";
+               exit();
+            }
+
+            $newQty = (int) $existing['qty'] + (int) $qty;
+            $set = "qty = " . $newQty;
+            if ((int) $paket_qty > 0) {
+               $set .= ", paket_qty = " . ((int) ($existing['paket_qty'] ?? 0) + (int) $paket_qty);
+            }
+            $do = $this->db(0)->update('master_mutasi', $set, 'id = ' . (int) $existing['id']);
+            echo $do['errno'] == 0 ? 0 : $do['error'];
+            return;
+         }
 
       $cols = 'ref, jenis, jenis_target, id_barang, id_sumber, id_target, qty, sds, sn, sn_c, user_id, cs_id, harga_jual, price_locker, paket_ref, paket_group, harga_paket, paket_qty';
       $vals = "'" . $ref . "',2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $id_sumber . "'," . $id_target . "," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $cs_id . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $harga_paket . "," . $paket_qty;
@@ -1673,43 +1708,57 @@ class Buka_Order extends Controller
 
    function deleteOrder()
    {
-      $id_order = $_POST['id_order'];
+      $id_order = (int) ($_POST['id_order'] ?? 0);
+      if ($id_order <= 0) {
+         echo 'Data order tidak valid';
+         exit();
+      }
 
       $cek_price_lock = $this->db(0)->get_where_row('order_data', 'id_order_data = ' . $id_order);
-      
+      if (!is_array($cek_price_lock) || empty($cek_price_lock['id_order_data'])) {
+         echo 'Item order tidak ditemukan atau sudah dihapus';
+         exit();
+      }
+
+      $ref = (string) ($cek_price_lock['ref'] ?? '');
+      $price_locker = (int) ($cek_price_lock['price_locker'] ?? 0);
+      $paket_group = (string) ($cek_price_lock['paket_group'] ?? '');
+      $paket_ref = (string) ($cek_price_lock['paket_ref'] ?? '');
+
       // Check if in edit mode
       $in_edit_mode = false;
       if (isset($_SESSION['edit'][$this->userData['id_user']])) {
          $dEdit = $_SESSION['edit'][$this->userData['id_user']];
          $session_key = isset($dEdit[4]) ? $dEdit[4] : '';
-         
+
          if (!empty($session_key)) {
             $in_edit_mode = true;
             // Get edit session snapshot
             $session = $this->db(0)->get_where_row('edit_sessions', "session_key = '" . $session_key . "' AND status = 'active'");
-            
+
             if ($session && !empty($session['snapshot_data'])) {
                $snapshot_order = json_decode($session['snapshot_data'], true);
-               
-               // Check if this item exists in snapshot (old item)
-               foreach ($snapshot_order as $item) {
-                  if (isset($item['id_order_data']) && $item['id_order_data'] == $id_order) {
-                     echo "Item ini tidak dapat dihapus karena sudah ada sebelum edit. Silahkan gunakan cancel jika ingin membatalkan.";
-                     exit();
+               if (is_array($snapshot_order)) {
+                  // Check if this item exists in snapshot (old item)
+                  foreach ($snapshot_order as $item) {
+                     if (isset($item['id_order_data']) && $item['id_order_data'] == $id_order) {
+                        echo "Item ini tidak dapat dihapus karena sudah ada sebelum edit. Silahkan gunakan cancel jika ingin membatalkan.";
+                        exit();
+                     }
                   }
                }
             }
          }
       } else {
          // If NOT in edit mode, check if item has ref (already processed)
-         if ($cek_price_lock['ref'] <> "") {
+         if ($ref !== '') {
             echo "Tidak dapat dihapus, silahkan lakukan cancel";
             exit();
          }
       }
-      
-      if ($cek_price_lock['price_locker'] == 1) {
-         $where = "paket_group = '" . $cek_price_lock['paket_group'] . "' AND paket_ref = '" . $cek_price_lock['paket_ref'] . "'";
+
+      if ($price_locker == 1) {
+         $where = "paket_group = '" . addslashes($paket_group) . "' AND paket_ref = '" . addslashes($paket_ref) . "'";
          $do = $this->db(0)->delete_where('master_mutasi', $where);
          if ($do['errno'] <> 0) {
             echo $do['error'];
@@ -1719,7 +1768,6 @@ class Buka_Order extends Controller
          $where = "id_order_data =" . $id_order;
       }
 
-      
       $do = $this->db(0)->delete_where('order_data', $where);
       if ($do['errno'] == 0) {
          $this->model('Log')->write($this->userData['user'] . " Delete Order Produksi Success!");
