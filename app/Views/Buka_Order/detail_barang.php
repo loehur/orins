@@ -27,20 +27,31 @@
                             </td>
                         </tr>
                     <?php } ?>
-                    <?php if ($ds['qty'] == 0 && $ds['sn'] <> "") {
+                    <?php
+                    $stockDisabled = !empty($data['limited']) && (int)$ds['qty'] === 0;
+                    if ($ds['qty'] == 0 && $ds['sn'] <> "") {
                         continue;
-                    } ?>
+                    }
+                    ?>
                     <tr>
                         <td class="fw-bold"><?= $ds['qty'] ?></td>
                         <td><?= $ds['sds'] == 1 ? "<span class='text-danger'>SDS</span>" : $this->dToko[$this->userData['id_toko']]['inisial'] ?></td>
                         <td><?= $ds['sn'] ?></td>
                         <td class="text-end">
-                            <form action="<?= PV::BASE_URL ?>Buka_Order/add_barang/<?= $data['id_pelanggan_jenis'] ?>" class="mb-0" method="POST">
-                                <input type="hidden" name="sds" value="<?= $ds['sds'] ?>">
-                                <input type="hidden" name="sn" value="<?= $ds['sn'] ?>">
-                                <input type="hidden" name="kode" value="<?= $ds['id_barang'] ?>">
-                                <input type="number" style="width: 50px;" min="1" value="1" name="qty" class="border-0 h-100 rounded text-center" <?= (!empty($data['limited']) && $ds['qty'] > 0) ? 'max="' . $ds['qty'] . '"' : '' ?> <?= (!empty($data['limited']) && $ds['qty'] == 0) ? 'disabled' : '' ?>> <button type="submit" class="btn btn-sm btn-primary" <?= (!empty($data['limited']) && $ds['qty'] == 0) ? 'disabled' : '' ?>>Tambah</button>
-                            </form>
+                            <input type="number"
+                                style="width: 50px;"
+                                min="1"
+                                value="1"
+                                class="border-0 h-100 rounded text-center barang-qty-input"
+                                <?= (!empty($data['limited']) && $ds['qty'] > 0) ? 'max="' . (int)$ds['qty'] . '"' : '' ?>
+                                <?= $stockDisabled ? 'disabled data-stock-disabled="1"' : '' ?>>
+                            <button type="button"
+                                class="btn btn-sm btn-primary btnAddBarangRow"
+                                data-action="<?= PV::BASE_URL ?>Buka_Order/add_barang/<?= (int)$data['id_pelanggan_jenis'] ?>"
+                                data-kode="<?= (int)$ds['id_barang'] ?>"
+                                data-sds="<?= (int)$ds['sds'] ?>"
+                                data-sn="<?= htmlspecialchars($ds['sn'] ?? '', ENT_QUOTES) ?>"
+                                <?= $stockDisabled ? 'disabled data-stock-disabled="1"' : '' ?>>Tambah</button>
                         </td>
                     </tr>
                 <?php } ?>
@@ -71,80 +82,3 @@
         <div class="ok"></div>
     </div>
 </div>
-<?php foreach ($data as $key => $d) { ?>
-    <div class="row mx-0">
-        <div class="col px-0 mb-2" style="min-width: 200px;">
-
-        </div>
-    </div>
-<?php  } ?>
-
-<script>
-    $(document).ready(function() {
-        $('select.tize').selectize();
-    });
-
-    $("#detail_barang").off("submit.barangDetail", "form").on("submit.barangDetail", "form", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var $form = $(this);
-        if (typeof window.beginBukaOrderSubmit === 'function') {
-            if (!window.beginBukaOrderSubmit($form)) {
-                return false;
-            }
-        } else if ($form.data('ajaxSubmitting')) {
-            return false;
-        } else {
-            $form.data('ajaxSubmitting', true);
-            $form.find('button[type="submit"]').prop('disabled', true);
-        }
-        var id_paket = $("#paket_barang").val();
-        if (typeof id_paket == "undefined") {
-            id_paket = "";
-        }
-        $.ajax({
-            url: $form.attr('action'),
-            data: $form.serialize() + "&id_paket=" + id_paket,
-            type: $form.attr("method"),
-            success: function(res) {
-                if (res == 0) {
-                    var modalEl = $form.closest('.modal')[0];
-                    if (modalEl) {
-                        bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-                    }
-                    formPickLoaded = false;
-                    $('#form-pick-modals').empty();
-                    content();
-                    if (typeof window.resetBukaOrderSubmit === 'function') {
-                        setTimeout(function() {
-                            window.resetBukaOrderSubmit($form);
-                        }, 1200);
-                    }
-                } else {
-                    if (typeof showToast === 'function') {
-                        showToast(res, 'danger');
-                    } else {
-                        alert(res);
-                    }
-                    if (typeof window.resetBukaOrderSubmit === 'function') {
-                        window.resetBukaOrderSubmit($form);
-                    } else {
-                        $form.data('ajaxSubmitting', false);
-                        $form.find('button[type="submit"]').prop('disabled', false);
-                    }
-                }
-            },
-            error: function() {
-                if (typeof showToast === 'function') {
-                    showToast('Gagal menambahkan barang. Coba lagi.', 'danger');
-                }
-                if (typeof window.resetBukaOrderSubmit === 'function') {
-                    window.resetBukaOrderSubmit($form);
-                } else {
-                    $form.data('ajaxSubmitting', false);
-                    $form.find('button[type="submit"]').prop('disabled', false);
-                }
-            }
-        });
-    });
-</script>

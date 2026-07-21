@@ -939,31 +939,127 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     }
 
     var bukaOrderEvt = '.bukaOrder';
-    window.bukaOrderAddBusy = false;
-
-    window.resetBukaOrderSubmit = function($form) {
+    if (typeof window.bukaOrderAddBusy === 'undefined') {
         window.bukaOrderAddBusy = false;
-        if (!$form || !$form.length) {
+    }
+    if (typeof window.bukaOrderLastSubmitAt === 'undefined') {
+        window.bukaOrderLastSubmitAt = 0;
+    }
+
+    window.resetBukaOrderSubmit = function($el) {
+        window.bukaOrderAddBusy = false;
+        if (!$el || !$el.length) {
             return;
         }
-        $form.data('ajaxSubmitting', false);
-        $form.find('button[type="submit"]').prop('disabled', false);
+        $el.data('ajaxSubmitting', false);
+        if ($el.is('form')) {
+            $el.find('button[type="submit"]').prop('disabled', false);
+        } else {
+            $('#exampleModalB .btnAddBarangRow').each(function() {
+                if ($(this).data('stockDisabled')) {
+                    return;
+                }
+                $(this).prop('disabled', false);
+            });
+            $('#exampleModalB .barang-qty-input').each(function() {
+                if ($(this).data('stockDisabled')) {
+                    return;
+                }
+                $(this).prop('disabled', false);
+            });
+        }
+        $('form.ajax:visible button[type="submit"]').prop('disabled', false);
     };
 
-    window.beginBukaOrderSubmit = function($form) {
+    window.beginBukaOrderSubmit = function($el) {
+        var now = Date.now();
         if (window.bukaOrderAddBusy) {
             return false;
         }
-        if ($form && $form.data('ajaxSubmitting')) {
+        if (now - (window.bukaOrderLastSubmitAt || 0) < 600) {
+            return false;
+        }
+        if ($el && $el.data('ajaxSubmitting')) {
             return false;
         }
         window.bukaOrderAddBusy = true;
-        if ($form && $form.length) {
-            $form.data('ajaxSubmitting', true);
-            $form.find('button[type="submit"]').prop('disabled', true);
+        window.bukaOrderLastSubmitAt = now;
+        if ($el && $el.length) {
+            $el.data('ajaxSubmitting', true);
+            if ($el.is('form')) {
+                $el.find('button[type="submit"]').prop('disabled', true);
+            } else {
+                $el.prop('disabled', true);
+                $('#exampleModalB .btnAddBarangRow').prop('disabled', true);
+                $('#exampleModalB .barang-qty-input').prop('disabled', true);
+            }
         }
+        $('form.ajax:visible button[type="submit"]').prop('disabled', true);
         return true;
     };
+
+    function finishBukaOrderAddSuccess($el) {
+        if ($el && $el.is('form')) {
+            closeFormModal($el);
+        } else if ($el && $el.length) {
+            var modalEl = $el.closest('.modal')[0];
+            if (modalEl) {
+                bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+            }
+        }
+        formPickLoaded = false;
+        $('#form-pick-modals').empty();
+        content();
+    }
+
+    function submitBarangRow($btn) {
+        if (!$btn || !$btn.length) {
+            return;
+        }
+        if (!window.beginBukaOrderSubmit($btn)) {
+            return;
+        }
+        var $row = $btn.closest('tr');
+        var qty = parseInt($row.find('.barang-qty-input').val(), 10) || 1;
+        if (qty < 1) {
+            window.resetBukaOrderSubmit($btn);
+            showAlert('Jumlah minimal 1', 'danger');
+            return;
+        }
+        var idPaket = $('#paket_barang').val() || '';
+        $.ajax({
+            url: $btn.data('action'),
+            type: 'POST',
+            data: {
+                kode: $btn.data('kode'),
+                sds: $btn.data('sds'),
+                sn: $btn.data('sn') || '',
+                qty: qty,
+                id_paket: idPaket
+            },
+            success: function(res) {
+                if (res == 0) {
+                    finishBukaOrderAddSuccess($btn);
+                } else {
+                    if (typeof showToast === 'function') {
+                        showToast(res, 'danger');
+                    } else {
+                        showAlert(res, 'danger');
+                    }
+                }
+            },
+            error: function() {
+                if (typeof showToast === 'function') {
+                    showToast('Gagal menambahkan barang. Coba lagi.', 'danger');
+                } else {
+                    showAlert('Gagal menambahkan barang. Coba lagi.', 'danger');
+                }
+            },
+            complete: function() {
+                window.resetBukaOrderSubmit($btn);
+            }
+        });
+    }
 
     $(document).off('click' + bukaOrderEvt, '[data-bs-toggle="modal"]').on('click' + bukaOrderEvt, '[data-bs-toggle="modal"]', function(e) {
         var target = $(this).attr('data-bs-target');
@@ -1238,9 +1334,27 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         }
     }
 
+    $(document).off('click' + bukaOrderEvt, '.btnAddBarangRow').on('click' + bukaOrderEvt, '.btnAddBarangRow', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        submitBarangRow($(this));
+    });
+
+    $(document).off('keydown' + bukaOrderEvt, '#detail_barang .barang-qty-input').on('keydown' + bukaOrderEvt, '#detail_barang .barang-qty-input', function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            var $btn = $(this).closest('tr').find('.btnAddBarangRow');
+            if ($btn.length && !$btn.prop('disabled')) {
+                submitBarangRow($btn);
+            }
+        }
+    });
+
     $(document).off('submit' + bukaOrderEvt, 'form.ajax').on('submit' + bukaOrderEvt, 'form.ajax', function(e) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
         var $form = $(this);
         if (!window.beginBukaOrderSubmit($form)) {
             return false;
@@ -1251,20 +1365,15 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             type: $form.attr("method"),
             success: function(res) {
                 if (res == 0) {
-                    closeFormModal($form);
-                    formPickLoaded = false;
-                    $('#form-pick-modals').empty();
-                    content();
-                    setTimeout(function() {
-                        window.resetBukaOrderSubmit($form);
-                    }, 1200);
+                    finishBukaOrderAddSuccess($form);
                 } else {
                     showAlert(res, 'danger');
-                    window.resetBukaOrderSubmit($form);
                 }
             },
             error: function() {
                 showAlert('Gagal menambahkan item. Coba lagi.', 'danger');
+            },
+            complete: function() {
                 window.resetBukaOrderSubmit($form);
             }
         });

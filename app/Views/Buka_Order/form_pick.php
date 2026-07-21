@@ -129,10 +129,9 @@ switch ($id_pelanggan_jenis) {
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Barang - <b><?= $id_pelanggan_jenis == 1 ? "Umum" : "Dealer" ?></b></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form class="ajax" action="<?= PV::BASE_URL ?>Buka_Order/add_barang" method="POST">
-                <div class="modal-body bg-success bg-gradient bg-opacity-10 px-2">
+            <div class="modal-body bg-success bg-gradient bg-opacity-10 px-2">
                     <div class="mb-2">
-                        <select class="tize loadDetail_Barang" name="id_produk" required>
+                        <select class="tize loadDetail_Barang" id="barangPickSelect" required>
                             <option></option>
                             <?php
                             foreach ($data['stok'] as $dps) {
@@ -149,7 +148,7 @@ switch ($id_pelanggan_jenis) {
                     <?php if (count($mgpaket) > 0) { ?>
                         <div class="mb-2 mt-5">
                             <label class="text-sm fw-bold text-danger ps-1">Include to Package</label>
-                            <select class="tize" name="id_paket" id="paket_barang">
+                            <select class="tize" id="paket_barang">
                                 <option value="" selected></option>
                                 <?php foreach ($mgpaket as $dp) { ?>
                                     <option value="<?= $dp['id'] . "-" . $dp['primary'] . "-" . $dp['tb'] ?>"><?= $dp['nama'] ?></option>
@@ -159,7 +158,6 @@ switch ($id_pelanggan_jenis) {
                     <?php } ?>
                     <div id="detail_barang" style="min-height: 300px;"></div>
                 </div>
-            </form>
         </div>
     </div>
 </div>
