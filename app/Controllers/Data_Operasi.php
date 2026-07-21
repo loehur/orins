@@ -355,7 +355,8 @@ class Data_Operasi extends Controller
 
             $lokasiMode = $this->multiPayLokasiMode($ref_multi);
             $paSds = (int)($dPa[$payment_account]['sds'] ?? 0);
-            if ($lokasiMode === 'SDS' && $paSds !== 1) {
+            // sds=2 = akun universal (boleh untuk SDS maupun TOKO)
+            if ($lokasiMode === 'SDS' && $paSds !== 1 && $paSds !== 2) {
                echo $this->msgBayarGagal('akun_sds', ['mode' => 'SDS']);
                exit();
             }

@@ -1116,6 +1116,10 @@
         }
 
         var filtered = paymentAccountsMulti.filter(function(pa) {
+            // sds=2 = akun universal, selalu tampil (SDS / TOKO / MIX)
+            if (pa.sds === 2) {
+                return true;
+            }
             if (mode === "MIX") {
                 return true;
             }

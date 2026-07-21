@@ -393,7 +393,7 @@ return [
             ]
         ],
         [
-            'access' => [6],
+            'access' => [6, 7],
             'name' => 'Audit',
             'active' => ['Audit - Barang Masuk', 'Audit - Kas Kecil', 'Barang - Riwayat Audit', 'Audit - Barang Keluar'],
             'icon' => 'check-square',
@@ -424,7 +424,7 @@ return [
         [
             'access' => [5],
             'name' => 'Finance',
-            'active' => ['Finance - Non Tunai', 'Finance - Non Tunai Riwayat', 'Finance - Setoran', 'CodGen', 'Audit - Gudang Jual', 'Office - Kas', 'Petty Cash Finance', 'Stok - Transfer', 'Penjualan SDS'],
+            'active' => ['Finance - Non Tunai', 'Finance - Non Tunai Riwayat', 'Finance - Setoran', 'Finance - Akun Pembayaran', 'CodGen', 'Audit - Gudang Jual', 'Office - Kas', 'Petty Cash Finance', 'Penjualan SDS'],
             'icon' => 'dollar-sign',
             'icon-color' => "success",
             'sub' => [
@@ -437,6 +437,11 @@ return [
                     'name' => 'Setoran Kasir',
                     'link' => 'Setoran_F',
                     'active' => 'Finance - Setoran'
+                ],
+                [
+                    'name' => 'Akun Pembayaran',
+                    'link' => 'Akun_Pembayaran',
+                    'active' => 'Finance - Akun Pembayaran'
                 ],
                 [
                     'name' => 'Kas Kantor',
@@ -452,11 +457,6 @@ return [
                     'name' => 'Penjualan Gudang',
                     'link' => 'Audit_GudangJual',
                     'active' => 'Audit - Gudang Jual'
-                ],
-                [
-                    'name' => 'Transfer Stok',
-                    'link' => 'Stok_Transfer',
-                    'active' => 'Stok - Transfer'
                 ],
                 [
                     'name' => 'Penjualan SDS',
