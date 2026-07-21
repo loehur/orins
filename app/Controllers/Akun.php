@@ -28,7 +28,9 @@ class Akun extends Controller
 
    public function content()
    {
-      $this->view($this->v_content);
+      $pin = isset($this->userData['pin']) ? trim((string)$this->userData['pin']) : '';
+      $data['has_pin'] = strlen($pin) > 0;
+      $this->view($this->v_content, $data);
    }
 
    public function updatePass()
@@ -53,5 +55,35 @@ class Akun extends Controller
       $set = "password = '" . $new . "'";
       $update = $this->db(0)->update("user", $set, $where);
       echo $update['errno'];
+   }
+
+   public function generatePin()
+   {
+      header('Content-Type: application/json; charset=utf-8');
+
+      $pass = $_POST['pass'] ?? '';
+      if ($pass === '') {
+         echo json_encode(['ok' => 0, 'error' => 'Password wajib diisi.']);
+         exit();
+      }
+
+      if ($this->model('Enc')->enc($pass) <> $this->userData['password']) {
+         echo json_encode(['ok' => 0, 'error' => 'Password salah!']);
+         exit();
+      }
+
+      $pin = str_pad((string)random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+      $where = "id_user = '" . $this->userData['id_user'] . "'";
+      $set = "pin = '" . $pin . "'";
+      $update = $this->db(0)->update("user", $set, $where);
+      if ($update['errno'] <> 0) {
+         echo json_encode(['ok' => 0, 'error' => $update['error']]);
+         exit();
+      }
+
+      $_SESSION['user_data']['pin'] = $pin;
+      $this->userData['pin'] = $pin;
+      $this->model('Log')->write($this->userData['user'] . " Generate PIN Success");
+      echo json_encode(['ok' => 1, 'pin' => $pin]);
    }
 }
