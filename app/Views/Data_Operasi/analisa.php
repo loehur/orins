@@ -32,6 +32,14 @@ $dRef = $data['dRef'] ?? [];
         border-left-color: #198754;
         background: #f1f9f4;
     }
+    .analisa-flag.warn {
+        border-left-color: #fd7e14;
+        background: #fff8f0;
+    }
+    .analisa-flag.info {
+        border-left-color: #0d6efd;
+        background: #f0f6ff;
+    }
     .analisa-table th, .analisa-table td {
         padding: .25rem .4rem;
         font-size: 12px;
@@ -40,12 +48,31 @@ $dRef = $data['dRef'] ?? [];
 
 <div class="analisa-section">
     <h6>Ringkasan Diagnosa</h6>
-    <?php foreach ($data['reasons'] as $i => $reason) {
-        $okClass = ($i === 0 && !empty($data['ready_to_tuntas'])) || ($i === 0 && (int)$data['tuntas_induk'] === 1) ? 'ok' : '';
+    <?php foreach (($data['flags'] ?? []) as $flag) {
+        $level = $flag['level'] ?? 'info';
+        $cls = $level === 'ok' ? 'ok' : ($level === 'warn' ? 'warn' : ($level === 'error' ? '' : 'info'));
         ?>
-        <div class="analisa-flag <?= $okClass ?>"><?= htmlspecialchars($reason) ?></div>
+        <div class="analisa-flag <?= $cls ?>"><?= htmlspecialchars($flag['text'] ?? '') ?></div>
     <?php } ?>
 </div>
+
+<?php if (!empty($data['system_checks'])) { ?>
+<div class="analisa-section">
+    <h6>Sistem / Cron</h6>
+    <?php foreach ($data['system_checks'] as $sc) {
+        $level = $sc['level'] ?? 'info';
+        $cls = $level === 'ok' ? 'ok' : ($level === 'warn' ? 'warn' : ($level === 'error' ? '' : 'info'));
+        ?>
+        <div class="analisa-flag <?= $cls ?>">
+            <div class="fw-bold"><?= htmlspecialchars($sc['title'] ?? '') ?></div>
+            <div><?= htmlspecialchars($sc['text'] ?? '') ?></div>
+            <?php if (!empty($sc['fix'])) { ?>
+                <div class="mt-1"><small><b>Perbaikan:</b> <?= htmlspecialchars($sc['fix']) ?></small></div>
+            <?php } ?>
+        </div>
+    <?php } ?>
+</div>
+<?php } ?>
 
 <div class="analisa-section">
     <h6>Identitas Nota</h6>

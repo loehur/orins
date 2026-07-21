@@ -1446,44 +1446,105 @@ class Data_Operasi extends Controller
 
       $paymentOk = ($verifyPayment == $bill);
       $readyToTuntas = false;
-      $reasons = [];
+      $flags = []; // ['level' => ok|warn|error|info, 'text' => ...]
+
       if ($paymentOk && $ambilAll && $verifyKasKecil) {
          if ($bill > 0 && $verifyPayment > 0) {
             $readyToTuntas = true;
-            $reasons[] = 'Siap tuntas: pembayaran match + sudah ambil + kas kecil OK';
+            $flags[] = ['level' => 'ok', 'text' => 'Kriteria bisnis OK: pembayaran match + sudah ambil + kas kecil OK'];
          } elseif ($hasStok || $hasDiskonItem) {
             $readyToTuntas = true;
-            $reasons[] = 'Siap tuntas: bill 0 (stok/diskon)';
+            $flags[] = ['level' => 'ok', 'text' => 'Kriteria bisnis OK: bill 0 (stok/diskon)'];
          } elseif ($itemCount > 0 && $itemCount === $cancelCount) {
             $readyToTuntas = true;
-            $reasons[] = 'Siap tuntas: semua item cancel';
+            $flags[] = ['level' => 'ok', 'text' => 'Kriteria bisnis OK: semua item cancel'];
          } else {
-            $reasons[] = 'Bill 0 tapi belum memenuhi syarat stok/diskon/all-cancel';
+            $flags[] = ['level' => 'warn', 'text' => 'Bill 0 tapi belum memenuhi syarat stok/diskon/all-cancel'];
          }
       } else {
          if (!$paymentOk) {
             $diff = $bill - $verifyPayment;
-            $reasons[] = 'Pembayaran verify belum match (selisih Rp' . number_format($diff) . '). Catatan: Tunai hanya dihitung jika sudah setor (status_setoran=1); NonTunai/Afiliasi/Saldo harus status OK.';
+            $flags[] = ['level' => 'error', 'text' => 'Pembayaran verify belum match (selisih Rp' . number_format($diff) . '). Tunai hanya dihitung jika sudah setor (status_setoran=1); NonTunai/Afiliasi/Saldo harus status OK.'];
          }
          if (!$ambilAll) {
-            $reasons[] = 'Masih ada order produksi yang belum diambil (id_ambil = 0)';
+            $flags[] = ['level' => 'error', 'text' => 'Masih ada order produksi yang belum diambil (id_ambil = 0)'];
          }
          if (!$verifyKasKecil) {
-            $reasons[] = 'Ada kas kecil yang belum valid (st <> 1)';
+            $flags[] = ['level' => 'error', 'text' => 'Ada kas kecil yang belum valid (st <> 1)'];
          }
       }
 
       if (count($spkPending) > 0) {
-         $reasons[] = 'SPK belum selesai di divisi: ' . implode(', ', array_keys($spkPending));
+         $flags[] = ['level' => 'warn', 'text' => 'SPK belum selesai di divisi: ' . implode(', ', array_keys($spkPending)) . ' (tidak menghalangi tuntas cron, info saja)'];
       }
 
       $tuntasInduk = is_array($dRef) ? (int)($dRef['tuntas'] ?? 0) : 0;
-      if ($tuntasInduk === 1) {
-         array_unshift($reasons, 'Ref induk sudah tuntas di DB');
-      } elseif ($readyToTuntas) {
-         array_unshift($reasons, 'Seharusnya siap dituntaskan oleh cron cek_tuntas');
+
+      // Diagnosa sistem cron (collation / antrian batch)
+      $systemChecks = [];
+      $collationProbe = $this->db(0)->count_where(
+         'master_mutasi',
+         "`ref` <> '' AND CONVERT(`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci IN (SELECT CONVERT(`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci FROM `ref` WHERE tuntas = 1)"
+      );
+      // Probe tanpa COLLATE — jika gagal, tampilkan error asli ke UI
+      $collationRaw = $this->db(0)->count_where(
+         'master_mutasi',
+         "`ref` <> '' AND `ref` IN (SELECT `ref` FROM `ref` WHERE tuntas = 1)"
+      );
+      if (is_array($collationRaw)) {
+         $errInfo = (string)($collationRaw['info'] ?? 'unknown');
+         $systemChecks[] = [
+            'level' => 'error',
+            'title' => 'Error database (cron sync)',
+            'text' => $errInfo,
+            'fix' => 'Kolom `ref` antar tabel beda collation (mis. utf8mb4_general_ci vs utf8mb4_0900_ai_ci). Perbaikan: samakan collation kolom `ref` di tabel `ref`, `order_data`, `master_mutasi`, atau pastikan cron memakai CONVERT/COLLATE (sudah di-patch).',
+         ];
+         $flags[] = ['level' => 'error', 'text' => 'Sistem: cron sync detail bisa gagal karena collation — ' . $errInfo];
+      } elseif (is_array($collationProbe)) {
+         $systemChecks[] = [
+            'level' => 'warn',
+            'title' => 'Probe collation (patched) masih gagal',
+            'text' => (string)($collationProbe['info'] ?? 'unknown'),
+            'fix' => 'Cek ulang query cron / hak akses DB.',
+         ];
       } else {
-         array_unshift($reasons, 'Belum siap tuntas');
+         $systemChecks[] = [
+            'level' => 'ok',
+            'title' => 'Collation join `ref`',
+            'text' => 'Perbandingan antar-tabel OK (dengan COLLATE unicode).',
+            'fix' => '',
+         ];
+      }
+
+      if ($tuntasInduk === 1) {
+         array_unshift($flags, ['level' => 'ok', 'text' => 'Ref induk sudah tuntas di DB']);
+      } elseif ($readyToTuntas) {
+         array_unshift($flags, ['level' => 'warn', 'text' => 'Nota siap tuntas menurut kriteria bisnis, tapi status induk masih BELUM']);
+
+         // Posisi antrian cron (max 200 / run, urut ref ASC)
+         $batchLimit = 200;
+         $antrian = $this->db(0)->count_where('ref', "tuntas = 0 AND CONVERT(`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci < CONVERT('" . $refEsc . "' USING utf8mb4) COLLATE utf8mb4_unicode_ci");
+         if (is_array($antrian)) {
+            $antrian = $this->db(0)->count_where('ref', "tuntas = 0 AND `ref` < '" . $refEsc . "'");
+         }
+         if (!is_array($antrian)) {
+            $pos = (int)$antrian + 1;
+            $systemChecks[] = [
+               'level' => $pos > $batchLimit ? 'warn' : 'info',
+               'title' => 'Antrian cron cek_tuntas',
+               'text' => 'Posisi kira-kira #' . $pos . ' dari ref yang belum tuntas (cron max ' . $batchLimit . ' per eksekusi, urut ASC).',
+               'fix' => $pos > $batchLimit
+                  ? 'Nota ini belum masuk batch saat ini. Tunggu cron berikutnya, atau naikkan batch / jalankan cron lebih sering.'
+                  : 'Seharusnya sudah masuk batch. Jika tetap belum tuntas, cek log cron (0 ORDER TUNTAS) — kemungkinan hitung bill cron beda atau error lain.',
+            ];
+            if ($pos > $batchLimit) {
+               $flags[] = ['level' => 'warn', 'text' => 'Antri cron: posisi ~#' . $pos . ' (di luar batch ' . $batchLimit . ' pertama)'];
+            } else {
+               $flags[] = ['level' => 'warn', 'text' => 'Sudah di rentang batch cron, tapi belum tuntas — cek log cron / beda perhitungan bill'];
+            }
+         }
+      } else {
+         array_unshift($flags, ['level' => 'error', 'text' => 'Belum siap tuntas']);
       }
 
       $pelangganNama = '#' . $idPelanggan;
@@ -1537,7 +1598,8 @@ class Data_Operasi extends Controller
          'payment_ok' => $paymentOk,
          'ready_to_tuntas' => $readyToTuntas,
          'tuntas_induk' => $tuntasInduk,
-         'reasons' => $reasons,
+         'flags' => $flags,
+         'system_checks' => $systemChecks,
          'spk_pending' => array_keys($spkPending),
          'order_lines' => $orderLines,
          'mutasi_lines' => $mutasiLines,

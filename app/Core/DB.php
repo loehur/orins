@@ -286,6 +286,16 @@ class DB extends DBC
         }
     }
 
+    public function lastError()
+    {
+        return $this->mysqli->error;
+    }
+
+    public function lastErrno()
+    {
+        return $this->mysqli->errno;
+    }
+
     public function scalar($sql)
     {
         $result = $this->mysqli->query($sql);

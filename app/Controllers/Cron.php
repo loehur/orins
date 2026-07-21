@@ -108,9 +108,9 @@ class Cron extends Controller
       $batchLimit = max(1, (int)$batchLimit);
       $today = date('Y-m-d');
       $dateExpr = "IF(r.tuntas_date IS NOT NULL AND r.tuntas_date <> '' AND r.tuntas_date <> '0000-00-00', r.tuntas_date, '" . $today . "')";
-      // backtick `ref` — nama tabel/kolom reserved-prone di MySQL
-      $pendingWhereMutasi = "tuntas = 0 AND `ref` <> '' AND `ref` IN (SELECT `ref` FROM `ref` WHERE tuntas = 1)";
-      $pendingWhereOrder = "tuntas = 0 AND `ref` <> '' AND `ref` IN (SELECT `ref` FROM `ref` WHERE tuntas = 1)";
+      // Samakan collation saat bandingkan kolom `ref` antar tabel (hindari Illegal mix of collations)
+      $pendingWhereMutasi = "tuntas = 0 AND `ref` <> '' AND CONVERT(`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci IN (SELECT CONVERT(`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci FROM `ref` WHERE tuntas = 1)";
+      $pendingWhereOrder = "tuntas = 0 AND `ref` <> '' AND CONVERT(`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci IN (SELECT CONVERT(`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci FROM `ref` WHERE tuntas = 1)";
 
       $pendingMutasiRaw = $this->db(0)->count_where('master_mutasi', $pendingWhereMutasi);
       $pendingOrderRaw = $this->db(0)->count_where('order_data', $pendingWhereOrder);
@@ -138,23 +138,23 @@ class Cron extends Controller
       $syncOrder = min($pendingOrder, $batchLimit);
 
       $sqlMutasi = "UPDATE `master_mutasi` mm
-         INNER JOIN `ref` r ON r.`ref` = mm.`ref`
+         INNER JOIN `ref` r ON CONVERT(r.`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci = CONVERT(mm.`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci
          SET mm.tuntas = 1, mm.tuntas_date = " . $dateExpr . "
          WHERE r.tuntas = 1 AND mm.tuntas = 0 AND mm.`ref` <> ''
          LIMIT " . $batchLimit;
 
       $sqlOrder = "UPDATE `order_data` od
-         INNER JOIN `ref` r ON r.`ref` = od.`ref`
+         INNER JOIN `ref` r ON CONVERT(r.`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci = CONVERT(od.`ref` USING utf8mb4) COLLATE utf8mb4_unicode_ci
          SET od.tuntas = 1, od.tuntas_date = " . $dateExpr . "
          WHERE r.tuntas = 1 AND od.tuntas = 0
          LIMIT " . $batchLimit;
 
       if ($pendingOrder > 0 && !$this->db(0)->query($sqlOrder)) {
-         echo "Gagal sinkron order_data dari ref tuntas\n";
+         echo "Gagal sinkron order_data dari ref tuntas: " . $this->db(0)->lastError() . "\n";
       }
 
       if ($pendingMutasi > 0 && !$this->db(0)->query($sqlMutasi)) {
-         echo "Gagal sinkron master_mutasi dari ref tuntas\n";
+         echo "Gagal sinkron master_mutasi dari ref tuntas: " . $this->db(0)->lastError() . "\n";
       }
 
       $total = $syncMutasi + $syncOrder;
