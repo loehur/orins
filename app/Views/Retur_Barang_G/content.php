@@ -1,3 +1,9 @@
+<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/dataTables.dataTables.min.css" rel="stylesheet" />
+<style>
+    .dt-search {
+        float: right !important;
+    }
+</style>
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
 <main>
     <!-- Main page content-->
@@ -29,7 +35,16 @@
             </div>
         </form>
 
-        <table class="table table-sm text-sm">
+        <table class="text-sm" id="dt_tb">
+            <thead>
+                <tr>
+                    <th>Tujuan</th>
+                    <th>Ref/Tanggal</th>
+                    <th>SDS/Note</th>
+                    <th>ST</th>
+                </tr>
+            </thead>
+            <tbody>
             <?php foreach ($data['input'] as $a) { ?>
                 <tr>
                     <td>
@@ -53,13 +68,26 @@
                     </td>
                 </tr>
             <?php } ?>
+            </tbody>
         </table>
     </div>
 </main>
 
+<script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
+
 <script>
     $(document).ready(function() {
         $('select.tize').selectize();
+        $('#dt_tb').dataTable({
+            "bLengthChange": false,
+            "bFilter": true,
+            "bInfo": false,
+            "ordering": false,
+            "bAutoWidth": false,
+            "pageLength": 50,
+            "scrollY": 530,
+            "dom": "lfrti"
+        });
     });
     $("form").on("submit", function(e) {
         e.preventDefault();
