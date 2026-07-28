@@ -1,6 +1,7 @@
 <?php
 $mode = $data['mode'];
 $isDev = !empty($data['is_dev']);
+$isWideScope = !empty($data['is_wide_scope']);
 $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
 ?>
 
@@ -62,7 +63,7 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                             <th style="width:100px">Tipe</th>
                             <th>Karyawan</th>
                             <th>Pembuat</th>
-                            <?php if ($isDev) { ?>
+                            <?php if ($isWideScope) { ?>
                                 <th>Toko</th>
                             <?php } ?>
                         </tr>
@@ -85,7 +86,7 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                                 <td><span class="badge <?= $badgeClass ?>"><?= $tipeLabel[(int) $t['tipe']] ?? '-' ?></span></td>
                                 <td><?= htmlspecialchars($namaKaryawan) ?></td>
                                 <td><?= htmlspecialchars($namaUser) ?></td>
-                                <?php if ($isDev) { ?>
+                                <?php if ($isWideScope) { ?>
                                     <td><?= htmlspecialchars($this->dToko[$t['id_toko']]['inisial'] ?? $t['id_toko']) ?></td>
                                 <?php } ?>
                             </tr>
@@ -143,19 +144,16 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                 </div>
             </div>
 
-        <?php } else {
-            $month = $data['month'];
-        ?>
+        <?php } else { ?>
             <div class="row mx-0 mb-3 align-items-center">
                 <div class="col ps-0">
-                    <span class="btn btn-sm btn-outline-dark" onclick="loadAppContent('<?= PV::BASE_URL ?>Tiket/content/selesai/<?= $month ?>/1')">Back</span>
-                    <span class="px-2 text-primary fw-bold"><?= date('F Y', strtotime($month . '-01')) ?></span>
-                    <span class="btn btn-sm btn-outline-dark" onclick="loadAppContent('<?= PV::BASE_URL ?>Tiket/content/selesai/<?= $month ?>/2')">Next</span>
+                    <span class="fw-bold text-primary">Tiket Selesai</span>
+                    <span class="text-muted small ms-2">(semua riwayat)</span>
                 </div>
             </div>
 
             <?php if (count($data['tiket']) === 0) { ?>
-                <div class="alert alert-light border text-center">Tidak ada tiket selesai pada bulan ini.</div>
+                <div class="alert alert-light border text-center">Belum ada tiket selesai.</div>
             <?php } else { ?>
                 <table class="table table-sm table-hover text-sm">
                     <thead>
@@ -165,7 +163,7 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                             <th style="width:100px">Tipe</th>
                             <th>Karyawan</th>
                             <th>Pembuat</th>
-                            <?php if ($isDev) { ?>
+                            <?php if ($isWideScope) { ?>
                                 <th>Toko</th>
                             <?php } ?>
                         </tr>
@@ -188,7 +186,7 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                                 <td><span class="badge <?= $badgeClass ?>"><?= $tipeLabel[(int) $t['tipe']] ?? '-' ?></span></td>
                                 <td><?= htmlspecialchars($namaKaryawan) ?></td>
                                 <td><?= htmlspecialchars($namaUser) ?></td>
-                                <?php if ($isDev) { ?>
+                                <?php if ($isWideScope) { ?>
                                     <td><?= htmlspecialchars($this->dToko[$t['id_toko']]['inisial'] ?? $t['id_toko']) ?></td>
                                 <?php } ?>
                             </tr>
@@ -229,6 +227,7 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
 <script>
     var tiketCreateSubmitting = false;
     var tiketReplySubmitting = false;
+    var tiketIsWideScope = <?= !empty($isWideScope) ? 'true' : 'false' ?>;
     var tiketIsDev = <?= !empty($isDev) ? 'true' : 'false' ?>;
 
     function tiketEscapeHtml(text) {
@@ -296,7 +295,7 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
             + '<td><span class="badge ' + tiketEscapeHtml(t.badge_class) + '">' + tiketEscapeHtml(t.tipe_label) + '</span></td>'
             + '<td>' + tiketEscapeHtml(t.karyawan) + '</td>'
             + '<td>' + tiketEscapeHtml(t.pembuat) + '</td>';
-        if (tiketIsDev) {
+        if (tiketIsWideScope) {
             cols += '<td>' + tiketEscapeHtml(t.toko) + '</td>';
         }
         return '<tr class="tiket-row" data-id="' + t.id_tiket + '">' + cols + '</tr>';

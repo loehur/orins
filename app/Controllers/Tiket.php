@@ -16,10 +16,21 @@ class Tiket extends Controller
       return in_array($this->userData['user_tipe'], PV::PRIV[0]);
    }
 
+   private function isGudang()
+   {
+      return in_array($this->userData['user_tipe'], PV::PRIV[7]);
+   }
+
+   /** Dev + Gudang: lihat semua toko (tanpa filter id_toko) */
+   private function isWideTicketScope()
+   {
+      return $this->isDev() || $this->isGudang();
+   }
+
    private function ticketScopeWhere($alias = '')
    {
       $prefix = $alias !== '' ? $alias . '.' : '';
-      if ($this->isDev()) {
+      if ($this->isWideTicketScope()) {
          return '1=1';
       }
       return $prefix . "id_toko = " . (int) $this->userData['id_toko'];
@@ -72,12 +83,13 @@ class Tiket extends Controller
 
       $data['mode'] = $mode;
       $data['is_dev'] = $this->isDev();
+      $data['is_wide_scope'] = $this->isWideTicketScope();
       $data['karyawan_form'] = $this->db(0)->get_where(
          'karyawan',
          "id_toko = " . (int) $this->userData['id_toko'] . " AND en = 1 ORDER BY freq_cs DESC",
          'id_karyawan'
       );
-      if ($this->isDev()) {
+      if ($this->isWideTicketScope()) {
          $data['karyawan'] = $this->db(0)->get_where('karyawan', "en = 1 ORDER BY nama ASC", 'id_karyawan');
       } else {
          $data['karyawan'] = $this->db(0)->get_where('karyawan', "id_toko = " . (int) $this->userData['id_toko'] . " AND en = 1 ORDER BY nama ASC", 'id_karyawan');
@@ -88,17 +100,8 @@ class Tiket extends Controller
          $where = "status = 0 AND " . $this->ticketScopeWhere() . " ORDER BY id_tiket DESC";
          $data['tiket'] = $this->db(0)->get_where('tiket', $where);
       } else {
-         if ($month === "") {
-            $month = date('Y-m');
-         }
-         if ((int) $nav === 1) {
-            $month = date('Y-m', strtotime('-1 month', strtotime($month . '-01')));
-         } elseif ((int) $nav === 2) {
-            $month = date('Y-m', strtotime('+1 month', strtotime($month . '-01')));
-         }
-
-         $data['month'] = $month;
-         $where = "status = 1 AND selesai_time LIKE '" . addslashes($month) . "%' AND " . $this->ticketScopeWhere() . " ORDER BY selesai_time DESC";
+         // Tanpa filter bulan — tampilkan semua tiket selesai
+         $where = "status = 1 AND " . $this->ticketScopeWhere() . " ORDER BY selesai_time DESC";
          $data['tiket'] = $this->db(0)->get_where('tiket', $where);
       }
 
