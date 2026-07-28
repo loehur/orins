@@ -157,7 +157,6 @@
                                     <?= $a['updateTime'] ?>
                                 </td>
                                 <?php
-                                $tuntas = $this->db(0)->get_where_row("order_data", "ref = '" . $ref . "'")['tuntas'];
                                 switch ($a['status_mutasi']) {
                                     case 1:
                                 ?>
