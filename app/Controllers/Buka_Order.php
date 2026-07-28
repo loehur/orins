@@ -705,7 +705,7 @@ class Buka_Order extends Controller
          return;
       }
 
-      $paket_group = $this->userData['id_toko'] . date("ymdHis") . rand(0, 9);
+      $paket_group = $this->userData['id_toko'] . date("ymdHis") . substr(bin2hex(random_bytes(4)), 0, 8);
       $data['order'] = $this->db(0)->get_where("paket_order", "paket_ref = '" . $id . "'");
       $data['mutasi'] = $this->db(0)->get_where("paket_mutasi", "paket_ref = '" . $id . "'");
       $data['barang'] = $this->db(0)->get('master_barang', 'code');
@@ -729,6 +729,7 @@ class Buka_Order extends Controller
       $this->cartLog(
          'PAKETDEF pkt=' . $id
             . ' qty_paket=' . (int) $qty_paket
+            . ' group=' . $paket_group
             . ' rows_mutasi=' . count($data['mutasi']) . ' uniq_mutasi=' . count($sigM)
             . ' rows_order=' . count($data['order']) . ' uniq_order=' . count($sigO)
             . ' DUPDEF=' . $dupDef
@@ -749,7 +750,9 @@ class Buka_Order extends Controller
          $_POST['sn'] = '';
          $id_sumber = $dm['id_sumber'];
          $harga_paket_item = ($dm['price_locker'] == 1) ? $harga_paket : 0;
-         $paket_qty_value = ($dm['price_locker'] == 1) ? $qty_paket : 0;
+         // paket_qty harus tersimpan di SEMUA item (bukan hanya price_locker),
+         // agar header cart menampilkan qty paket yang benar.
+         $paket_qty_value = (int) $qty_paket;
          $this->cartLog('LOOP mutasi i=' . $i . ' kode=' . $dm['id_barang'] . ' qty=' . $_POST['qty'] . ' sds=' . $dm['sds']);
          $this->add_barang($id_pelanggan_jenis, $dm['price_locker'], $id, $id_sumber, $harga_paket_item, $paket_group, $paket_qty_value);
       }
@@ -766,7 +769,7 @@ class Buka_Order extends Controller
          $_POST['produk_detail'] = $do['produk_detail'];
          $_POST['jumlah'] = $qty_paket * $do['jumlah'];
          $harga_paket_item = ($do['price_locker'] == 1) ? $harga_paket : 0;
-         $paket_qty_value = ($do['price_locker'] == 1) ? $qty_paket : 0;
+         $paket_qty_value = (int) $qty_paket;
          $this->cartLog('LOOP order j=' . $j . ' id_produk=' . $do['id_produk'] . ' jumlah=' . $_POST['jumlah']);
          $this->add($do['id_afiliasi'], $id, $paket_group, $do['price_locker'], $harga_paket_item, $do['pj'], $paket_qty_value);
       }

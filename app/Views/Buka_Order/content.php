@@ -160,16 +160,32 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                 </div>
             </div>
             <?php
-            // Prepare grouping: separate paket items (grouped by paket_group) and non-paket items
+            // Prepare grouping: separate paket items (grouped by paket_group + paket_ref)
             $order_nonpaket = [];
-            $order_paket_groups = []; // paket_group => ['paket_ref'=>..., 'items'=>[], 'harga_paket'=>..., 'paket_qty'=>...]
+            $order_paket_groups = []; // key => ['paket_group'=>..., 'paket_ref'=>..., 'items'=>[], 'harga_paket'=>..., 'paket_qty'=>...]
             foreach ($data['order'] as $keyD => $do) {
                 if (isset($do['paket_ref']) && strlen($do['paket_ref']) > 0) {
-                    $pg = $do['paket_group'];
-                    if (!isset($order_paket_groups[$pg])) {
-                        $order_paket_groups[$pg] = ['paket_ref' => $do['paket_ref'], 'items' => [], 'harga_paket' => $do['harga_paket'], 'paket_qty' => $do['paket_qty']];
+                    $pg = (string)($do['paket_group'] ?? '');
+                    $pref = (string)$do['paket_ref'];
+                    // Pisahkan per group+ref agar paket berbeda tidak bercampur meski group bentrok
+                    $gkey = $pg . '|' . $pref;
+                    if (!isset($order_paket_groups[$gkey])) {
+                        $order_paket_groups[$gkey] = [
+                            'paket_group' => $pg,
+                            'paket_ref' => $pref,
+                            'items' => [],
+                            'harga_paket' => (int)($do['harga_paket'] ?? 0),
+                            'paket_qty' => (int)($do['paket_qty'] ?? 0),
+                        ];
                     }
-                    $order_paket_groups[$pg]['items'][] = ['key' => $keyD, 'do' => $do];
+                    $order_paket_groups[$gkey]['items'][] = ['key' => $keyD, 'do' => $do];
+                    $pq = (int)($do['paket_qty'] ?? 0);
+                    if ($pq > (int)$order_paket_groups[$gkey]['paket_qty']) {
+                        $order_paket_groups[$gkey]['paket_qty'] = $pq;
+                    }
+                    if ((int)($do['harga_paket'] ?? 0) > (int)$order_paket_groups[$gkey]['harga_paket']) {
+                        $order_paket_groups[$gkey]['harga_paket'] = (int)$do['harga_paket'];
+                    }
                 } else {
                     $order_nonpaket[] = ['key' => $keyD, 'do' => $do];
                 }
@@ -372,8 +388,9 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                     </tr>
                                 <?php }
                                 // Now render paket groups: show header + all items (items still deletable, but hide per-item harga and P/D)
-                                foreach ($order_paket_groups as $pg => $group) {
+                                foreach ($order_paket_groups as $gkey => $group) {
                                     $no++;
+                                    $pg = $group['paket_group'];
                                     $paket_ref = $group['paket_ref'];
                                     $paket_nama = isset($data['paket'][$paket_ref]['nama']) ? $data['paket'][$paket_ref]['nama'] : $paket_ref;
                                     $harga_paket_val = 0;
@@ -383,7 +400,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                     if ($harga_paket_val == 0 && isset($group['harga_paket'])) {
                                         $harga_paket_val = $group['harga_paket'];
                                     }
-                                    $paket_qty_display = isset($group['paket_qty']) && $group['paket_qty'] > 0 ? $group['paket_qty'] : 1;
+                                    $paket_qty_display = isset($group['paket_qty']) && $group['paket_qty'] > 0 ? (int)$group['paket_qty'] : 1;
                                     $paket_diskon_total = 0;
                                     foreach ($group['items'] as $item) {
                                         $do_item = $item['do'];
@@ -548,16 +565,31 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             <div class="col border border-bottom-0 px-0">
                 <table class="table table-sm m-0 text-sm">
                     <?php
-                    // Group order_barang by paket_group as well
+                    // Group order_barang by paket_group + paket_ref
                     $ob_nonpaket = [];
                     $ob_paket_groups = [];
                     foreach ($data['order_barang'] as $db) {
                         if (isset($db['paket_ref']) && strlen($db['paket_ref']) > 0) {
-                            $pg = $db['paket_group'];
-                            if (!isset($ob_paket_groups[$pg])) {
-                                $ob_paket_groups[$pg] = ['paket_ref' => $db['paket_ref'], 'items' => [], 'harga_paket' => $db['harga_paket'], 'paket_qty' => $db['paket_qty']];
+                            $pg = (string)($db['paket_group'] ?? '');
+                            $pref = (string)$db['paket_ref'];
+                            $gkey = $pg . '|' . $pref;
+                            if (!isset($ob_paket_groups[$gkey])) {
+                                $ob_paket_groups[$gkey] = [
+                                    'paket_group' => $pg,
+                                    'paket_ref' => $pref,
+                                    'items' => [],
+                                    'harga_paket' => (int)($db['harga_paket'] ?? 0),
+                                    'paket_qty' => (int)($db['paket_qty'] ?? 0),
+                                ];
                             }
-                            $ob_paket_groups[$pg]['items'][] = $db;
+                            $ob_paket_groups[$gkey]['items'][] = $db;
+                            $pq = (int)($db['paket_qty'] ?? 0);
+                            if ($pq > (int)$ob_paket_groups[$gkey]['paket_qty']) {
+                                $ob_paket_groups[$gkey]['paket_qty'] = $pq;
+                            }
+                            if ((int)($db['harga_paket'] ?? 0) > (int)$ob_paket_groups[$gkey]['harga_paket']) {
+                                $ob_paket_groups[$gkey]['harga_paket'] = (int)$db['harga_paket'];
+                            }
                         } else {
                             $ob_nonpaket[] = $db;
                         }
@@ -619,7 +651,8 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                     <?php } ?>
                     <?php
                     // Render grouped paket barang: header + individual items (hide per-item harga/P/D but keep delete)
-                    foreach ($ob_paket_groups as $pg => $group) {
+                    foreach ($ob_paket_groups as $gkey => $group) {
+                        $pg = $group['paket_group'];
                         $paket_ref = $group['paket_ref'];
                         $paket_nama = isset($data['paket'][$paket_ref]['nama']) ? $data['paket'][$paket_ref]['nama'] : $paket_ref;
                         $harga_paket_val = 0;
@@ -629,10 +662,10 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                         if ($harga_paket_val == 0 && isset($group['harga_paket'])) {
                             $harga_paket_val = $group['harga_paket'];
                         }
-                        $paket_qty_display = isset($group['paket_qty']) && $group['paket_qty'] > 0 ? $group['paket_qty'] : 1;
+                        $paket_qty_display = isset($group['paket_qty']) && $group['paket_qty'] > 0 ? (int)$group['paket_qty'] : 1;
 
-                        // Render header only if this paket_group doesn't exist in order_paket_groups
-                        $render_header = !isset($order_paket_groups[$pg]);
+                        // Header sudah dirender di section order jika group+ref yang sama ada di sana
+                        $render_header = !isset($order_paket_groups[$gkey]);
                         $paket_spk_qty_locked = false;
                         if ($render_header) {
                             foreach ($data['order'] as $odo) {
