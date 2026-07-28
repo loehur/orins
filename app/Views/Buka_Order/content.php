@@ -162,7 +162,8 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             <?php
             // Prepare grouping: separate paket items (grouped by paket_group + paket_ref)
             $order_nonpaket = [];
-            $order_paket_groups = []; // key => ['paket_group'=>..., 'paket_ref'=>..., 'items'=>[], 'harga_paket'=>..., 'paket_qty'=>...]
+            $order_paket_groups = []; // key => ['paket_group'=>..., 'paket_ref'=>..., 'items'=>[], 'barang'=>[], ...]
+            $ob_nonpaket = [];
             foreach ($data['order'] as $keyD => $do) {
                 if (isset($do['paket_ref']) && strlen($do['paket_ref']) > 0) {
                     $pg = (string)($do['paket_group'] ?? '');
@@ -174,6 +175,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                             'paket_group' => $pg,
                             'paket_ref' => $pref,
                             'items' => [],
+                            'barang' => [],
                             'harga_paket' => (int)($do['harga_paket'] ?? 0),
                             'paket_qty' => (int)($do['paket_qty'] ?? 0),
                         ];
@@ -188,6 +190,38 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                     }
                 } else {
                     $order_nonpaket[] = ['key' => $keyD, 'do' => $do];
+                }
+            }
+
+            // Barang paket digabung ke kelompok paket yang sama (bukan section terpisah)
+            foreach ($data['order_barang'] as $db) {
+                if (isset($db['paket_ref']) && strlen($db['paket_ref']) > 0) {
+                    $pg = (string)($db['paket_group'] ?? '');
+                    $pref = (string)$db['paket_ref'];
+                    $gkey = $pg . '|' . $pref;
+                    if (!isset($order_paket_groups[$gkey])) {
+                        $order_paket_groups[$gkey] = [
+                            'paket_group' => $pg,
+                            'paket_ref' => $pref,
+                            'items' => [],
+                            'barang' => [],
+                            'harga_paket' => (int)($db['harga_paket'] ?? 0),
+                            'paket_qty' => (int)($db['paket_qty'] ?? 0),
+                        ];
+                    }
+                    if (!isset($order_paket_groups[$gkey]['barang'])) {
+                        $order_paket_groups[$gkey]['barang'] = [];
+                    }
+                    $order_paket_groups[$gkey]['barang'][] = $db;
+                    $pq = (int)($db['paket_qty'] ?? 0);
+                    if ($pq > (int)$order_paket_groups[$gkey]['paket_qty']) {
+                        $order_paket_groups[$gkey]['paket_qty'] = $pq;
+                    }
+                    if ((int)($db['harga_paket'] ?? 0) > (int)$order_paket_groups[$gkey]['harga_paket']) {
+                        $order_paket_groups[$gkey]['harga_paket'] = (int)$db['harga_paket'];
+                    }
+                } else {
+                    $ob_nonpaket[] = $db;
                 }
             }
 
@@ -551,7 +585,40 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                                 </table>
                                             </td>
                                         </tr>
-                                <?php } // end items loop
+                                <?php } // end order items loop
+
+                                    // Barang milik paket_group yang sama — tampil di bawah item produksi paket
+                                    foreach (($group['barang'] ?? []) as $db) {
+                                        $total_item += 1;
+                                        $dp = $data['barang'][$db['id_barang']];
+                                        $nama_barang = trim(($dp['brand'] ?? '') . ' ' . ($dp['model'] ?? '')) . ($dp['product_name'] ?? '');
+                                    ?>
+                                        <tr>
+                                            <td class="">
+                                                <table class="table table-sm w-100 mb-0">
+                                                    <tr class="bg-success bg-gradient bg-opacity-10">
+                                                        <td class="ps-2 align-middle">
+                                                            <span class="text-nowrap text-dark">
+                                                                <small class="text-secondary">#<?= (int)$db['id'] ?></small>
+                                                                <small> <?= htmlspecialchars($nama_barang) ?></small>
+                                                                <?= ((int)$db['price_locker'] === 1) ? ' <i class="fa-solid fa-key"></i>' : '' ?>
+                                                                <?= ((int)$db['sds'] === 1) ? " <span class='text-danger fw-bold'>S</span>" : "" ?>
+                                                            </span>
+                                                            <?php if (!empty($db['sn'])) { ?>
+                                                                <br><small class="text-muted"><?= htmlspecialchars($db['sn']) ?></small>
+                                                            <?php } ?>
+                                                        </td>
+                                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                                            <small><?= (int)$db['qty'] ?>x</small>
+                                                        </td>
+                                                        <td class="text-end" style="width: 1px;white-space: nowrap;"><small></small></td>
+                                                        <td class="text-end" style="width: 1px;white-space: nowrap;"><b><small></small></b></td>
+                                                        <td class="align-middle" style="width: 30px;"><a class="deleteItemBarang" data-id="<?= (int)$db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    <?php } // end barang in group
                                 } // end groups loop
                                 ?>
                             </tbody>
@@ -561,39 +628,11 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         <?php }
         } ?>
 
+        <?php if (count($ob_nonpaket) > 0) { ?>
         <div class="row mt-2">
             <div class="col border border-bottom-0 px-0">
                 <table class="table table-sm m-0 text-sm">
                     <?php
-                    // Group order_barang by paket_group + paket_ref
-                    $ob_nonpaket = [];
-                    $ob_paket_groups = [];
-                    foreach ($data['order_barang'] as $db) {
-                        if (isset($db['paket_ref']) && strlen($db['paket_ref']) > 0) {
-                            $pg = (string)($db['paket_group'] ?? '');
-                            $pref = (string)$db['paket_ref'];
-                            $gkey = $pg . '|' . $pref;
-                            if (!isset($ob_paket_groups[$gkey])) {
-                                $ob_paket_groups[$gkey] = [
-                                    'paket_group' => $pg,
-                                    'paket_ref' => $pref,
-                                    'items' => [],
-                                    'harga_paket' => (int)($db['harga_paket'] ?? 0),
-                                    'paket_qty' => (int)($db['paket_qty'] ?? 0),
-                                ];
-                            }
-                            $ob_paket_groups[$gkey]['items'][] = $db;
-                            $pq = (int)($db['paket_qty'] ?? 0);
-                            if ($pq > (int)$ob_paket_groups[$gkey]['paket_qty']) {
-                                $ob_paket_groups[$gkey]['paket_qty'] = $pq;
-                            }
-                            if ((int)($db['harga_paket'] ?? 0) > (int)$ob_paket_groups[$gkey]['harga_paket']) {
-                                $ob_paket_groups[$gkey]['harga_paket'] = (int)$db['harga_paket'];
-                            }
-                        } else {
-                            $ob_nonpaket[] = $db;
-                        }
-                    }
                     foreach ($ob_nonpaket as $db) {
                         $total_item += 1;
                         $dp = $data['barang'][$db['id_barang']];
@@ -627,12 +666,10 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                             </td>
                             <td class="text-end">
                                 <?= number_format($db['qty']) ?>x<br>
-                                <?php if ((!isset($db['paket_ref']) || $db['paket_ref'] == '') && (!isset($db['paket_group']) || $db['paket_group'] == '')) { ?>
-                                    <?php if ($db['ref'] == '' || isset($_SESSION['edit'][$this->userData['id_user']])) { ?>
-                                        <b><span data-bs-toggle="modal" data-code="<?= $db['id_barang'] ?>" data-jenis="<?= $db['jenis_target'] ?>" data-bs-target="#exampleModalPbarang" style="cursor: pointer;" class="tetapkanHargaBarang px-2">P</span></b>
-                                    <?php } ?>
-                                    <b><span data-bs-toggle="modal" data-id="<?= $db['id'] . "_" . $dp['harga_' . $id_pelanggan_jenis] ?>" data-bs-target="#modalDiskonBarang" style="cursor: pointer;" class="tetapkanDiskonBarang pe-2">D</span></b>
+                                <?php if ($db['ref'] == '' || isset($_SESSION['edit'][$this->userData['id_user']])) { ?>
+                                    <b><span data-bs-toggle="modal" data-code="<?= $db['id_barang'] ?>" data-jenis="<?= $db['jenis_target'] ?>" data-bs-target="#exampleModalPbarang" style="cursor: pointer;" class="tetapkanHargaBarang px-2">P</span></b>
                                 <?php } ?>
+                                <b><span data-bs-toggle="modal" data-id="<?= $db['id'] . "_" . $dp['harga_' . $id_pelanggan_jenis] ?>" data-bs-target="#modalDiskonBarang" style="cursor: pointer;" class="tetapkanDiskonBarang pe-2">D</span></b>
 
                                 <?php
                                 $harga_semula = "";
@@ -643,126 +680,16 @@ if (!function_exists('buka_order_spk_qty_locked')) {
 
                                 $totalnya -= ($db['diskon'] * $db['qty']);
                                 ?>
-                                <?= ($db['price_locker'] == 0 && (!isset($db['paket_ref']) || $db['paket_ref'] == '') && (!isset($db['paket_group']) || $db['paket_group'] == '')) ? $harga_semula . " @" . number_format($harga_satuan)  : "" ?>
+                                <?= ($db['price_locker'] == 0) ? $harga_semula . " @" . number_format($harga_satuan)  : "" ?>
                             </td>
-                            <td class="text-end pe-2"></td>
+                            <td class="text-end pe-2"><?= number_format($totalnya) ?></td>
                             <td class="pt-2" style="width: 30px;"><a class="deleteItemBarang" data-id="<?= $db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                         </tr>
-                    <?php } ?>
-                    <?php
-                    // Render grouped paket barang: header + individual items (hide per-item harga/P/D but keep delete)
-                    foreach ($ob_paket_groups as $gkey => $group) {
-                        $pg = $group['paket_group'];
-                        $paket_ref = $group['paket_ref'];
-                        $paket_nama = isset($data['paket'][$paket_ref]['nama']) ? $data['paket'][$paket_ref]['nama'] : $paket_ref;
-                        $harga_paket_val = 0;
-                        if (isset($data['paket'][$paket_ref])) {
-                            $harga_paket_val = $data['paket'][$paket_ref]['harga_' . $id_pelanggan_jenis];
-                        }
-                        if ($harga_paket_val == 0 && isset($group['harga_paket'])) {
-                            $harga_paket_val = $group['harga_paket'];
-                        }
-                        $paket_qty_display = isset($group['paket_qty']) && $group['paket_qty'] > 0 ? (int)$group['paket_qty'] : 1;
-
-                        // Header sudah dirender di section order jika group+ref yang sama ada di sana
-                        $render_header = !isset($order_paket_groups[$gkey]);
-                        $paket_spk_qty_locked = false;
-                        if ($render_header) {
-                            foreach ($data['order'] as $odo) {
-                                if (($odo['paket_group'] ?? '') == $pg && ($odo['paket_ref'] ?? '') == $paket_ref) {
-                                    if (buka_order_spk_qty_locked($odo['spk_dvs'] ?? '')) {
-                                        $paket_spk_qty_locked = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        if ($render_header) {
-                            $total_order += ($harga_paket_val * $paket_qty_display);
-                        ?>
-                        <tr>
-                            <td colspan="5">
-                                <table class="table table-sm w-100 mb-0">
-                                    <tr class="bg-secondary bg-gradient bg-opacity-10">
-                                        <td class="ps-2 align-middle">
-                                            <span class="text-nowrap text-dark"><small class="text-secondary">#PK<?= $pg ?></small><b><small> <?= ucwords($paket_nama) ?></small></b></span>
-                                        </td>
-                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                            <small>
-                                                <?php if ($paket_spk_qty_locked) { ?>
-                                                    <?= $paket_qty_display ?>x
-                                                <?php } else { ?>
-                                                    <span class="edit_paket_qty" data-paket_group="<?= $pg ?>" data-paket_ref="<?= $paket_ref ?>"><?= $paket_qty_display ?></span>x
-                                                <?php } ?>
-                                            </small>
-                                        </td>
-                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                            <small>
-                                                <?= '@' . number_format($harga_paket_val) ?>
-                                            </small>
-                                        </td>
-                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                            <b>
-                                                <small>
-                                                    <?= number_format($harga_paket_val * $paket_qty_display) ?>
-                                                </small>
-                                            </b>
-                                        </td>
-                                        <td class="align-middle" style="width: 30px;"></td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <?php } ?>
-                        <?php foreach ($group['items'] as $db) {
-                            $total_item += 1;
-                            $dp = $data['barang'][$db['id_barang']];
-
-                            if ($db['harga_jual'] > 0) {
-                                $harga_satuan = $db['harga_jual'];
-                            } else {
-                                $harga_satuan = $dp['harga_' . $id_pelanggan_jenis];
-                            }
-
-                            if ($db['price_locker'] == 1) {
-                                $classKeyPrice = 'text-danger';
-                                $totalnya = ($harga_satuan * $db['qty']) + $mgpaket[$db['paket_ref']]['harga_paket'];
-                            } else {
-                                $totalnya = ($harga_satuan * $db['qty']);
-                            }
-                        ?>
-                            <tr>
-                                <td class="text-secondary text-end ps-2">
-                                    #<?= $db['id'] ?><br><?= $db['sds'] == 1 ? "<span class='text-danger'>S</span>" : "" ?>
-                                </td>
-                                <td>
-                                    <?= trim($dp['brand'] . " " . $dp['model'])  ?><?= $dp['product_name'] ?><?= $db['price_locker'] == 1 ? ' <i class="fa-solid fa-key"></i>' : '' ?>
-                                    <?= $db['sn'] <> "" ? "<br>" . $db['sn'] : "" ?>
-                                    <?= $db['paket_ref'] <> "" ? "<br><span class='badge text-dark bg-light'>" . $data['paket'][$db['paket_ref']]['nama'] . "</span>" : "" ?>
-                                </td>
-                                <td class="text-end">
-                                    <?= number_format($db['qty']) ?>x<br>
-                                    <!-- hide P/D controls for paket items -->
-                                    <?php
-                                    $harga_semula = "";
-                                    if ($db['diskon'] > 0) {
-                                        $harga_semula = "<s>" . number_format($harga_satuan) . "</s>";
-                                        $harga_satuan -= $db['diskon'];
-                                    }
-
-                                    $totalnya -= ($db['diskon'] * $db['qty']);
-                                    ?>
-                                    <?= ($db['price_locker'] == 0 && (!isset($db['paket_ref']) || $db['paket_ref'] == '') && (!isset($db['paket_group']) || $db['paket_group'] == '')) ? $harga_semula . " @" . number_format($harga_satuan)  : "" ?>
-                                </td>
-                                <td class="text-end pe-2"><?= (!isset($db['paket_ref']) || $db['paket_ref'] == '') ? number_format($totalnya) : '' ?></td>
-                                <td class="pt-2" style="width: 30px;"><a class="deleteItemBarang" data-id="<?= $db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
-                            </tr>
-                        <?php } // end items loop 
-                        ?>
                     <?php } ?>
                 </table>
             </div>
         </div>
+        <?php } ?>
         <div class="row mt-2">
             <div class="col text-end border">
                 <?= $total_item ?> Items
@@ -990,10 +917,9 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     }
 
     var bukaOrderEvt = '.bukaOrder';
-    // Setiap kali content reload selesai — jangan buka busy jika baru saja submit
-    if (!window.bukaOrderLastSubmitAt || (Date.now() - window.bukaOrderLastSubmitAt) > 1500) {
-        window.bukaOrderAddBusy = false;
-    }
+    // Content reload = halaman baru: selalu buka kunci submit.
+    // Debounce double-fire tetap lewat lastSubmitAt di beginBukaOrderSubmit.
+    window.bukaOrderAddBusy = false;
     window.bukaOrderAddXhr = null;
     if (typeof window.bukaOrderLastSubmitAt === 'undefined') {
         window.bukaOrderLastSubmitAt = 0;
@@ -1067,8 +993,8 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         if (window.bukaOrderAddBusy) {
             return false;
         }
-        // Debounce lebih ketat: 1.2s untuk cegah double-fire dari handler ganda
-        if (now - (window.bukaOrderLastSubmitAt || 0) < 1200) {
+        // Debounce singkat: cegah double-fire 1 klik, tetap izinkan tambah lagi setelahnya
+        if (now - (window.bukaOrderLastSubmitAt || 0) < 600) {
             return false;
         }
         if ($el && $el.data('ajaxSubmitting')) {
@@ -1090,18 +1016,45 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         return true;
     };
 
+    function disposePickModals() {
+        pickModalTargets.forEach(function(sel) {
+            var el = document.querySelector(sel);
+            if (!el || typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+                return;
+            }
+            var inst = bootstrap.Modal.getInstance(el);
+            if (inst) {
+                try {
+                    inst.dispose();
+                } catch (e) {}
+            }
+        });
+        document.querySelectorAll('.modal-backdrop').forEach(function(b) {
+            b.remove();
+        });
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+    }
+
     function finishBukaOrderAddSuccess($el) {
-        // Tetap lock sampai content reload selesai — jangan reset di sini
         if ($el && $el.is('form')) {
             closeFormModal($el);
         } else if ($el && $el.length) {
             var modalEl = $el.closest('.modal')[0];
             if (modalEl) {
-                bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                try {
+                    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                } catch (e) {}
             }
         }
+        disposePickModals();
         formPickLoaded = false;
+        formPickLoading = false;
+        formPickCallbacks = [];
         $('#form-pick-modals').empty();
+        window.bukaOrderAddBusy = false;
+        window.bukaOrderAddXhr = null;
         content();
     }
 

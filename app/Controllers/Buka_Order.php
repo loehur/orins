@@ -54,8 +54,8 @@ class Buka_Order extends Controller
    /** @var string Sumber write: http | paket */
    private $cartLogSrc = 'http';
 
-   /** Jendela dedupe konten (detik) — request dobel beda UUID tetap ditolak */
-   private const CART_CONTENT_DEDUPE_SEC = 3;
+   /** Jendela dedupe konten (detik) — hanya untuk double-POST teknis, bukan klik ulang sengaja */
+   private const CART_CONTENT_DEDUPE_SEC = 1;
 
    private function cartLog($msg)
    {
