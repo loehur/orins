@@ -261,14 +261,12 @@ class Cron extends Controller
                      $stok[$r] = true;
                   }
 
-                  $jumlah = $do['harga'] * $do['jumlah'];
                   $cancel = $do['cancel'];
 
                   if ($cancel == 0 && $do['stok'] == 0) {
-                     $bill[$r] += ($jumlah + $do['harga_paket']);
-                     $bill[$r] -= $do['diskon'];
-
-                     if ($do['diskon'] > 0) {
+                     $line = $this->billOrderLine($do);
+                     $bill[$r] += $line['bill'];
+                     if ($line['diskon'] > 0) {
                         $ada_diskon[$r] = true;
                      }
                   }
@@ -294,14 +292,12 @@ class Cron extends Controller
                foreach ($dMutasi[$r] as $do) {
 
                   $cancel_barang = $do['stat'];
-                  $jumlah = $do['qty'];
                   if ($cancel_barang <> 2) {
-                     if ($do['diskon'] > 0) {
+                     $line = $this->billMutasiLine($do);
+                     $bill[$r] += $line['bill'];
+                     if ($line['diskon'] > 0) {
                         $ada_diskon[$r] = true;
                      }
-
-                     $bill[$r] += (($jumlah * $do['harga_jual']) + $do['harga_paket']);
-                     $bill[$r] -= ($do['diskon'] * $jumlah);
                   } else {
                      $cancel_count[$r] += 1;
                   }
@@ -355,6 +351,37 @@ class Cron extends Controller
       } else {
          echo "0 ORDER TUNTAS dari " . $checked . " ref dicek\n";
       }
+   }
+
+   /**
+    * Bill order_data — sama rumus Data_Operasi UI / analisa / refFinance.
+    * @return array{bill:int, diskon:int}
+    */
+   private function billOrderLine(array $do)
+   {
+      $paketQty = isset($do['paket_qty']) && (int)$do['paket_qty'] > 0 ? (int)$do['paket_qty'] : 1;
+      $line = ((int)$do['harga'] * (int)$do['jumlah']) + ((int)$do['harga_paket'] * $paketQty);
+      $akumDiskonUnit = 0;
+      $listDetail = @unserialize($do['detail_harga'] ?? '');
+      if (is_array($listDetail)) {
+         foreach ($listDetail as $ld) {
+            $akumDiskonUnit += isset($ld['d']) ? (int)$ld['d'] : 0;
+         }
+      }
+      $diskon = $akumDiskonUnit * (int)$do['jumlah'];
+      return ['bill' => $line - $diskon, 'diskon' => $diskon];
+   }
+
+   /**
+    * Bill master_mutasi — sama rumus Data_Operasi UI.
+    */
+   private function billMutasiLine(array $dm)
+   {
+      $paketQty = isset($dm['paket_qty']) && (int)$dm['paket_qty'] > 0 ? (int)$dm['paket_qty'] : 1;
+      $qty = (int)$dm['qty'];
+      $diskon = (int)$dm['diskon'] * $qty;
+      $bill = (($qty * (int)$dm['harga_jual']) + ((int)$dm['harga_paket'] * $paketQty)) - $diskon;
+      return ['bill' => $bill, 'diskon' => $diskon];
    }
 
    public function cek_tuntas($ref = "", $print = false, $returnMode = false)
@@ -459,14 +486,13 @@ class Cron extends Controller
             }
 
             if ($do['stok'] == 1) $stok = true;
-            if ($do['diskon'] > 0) $ada_diskon = true;
 
-            $jumlah = $do['harga'] * $do['jumlah'];
             $cancel = $do['cancel'];
 
             if ($cancel == 0 && $do['stok'] == 0) {
-               $bill += ($jumlah + $do['harga_paket']);
-               $bill -= $do['diskon'];
+               $line = $this->billOrderLine($do);
+               $bill += $line['bill'];
+               if ($line['diskon'] > 0) $ada_diskon = true;
             }
 
             if ($cancel == 1) {
@@ -490,14 +516,12 @@ class Cron extends Controller
                $db_tuntas_date = $dm['tuntas_date'];
             }
 
-            if ($dm['diskon'] > 0) $ada_diskon = true;
-
             $cancel_barang = $dm['stat'];
-            $jumlah = $dm['qty'];
 
             if ($cancel_barang <> 2) {
-               $bill += (($jumlah * $dm['harga_jual']) + $dm['harga_paket']);
-               $bill -= ($dm['diskon'] * $jumlah);
+               $line = $this->billMutasiLine($dm);
+               $bill += $line['bill'];
+               if ($line['diskon'] > 0) $ada_diskon = true;
             } else {
                $cancel_count += 1;
             }
@@ -548,7 +572,13 @@ class Cron extends Controller
                return ['ok' => 1, 'message' => 'Nota dituntaskan', 'reason' => $reason];
             }
          } elseif ($returnMode) {
-            return ['ok' => 0, 'error' => $reason, 'ready' => false];
+            return [
+               'ok' => 0,
+               'error' => $reason,
+               'ready' => false,
+               'bill' => (int)$bill,
+               'verify_payment' => (int)$verify_payment,
+            ];
          }
       } else {
          // Echo Robust Info

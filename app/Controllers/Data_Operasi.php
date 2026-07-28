@@ -1801,6 +1801,9 @@ class Data_Operasi extends Controller
       $err = is_array($result) && !empty($result['error'])
          ? $result['error']
          : 'Belum tuntas. Cron menilai nota belum memenuhi syarat (bill/verify/ambil).';
+      if (is_array($result) && isset($result['bill'], $result['verify_payment'])) {
+         $err .= ' [Bill ' . number_format((int)$result['bill']) . ' vs Verify ' . number_format((int)$result['verify_payment']) . ']';
+      }
       echo json_encode([
          'ok' => 0,
          'error' => $err,
