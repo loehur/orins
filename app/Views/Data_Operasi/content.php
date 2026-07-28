@@ -1441,7 +1441,6 @@
     });
 
     var tukarBarangVerifiedKey = '';
-    var tukarBarangPending = null;
 
     function $tukarBarangModal($from) {
         if ($from && $from.length) {
@@ -1498,25 +1497,19 @@
     }
 
     $(document).on("click", "a.tukarBarang", function() {
-        tukarBarangPending = {
-            id: $(this).attr("data-id"),
-            sds: $(this).attr("data-sds") || "0",
-            id_sumber: $(this).attr("data-id_sumber") || "0"
-        };
+        var $modal = $('#exampleModalTukarBarang');
+        $modal.find("input[name=tukarBarang_id]").val($(this).attr("data-id") || "");
+        $modal.find("#tukarBarang_id_sumber").val($(this).attr("data-id_sumber") || "0");
+        $modal.find("#tukarBarang_sds").val($(this).attr("data-sds") || "0");
+        $modal.find("#tukarBarang_id_baru").val('');
+        $modal.find("#tukarBarang_sn").val('');
+        $modal.find("#tukarBarang_reason").val('');
+        $modal.find('input[name=pin]').val('');
+        resetTukarBarangCek($modal);
     });
 
     $(document).on("shown.bs.modal", "#exampleModalTukarBarang", function() {
         var $modal = $(this);
-        if (tukarBarangPending) {
-            $modal.find("input[name=tukarBarang_id]").val(tukarBarangPending.id);
-            $modal.find("#tukarBarang_id_sumber").val(tukarBarangPending.id_sumber);
-            $modal.find("#tukarBarang_sds").val(tukarBarangPending.sds);
-            $modal.find("#tukarBarang_id_baru").val('');
-            $modal.find("#tukarBarang_sn").val('');
-            $modal.find("#tukarBarang_reason").val('');
-            $modal.find('input[name=pin]').val('');
-            tukarBarangPending = null;
-        }
         resetTukarBarangCek($modal);
     });
 
@@ -1531,8 +1524,14 @@
         var $modal = $tukarBarangModal($(this));
         var $btn = $(this).prop('disabled', true);
         var $result = $modal.find('.tukar-barang-cek-result');
+        var barisId = $modal.find('input[name=tukarBarang_id]').val();
         tukarBarangVerifiedKey = '';
         $modal.find('#btnTukarBarang').prop('disabled', true);
+        if (!barisId) {
+            $result.removeClass('d-none').html(renderTukarBarangCekFail('Data baris order belum terbaca. Tutup lalu buka lagi menu Tukar Barang.'));
+            $btn.prop('disabled', false);
+            return;
+        }
         $result.removeClass('d-none').html('<div class="text-muted small py-2"><span class="spinner-border spinner-border-sm me-1"></span>Memeriksa ketersediaan...</div>');
 
         $.ajax({
@@ -1540,7 +1539,7 @@
             type: 'POST',
             dataType: 'json',
             data: {
-                tukarBarang_id: $modal.find('input[name=tukarBarang_id]').val(),
+                tukarBarang_id: barisId,
                 id_baru: $modal.find('#tukarBarang_id_baru').val(),
                 sn_baru: $modal.find('#tukarBarang_sn').val(),
                 sds_baru: $modal.find('#tukarBarang_sds').val()
