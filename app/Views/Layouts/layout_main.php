@@ -101,13 +101,42 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 		sync();
 	});
 
+	function hardReload() {
+		var go = function() {
+			var url = new URL(window.location.href);
+			url.searchParams.set('_r', String(Date.now()));
+			window.location.replace(url.toString());
+		};
+		var clearCaches = Promise.resolve();
+		if (window.caches && typeof caches.keys === 'function') {
+			clearCaches = caches.keys().then(function(keys) {
+				return Promise.all(keys.map(function(k) {
+					return caches.delete(k);
+				}));
+			}).catch(function() {});
+		}
+		var clearSw = Promise.resolve();
+		if (navigator.serviceWorker && typeof navigator.serviceWorker.getRegistrations === 'function') {
+			clearSw = navigator.serviceWorker.getRegistrations().then(function(regs) {
+				return Promise.all(regs.map(function(r) {
+					return r.unregister();
+				}));
+			}).catch(function() {});
+		}
+		Promise.all([clearCaches, clearSw]).then(go).catch(go);
+	}
+
 	function sync() {
 		$.ajax({
-			url: $("a#sync").attr('href'),
+			url: $("a#sync").attr('href') + ( ($("a#sync").attr('href') || '').indexOf('?') >= 0 ? '&' : '?' ) + '_r=' + Date.now(),
 			type: "GET",
+			cache: false,
 			success: function() {
-				location.reload(true);
+				hardReload();
 			},
+			error: function() {
+				hardReload();
+			}
 		});
 	}
 
@@ -116,6 +145,7 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 		$.ajax({
 			url: $(this).attr('href'),
 			type: "GET",
+			cache: false,
 			success: function() {
 				sync();
 			},

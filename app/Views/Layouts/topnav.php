@@ -8,9 +8,9 @@
 		<a class="ps-lg-2 text-end me-2 text-purple fw-bold p-2 rounded text-decoration-none" href="<?= PV::BASE_URL ?>Home">ORINS</a>
 	</div>
 	<?php if ($this->userData['user_tipe'] <> 9) { ?>
-		<a class="ps-lg-2 text-end me-2 fw-bold text-success py-2 ps-2 pe-0 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></a>
+		<a class="ps-lg-2 text-end me-2 fw-bold text-success py-2 ps-2 pe-0 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync" title="Sync + muat ulang keras (bypass cache)"><?= strtoupper($this->dToko[$this->userData['id_toko']]['inisial']) ?></a>
 	<?php } else { ?>
-		<a class="ps-lg-2 text-end me-2 fw-bold text-success py-2 ps-2 pe-0 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync">SYNC</a>
+		<a class="ps-lg-2 text-end me-2 fw-bold text-success py-2 ps-2 pe-0 rounded text-decoration-none" id="sync" href="<?= PV::BASE_URL ?>Log/sync" title="Sync + muat ulang keras (bypass cache)">SYNC</a>
 	<?php } ?>
 	<ul class="navbar-nav align-items-center">
 		<!-- User Dropdown-->
