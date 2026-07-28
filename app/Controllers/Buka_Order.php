@@ -54,6 +54,9 @@ class Buka_Order extends Controller
    /** @var string Sumber write: http | paket */
    private $cartLogSrc = 'http';
 
+   /** Jendela dedupe konten (detik) — request dobel beda UUID tetap ditolak */
+   private const CART_CONTENT_DEDUPE_SEC = 3;
+
    private function cartLog($msg)
    {
       if ($this->cartReqId === null) {
@@ -86,6 +89,39 @@ class Buka_Order extends Controller
          }
       }
       return implode(' ', $out);
+   }
+
+   /**
+    * Dedupe berdasarkan isi request (bukan UUID).
+    * Request dobel teknis sering bawa idempotency_key berbeda → UUID dedupe gagal.
+    * Return false = duplikat, caller harus echo 0 dan stop.
+    */
+   private function claimCartContentDedupe($endpoint, array $parts)
+   {
+      $uid = (int) $this->userData['id_user'];
+      $fp = substr(md5($endpoint . '|' . implode('|', $parts)), 0, 24);
+      $now = time();
+
+      if (!isset($_SESSION['bo_add_content']) || !is_array($_SESSION['bo_add_content'])) {
+         $_SESSION['bo_add_content'] = [];
+      }
+      if (!isset($_SESSION['bo_add_content'][$uid]) || !is_array($_SESSION['bo_add_content'][$uid])) {
+         $_SESSION['bo_add_content'][$uid] = [];
+      }
+
+      foreach ($_SESSION['bo_add_content'][$uid] as $k => $ts) {
+         if (!is_numeric($ts) || ($now - (int) $ts) > self::CART_CONTENT_DEDUPE_SEC) {
+            unset($_SESSION['bo_add_content'][$uid][$k]);
+         }
+      }
+
+      if (isset($_SESSION['bo_add_content'][$uid][$fp])) {
+         $this->cartLog('CONTENT=REJECT ep=' . $endpoint . ' fp=' . $fp);
+         return false;
+      }
+
+      $_SESSION['bo_add_content'][$uid][$fp] = $now;
+      return true;
    }
 
    private function orderAddLockKey(array $parts)
@@ -121,12 +157,15 @@ class Buka_Order extends Controller
 
       $raw = trim((string) ($_POST['idempotency_key'] ?? ''));
       if ($raw === '') {
-         return true;
+         // Fail-closed untuk endpoint cart: tanpa key anggap tidak aman di era double-POST
+         $this->cartLog('IDEM=NOKEY');
+         return false;
       }
 
       $key = substr(preg_replace('/[^a-zA-Z0-9_-]/', '', $raw), 0, 64);
       if ($key === '') {
-         return true;
+         $this->cartLog('IDEM=BADKEY');
+         return false;
       }
 
       $uid = (int) $this->userData['id_user'];
@@ -152,15 +191,20 @@ class Buka_Order extends Controller
       return true;
    }
 
-   private function findExistingOrderRow($ref, $produk_code, $paket_ref, $note)
+   private function findExistingOrderRow($ref, $produk_code, $paket_ref, $note, $paket_group = '')
    {
       $where = "ref = '" . addslashes($ref) . "'"
          . " AND id_user = " . (int) $this->userData['id_user']
          . " AND produk_code = '" . addslashes($produk_code) . "'"
          . " AND paket_ref = '" . addslashes($paket_ref) . "'"
          . " AND note = '" . addslashes($note) . "'"
-         . " AND tuntas = 0 AND cancel = 0"
-         . " ORDER BY id_order_data DESC";
+         . " AND tuntas = 0 AND cancel = 0";
+      // Item paket: merge hanya dalam paket_group yang sama.
+      // add_paket selalu buat group baru → klik ulang = group baru (bukan numpuk qty di group lama).
+      if ($paket_ref !== '') {
+         $where .= " AND paket_group = '" . addslashes((string) $paket_group) . "'";
+      }
+      $where .= " ORDER BY id_order_data DESC";
 
       $row = $this->db(0)->get_where_row('order_data', $where);
       if (!is_array($row) || empty($row['id_order_data'])) {
@@ -169,7 +213,7 @@ class Buka_Order extends Controller
       return $row;
    }
 
-   private function findExistingBarangRow($ref, $id_barang, $sn, $sds, $paket_ref)
+   private function findExistingBarangRow($ref, $id_barang, $sn, $sds, $paket_ref, $paket_group = '')
    {
       $where = "ref = '" . addslashes($ref) . "'"
          . " AND user_id = " . (int) $this->userData['id_user']
@@ -177,8 +221,11 @@ class Buka_Order extends Controller
          . " AND sn = '" . addslashes($sn) . "'"
          . " AND sds = " . (int) $sds
          . " AND paket_ref = '" . addslashes($paket_ref) . "'"
-         . " AND tuntas = 0 AND stat <> 2"
-         . " ORDER BY id DESC";
+         . " AND tuntas = 0 AND stat <> 2";
+      if ($paket_ref !== '') {
+         $where .= " AND paket_group = '" . addslashes((string) $paket_group) . "'";
+      }
+      $where .= " ORDER BY id DESC";
 
       $row = $this->db(0)->get_where_row('master_mutasi', $where);
       if (!is_array($row) || empty($row['id'])) {
@@ -649,6 +696,15 @@ class Buka_Order extends Controller
 
       $id = $_POST['id'];
       $qty_paket = $_POST['qty_paket'];
+      if (!$this->claimCartContentDedupe('add_paket', [
+         (string) $this->userData['id_toko'],
+         (string) $id,
+         (string) $qty_paket,
+      ])) {
+         echo 0;
+         return;
+      }
+
       $paket_group = $this->userData['id_toko'] . date("ymdHis") . rand(0, 9);
       $data['order'] = $this->db(0)->get_where("paket_order", "paket_ref = '" . $id . "'");
       $data['mutasi'] = $this->db(0)->get_where("paket_mutasi", "paket_ref = '" . $id . "'");
@@ -756,6 +812,20 @@ class Buka_Order extends Controller
          $this->cartLog('OUT=qty_invalid ep=add jumlah=' . $jumlah);
          echo "Jumlah minimal 1";
          exit();
+      }
+
+      if ($this->cartLogSrc !== 'paket') {
+         if (!$this->claimCartContentDedupe('add', [
+            (string) $ref,
+            (string) $id_produk,
+            (string) $jumlah,
+            (string) $note,
+            (string) $afiliasi,
+            (string) $paket_ref,
+         ])) {
+            echo 0;
+            exit();
+         }
       }
 
       //update freq
@@ -948,7 +1018,7 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
-      $lockParts = [$ref, 'order', $produk_code, $paket_ref, $note];
+      $lockParts = [$ref, 'order', $produk_code, $paket_ref, $paket_group, $note];
       if (!$this->acquireOrderAddLock($lockParts)) {
          $this->cartLog('LOCK=BUSY ep=add produk_code=' . $produk_code);
          echo "Input masih diproses. Tunggu sebentar lalu coba lagi.";
@@ -956,7 +1026,7 @@ class Buka_Order extends Controller
       }
 
       try {
-         $existing = $this->findExistingOrderRow($ref, $produk_code, $paket_ref, $note);
+         $existing = $this->findExistingOrderRow($ref, $produk_code, $paket_ref, $note, $paket_group);
          if ($existing) {
             $newJumlah = (int) $existing['jumlah'] + (int) $jumlah;
             $set = "jumlah = " . $newJumlah;
@@ -1059,6 +1129,20 @@ class Buka_Order extends Controller
          exit();
       }
 
+      if ($this->cartLogSrc !== 'paket') {
+         if (!$this->claimCartContentDedupe('add_barang', [
+            (string) $ref,
+            (string) $id_barang,
+            (string) $qty,
+            (string) $sds,
+            (string) $sn,
+            (string) $paket_ref,
+         ])) {
+            echo 0;
+            exit();
+         }
+      }
+
       if ($id_sumber == 0) {
          $id_sumber = $this->userData['id_toko'];
       }
@@ -1071,7 +1155,7 @@ class Buka_Order extends Controller
          $paket_group = $link_paket['paket_group'];
       }
 
-      $lockParts = [$ref, 'barang', $id_barang, $sn, $sds, $paket_ref];
+      $lockParts = [$ref, 'barang', $id_barang, $sn, $sds, $paket_ref, $paket_group];
       if (!$this->acquireOrderAddLock($lockParts)) {
          $this->cartLog('LOCK=BUSY ep=add_barang kode=' . $id_barang);
          echo "Input masih diproses. Tunggu sebentar lalu coba lagi.";
@@ -1079,7 +1163,7 @@ class Buka_Order extends Controller
       }
 
       try {
-         $existing = $this->findExistingBarangRow($ref, $id_barang, $sn, $sds, $paket_ref);
+         $existing = $this->findExistingBarangRow($ref, $id_barang, $sn, $sds, $paket_ref, $paket_group);
 
       $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $id_barang . "'");
       $harga = $barang['harga_' . $id_jenis_pelanggan];

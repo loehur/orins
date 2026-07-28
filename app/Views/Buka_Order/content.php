@@ -957,8 +957,10 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     }
 
     var bukaOrderEvt = '.bukaOrder';
-    // Setiap kali content reload selesai, buka lagi kunci submit
-    window.bukaOrderAddBusy = false;
+    // Setiap kali content reload selesai — jangan buka busy jika baru saja submit
+    if (!window.bukaOrderLastSubmitAt || (Date.now() - window.bukaOrderLastSubmitAt) > 1500) {
+        window.bukaOrderAddBusy = false;
+    }
     window.bukaOrderAddXhr = null;
     if (typeof window.bukaOrderLastSubmitAt === 'undefined') {
         window.bukaOrderLastSubmitAt = 0;
