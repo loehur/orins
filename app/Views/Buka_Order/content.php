@@ -119,10 +119,10 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                 <div class="col px-0 text-end">
                     <?php if ($data['count'] <= 40) {
                         if ($id_pelanggan_jenis <> 100) { ?>
-                            <button type="button" class="btn me-1 shadow-none btn-sm btn-danger bg-gradient py-1" data-bs-target="#exampleModalPaket" data-bs-toggle="modal">(&#43;) Paket</button>
-                            <button type="button" class="btn me-1 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
-                            <button type="button" class="btn me-1 shadow-none btn-sm btn-dark bg-gradient py-1" data-bs-target="#exampleModalJasa" data-bs-toggle="modal">(&#43;) Jasa</button>
-                            <button type="button" class="btn me-1 shadow-none btn-sm btn-success bg-gradient py-1" data-bs-target="#exampleModalB" data-bs-toggle="modal">(&#43;) Barang</button>
+                            <button type="button" class="btn me-1 shadow-none btn-sm btn-danger bg-gradient py-1 buka-order-pick" data-bs-target="#exampleModalPaket">(&#43;) Paket</button>
+                            <button type="button" class="btn me-1 shadow-none btn-sm btn-primary bg-gradient py-1 buka-order-pick" data-bs-target="#exampleModal">(&#43;) Produksi</button>
+                            <button type="button" class="btn me-1 shadow-none btn-sm btn-dark bg-gradient py-1 buka-order-pick" data-bs-target="#exampleModalJasa">(&#43;) Jasa</button>
+                            <button type="button" class="btn me-1 shadow-none btn-sm btn-success bg-gradient py-1 buka-order-pick" data-bs-target="#exampleModalB">(&#43;) Barang</button>
                             <div class="btn-group me-1">
                                 <?php if ($this->userData['aff_id'] == 0) { ?>
                                     <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -132,7 +132,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                     <ul class="dropdown-menu dropdown-menu-start p-0">
                                         <?php foreach ($this->dToko as $dt) {
                                             if ($dt['id_toko'] <> $this->userData['id_toko'] && $dt['produksi'] == 1) { ?>
-                                                <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
+                                                <li><a class="dropdown-item aff buka-order-pick" data-bs-target="#exampleModalAff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
                                         <?php }
                                         } ?>
                                     </ul>
@@ -140,7 +140,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                             </div>
                         <?php } else { ?>
                             <?php if ($this->userData['aff_id'] == 0) { ?>
-                                <button type="button" class="btn me-1 shadow-none btn-sm btn-primary bg-gradient py-1" data-bs-toggle="modal" data-bs-target="#exampleModal">(&#43;) Produksi</button>
+                                <button type="button" class="btn me-1 shadow-none btn-sm btn-primary bg-gradient py-1 buka-order-pick" data-bs-target="#exampleModal">(&#43;) Produksi</button>
                                 <div class="btn-group me-1">
                                     <button type="button" class="btn shadow-none btn-sm btn-warning bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                         (&#43;) Afiliasi
@@ -149,7 +149,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                     <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
                                         <?php foreach ($this->dToko as $dt) {
                                             if ($dt['id_toko'] <> $this->userData['id_toko']) { ?>
-                                                <li><a data-bs-toggle="modal" data-bs-target="#exampleModalAff" class="dropdown-item aff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
+                                                <li><a class="dropdown-item aff buka-order-pick" data-bs-target="#exampleModalAff" data-id="<?= $dt['id_toko'] ?>" href="#"><?= $dt['nama_toko'] ?></a></li>
                                         <?php }
                                         } ?>
                                     </ul>
@@ -933,9 +933,27 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             applyAffTargetToForm();
         }
         var modalEl = document.querySelector(target);
-        if (modalEl) {
-            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        if (!modalEl) {
+            return false;
         }
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        return true;
+    }
+
+    function requestOpenPickModal(target) {
+        if (pickModalTargets.indexOf(target) === -1) {
+            return;
+        }
+        if (formPickLoaded) {
+            openPickModal(target);
+            return;
+        }
+        if (!formPickLoading) {
+            showFormPickLoader();
+        }
+        loadFormPickModals(function() {
+            openPickModal(target);
+        });
     }
 
     var bukaOrderEvt = '.bukaOrder';
@@ -1106,26 +1124,42 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         });
     }
 
-    $(document).off('click' + bukaOrderEvt, '[data-bs-toggle="modal"]').on('click' + bukaOrderEvt, '[data-bs-toggle="modal"]', function(e) {
+    $(document).off('click' + bukaOrderEvt, '.buka-order-pick').on('click' + bukaOrderEvt, '.buka-order-pick', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
         var target = $(this).attr('data-bs-target');
-        if (pickModalTargets.indexOf(target) === -1) {
-            return;
-        }
         if ($(this).hasClass('aff')) {
             pendingAffTarget = $(this).attr('data-id');
             applyAffTargetToForm();
         }
-        if (!formPickLoaded) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (!formPickLoading) {
-                showFormPickLoader();
-            }
-            loadFormPickModals(function() {
-                openPickModal(target);
-            });
-        }
+        requestOpenPickModal(target);
+        return false;
     });
+
+    // Capture-phase: cegah Bootstrap data-api sebelum modal HTML ada (termasuk HTML cache lama)
+    if (window._bukaOrderPickCapture) {
+        document.removeEventListener('click', window._bukaOrderPickCapture, true);
+    }
+    window._bukaOrderPickCapture = function(e) {
+        var el = e.target && e.target.closest ? e.target.closest('.buka-order-pick, [data-bs-toggle="modal"]') : null;
+        if (!el) {
+            return;
+        }
+        var target = el.getAttribute('data-bs-target');
+        if (pickModalTargets.indexOf(target) === -1) {
+            return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        if (el.classList.contains('aff')) {
+            pendingAffTarget = el.getAttribute('data-id');
+            applyAffTargetToForm();
+        }
+        requestOpenPickModal(target);
+    };
+    document.addEventListener('click', window._bukaOrderPickCapture, true);
 
     $(document).ready(function() {
         $('.tize:not(.ajax-pelanggan)').selectize();
