@@ -79,10 +79,44 @@
     </div>
 </main>
 
+<div class="modal" id="modalConfirmAction" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalConfirmActionTitle">Konfirmasi</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalConfirmActionText">
+                Yakin?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger" id="modalConfirmActionYes">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
         $('select.tize').selectize();
     });
+
+    function showConfirmAction(message, onConfirm, options) {
+        options = options || {};
+        $('#modalConfirmActionTitle').text(options.title || 'Konfirmasi');
+        $('#modalConfirmActionText').html(message);
+        $('#modalConfirmActionYes').text(options.confirmText || 'Ya, Hapus');
+
+        var modal = new bootstrap.Modal(document.getElementById('modalConfirmAction'));
+        $('#modalConfirmActionYes').off('click').on('click', function() {
+            modal.hide();
+            if (typeof onConfirm === 'function') {
+                onConfirm();
+            }
+        });
+        modal.show();
+    }
 
     function refreshMutasiTable() {
         $.get('<?= PV::BASE_URL ?>Retur_Barang_G/list_data/<?= $d['id'] ?>', function(html) {
@@ -115,25 +149,29 @@
         });
     });
 
-    $(document).off('dblclick.returDel', '.cell_delete').on('dblclick.returDel', '.cell_delete', function() {
+    $(document).off('click.returDel', '.cell_delete').on('click.returDel', '.cell_delete', function() {
         var id = $(this).attr('data-id');
         var primary = $(this).attr('data-primary');
         var tb = $(this).attr('data-tb');
 
-        $.ajax({
-            url: '<?= PV::BASE_URL ?>Functions/deleteCell',
-            data: {
-                'id': id,
-                'primary': primary,
-                'tb': tb
-            },
-            type: 'POST',
-            dataType: 'html',
-            success: function(res) {
-                if (res == 0) {
-                    $("#tr" + id).remove();
+        showConfirmAction('Yakin ingin menghapus item ini?', function() {
+            $.ajax({
+                url: '<?= PV::BASE_URL ?>Functions/deleteCell',
+                data: {
+                    'id': id,
+                    'primary': primary,
+                    'tb': tb
+                },
+                type: 'POST',
+                dataType: 'html',
+                success: function(res) {
+                    if (res == 0) {
+                        $("#tr" + id).remove();
+                    } else {
+                        alert(res);
+                    }
                 }
-            },
+            });
         });
     });
 
@@ -144,19 +182,21 @@
         }
     });
 
-    $(document).off('dblclick.returCancel', '.cancel-surat').on('dblclick.returCancel', '.cancel-surat', function() {
+    $(document).off('click.returCancel', '.cancel-surat').on('click.returCancel', '.cancel-surat', function() {
         var id = $(this).attr('data-id');
-        $.ajax({
-            url: '<?= PV::BASE_URL ?>Retur_Barang_G/cancel',
-            data: { id: id },
-            type: 'POST',
-            success: function(res) {
-                if (res == 0) {
-                    location.href = '<?= PV::BASE_URL ?>Retur_Barang_G';
-                } else {
-                    alert(res);
+        showConfirmAction('Yakin ingin cancel surat <b>' + id + '</b>?', function() {
+            $.ajax({
+                url: '<?= PV::BASE_URL ?>Retur_Barang_G/cancel',
+                data: { id: id },
+                type: 'POST',
+                success: function(res) {
+                    if (res == 0) {
+                        location.href = '<?= PV::BASE_URL ?>Retur_Barang_G';
+                    } else {
+                        alert(res);
+                    }
                 }
-            }
+            });
         });
     });
 </script>

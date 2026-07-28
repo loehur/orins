@@ -69,6 +69,24 @@
     </div>
 </main>
 
+<div class="modal" id="modalConfirmAction" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalConfirmActionTitle">Konfirmasi</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalConfirmActionText">
+                Yakin?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger" id="modalConfirmActionYes">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="<?= PV::ASSETS_URL ?>js/dataTables.min.js"></script>
 
 <script>
@@ -86,6 +104,22 @@
         });
     });
 
+    function showConfirmAction(message, onConfirm, options) {
+        options = options || {};
+        $('#modalConfirmActionTitle').text(options.title || 'Konfirmasi');
+        $('#modalConfirmActionText').html(message);
+        $('#modalConfirmActionYes').text(options.confirmText || 'Ya, Hapus');
+
+        var modal = new bootstrap.Modal(document.getElementById('modalConfirmAction'));
+        $('#modalConfirmActionYes').off('click').on('click', function() {
+            modal.hide();
+            if (typeof onConfirm === 'function') {
+                onConfirm();
+            }
+        });
+        modal.show();
+    }
+
     $("form").on("submit", function(e) {
         e.preventDefault();
         $.ajax({
@@ -102,22 +136,24 @@
         });
     });
 
-    $(".cancel").dblclick(function() {
+    $(".cancel").click(function() {
         var id = $(this).attr('data-id');
-        $.ajax({
-            url: '<?= PV::BASE_URL ?>Gudang_Penjualan/cancel',
-            data: {
-                'id': id,
-            },
-            type: 'POST',
-            dataType: 'html',
-            success: function(res) {
-                if (res == 0) {
-                    $("tr#" + id).remove();
-                } else {
-                    alert(res);
+        showConfirmAction('Yakin ingin cancel surat <b>' + id + '</b>?', function() {
+            $.ajax({
+                url: '<?= PV::BASE_URL ?>Gudang_Penjualan/cancel',
+                data: {
+                    'id': id,
+                },
+                type: 'POST',
+                dataType: 'html',
+                success: function(res) {
+                    if (res == 0) {
+                        $("tr#" + id).remove();
+                    } else {
+                        alert(res);
+                    }
                 }
-            },
+            });
         });
     });
 </script>
