@@ -1046,6 +1046,10 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     };
 
     function disposePickModals() {
+        if (typeof window.cleanupBootstrapModals === 'function') {
+            window.cleanupBootstrapModals();
+            return;
+        }
         pickModalTargets.forEach(function(sel) {
             var el = document.querySelector(sel);
             if (!el || typeof bootstrap === 'undefined' || !bootstrap.Modal) {
@@ -1067,17 +1071,22 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     }
 
     function finishBukaOrderAddSuccess($el) {
-        if ($el && $el.is('form')) {
-            closeFormModal($el);
-        } else if ($el && $el.length) {
+        // Tutup modal dulu, lalu cleanup global sebelum content() ganti HTML
+        // (hindari backdrop sangkut saat #content diganti)
+        if ($el && $el.length) {
             var modalEl = $el.closest('.modal')[0];
-            if (modalEl) {
+            if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
                 try {
-                    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                    var inst = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
+                    inst.hide();
                 } catch (e) {}
             }
         }
-        disposePickModals();
+        if (typeof window.cleanupBootstrapModals === 'function') {
+            window.cleanupBootstrapModals();
+        } else {
+            disposePickModals();
+        }
         formPickLoaded = false;
         formPickLoading = false;
         formPickCallbacks = [];

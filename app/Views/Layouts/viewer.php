@@ -132,8 +132,14 @@
     }
 
     function loadAppContent(url, done) {
+        if (typeof window.cleanupBootstrapModals === 'function') {
+            window.cleanupBootstrapModals();
+        }
         showContentLoader();
         $("div#content").load(url, function(response, status) {
+            if (typeof window.cleanupBootstrapModals === 'function') {
+                window.cleanupBootstrapModals();
+            }
             if (status === 'error') {
                 hideContentLoader();
                 $('#content').html('<div class="alert alert-danger m-3">Gagal memuat halaman. <a href="javascript:location.reload()">Coba lagi</a></div>');

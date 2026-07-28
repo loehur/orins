@@ -94,6 +94,73 @@ $openPrioritasMenu = str_contains($t, "Afiliasi Order") || str_contains($t, "SPK
 	<script src="<?= PV::ASSETS_URL ?>js/jquery-3.7.0.min.js"></script>
 	<script src="<?= PV::ASSETS_URL ?>js/selectize.min.js"></script>
 	<script src="<?= PV::ASSETS_URL ?>plugins/bootstrap-5.1/bootstrap.bundle.min.js"></script>
+	<script>
+	(function() {
+		function removeOrphanBackdrops() {
+			document.querySelectorAll('.modal-backdrop').forEach(function(b) {
+				b.remove();
+			});
+			if (!document.querySelector('.modal.show')) {
+				document.body.classList.remove('modal-open');
+				document.body.style.removeProperty('overflow');
+				document.body.style.removeProperty('padding-right');
+			}
+		}
+
+		/**
+		 * Bersihkan modal Bootstrap yang sangkut (backdrop / body.modal-open).
+		 * Dipakai sebelum AJAX ganti #content, dan sebagai safety net global.
+		 */
+		window.cleanupBootstrapModals = function() {
+			if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+				document.querySelectorAll('.modal').forEach(function(el) {
+					var inst = bootstrap.Modal.getInstance(el);
+					if (inst) {
+						try {
+							inst.hide();
+						} catch (e) {}
+						try {
+							inst.dispose();
+						} catch (e) {}
+					}
+					el.classList.remove('show');
+					el.style.display = 'none';
+					el.setAttribute('aria-hidden', 'true');
+					el.removeAttribute('aria-modal');
+					el.removeAttribute('role');
+				});
+			}
+			removeOrphanBackdrops();
+		};
+
+		// Setelah modal tutup normal: pastikan tidak ada backdrop sisa
+		document.addEventListener('hidden.bs.modal', function() {
+			setTimeout(removeOrphanBackdrops, 10);
+		});
+
+		// Escape darurat jika overlay sangkut tanpa modal terbuka
+		document.addEventListener('keydown', function(e) {
+			if (e.key !== 'Escape') {
+				return;
+			}
+			if (!document.querySelector('.modal.show') && (
+				document.querySelector('.modal-backdrop') || document.body.classList.contains('modal-open')
+			)) {
+				removeOrphanBackdrops();
+			}
+		});
+
+		// Klik backdrop yatim (tanpa .modal.show) → bersihkan
+		document.addEventListener('click', function(e) {
+			if (!e.target || !e.target.classList || !e.target.classList.contains('modal-backdrop')) {
+				return;
+			}
+			if (!document.querySelector('.modal.show')) {
+				removeOrphanBackdrops();
+			}
+		}, true);
+	})();
+	</script>
 	<script src="<?= PV::ASSETS_URL ?>js/scripts.js"></script>
 	<script>
 	$("a#sync").click(function(e) {
