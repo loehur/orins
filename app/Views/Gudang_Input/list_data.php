@@ -146,7 +146,13 @@
     $(document).on('keydown', function(event) {
         if (event.keyCode == 112) {
             event.preventDefault();
-            $('.selectize-input').click();
+            var selectize = $('#barang')[0] && $('#barang')[0].selectize ? $('#barang')[0].selectize : null;
+            if (selectize) {
+                selectize.focus();
+                selectize.open();
+            } else {
+                $('.selectize-input').click();
+            }
         }
     });
 

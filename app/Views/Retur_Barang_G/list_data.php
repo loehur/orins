@@ -102,6 +102,19 @@
         $('select.tize').selectize();
     });
 
+    $(document).off('keydown.returBarangFocus').on('keydown.returBarangFocus', function(event) {
+        if (event.keyCode == 112) {
+            event.preventDefault();
+            var selectize = $('#barang')[0] && $('#barang')[0].selectize ? $('#barang')[0].selectize : null;
+            if (selectize) {
+                selectize.focus();
+                selectize.open();
+            } else {
+                $('.selectize-input').click();
+            }
+        }
+    });
+
     function showConfirmAction(message, onConfirm, options) {
         options = options || {};
         $('#modalConfirmActionTitle').text(options.title || 'Konfirmasi');
