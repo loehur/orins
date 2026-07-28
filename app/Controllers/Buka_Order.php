@@ -48,6 +48,46 @@ class Buka_Order extends Controller
    /** @var bool Idempotency sudah di-claim di request ini (untuk loop add_paket) */
    private $orderAddIdempotencyHandled = false;
 
+   /** @var string|null Request ID untuk forensik cart debug */
+   private $cartReqId = null;
+
+   /** @var string Sumber write: http | paket */
+   private $cartLogSrc = 'http';
+
+   private function cartLog($msg)
+   {
+      if ($this->cartReqId === null) {
+         $this->cartReqId = substr(md5(uniqid((string) mt_rand(), true)), 0, 8);
+      }
+      $ms = (int) ((microtime(true) - floor(microtime(true))) * 1000);
+      $line = 'rid=' . $this->cartReqId
+         . ' t=' . date('H:i:s') . '.' . sprintf('%03d', $ms)
+         . ' u=' . (int) $this->userData['id_user']
+         . ' toko=' . (int) $this->userData['id_toko']
+         . ' src=' . $this->cartLogSrc
+         . ' ' . $msg;
+      $this->model('Log')->write($line, 'cartdebug');
+   }
+
+   private function cartPayloadSummary()
+   {
+      $show = ['id', 'qty_paket', 'id_produk', 'jumlah', 'note', 'kode', 'qty', 'sds', 'sn', 'id_paket'];
+      $out = [];
+      foreach ($show as $k) {
+         if (isset($_POST[$k])) {
+            $out[] = $k . '=' . substr(preg_replace('/\s+/', ' ', (string) $_POST[$k]), 0, 40);
+         }
+      }
+      $out[] = 'nkeys=' . count($_POST);
+      $out[] = 'key=' . substr((string) ($_POST['idempotency_key'] ?? 'NOKEY'), 0, 12);
+      foreach (['dbg_page', 'dbg_calls', 'dbg_sent', 'dbg_reload', 'dbg_handlers'] as $d) {
+         if (isset($_POST[$d])) {
+            $out[] = substr($d, 4) . '=' . (int) $_POST[$d];
+         }
+      }
+      return implode(' ', $out);
+   }
+
    private function orderAddLockKey(array $parts)
    {
       return 'bo_' . (int) $this->userData['id_user'] . '_' . substr(md5(implode('|', $parts)), 0, 16);
@@ -600,7 +640,9 @@ class Buka_Order extends Controller
 
    function add_paket($id_pelanggan_jenis)
    {
+      $this->cartLog('ENTER ep=add_paket ' . $this->cartPayloadSummary());
       if (!$this->claimOrderAddIdempotency()) {
+         $this->cartLog('IDEM=REJECT ep=add_paket');
          echo 0;
          return;
       }
@@ -612,12 +654,39 @@ class Buka_Order extends Controller
       $data['mutasi'] = $this->db(0)->get_where("paket_mutasi", "paket_ref = '" . $id . "'");
       $data['barang'] = $this->db(0)->get('master_barang', 'code');
 
+      if (!is_array($data['order'])) {
+         $data['order'] = [];
+      }
+      if (!is_array($data['mutasi'])) {
+         $data['mutasi'] = [];
+      }
+
+      $sigM = [];
+      foreach ($data['mutasi'] as $r) {
+         $sigM[((string) ($r['id_barang'] ?? '')) . '|' . ((string) ($r['sds'] ?? ''))] = 1;
+      }
+      $sigO = [];
+      foreach ($data['order'] as $r) {
+         $sigO[((string) ($r['id_produk'] ?? '')) . '|' . ((string) ($r['produk_code'] ?? '')) . '|' . ((string) ($r['note'] ?? ''))] = 1;
+      }
+      $dupDef = (count($data['mutasi']) > count($sigM) || count($data['order']) > count($sigO)) ? 1 : 0;
+      $this->cartLog(
+         'PAKETDEF pkt=' . $id
+            . ' qty_paket=' . (int) $qty_paket
+            . ' rows_mutasi=' . count($data['mutasi']) . ' uniq_mutasi=' . count($sigM)
+            . ' rows_order=' . count($data['order']) . ' uniq_order=' . count($sigO)
+            . ' DUPDEF=' . $dupDef
+      );
+
       // Get harga_paket from paket_main
       $paket_main = $this->db(0)->get_where_row("paket_main", "id = '" . $id . "'");
       $harga_paket_column = 'harga_' . $id_pelanggan_jenis;
       $harga_paket = isset($paket_main[$harga_paket_column]) ? $paket_main[$harga_paket_column] : 0;
 
+      $this->cartLogSrc = 'paket';
+      $i = 0;
       foreach ($data['mutasi'] as $dm) {
+         $i++;
          $_POST['kode'] = $dm['id_barang'];
          $_POST['qty'] = $qty_paket * $dm['qty'];
          $_POST['sds'] = $dm['sds'];
@@ -625,10 +694,13 @@ class Buka_Order extends Controller
          $id_sumber = $dm['id_sumber'];
          $harga_paket_item = ($dm['price_locker'] == 1) ? $harga_paket : 0;
          $paket_qty_value = ($dm['price_locker'] == 1) ? $qty_paket : 0;
+         $this->cartLog('LOOP mutasi i=' . $i . ' kode=' . $dm['id_barang'] . ' qty=' . $_POST['qty'] . ' sds=' . $dm['sds']);
          $this->add_barang($id_pelanggan_jenis, $dm['price_locker'], $id, $id_sumber, $harga_paket_item, $paket_group, $paket_qty_value);
       }
 
+      $j = 0;
       foreach ($data['order'] as $do) {
+         $j++;
          $_POST['id_produk'] = $do['id_produk'];
          $_POST['note'] = $do['note'];
          $_POST['note_spk'] = $do['note_spk'];
@@ -639,13 +711,19 @@ class Buka_Order extends Controller
          $_POST['jumlah'] = $qty_paket * $do['jumlah'];
          $harga_paket_item = ($do['price_locker'] == 1) ? $harga_paket : 0;
          $paket_qty_value = ($do['price_locker'] == 1) ? $qty_paket : 0;
+         $this->cartLog('LOOP order j=' . $j . ' id_produk=' . $do['id_produk'] . ' jumlah=' . $_POST['jumlah']);
          $this->add($do['id_afiliasi'], $id, $paket_group, $do['price_locker'], $harga_paket_item, $do['pj'], $paket_qty_value);
       }
+      $this->cartLog('DONE ep=add_paket writes_planned=' . ($i + $j));
    }
 
    function add($afiliasi = 0, $paket_ref = '', $paket_group = '', $price_locker = 0, $harga_paket = 0, $pj = 0, $paket_qty = 0)
    {
+      if ($this->cartLogSrc !== 'paket') {
+         $this->cartLog('ENTER ep=add ' . $this->cartPayloadSummary());
+      }
       if (!$this->claimOrderAddIdempotency()) {
+         $this->cartLog('IDEM=REJECT ep=add');
          echo 0;
          exit();
       }
@@ -675,6 +753,7 @@ class Buka_Order extends Controller
       $note = $_POST['note'] ?? '';
 
       if ($jumlah < 1) {
+         $this->cartLog('OUT=qty_invalid ep=add jumlah=' . $jumlah);
          echo "Jumlah minimal 1";
          exit();
       }
@@ -871,6 +950,7 @@ class Buka_Order extends Controller
 
       $lockParts = [$ref, 'order', $produk_code, $paket_ref, $note];
       if (!$this->acquireOrderAddLock($lockParts)) {
+         $this->cartLog('LOCK=BUSY ep=add produk_code=' . $produk_code);
          echo "Input masih diproses. Tunggu sebentar lalu coba lagi.";
          exit();
       }
@@ -885,9 +965,13 @@ class Buka_Order extends Controller
             }
             $do = $this->db(0)->update('order_data', $set, 'id_order_data = ' . (int) $existing['id_order_data']);
             if ($do['errno'] == 0) {
+               $this->cartLog('WRITE=MERGE tb=order_data id=' . (int) $existing['id_order_data']
+                  . ' jumlah ' . (int) $existing['jumlah'] . ' -> ' . $newJumlah
+                  . ' produk_code=' . substr($produk_code, 0, 40));
                $this->model('Log')->write($this->userData['user'] . " Add Order Qty +" . (int) $jumlah . " Success!");
                echo $do['errno'];
             } else {
+               $this->cartLog('WRITE=FAIL MERGE tb=order_data err=' . substr((string) $do['error'], 0, 80));
                print_r($do['error']);
                exit();
             }
@@ -906,9 +990,14 @@ class Buka_Order extends Controller
 
          $do = $this->db(0)->insertCols('order_data', $cols, $vals);
          if ($do['errno'] == 0) {
+            $newId = (int) $this->db(0)->scalar("SELECT LAST_INSERT_ID()");
+            $this->cartLog('WRITE=INSERT tb=order_data id=' . $newId
+               . ' jumlah=' . (int) $jumlah
+               . ' produk_code=' . substr($produk_code, 0, 40));
             $this->model('Log')->write($this->userData['user'] . " Add Order Success!");
             echo $do['errno'];
          } else {
+            $this->cartLog('WRITE=FAIL INSERT tb=order_data err=' . substr((string) $do['error'], 0, 80));
             print_r($do['error']);
             exit();
          }
@@ -919,7 +1008,11 @@ class Buka_Order extends Controller
 
    function add_barang($id_jenis_pelanggan, $price_locker = 0, $paket_ref = "", $id_sumber = 0, $harga_paket = 0, $paket_group = "", $paket_qty = 0)
    {
+      if ($this->cartLogSrc !== 'paket') {
+         $this->cartLog('ENTER ep=add_barang ' . $this->cartPayloadSummary());
+      }
       if (!$this->claimOrderAddIdempotency()) {
+         $this->cartLog('IDEM=REJECT ep=add_barang');
          echo 0;
          exit();
       }
@@ -961,6 +1054,7 @@ class Buka_Order extends Controller
       }
 
       if ($qty < 1) {
+         $this->cartLog('OUT=qty_invalid ep=add_barang qty=' . $qty);
          echo "Jumlah minimal 1";
          exit();
       }
@@ -979,6 +1073,7 @@ class Buka_Order extends Controller
 
       $lockParts = [$ref, 'barang', $id_barang, $sn, $sds, $paket_ref];
       if (!$this->acquireOrderAddLock($lockParts)) {
+         $this->cartLog('LOCK=BUSY ep=add_barang kode=' . $id_barang);
          echo "Input masih diproses. Tunggu sebentar lalu coba lagi.";
          exit();
       }
@@ -997,6 +1092,7 @@ class Buka_Order extends Controller
       if (isset($barang['limited']) && $barang['limited'] == 1) {
          $sisa = $this->data('Barang')->sisa_stok($id_barang, $id_sumber, $sn, $sds);
          if ($sisa < $qty) {
+            $this->cartLog('OUT=stok_kurang ep=add_barang kode=' . $id_barang . ' sisa=' . $sisa . ' qty=' . $qty);
             echo "Stok tidak mencukupi. Tersedia: " . $sisa;
             exit();
          }
@@ -1005,6 +1101,7 @@ class Buka_Order extends Controller
          if ($existing) {
             // SN unik: tidak boleh ditambah / digabung qty
             if ($sn_c === 1 || strlen(trim($sn)) > 0) {
+               $this->cartLog('OUT=sn_dupe ep=add_barang kode=' . $id_barang . ' sn=' . substr($sn, 0, 20));
                echo "Barang dengan SN yang sama sudah ada di cart.";
                exit();
             }
@@ -1015,6 +1112,9 @@ class Buka_Order extends Controller
                $set .= ", paket_qty = " . ((int) ($existing['paket_qty'] ?? 0) + (int) $paket_qty);
             }
             $do = $this->db(0)->update('master_mutasi', $set, 'id = ' . (int) $existing['id']);
+            $this->cartLog('WRITE=MERGE tb=master_mutasi id=' . (int) $existing['id']
+               . ' qty ' . (int) $existing['qty'] . ' -> ' . $newQty
+               . ' kode=' . $id_barang);
             echo $do['errno'] == 0 ? 0 : $do['error'];
             return;
          }
@@ -1022,6 +1122,12 @@ class Buka_Order extends Controller
       $cols = 'ref, jenis, jenis_target, id_barang, id_sumber, id_target, qty, sds, sn, sn_c, user_id, cs_id, harga_jual, price_locker, paket_ref, paket_group, harga_paket, paket_qty';
       $vals = "'" . $ref . "',2," . $id_jenis_pelanggan . "," . $id_barang . ",'" . $id_sumber . "'," . $id_target . "," . $qty . "," . $sds . ",'" . $sn . "'," . $sn_c . "," . $this->userData['id_user'] . "," . $cs_id . "," . $harga . "," . $price_locker . ",'" . $paket_ref . "','" . $paket_group . "'," . $harga_paket . "," . $paket_qty;
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
+      if ($do['errno'] == 0) {
+         $newId = (int) $this->db(0)->scalar("SELECT LAST_INSERT_ID()");
+         $this->cartLog('WRITE=INSERT tb=master_mutasi id=' . $newId . ' qty=' . (int) $qty . ' kode=' . $id_barang);
+      } else {
+         $this->cartLog('WRITE=FAIL INSERT tb=master_mutasi err=' . substr((string) $do['error'], 0, 80));
+      }
       echo $do['errno'] == 0 ? 0 : $do['error'];
       } finally {
          $this->releaseOrderAddLock($lockParts);

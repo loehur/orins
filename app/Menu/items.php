@@ -561,6 +561,20 @@ return [
                     'active' => 'Managment - Office User'
                 ],
             ]
+        ],
+        [
+            'access' => [0],
+            'name' => 'Developer',
+            'active' => ['Developer - Cart Debug Log'],
+            'icon' => 'terminal',
+            'icon-color' => "dark",
+            'sub' => [
+                [
+                    'name' => 'Cart Debug Log',
+                    'link' => 'Cart_Debug',
+                    'active' => 'Developer - Cart Debug Log'
+                ],
+            ]
         ]
 ];
 

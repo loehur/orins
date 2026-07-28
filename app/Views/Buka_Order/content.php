@@ -945,6 +945,36 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     if (typeof window.bukaOrderLastSubmitAt === 'undefined') {
         window.bukaOrderLastSubmitAt = 0;
     }
+    if (typeof window.bukaOrderDbg === 'undefined') {
+        window.bukaOrderDbg = {
+            page: Math.random().toString(36).slice(2, 8),
+            calls: 0,
+            sent: 0,
+            reload: 0
+        };
+    }
+    window.bukaOrderDbg.reload += 1;
+
+    window.bukaOrderDbgFields = function() {
+        var h = 0;
+        try {
+            var ev = jQuery._data(document, 'events') || {};
+            ['submit', 'click', 'keydown'].forEach(function(type) {
+                (ev[type] || []).forEach(function(o) {
+                    if (o.namespace && String(o.namespace).indexOf('bukaOrderAdd') !== -1) {
+                        h += 1;
+                    }
+                });
+            });
+        } catch (e) {}
+        return {
+            dbg_page: window.bukaOrderDbg.page,
+            dbg_calls: window.bukaOrderDbg.calls,
+            dbg_sent: window.bukaOrderDbg.sent,
+            dbg_reload: window.bukaOrderDbg.reload,
+            dbg_handlers: h
+        };
+    };
 
     window.newBukaOrderIdempotencyKey = function() {
         if (window.crypto && typeof window.crypto.randomUUID === 'function') {
@@ -1023,6 +1053,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     }
 
     function submitBarangRow($btn) {
+        window.bukaOrderDbg.calls += 1;
         if (!$btn || !$btn.length || $btn.prop('disabled')) {
             return;
         }
@@ -1038,17 +1069,19 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         }
         var idPaket = $('#paket_barang').val() || '';
         var idempotencyKey = window.newBukaOrderIdempotencyKey();
+        window.bukaOrderDbg.sent += 1;
+        var postData = $.extend({
+            kode: $btn.data('kode'),
+            sds: $btn.data('sds'),
+            sn: $btn.data('sn') || '',
+            qty: qty,
+            id_paket: idPaket,
+            idempotency_key: idempotencyKey
+        }, window.bukaOrderDbgFields());
         window.bukaOrderAddXhr = $.ajax({
             url: $btn.data('action'),
             type: 'POST',
-            data: {
-                kode: $btn.data('kode'),
-                sds: $btn.data('sds'),
-                sn: $btn.data('sn') || '',
-                qty: qty,
-                id_paket: idPaket,
-                idempotency_key: idempotencyKey
-            },
+            data: postData,
             success: function(res) {
                 if (res == 0) {
                     finishBukaOrderAddSuccess($btn);
@@ -1383,6 +1416,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
     // Update fungsi yang dipanggil handler (tiap reload content)
     window.submitBarangRowFn = submitBarangRow;
     window.submitAjaxFormFn = function($form) {
+        window.bukaOrderDbg.calls += 1;
         if (!$form || !$form.length) {
             return;
         }
@@ -1393,7 +1427,9 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         var isAddCart = /Buka_Order\/(add|add_paket|add_barang)/.test(action);
         var postData = $form.serialize();
         if (isAddCart) {
+            window.bukaOrderDbg.sent += 1;
             postData += '&idempotency_key=' + encodeURIComponent(window.newBukaOrderIdempotencyKey());
+            postData += '&' + $.param(window.bukaOrderDbgFields());
         }
         window.bukaOrderAddXhr = $.ajax({
             url: action,
