@@ -41,7 +41,7 @@
             </thead>
             <tbody>
             <?php foreach ($data['input'] as $a) { ?>
-                <tr>
+                <tr id="<?= $a['id'] ?>">
                     <td class="align-middle">
                         <a href="<?= PV::BASE_URL ?>Gudang_Penjualan/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
                     </td>
@@ -56,9 +56,10 @@
                     </td>
                     <td class="align-middle">
                         <?php if ($a['cek'] == 0) { ?>
-                            <span class="text-warning"><i class="fa-regular fa-circle"></i> Checking</span>
+                            <span class="text-danger cancel" style="cursor: pointer;" data-id="<?= $a['id'] ?>"><i class="fa-regular fa-circle-xmark"></i> Cancel</span><br>
+                            <span class="badge bg-warning">CHECKING</span>
                         <?php } else { ?>
-                            <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                            <span class="badge bg-success">CONFIRMED</span>
                         <?php } ?>
                     </td>
                 </tr>
@@ -96,6 +97,25 @@
                     content();
                 } else {
                     alert(result)
+                }
+            },
+        });
+    });
+
+    $(".cancel").dblclick(function() {
+        var id = $(this).attr('data-id');
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Gudang_Penjualan/cancel',
+            data: {
+                'id': id,
+            },
+            type: 'POST',
+            dataType: 'html',
+            success: function(res) {
+                if (res == 0) {
+                    $("tr#" + id).remove();
+                } else {
+                    alert(res);
                 }
             },
         });

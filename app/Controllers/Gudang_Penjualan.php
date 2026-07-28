@@ -115,4 +115,42 @@ class Gudang_Penjualan extends Controller
       $do = $this->db(0)->insertCols('master_mutasi', $cols, $vals);
       echo $do['errno'] == 0 ? 0 : $do['error'];
    }
+
+   function cancel()
+   {
+      $id = addslashes($_POST['id'] ?? '');
+      if ($id === '') {
+         echo "ID surat tidak valid";
+         exit();
+      }
+
+      $head = $this->db(0)->get_where_row('master_input', "id = '" . $id . "' AND tipe = 3");
+      if (!is_array($head) || empty($head['id'])) {
+         echo "Surat penjualan tidak ditemukan";
+         exit();
+      }
+      if ((int)$head['cek'] !== 0) {
+         echo "No Surat (" . $id . ") sudah terverifikasi";
+         exit();
+      }
+
+      $count = $this->db(0)->count_where('master_mutasi', "ref = '" . $id . "' AND stat <> 0");
+      if (is_array($count) || (int)$count > 0) {
+         echo "No Surat (" . $id . ") sudah terverifikasi";
+         exit();
+      }
+
+      $del = $this->db(0)->delete_where('master_input', "id = '" . $id . "'");
+      if ($del['errno'] == 0) {
+         $del = $this->db(0)->delete_where('master_mutasi', "ref = '" . $id . "'");
+         if ($del['errno'] <> 0) {
+            echo $del['error'];
+            exit();
+         }
+         echo 0;
+      } else {
+         echo $del['error'];
+         exit();
+      }
+   }
 }

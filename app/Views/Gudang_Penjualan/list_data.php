@@ -5,6 +5,9 @@
     <!-- Main page content-->
     <div class="container">
         <div class="row mb-2">
+            <div class="col-auto mt-auto px-1 mb-2">
+                <a href="<?= PV::BASE_URL ?>Gudang_Penjualan"><button class="btn btn-outline pb-0 border-0"><i class="fa-solid fa-chevron-left"></i> <small>Back</small></button></a>
+            </div>
             <div class="col-auto text-center px-1 mb-2">
                 <label>No. Ref</label><br>
                 <input name="id" value="<?= $d['id'] ?>" readonly class="text-center border-bottom border-0" style="text-transform: uppercase;">
@@ -17,6 +20,11 @@
                 <label>Tanggal</label><br>
                 <input type="date" name="tanggal" readonly class="text-center border-bottom border-0" value="<?= $d['tanggal'] ?>">
             </div>
+            <?php if ($d['cek'] == 0) { ?>
+                <div class="col-auto mt-auto px-1 mb-2">
+                    <span class="text-danger cancel-surat" style="cursor: pointer;" data-id="<?= $d['id'] ?>"><i class="fa-regular fa-circle-xmark"></i> Cancel Surat</span>
+                </div>
+            <?php } ?>
         </div>
         <hr>
         <?php if ($d['cek'] == 0) { ?>
@@ -36,7 +44,7 @@
         <?php } ?>
         <div id="stok_data"></div>
 
-        <table class="table table-sm mx-1 bg-light text-sm">
+        <table class="table table-sm mx-1 bg-light text-sm" id="mutasi_table">
             <?php
             $no = 0;
             foreach ($data['mutasi'] as $a) {
@@ -71,7 +79,6 @@
             <?php } ?>
         </table>
     </div>
-    </div>
 </main>
 
 <script>
@@ -79,23 +86,38 @@
         $('select.tize').selectize();
     });
 
-    $("form").on("submit", function(e) {
+    function refreshMutasiTable() {
+        $.get('<?= PV::BASE_URL ?>Gudang_Penjualan/list_data/<?= $d['id'] ?>', function(html) {
+            var $html = $('<div>').append($.parseHTML(html));
+            var $tbl = $html.find('#mutasi_table');
+            if ($tbl.length) {
+                $('#mutasi_table').html($tbl.html());
+            }
+        });
+    }
+
+    $(document).off('submit.gjualAdd', 'form.form-add-mutasi').on('submit.gjualAdd', 'form.form-add-mutasi', function(e) {
         e.preventDefault();
+        var $form = $(this);
+        var barangId = $form.find('input[name="kode"]').val() || ($('#barang').val() || '');
         $.ajax({
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            type: $(this).attr("method"),
+            url: $form.attr('action'),
+            data: $form.serialize(),
+            type: $form.attr('method'),
             success: function(result) {
                 if (result == 0) {
-                    content();
+                    refreshMutasiTable();
+                    if (barangId) {
+                        $('#stok_data').load('<?= PV::BASE_URL ?>Gudang_Penjualan/stok_data/' + barangId + '/<?= $d['id'] ?>');
+                    }
                 } else {
-                    alert(result)
+                    alert(result);
                 }
             },
         });
     });
 
-    $(".cell_delete").dblclick(function() {
+    $(document).off('dblclick.gjualDel', '.cell_delete').on('dblclick.gjualDel', '.cell_delete', function() {
         var id = $(this).attr('data-id');
         var primary = $(this).attr('data-primary');
         var tb = $(this).attr('data-tb');
@@ -117,10 +139,26 @@
         });
     });
 
-    $("#barang").change(function() {
+    $(document).off('change.gjualBarang', '#barang').on('change.gjualBarang', '#barang', function() {
         var get = $(this).val();
         if (get != "") {
             $('#stok_data').load('<?= PV::BASE_URL ?>Gudang_Penjualan/stok_data/' + get + '/' + '<?= $d['id'] ?>');
         }
-    })
+    });
+
+    $(document).off('dblclick.gjualCancel', '.cancel-surat').on('dblclick.gjualCancel', '.cancel-surat', function() {
+        var id = $(this).attr('data-id');
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Gudang_Penjualan/cancel',
+            data: { id: id },
+            type: 'POST',
+            success: function(res) {
+                if (res == 0) {
+                    location.href = '<?= PV::BASE_URL ?>Gudang_Penjualan';
+                } else {
+                    alert(res);
+                }
+            }
+        });
+    });
 </script>

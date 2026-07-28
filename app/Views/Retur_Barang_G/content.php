@@ -46,7 +46,7 @@
             </thead>
             <tbody>
             <?php foreach ($data['input'] as $a) { ?>
-                <tr>
+                <tr id="<?= $a['id'] ?>">
                     <td>
                         <a href="<?= PV::BASE_URL ?>Retur_Barang_G/list/<?= $a['id'] ?>"><i class="fa-solid fa-list-ol"></i></a>
                         <br><?= strtoupper($data['supplier'][$a['id_target']]['nama']) ?>
@@ -61,9 +61,10 @@
                     </td>
                     <td class="align-top">
                         <?php if ($a['cek'] == 0) { ?>
-                            <span class="text-warning"><i class="fa-regular fa-circle"></i> Checking</span>
+                            <span class="text-danger cancel" style="cursor: pointer;" data-id="<?= $a['id'] ?>"><i class="fa-regular fa-circle-xmark"></i> Cancel</span><br>
+                            <span class="badge bg-warning">CHECKING</span>
                         <?php } else { ?>
-                            <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                            <span class="badge bg-success">CONFIRMED</span>
                         <?php } ?>
                     </td>
                 </tr>
@@ -100,6 +101,25 @@
                     content();
                 } else {
                     alert(result)
+                }
+            },
+        });
+    });
+
+    $(".cancel").dblclick(function() {
+        var id = $(this).attr('data-id');
+        $.ajax({
+            url: '<?= PV::BASE_URL ?>Retur_Barang_G/cancel',
+            data: {
+                'id': id,
+            },
+            type: 'POST',
+            dataType: 'html',
+            success: function(res) {
+                if (res == 0) {
+                    $("tr#" + id).remove();
+                } else {
+                    alert(res);
                 }
             },
         });
