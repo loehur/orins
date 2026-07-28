@@ -45,6 +45,9 @@ class Buka_Order extends Controller
       return false;
    }
 
+   /** @var bool Idempotency sudah di-claim di request ini (untuk loop add_paket) */
+   private $orderAddIdempotencyHandled = false;
+
    private function orderAddLockKey(array $parts)
    {
       return 'bo_' . (int) $this->userData['id_user'] . '_' . substr(md5(implode('|', $parts)), 0, 16);
@@ -62,6 +65,51 @@ class Buka_Order extends Controller
    {
       $key = addslashes($this->orderAddLockKey($parts));
       $this->db(0)->scalar("SELECT RELEASE_LOCK('" . $key . "')");
+   }
+
+   /**
+    * Claim idempotency key dari POST (1 intent submit = 1 efek).
+    * Klik ulang sengaja memakai key baru → tetap boleh merge qty.
+    * Request dobel teknis memakai key sama → ditolak (caller echo 0).
+    */
+   private function claimOrderAddIdempotency()
+   {
+      if ($this->orderAddIdempotencyHandled) {
+         return true;
+      }
+      $this->orderAddIdempotencyHandled = true;
+
+      $raw = trim((string) ($_POST['idempotency_key'] ?? ''));
+      if ($raw === '') {
+         return true;
+      }
+
+      $key = substr(preg_replace('/[^a-zA-Z0-9_-]/', '', $raw), 0, 64);
+      if ($key === '') {
+         return true;
+      }
+
+      $uid = (int) $this->userData['id_user'];
+      if (!isset($_SESSION['bo_add_idem']) || !is_array($_SESSION['bo_add_idem'])) {
+         $_SESSION['bo_add_idem'] = [];
+      }
+      if (!isset($_SESSION['bo_add_idem'][$uid]) || !is_array($_SESSION['bo_add_idem'][$uid])) {
+         $_SESSION['bo_add_idem'][$uid] = [];
+      }
+
+      $now = time();
+      foreach ($_SESSION['bo_add_idem'][$uid] as $k => $ts) {
+         if (!is_numeric($ts) || ($now - (int) $ts) > 180) {
+            unset($_SESSION['bo_add_idem'][$uid][$k]);
+         }
+      }
+
+      if (isset($_SESSION['bo_add_idem'][$uid][$key])) {
+         return false;
+      }
+
+      $_SESSION['bo_add_idem'][$uid][$key] = $now;
+      return true;
    }
 
    private function findExistingOrderRow($ref, $produk_code, $paket_ref, $note)
@@ -552,6 +600,11 @@ class Buka_Order extends Controller
 
    function add_paket($id_pelanggan_jenis)
    {
+      if (!$this->claimOrderAddIdempotency()) {
+         echo 0;
+         return;
+      }
+
       $id = $_POST['id'];
       $qty_paket = $_POST['qty_paket'];
       $paket_group = $this->userData['id_toko'] . date("ymdHis") . rand(0, 9);
@@ -592,6 +645,11 @@ class Buka_Order extends Controller
 
    function add($afiliasi = 0, $paket_ref = '', $paket_group = '', $price_locker = 0, $harga_paket = 0, $pj = 0, $paket_qty = 0)
    {
+      if (!$this->claimOrderAddIdempotency()) {
+         echo 0;
+         exit();
+      }
+
       $this->dataSynchrone();
       $this->dataBootstrap();
 
@@ -861,6 +919,11 @@ class Buka_Order extends Controller
 
    function add_barang($id_jenis_pelanggan, $price_locker = 0, $paket_ref = "", $id_sumber = 0, $harga_paket = 0, $paket_group = "", $paket_qty = 0)
    {
+      if (!$this->claimOrderAddIdempotency()) {
+         echo 0;
+         exit();
+      }
+
       $ref = "";
       $cs_id = 0;
       $id_target = 0;

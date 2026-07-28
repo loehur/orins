@@ -946,6 +946,13 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         window.bukaOrderLastSubmitAt = 0;
     }
 
+    window.newBukaOrderIdempotencyKey = function() {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.crypto.randomUUID();
+        }
+        return 'bo_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 12);
+    };
+
     window.resetBukaOrderSubmit = function($el) {
         window.bukaOrderAddBusy = false;
         window.bukaOrderAddXhr = null;
@@ -1030,9 +1037,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
             return;
         }
         var idPaket = $('#paket_barang').val() || '';
-        if (window.bukaOrderAddXhr && window.bukaOrderAddXhr.readyState !== 4) {
-            window.bukaOrderAddXhr.abort();
-        }
+        var idempotencyKey = window.newBukaOrderIdempotencyKey();
         window.bukaOrderAddXhr = $.ajax({
             url: $btn.data('action'),
             type: 'POST',
@@ -1041,7 +1046,8 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                 sds: $btn.data('sds'),
                 sn: $btn.data('sn') || '',
                 qty: qty,
-                id_paket: idPaket
+                id_paket: idPaket,
+                idempotency_key: idempotencyKey
             },
             success: function(res) {
                 if (res == 0) {
@@ -1056,10 +1062,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                     window.resetBukaOrderSubmit($btn);
                 }
             },
-            error: function(_xhr, status) {
-                if (status === 'abort') {
-                    return;
-                }
+            error: function() {
                 if (typeof showToast === 'function') {
                     showToast('Gagal menambahkan barang. Coba lagi.', 'danger');
                 } else {
@@ -1386,12 +1389,15 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         if (!window.beginBukaOrderSubmit($form)) {
             return;
         }
-        if (window.bukaOrderAddXhr && window.bukaOrderAddXhr.readyState !== 4) {
-            window.bukaOrderAddXhr.abort();
+        var action = ($form.attr('action') || '');
+        var isAddCart = /Buka_Order\/(add|add_paket|add_barang)/.test(action);
+        var postData = $form.serialize();
+        if (isAddCart) {
+            postData += '&idempotency_key=' + encodeURIComponent(window.newBukaOrderIdempotencyKey());
         }
         window.bukaOrderAddXhr = $.ajax({
-            url: $form.attr('action'),
-            data: $form.serialize(),
+            url: action,
+            data: postData,
             type: $form.attr("method"),
             success: function(res) {
                 if (res == 0) {
@@ -1401,10 +1407,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                     window.resetBukaOrderSubmit($form);
                 }
             },
-            error: function(_xhr, status) {
-                if (status === 'abort') {
-                    return;
-                }
+            error: function() {
                 showAlert('Gagal menambahkan item. Coba lagi.', 'danger');
                 window.resetBukaOrderSubmit($form);
             }
