@@ -1361,7 +1361,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         if (prefix === 'B1') {
             var msg = 'Barang ini bonus, tidak untuk di perjual belikan, hanya tambahkan jika benar-benar untuk bonus';
             if (typeof showAlert === 'function') {
-                showAlert(msg, 'warning');
+                showAlert(msg, 'danger');
             } else {
                 alert(msg);
             }

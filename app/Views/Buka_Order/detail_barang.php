@@ -1,10 +1,31 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
 
 <?php if (!empty($data['is_bonus'])) { ?>
-    <div class="alert alert-warning py-2 px-2 mb-2 text-sm" role="alert">
+    <div class="alert alert-danger barang-bonus-warn py-2 px-2 mb-2 text-sm" role="alert">
         <i class="fa-solid fa-triangle-exclamation me-1"></i>
         <strong>Barang bonus (B1).</strong> Tidak untuk diperjualbelikan — hanya tambahkan jika benar-benar untuk bonus.
     </div>
+    <style>
+        .barang-bonus-warn {
+            color: #fff !important;
+            background: #dc3545 !important;
+            border: 2px solid #7a0b14 !important;
+            font-weight: 700;
+            animation: barangBonusBlink 0.85s ease-in-out infinite;
+        }
+        @keyframes barangBonusBlink {
+            0%, 100% {
+                opacity: 1;
+                background: #dc3545 !important;
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.75);
+            }
+            50% {
+                opacity: 0.55;
+                background: #a71d2a !important;
+                box-shadow: 0 0 12px 2px rgba(220, 53, 69, 0.9);
+            }
+        }
+    </style>
 <?php } ?>
 
 <div class="mb-1">
