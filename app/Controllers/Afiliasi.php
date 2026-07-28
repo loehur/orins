@@ -31,13 +31,34 @@ class Afiliasi extends Controller
 
    public function content($parse = "")
    {
-      $data['pelanggan'] = $this->db(0)->get('pelanggan');
+      $data['pelanggan'] = $this->db(0)->get('pelanggan', 'id_pelanggan');
       $data['_c'] = __CLASS__;
       $where = "metode_mutasi = 3 AND id_client <> 0 AND status_mutasi = 0 ORDER BY id_client ASC, id_kas ASC";
       $data['kas'] = $this->db(0)->get_where('kas', $where);
 
       $where = "metode_mutasi = 3 AND id_client <> 0 AND (status_mutasi = 1 OR status_mutasi = 2) ORDER BY updateTime DESC LIMIT 20";
       $data['kas_done'] = $this->db(0)->get_where('kas', $where);
+
+      // Status tuntas dari tabel ref (sama seperti Non_Tunai) — dipakai untuk Re-Action
+      $data['ref'] = [];
+      if (is_array($data['kas_done']) && count($data['kas_done']) > 0) {
+         $refs = [];
+         foreach ($data['kas_done'] as $row) {
+            $r = (string)($row['ref_transaksi'] ?? '');
+            if ($r !== '') {
+               $refs[$r] = true;
+            }
+         }
+         $refKeys = array_keys($refs);
+         if (count($refKeys) > 0) {
+            $ref_list = "'" . implode("','", array_map('addslashes', $refKeys)) . "'";
+            $data['ref'] = $this->db(0)->get_where('ref', "ref IN (" . $ref_list . ")", 'ref');
+            if (!is_array($data['ref']) || isset($data['ref']['errno'])) {
+               $data['ref'] = [];
+            }
+         }
+      }
+
       $this->view($this->v_content, $data);
    }
 
@@ -45,20 +66,29 @@ class Afiliasi extends Controller
    {
       $id = $_POST['id'];
       $val = $_POST['val'];
-      $note = $_POST['note'];
+      $note = $_POST['note'] ?? '';
 
-      $where_kas = "id_kas = " . $id;
-
-      if ($val == 1) {
-         $set = "note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
-      } else {
-         $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+      $where_kas = "id_kas = " . (int)$id;
+      $kasRow = $this->db(0)->get_where_row("kas", $where_kas);
+      if (!is_array($kasRow) || empty($kasRow['id_kas'])) {
+         echo "Data kas tidak ditemukan";
+         exit();
       }
 
-      $ref = $this->db(0)->get_where_row("kas", $where_kas)['ref_transaksi'];
-      $where = "ref = '" . $ref . "'";
-      $set_ = "tuntas = 0";
-      $this->db(0)->update("order_data", $set_, $where);
+      // Mirror Non_Tunai: un_tuntas hanya saat Reject
+      if ((int)$val === 2) {
+         $ref = (string)($kasRow['ref_transaksi'] ?? '');
+         if ($ref !== '') {
+            $undo = $this->data('Operasi')->un_tuntas($ref);
+            if ($undo['status'] == 'failed') {
+               echo $undo['error'];
+               exit();
+            }
+         }
+         $set = "note_batal = '" . addslashes($note) . "', status_mutasi = 2, id_audit_afiliasi = " . (int)$this->userData['id_user'];
+      } else {
+         $set = "note_office = '" . addslashes($note) . "', status_mutasi = 1, id_audit_afiliasi = " . (int)$this->userData['id_user'];
+      }
 
       $update = $this->db(0)->update("kas", $set, $where_kas);
       echo $update['errno'];
@@ -68,21 +98,36 @@ class Afiliasi extends Controller
    {
       $id = explode("_", $_POST['id']);
       $val = $_POST['val'];
-      $note = $_POST['note'];
+      $note = $_POST['note'] ?? '';
 
+      $processed_refs = [];
       foreach ($id as $i) {
-         if ($val == 1) {
-            $set = "note_office = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
-         } else {
-            $set = "note_batal = '" . $note . "', status_mutasi = " . $val . ", id_audit_afiliasi = " . $this->userData['id_user'];
+         $i = (int)$i;
+         if ($i <= 0) {
+            continue;
          }
 
          $where_kas = "id_kas = " . $i;
-         $ref = $this->db(0)->get_where_row("kas", $where_kas)['ref_transaksi'];
+         $kasRow = $this->db(0)->get_where_row("kas", $where_kas);
+         if (!is_array($kasRow) || empty($kasRow['id_kas'])) {
+            echo "Data kas #" . $i . " tidak ditemukan";
+            exit();
+         }
 
-         $where_ref = "ref = '" . $ref . "'";
-         $set_ = "tuntas = 0";
-         $this->db(0)->update("order_data", $set_, $where_ref);
+         if ((int)$val === 2) {
+            $ref = (string)($kasRow['ref_transaksi'] ?? '');
+            if ($ref !== '' && !in_array($ref, $processed_refs, true)) {
+               $undo = $this->data('Operasi')->un_tuntas($ref);
+               if ($undo['status'] == 'failed') {
+                  echo "Ref " . $ref . ": " . $undo['error'];
+                  exit();
+               }
+               $processed_refs[] = $ref;
+            }
+            $set = "note_batal = '" . addslashes($note) . "', status_mutasi = 2, id_audit_afiliasi = " . (int)$this->userData['id_user'];
+         } else {
+            $set = "note_office = '" . addslashes($note) . "', status_mutasi = 1, id_audit_afiliasi = " . (int)$this->userData['id_user'];
+         }
 
          $update = $this->db(0)->update("kas", $set, $where_kas);
          if ($update['errno'] <> 0) {
@@ -90,6 +135,8 @@ class Afiliasi extends Controller
             exit();
          }
       }
+
+      echo 0;
    }
 
    function cekOrder($ref, $id_pelanggan)
@@ -101,18 +148,25 @@ class Afiliasi extends Controller
       $data['paket'] = $this->db(0)->get_where('paket_main', "id_toko = " . $this->userData['id_toko'], "id");
       $data['barang'] = $this->db(0)->get('master_barang', 'id');
 
-      $where = "ref = '" . $ref . "'";
+      $where = "ref = '" . addslashes($ref) . "'";
       $data['order'] = [];
       $data['mutasi'] = [];
       $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where);
+      if (!is_array($data['order']) || isset($data['order']['errno'])) {
+         $data['order'] = [];
+      }
+      if (!is_array($data['mutasi']) || isset($data['mutasi']['errno'])) {
+         $data['mutasi'] = [];
+      }
+
       $ref1 = array_unique(array_column($data['order'], 'ref'));
       $ref2 = array_unique(array_column($data['mutasi'], 'ref'));
       $refs = array_unique(array_merge($ref1, $ref2));
 
       $ref_list = "";
       foreach ($refs as $r) {
-         $ref_list .= $r . ",";
+         $ref_list .= "'" . addslashes($r) . "',";
       }
       $ref_list = rtrim($ref_list, ',');
 
@@ -149,24 +203,32 @@ class Afiliasi extends Controller
       foreach ($refs as $r) {
          $data['head'][$r]['cs_to'] = 0;
          $data['head'][$r]['id_afiliasi'] = 0;
+         $data['head'][$r]['tuntas'] = 0;
       }
 
-      foreach ($data['order'] as $ref => $do) {
+      foreach ($data['order'] as $refK => $do) {
          foreach ($do as $dd) {
-            $data['head'][$ref]['cs'] = $dd['id_penerima'];
-            $data['head'][$ref]['cs_to'] = $dd['id_user_afiliasi'];
-            $data['head'][$ref]['id_afiliasi'] = $dd['id_afiliasi'];
-            $data['head'][$ref]['insertTime'] = $dd['insertTime'];
-            $data['head'][$ref]['tuntas'] = $dd['tuntas'];
+            $data['head'][$refK]['cs'] = $dd['id_penerima'];
+            $data['head'][$refK]['cs_to'] = $dd['id_user_afiliasi'];
+            $data['head'][$refK]['id_afiliasi'] = $dd['id_afiliasi'];
+            $data['head'][$refK]['insertTime'] = $dd['insertTime'];
+            $data['head'][$refK]['tuntas'] = $dd['tuntas'];
             break;
          }
       }
 
-      foreach ($data['mutasi'] as $ref => $do) {
+      foreach ($data['mutasi'] as $refK => $do) {
          foreach ($do as $dd) {
-            $data['head'][$ref]['cs'] = $dd['cs_id'];
-            $data['head'][$ref]['insertTime'] = $dd['insertTime'];
-            $data['head'][$ref]['tuntas'] = $dd['tuntas'];
+            if (!isset($data['head'][$refK]['cs'])) {
+               $data['head'][$refK]['cs'] = $dd['cs_id'];
+            }
+            if (!isset($data['head'][$refK]['insertTime'])) {
+               $data['head'][$refK]['insertTime'] = $dd['insertTime'];
+            }
+            // Jangan overwrite tuntas dari order jika sudah ada; isi jika baru dari mutasi
+            if (!isset($data['head'][$refK]['tuntas']) || (int)$data['head'][$refK]['tuntas'] === 0) {
+               $data['head'][$refK]['tuntas'] = $dd['tuntas'] ?? 0;
+            }
             break;
          }
       }

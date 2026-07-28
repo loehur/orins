@@ -48,14 +48,9 @@
                                     $id_multi .= $id . "_";
                                 }
 
-
-                                $pelanggan = "Non";
-                                foreach ($data['pelanggan'] as $dp) {
-                                    if ($dp['id_pelanggan'] == $client) {
-                                        $pelanggan = $dp['nama'];
-                                    }
-                                }
-
+                                $pelanggan = isset($data['pelanggan'][$client]['nama'])
+                                    ? $data['pelanggan'][$client]['nama']
+                                    : "Non";
                             ?>
                                 <tr>
                                     <td>
@@ -118,22 +113,16 @@
                             <th class="text-end">Re-Action</th>
                         </tr>
                         <?php
-                        $no = 0;
                         foreach ($data['kas_done'] as $a) {
-                            $no += 1;
                             $id =  $a['id_kas'];
-
                             $client = $a['id_client'];
                             $jumlah = $a['jumlah'];
                             $ref = $a['ref_transaksi'];
+                            $tuntas = (int)($data['ref'][$ref]['tuntas'] ?? 0);
 
-                            $pelanggan = "Non";
-                            foreach ($data['pelanggan'] as $dp) {
-                                if ($dp['id_pelanggan'] == $client) {
-                                    $pelanggan = $dp['nama'];
-                                }
-                            }
-
+                            $pelanggan = isset($data['pelanggan'][$client]['nama'])
+                                ? $data['pelanggan'][$client]['nama']
+                                : "Non";
                         ?>
                             <tr>
                                 <td>
@@ -149,32 +138,44 @@
                                             echo '<span class="text-success"><i class="fa-solid fa-check-to-slot"></i> Verified</span>';
                                             break;
                                         default:
-                                            echo '<span><i class="text-danger fa-solid fa-xmark"></i> Rejected</span>';
+                                            echo '<span class="text-danger"><i class="fa-solid fa-xmark"></i> Rejected</span>';
                                             break;
                                     }
                                     ?>
                                     <br>
                                     <?= $a['updateTime'] ?>
                                 </td>
-                                <?php
-                                switch ($a['status_mutasi']) {
-                                    case 1:
-                                ?>
-                                        <td align="right">
-                                            <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
-                                            <br>
-                                            <small><span class="pe-2"><?= $a['note_office'] ?></span></small>
-                                        </td>
+                                <?php if ($tuntas == 0) {
+                                    switch ($a['status_mutasi']) {
+                                        case 1: ?>
+                                            <td align="right">
+                                                <button data-id="<?= $id ?>" data-val="2" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Reject</button>
+                                                <br>
+                                                <small><span class="pe-2"><?= $a['note_office'] ?></span></small>
+                                            </td>
+                                        <?php break;
+                                        default: ?>
+                                            <td align="right">
+                                                <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
+                                                <br>
+                                                <small><span class="pe-2"><?= $a['note_batal'] ?></span></small>
+                                            </td>
                                     <?php break;
-                                    default: ?>
-                                        <td align="right">
-                                            <button data-id="<?= $id ?>" data-val="1" class="action btn btn-sm btn-outline-secondary px-2 py-0 border-0">Verify</button>
-                                            <br>
-                                            <small><span class="pe-2"><?= $a['note_batal'] ?></span></small>
-                                        </td>
+                                    }
+                                } else {
+                                    switch ($a['status_mutasi']) {
+                                        case 1: ?>
+                                            <td align="right" class="text-secondary">
+                                                <small><span class="pe-2">Transaction Complete<br><?= $a['note_office'] ?></span></small>
+                                            </td>
+                                        <?php break;
+                                        default: ?>
+                                            <td align="right" class="text-secondary">
+                                                <small><span class="pe-2">Transaction Complete<br><?= $a['note_batal'] ?></span></small>
+                                            </td>
                                 <?php break;
-                                }
-                                ?>
+                                    }
+                                } ?>
                             </tr>
                         <?php } ?>
                     </table>
@@ -193,12 +194,18 @@
 
 <script>
     $("button.action").click(function() {
-        var note = prompt("Catatan", "");
-        if (note === null) {
-            return;
-        }
         var id_ = $(this).attr("data-id");
         var value = $(this).attr("data-val");
+        var note = "";
+
+        // Sama Non_Tunai: catatan wajib hanya saat Reject
+        if (value == 2) {
+            note = prompt("Catatan", "");
+            if (note === null) {
+                return;
+            }
+        }
+
         $.ajax({
             url: "<?= PV::BASE_URL . $data['_c'] ?>/action",
             data: {
@@ -209,6 +216,9 @@
             type: "POST",
             success: function(result) {
                 if (result == 0) {
+                    if (typeof window.cleanupBootstrapModals === 'function') {
+                        window.cleanupBootstrapModals();
+                    }
                     content();
                 } else {
                     alert(result);
@@ -218,13 +228,17 @@
     });
 
     $("button.actionMulti").click(function() {
-        var note = prompt("Catatan", "");
-        if (note === null) {
-            return;
-        }
-
         var id_ = $(this).attr("data-id");
         var value = $(this).attr("data-val");
+        var note = "";
+
+        if (value == 2) {
+            note = prompt("Catatan", "");
+            if (note === null) {
+                return;
+            }
+        }
+
         $.ajax({
             url: "<?= PV::BASE_URL . $data['_c'] ?>/actionMulti",
             data: {
@@ -235,6 +249,9 @@
             type: "POST",
             success: function(result) {
                 if (result == 0) {
+                    if (typeof window.cleanupBootstrapModals === 'function') {
+                        window.cleanupBootstrapModals();
+                    }
                     content();
                 } else {
                     alert(result);
