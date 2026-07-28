@@ -6,7 +6,8 @@ class Audit_KasKecil extends Controller
    {
       $this->session_cek();
       $this->dataBootstrap();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[100])) {
+      // Office/Audit/Gudang (100) + fallback Gudang (7)
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[100]) && !in_array($this->userData['user_tipe'], PV::PRIV[7])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }

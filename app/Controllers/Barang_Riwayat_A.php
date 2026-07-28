@@ -6,7 +6,8 @@ class Barang_Riwayat_A extends Controller
    {
       $this->session_cek();
       $this->dataBootstrap();
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[6])) {
+      // Audit (6) + Gudang (7)
+      if (!in_array($this->userData['user_tipe'], PV::PRIV[6]) && !in_array($this->userData['user_tipe'], PV::PRIV[7])) {
          $this->model('Log')->write($this->userData['user'] . " Force Logout. Hacker!");
          $this->logout();
       }
