@@ -168,9 +168,13 @@ class Cron extends Controller
       $batchLimit = self::CEK_TUNTAS_BATCH;
       $this->sync_tuntas_children_from_ref($batchLimit);
 
-      $refRows = $this->db(0)->get_where_order('ref', 'tuntas = 0', 'ref ASC LIMIT ' . $batchLimit);
-      $ref_tuntas = [];
+      $today = date("Y-m-d");
+      $order = "CASE WHEN tuntas_date IS NULL OR tuntas_date = '' OR tuntas_date = '0000-00-00' THEN 0 ELSE 1 END ASC, tuntas_date ASC, ref ASC LIMIT " . $batchLimit;
+      $refRows = $this->db(0)->get_where_order('ref', 'tuntas = 0', $order);
       $refs = [];
+      $failedRefs = [];
+      $successCount = 0;
+      $alreadyCount = 0;
 
       if (is_array($refRows)) {
          foreach ($refRows as $row) {
@@ -180,7 +184,6 @@ class Cron extends Controller
          }
       }
 
-      $tuntas_date = date("Y-m-d");
       $checked = count($refs);
 
       if ($checked === 0) {
@@ -189,168 +192,41 @@ class Cron extends Controller
       }
 
       echo $checked . " ref dicek (max " . $batchLimit . " per eksekusi)\n";
-
-      $ref_list = "";
       foreach ($refs as $r) {
-         $ref_list .= $r . ",";
-      }
-      $ref_list = rtrim($ref_list, ',');
-
-      $where = "ref IN (" . $ref_list . ")";
-
-      $dOrder = $this->db(0)->get_where('order_data', $where, 'ref', 1);
-      $dMutasi = $this->db(0)->get_where('master_mutasi', $where, 'ref', 1);
-
-      $where_kas = "jenis_transaksi = 1 AND ref_transaksi IN (" . $ref_list . ") AND status_mutasi = 1";
-      $dKas = $this->db(0)->get_where('kas', $where_kas, 'ref_transaksi', 1);
-
-      $where_kasKecil = "ref IN (" . $ref_list . ") AND tipe = 0";
-      $dKasKecil = $this->db(0)->get_where('kas_kecil', $where_kasKecil, 'ref', 1);
-
-      $cols = "ref_transaksi, cancel, SUM(jumlah) as jumlah";
-      $where = "ref_transaksi IN (" . $ref_list . ") AND cancel = 0 GROUP BY ref_transaksi";
-      $dDiskon = $this->db(0)->get_cols_where('xtra_diskon', $cols, $where, 1, 'ref_transaksi');
-      $dCharge = $this->db(0)->get_cols_where('charge', $cols, $where, 1, 'ref_transaksi');
-
-      foreach ($refs as $r) {
-
-            $charge[$r] = 0;
-            if (isset($dCharge[$r]['jumlah'])) {
-               $charge[$r] = $dCharge[$r]['jumlah'];
-            }
-
-            $stok[$r] = false;
-            $ada_diskon[$r] = false;
-            $verify_kas_kecil[$r] = true;
-
-            if (isset($dKasKecil[$r]) && count($dKasKecil[$r]) > 0) {
-               foreach ($dKasKecil[$r] as $kk) {
-                  if ($kk['st'] <> 1) {
-                     $verify_kas_kecil[$r] = false;
-                     break;
-                  }
-               }
-            }
-
-            $bill[$r] = $charge[$r];
-            $ambil_all[$r] = true;
-            $verify_payment[$r] = 0;
-            $cancel_count[$r] = 0;
-            $stok[$r] = false;
-
-            if (isset($dKas[$r]) && count($dKas[$r]) > 0) {
-               foreach ($dKas[$r] as $dk) {
-                  if ($dk['metode_mutasi'] == 1 && $dk['status_mutasi'] == 1 && $dk['status_setoran'] == 1) {
-                     $verify_payment[$r] += $dk['jumlah'];
-                  }
-
-                  if (($dk['metode_mutasi'] == 2 || $dk['metode_mutasi'] == 3 || $dk['metode_mutasi'] == 4) && $dk['status_mutasi'] == 1) {
-                     $verify_payment[$r] += $dk['jumlah'];
-                  }
-               }
-            }
-
-            if (isset($dDiskon[$r]) && count($dDiskon[$r]) > 0) {
-               $ds = $dDiskon[$r];
-               $verify_payment[$r] += $ds['jumlah'];
-            }
-
-            if (isset($dOrder[$r]) && count($dOrder[$r]) > 0) {
-               foreach ($dOrder[$r] as $do) {
-                  if ($do['stok'] == 1) {
-                     $stok[$r] = true;
-                  }
-
-                  $cancel = $do['cancel'];
-
-                  if ($cancel == 0 && $do['stok'] == 0) {
-                     $line = $this->billOrderLine($do);
-                     $bill[$r] += $line['bill'];
-                     if ($line['diskon'] > 0) {
-                        $ada_diskon[$r] = true;
-                     }
-                  }
-
-                  if ($cancel == 1) {
-                     $cancel_count[$r] += 1;
-                  }
-
-                  $id_ambil = $do['id_ambil'];
-                  $divisi_arr = unserialize($do['spk_dvs']);
-                  $countSPK = count($divisi_arr);
-                  if ($id_ambil == 0 && $cancel == 0) {
-                     if ($countSPK > 0 && $cancel == 0) {
-                        $ambil_all[$r] = false;
-                     }
-                  }
-               }
+         $res = $this->cek_tuntas($r, false, true);
+         if (is_array($res) && (int)($res['ok'] ?? 0) === 1) {
+            if (!empty($res['already'])) {
+               $alreadyCount++;
             } else {
-               $dOrder[$r] = [];
+               $successCount++;
             }
-
-            if (isset($dMutasi[$r]) && count($dMutasi[$r]) > 0) {
-               foreach ($dMutasi[$r] as $do) {
-
-                  $cancel_barang = $do['stat'];
-                  if ($cancel_barang <> 2) {
-                     $line = $this->billMutasiLine($do);
-                     $bill[$r] += $line['bill'];
-                     if ($line['diskon'] > 0) {
-                        $ada_diskon[$r] = true;
-                     }
-                  } else {
-                     $cancel_count[$r] += 1;
-                  }
-               }
-            } else {
-               $dMutasi[$r] = [];
-            }
-
-            $order_count[$r] = count($dMutasi[$r]) + count($dOrder[$r]);
-            if ($verify_payment[$r] == $bill[$r] && $ambil_all[$r] == true && $verify_kas_kecil[$r] == true) {
-               if ($bill[$r] > 0 && $verify_payment[$r] > 0) {
-                  array_push($ref_tuntas, $r);
-               } else {
-                  if ($stok[$r] == true || $ada_diskon[$r] == true) {
-                     array_push($ref_tuntas, $r);
-                  } else {
-                     if ($order_count[$r] == $cancel_count[$r]) {
-                        array_push($ref_tuntas, $r);
-                     }
-                  }
-               }
-            }
-      }
-
-      $total_tuntas = count($ref_tuntas);
-      if ($total_tuntas > 0) {
-         $rt_list = "";
-         foreach ($ref_tuntas as $r) {
-            $rt_list .= $r . ",";
-         }
-         $rt_list = rtrim($rt_list, ',');
-
-         $where = "ref IN (" . $rt_list . ")";
-         $set = "tuntas = 1, tuntas_date = '" . $tuntas_date . "'";
-         $up = $this->db(0)->update("order_data", $set, $where);
-         if ($up['errno'] <> 0) {
-            echo $up['error'] . "\n";
          } else {
-            $up = $this->db(0)->update("master_mutasi", $set, $where);
-            if ($up['errno'] <> 0) {
-               echo $up['error'] . "\n";
-            } else {
-               $up = $this->db(0)->update("ref", $set, $where);
-               if ($up['errno'] <> 0) {
-                  echo $up['error'] . "\n";
-               } else {
-                  echo $total_tuntas . " ORDER TUNTAS dari " . $checked . " ref dicek\n";
-               }
-            }
+            $failedRefs[] = $r;
          }
-      } else {
-         echo "0 ORDER TUNTAS dari " . $checked . " ref dicek\n";
       }
+
+      if (count($failedRefs) > 0) {
+         $failedList = "";
+         foreach ($failedRefs as $r) {
+            $failedList .= "'" . addslashes($r) . "',";
+         }
+         $failedList = rtrim($failedList, ',');
+         $whereFailed = "tuntas = 0 AND ref IN (" . $failedList . ")";
+         $setFailed = "tuntas_date = '" . $today . "'";
+         $upFailed = $this->db(0)->update("ref", $setFailed, $whereFailed);
+         if ($upFailed['errno'] <> 0) {
+            echo $upFailed['error'] . "\n";
+         }
+      }
+
+      echo $successCount . " ORDER TUNTAS dari " . $checked . " ref dicek";
+      if ($alreadyCount > 0) {
+         echo " (" . $alreadyCount . " ref sudah sinkron)";
+      }
+      if (count($failedRefs) > 0) {
+         echo " | " . count($failedRefs) . " ref belum lolos, dipindah ke belakang antrean";
+      }
+      echo "\n";
    }
 
    /**
