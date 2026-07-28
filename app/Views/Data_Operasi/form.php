@@ -153,8 +153,9 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col">
-                                <label class="form-label">PIN SPV <small class="text-muted">(4 digit)</small></label>
-                                <input type="password" name="pin" class="form-control form-control-sm" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required autocomplete="off" placeholder="Masukkan PIN">
+                                <label class="form-label">PIN Supervisor <small class="text-muted">(4 digit)</small></label>
+                                <input type="password" name="pin" class="form-control form-control-sm" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required autocomplete="off" placeholder="Masukkan PIN Supervisor">
+                                <div class="form-text text-muted">Aksi ini membutuhkan <strong>PIN Supervisor</strong>.</div>
                             </div>
                         </div>
                         <div class="row mb-2">
@@ -214,8 +215,9 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col">
-                                <label class="form-label">PIN SPV <small class="text-muted">(4 digit)</small></label>
-                                <input type="password" name="pin" class="form-control form-control-sm" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required autocomplete="off" placeholder="Masukkan PIN">
+                                <label class="form-label">PIN Supervisor <small class="text-muted">(4 digit)</small></label>
+                                <input type="password" name="pin" class="form-control form-control-sm" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required autocomplete="off" placeholder="Masukkan PIN Supervisor">
+                                <div class="form-text text-muted">Aksi ini membutuhkan <strong>PIN Supervisor</strong>.</div>
                             </div>
                         </div>
                         <div class="row mb-2">

@@ -551,16 +551,16 @@ class Data_Order extends Controller
       $this->view(__CLASS__ . "/print", $data);
    }
 
+   /**
+    * Validasi PIN Supervisor (user_tipe SPV toko yang sama).
+    * PIN Master (user_tipe 0) juga diterima.
+    * User yang submit tidak harus SPV — cukup punya PIN Supervisor/Master yang benar.
+    */
    private function verifySpvPin($pinInput)
    {
-      if (!in_array($this->userData['user_tipe'], PV::PRIV[1])) {
-         echo "Akses ditolak. Hanya SPV yang dapat melakukan aksi ini.";
-         exit();
-      }
-
-      $pinInput = trim((string)$pinInput);
+      $pinInput = trim((string) $pinInput);
       if ($pinInput === '') {
-         echo "PIN wajib diisi.";
+         echo "PIN Supervisor wajib diisi.";
          exit();
       }
 
@@ -569,16 +569,29 @@ class Data_Order extends Controller
          exit();
       }
 
-      $userRow = $this->db(0)->get_where_row('user', "id_user = '" . $this->userData['id_user'] . "'");
-      $storedPin = trim((string)($userRow['pin'] ?? ''));
-      if ($storedPin === '') {
-         echo "PIN belum diatur. Atur PIN di menu Akun terlebih dahulu.";
-         exit();
+      $pinEnc = $this->model('Enc')->enc($pinInput);
+      $pinEsc = addslashes($pinEnc);
+
+      // Master — diterima lintas toko
+      $master = $this->db(0)->get_where_row(
+         'user',
+         "user_tipe = 0 AND pin <> '' AND pin = '" . $pinEsc . "' LIMIT 1"
+      );
+      if (is_array($master) && !empty($master['id_user'])) {
+         return;
       }
 
-      if ($this->model('Enc')->enc($pinInput) !== $storedPin) {
-         echo "PIN salah!";
-         exit();
+      // SPV toko yang sama
+      $spv = $this->db(0)->get_where_row(
+         'user',
+         "user_tipe = 1 AND id_toko = " . (int) $this->userData['id_toko']
+            . " AND pin <> '' AND pin = '" . $pinEsc . "' LIMIT 1"
+      );
+      if (is_array($spv) && !empty($spv['id_user'])) {
+         return;
       }
+
+      echo "PIN Supervisor salah!";
+      exit();
    }
 }
