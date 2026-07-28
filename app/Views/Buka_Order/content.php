@@ -421,8 +421,10 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                         </td>
                                     </tr>
                                 <?php }
-                                // Now render paket groups: show header + all items (items still deletable, but hide per-item harga and P/D)
+                                // Paket groups: tiap group dalam kartu terpisah biar mudah dibaca
+                                $paket_group_i = 0;
                                 foreach ($order_paket_groups as $gkey => $group) {
+                                    $paket_group_i++;
                                     $no++;
                                     $pg = $group['paket_group'];
                                     $paket_ref = $group['paket_ref'];
@@ -439,6 +441,9 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                     foreach ($group['items'] as $item) {
                                         $do_item = $item['do'];
                                         $listDetail_item = unserialize($do_item['detail_harga']);
+                                        if (!is_array($listDetail_item)) {
+                                            $listDetail_item = [];
+                                        }
                                         foreach ($listDetail_item as $ld_o) {
                                             $paket_diskon_total += ($ld_o['d'] ?? 0) * $do_item['jumlah'];
                                         }
@@ -451,44 +456,47 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                         }
                                     }
                                     $total_order += ($harga_paket_val * $paket_qty_display) - $paket_diskon_total;
+                                    $pg_short = strlen($pg) > 8 ? substr($pg, -8) : $pg;
                                 ?>
-                                    <tr>
-                                        <td>
-                                            <table class="table table-sm w-100 mb-0">
-                                                <tr class="bg-secondary bg-gradient bg-opacity-10">
-                                                    <td class="ps-2 align-middle">
-                                                        <span class="text-nowrap text-dark"><small class="text-secondary">#PK<?= $pg ?></small><b><small> <?= ucwords($paket_nama) ?></small></b></span>
-                                                    </td>
-                                                    <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                                        <small>
-                                                            <?php if ($paket_spk_qty_locked) { ?>
-                                                                <?= $paket_qty_display ?>x
-                                                            <?php } else { ?>
-                                                                <span class="edit_paket_qty" data-paket_group="<?= $pg ?>" data-paket_ref="<?= $paket_ref ?>"><?= $paket_qty_display ?></span>x
-                                                            <?php } ?>
-                                                        </small>
-                                                    </td>
-                                                    <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                                        <small>
-                                                            <?= '@' . number_format($harga_paket_val) ?>
-                                                        </small>
-                                                    </td>
-                                                    <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                                        <b>
+                                    <tr class="paket-group-row">
+                                        <td class="p-0 border-0 <?= $paket_group_i > 1 || count($order_nonpaket) > 0 ? 'pt-2' : '' ?>">
+                                            <div class="paket-group-card">
+                                                <table class="table table-sm w-100 mb-0">
+                                                    <tr class="paket-group-head">
+                                                        <td class="ps-2 align-middle">
+                                                            <span class="text-nowrap text-dark">
+                                                                <span class="badge bg-dark text-white me-1">Paket</span>
+                                                                <b><small><?= ucwords($paket_nama) ?></small></b>
+                                                                <small class="text-muted ms-1">#<?= htmlspecialchars($pg_short) ?></small>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                             <small>
-                                                                <?php if ($paket_diskon_total > 0) { ?>
-                                                                    <del><?= number_format($harga_paket_val * $paket_qty_display) ?></del> <?= number_format(($harga_paket_val * $paket_qty_display) - $paket_diskon_total) ?>
+                                                                <?php if ($paket_spk_qty_locked) { ?>
+                                                                    <?= $paket_qty_display ?>x
                                                                 <?php } else { ?>
-                                                                    <?= number_format($harga_paket_val * $paket_qty_display) ?>
+                                                                    <span class="edit_paket_qty" data-paket_group="<?= $pg ?>" data-paket_ref="<?= $paket_ref ?>"><?= $paket_qty_display ?></span>x
                                                                 <?php } ?>
                                                             </small>
-                                                        </b>
-                                                    </td>
-                                                    <td class="align-middle" style="width: 30px;"></td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
+                                                        </td>
+                                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                                            <small>
+                                                                <?= '@' . number_format($harga_paket_val) ?>
+                                                            </small>
+                                                        </td>
+                                                        <td class="text-end" style="width: 1px;white-space: nowrap;">
+                                                            <b>
+                                                                <small>
+                                                                    <?php if ($paket_diskon_total > 0) { ?>
+                                                                        <del><?= number_format($harga_paket_val * $paket_qty_display) ?></del> <?= number_format(($harga_paket_val * $paket_qty_display) - $paket_diskon_total) ?>
+                                                                    <?php } else { ?>
+                                                                        <?= number_format($harga_paket_val * $paket_qty_display) ?>
+                                                                    <?php } ?>
+                                                                </small>
+                                                            </b>
+                                                        </td>
+                                                        <td class="align-middle" style="width: 30px;"></td>
+                                                    </tr>
                                     <?php
                                     // render each item in the paket group (show details, but hide harga and P/D controls)
                                     foreach ($group['items'] as $item) {
@@ -500,17 +508,19 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                         $id_produk = $do['id_produk'];
                                         $detail_arr = unserialize($do['produk_detail']);
                                         $listDetail = unserialize($do['detail_harga']);
+                                        if (!is_array($detail_arr)) {
+                                            $detail_arr = [];
+                                        }
+                                        if (!is_array($listDetail)) {
+                                            $listDetail = [];
+                                        }
                                         foreach ($listDetail as $kl => $ld_o) {
                                             $akum_diskon += $ld_o['d'];
                                         }
                                     ?>
-                                        <tr>
-                                            <td class="">
-                                                <table class="table table-sm w-100 mb-0">
-                                                    <tr class="<?= $do['id_afiliasi'] == 0 ? 'bg-primary' : 'bg-warning' ?> bg-gradient bg-opacity-10">
+                                                    <tr class="<?= $do['id_afiliasi'] == 0 ? 'bg-primary' : 'bg-warning' ?> bg-gradient bg-opacity-10 paket-group-item">
                                                         <td class="ps-2 align-middle">
                                                             <span class="text-nowrap text-dark"><small class="text-secondary">#<?= $id_order_data ?></small><small> <?= ucwords($do['produk']) ?></small><?= $do['price_locker'] == 1 ? ' <i class="fa-solid fa-key"></i>' : '' ?></span>
-                                                            <span class="badge bg-light text-dark"><?= $paket_nama ?></span>
                                                         </td>
                                                         <td class="text-end" style="width: 1px;white-space: nowrap;">
                                                             <small>
@@ -518,21 +528,15 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                                             </small>
                                                         </td>
                                                         <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                                            <small>
-                                                                <!-- per-item harga hidden for paket items -->
-                                                            </small>
+                                                            <small></small>
                                                         </td>
                                                         <td class="text-end" style="width: 1px;white-space: nowrap;">
-                                                            <b>
-                                                                <small>
-                                                                    <!-- per-item total hidden; totals computed earlier -->
-                                                                </small>
-                                                            </b>
+                                                            <b><small></small></b>
                                                         </td>
                                                         <td class="align-middle" style="width: 30px;"><a class="deleteItem" data-id_order="<?= $id_order_data ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                                                     </tr>
-                                                    <tr>
-                                                        <td colspan="10" class="border-bottom-0">
+                                                    <tr class="paket-group-item-detail">
+                                                        <td colspan="5" class="border-bottom-0 pt-0">
                                                             <table class="table table-sm table-borderless mb-1">
                                                                 <tr>
                                                                     <td class="pe-1 border-bottom-0" nowrap>
@@ -572,7 +576,7 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                                                     </tr>
                                                                 <?php } ?>
                                                             </table>
-                                                            <div class="row">
+                                                            <div class="row px-1 pb-1">
                                                                 <div class="col text-sm">
                                                                     <small style="cursor: pointer;" class="updateNote" data-id="<?= $do['id_order_data'] ?>" data-note_mode="main" data-note_val="<?= $do['note'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModalUtama"><span class="fw-bold">Utama</span></small><br>
                                                                     <?php if (strlen($do['note']) > 0) { ?>
@@ -582,21 +586,14 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                <?php } // end order items loop
+                                    <?php } // end order items loop
 
-                                    // Barang milik paket_group yang sama — tampil di bawah item produksi paket
                                     foreach (($group['barang'] ?? []) as $db) {
                                         $total_item += 1;
                                         $dp = $data['barang'][$db['id_barang']];
                                         $nama_barang = trim(($dp['brand'] ?? '') . ' ' . ($dp['model'] ?? '')) . ($dp['product_name'] ?? '');
                                     ?>
-                                        <tr>
-                                            <td class="">
-                                                <table class="table table-sm w-100 mb-0">
-                                                    <tr class="bg-success bg-gradient bg-opacity-10">
+                                                    <tr class="bg-success bg-gradient bg-opacity-10 paket-group-item">
                                                         <td class="ps-2 align-middle">
                                                             <span class="text-nowrap text-dark">
                                                                 <small class="text-secondary">#<?= (int)$db['id'] ?></small>
@@ -615,11 +612,12 @@ if (!function_exists('buka_order_spk_qty_locked')) {
                                                         <td class="text-end" style="width: 1px;white-space: nowrap;"><b><small></small></b></td>
                                                         <td class="align-middle" style="width: 30px;"><a class="deleteItemBarang" data-id="<?= (int)$db['id'] ?>" href="#"><i class="text-danger fa-regular fa-circle-xmark"></i></a></td>
                                                     </tr>
+                                    <?php } // end barang in group ?>
                                                 </table>
-                                            </td>
-                                        </tr>
-                                    <?php } // end barang in group
-                                } // end groups loop
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php } // end groups loop
                                 ?>
                             </tbody>
                         </table>
@@ -746,6 +744,37 @@ if (!function_exists('buka_order_spk_qty_locked')) {
         transform: translate(-50%, -50%);
         z-index: 2;
         text-align: center;
+    }
+
+    .paket-group-card {
+        border: 1px solid #ced4da;
+        border-left: 4px solid #495057;
+        border-radius: 0.35rem;
+        background: #fff;
+        overflow: hidden;
+        margin: 0 0.35rem 0.15rem;
+    }
+
+    .paket-group-card .paket-group-head {
+        background: #e9ecef;
+        border-bottom: 1px solid #ced4da;
+    }
+
+    .paket-group-card .paket-group-head td {
+        padding-top: 0.4rem;
+        padding-bottom: 0.4rem;
+    }
+
+    .paket-group-card .table > :not(caption) > * > * {
+        border-bottom-color: #e9ecef;
+    }
+
+    .paket-group-card .paket-group-item-detail td {
+        background: #f8f9fa;
+    }
+
+    .paket-group-row > td {
+        background: transparent !important;
     }
 </style>
 <div class="modal fade" id="modalUpdateError" tabindex="-1" aria-hidden="true">
