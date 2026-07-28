@@ -1,5 +1,12 @@
 <link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/selectize.bootstrap3.min.css" rel="stylesheet" />
 
+<?php if (!empty($data['is_bonus'])) { ?>
+    <div class="alert alert-warning py-2 px-2 mb-2 text-sm" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-1"></i>
+        <strong>Barang bonus (B1).</strong> Tidak untuk diperjualbelikan — hanya tambahkan jika benar-benar untuk bonus.
+    </div>
+<?php } ?>
+
 <div class="mb-1">
     <div class="row px-2">
         <div class="col">

@@ -1352,6 +1352,20 @@ if (!function_exists('buka_order_spk_qty_locked')) {
 
     $(document).off('change' + bukaOrderEvt, 'select.loadDetail_Barang').on('change' + bukaOrderEvt, 'select.loadDetail_Barang', function() {
         var produk = this.value;
+        var $sel = $(this);
+        var prefix = '';
+        try {
+            // selectize: option asli tetap di <select>
+            prefix = String($sel.find('option:selected').attr('data-code-prefix') || '').toUpperCase();
+        } catch (e) {}
+        if (prefix === 'B1') {
+            var msg = 'Barang ini bonus, tidak untuk di perjual belikan, hanya tambahkan jika benar-benar untuk bonus';
+            if (typeof showAlert === 'function') {
+                showAlert(msg, 'warning');
+            } else {
+                alert(msg);
+            }
+        }
         if (produk != "") {
             loadDetailPanel($("div#detail_barang"), '<?= PV::BASE_URL ?>Buka_Order/load_detail_barang/' + produk + '/<?= $id_pelanggan_jenis ?>');
         }

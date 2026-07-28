@@ -138,8 +138,9 @@ switch ($id_pelanggan_jenis) {
                                 $dp = $data['barang'][$dps['id_barang']] ?? null;
                                 if (!$dp) continue;
                                 $code_split = str_split($dp['code'] ?? '', 2);
+                                $code_prefix = strtoupper($code_split[0] ?? '');
                                 $harga = $dp['harga_' . $id_pelanggan_jenis] ?? 0; ?>
-                                <option value="<?= $dps['id_barang'] ?>"><?= ($code_split[0] ?? '') ?> <?= trim(($dp['brand'] ?? '') . " " . ($dp['model'] ?? '')) ?><?= $dp['product_name'] ?? '' ?> Rp<?= number_format($harga) ?></option>
+                                <option value="<?= $dps['id_barang'] ?>" data-code-prefix="<?= htmlspecialchars($code_prefix) ?>"><?= ($code_split[0] ?? '') ?> <?= trim(($dp['brand'] ?? '') . " " . ($dp['model'] ?? '')) ?><?= $dp['product_name'] ?? '' ?> Rp<?= number_format($harga) ?></option>
                             <?php
                             }
                             ?>

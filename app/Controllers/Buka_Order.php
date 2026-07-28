@@ -1275,6 +1275,9 @@ class Buka_Order extends Controller
       $data['id_pelanggan_jenis'] = $id_pelanggan_jenis;
       $barang = $this->db(0)->get_where_row('master_barang', "id = '" . $produk . "'");
       $data['limited'] = isset($barang['limited']) && $barang['limited'] == 1;
+      $code = (string)($barang['code'] ?? '');
+      $data['code_prefix'] = strtoupper(substr($code, 0, 2));
+      $data['is_bonus'] = ($data['code_prefix'] === 'B1');
       $this->view(__CLASS__ . "/detail_barang", $data);
    }
 
