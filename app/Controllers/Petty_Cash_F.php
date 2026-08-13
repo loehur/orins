@@ -29,9 +29,20 @@ class Petty_Cash_F extends Controller
       $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse, "page" => $page]);
    }
 
-   public function content()
+   public function content($year = "", $mode = 0)
    {
       $idToko = (int)$this->userData['id_toko'];
+
+      $year = (int)$year;
+      if ($year < 2000 || $year > 2100) {
+         $year = (int)date('Y');
+      }
+      $mode = (int)$mode;
+      if ($mode === 1) {
+         $year -= 1;
+      } elseif ($mode === 2) {
+         $year += 1;
+      }
 
       $topup = (int)$this->db(0)->sum_col_where(
          'kas_kecil',
@@ -49,13 +60,14 @@ class Petty_Cash_F extends Controller
       $data['pending_total'] = (int)$this->db(0)->count_where('kas_kecil', $wherePending);
       $data['pakai'] = $this->db(0)->get_where(
          'kas_kecil',
-         $wherePending . " ORDER BY id DESC LIMIT 20"
+         $wherePending . " ORDER BY id DESC LIMIT 10"
       );
       $data['pending_shown'] = is_array($data['pakai']) ? count($data['pakai']) : 0;
 
+      $data['year'] = $year;
       $data['topup'] = $this->db(0)->get_where(
          'kas_kecil',
-         "id_target = " . $idToko . " AND tipe = 1 ORDER BY id DESC LIMIT 40"
+         "id_target = " . $idToko . " AND tipe = 1 AND insertTime LIKE '" . $year . "%' ORDER BY id DESC"
       );
 
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');

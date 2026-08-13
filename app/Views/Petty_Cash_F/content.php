@@ -127,6 +127,24 @@
     .pcf-row-topup {
         background: #f7fbf8;
     }
+    .pcf-year {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+    }
+    .pcf-year .btn {
+        padding: .05rem .45rem;
+        line-height: 1.2;
+        font-size: .8rem;
+    }
+    .pcf-year .val {
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        min-width: 2.6rem;
+        text-align: center;
+        color: var(--pcf-ink);
+        font-size: .9rem;
+    }
 </style>
 
 <main class="pcf">
@@ -195,6 +213,11 @@
         <div class="pcf-sec">
             <div class="pcf-sec-h">
                 <h6>Riwayat Topup</h6>
+                <div class="pcf-year">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="content('<?= (int)$data['year'] ?>',1)" title="Tahun sebelumnya">&lsaquo;</button>
+                    <span class="val"><?= (int)$data['year'] ?></span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="content('<?= (int)$data['year'] ?>',2)" title="Tahun berikutnya">&rsaquo;</button>
+                </div>
             </div>
 
             <?php if (empty($data['topup'])) { ?>
