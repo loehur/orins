@@ -36,6 +36,65 @@ class SPK extends Controller
       $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse]);
    }
 
+   private function loadExpandedOrders($where)
+   {
+      $orders = $this->db(0)->get_where('order_data', $where);
+      if (!is_array($orders) || isset($orders['errno'])) {
+         $orders = [];
+      }
+
+      $ids = [];
+      foreach ($orders as $do) {
+         if (isset($do['id_order_data'])) {
+            $ids[] = (int) $do['id_order_data'];
+         }
+      }
+      $ids = array_values(array_unique(array_filter($ids)));
+      $stagesByOrder = [];
+      if (count($ids) > 0) {
+         $rows = $this->db(0)->get_where('spk_bertahap', 'id_order_data IN (' . implode(',', $ids) . ') ORDER BY tahap ASC');
+         $stagesByOrder = $this->model('SpkBertahap')->groupByOrderId($rows);
+      }
+
+      return $this->model('SpkBertahap')->expandOrdersForSpk($orders, $stagesByOrder);
+   }
+
+   private function resolveCekRow($cekId)
+   {
+      $parsed = $this->model('SpkBertahap')->parseCekId($cekId);
+      if ($parsed['type'] === 'bertahap') {
+         $st = $this->db(0)->get_where_row('spk_bertahap', 'id = ' . $parsed['id']);
+         if (!isset($st['id'])) {
+            return null;
+         }
+         $parent = $this->db(0)->get_where_row('order_data', 'id_order_data = ' . (int) $st['id_order_data']);
+         if (!isset($parent['id_order_data'])) {
+            return null;
+         }
+         $siblings = $this->db(0)->get_where('spk_bertahap', 'id_order_data = ' . (int) $st['id_order_data']);
+         $sumQty = $this->model('SpkBertahap')->sumQty(is_array($siblings) ? $siblings : []);
+         return [
+            'parsed' => $parsed,
+            'row' => $this->model('SpkBertahap')->buildVirtualFromStage($parent, $st, $sumQty),
+            'stage' => $st,
+            'parent' => $parent,
+         ];
+      }
+
+      $row = $this->db(0)->get_where_row('order_data', 'id_order_data = ' . $parsed['id']);
+      if (!isset($row['id_order_data'])) {
+         return null;
+      }
+      $row['cek_id'] = (string) $row['id_order_data'];
+      $row['bertahap'] = null;
+      return [
+         'parsed' => $parsed,
+         'row' => $row,
+         'stage' => null,
+         'parent' => $row,
+      ];
+   }
+
    public function content($parse = "")
    {
       $data['id_divisi'] = $parse;
@@ -47,15 +106,19 @@ class SPK extends Controller
 
       $dvs = '"D-' . $parse . '"';
       $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND tuntas = 0 AND cancel = 0 AND spk_dvs LIKE '%" . $dvs . "%' ORDER BY id_order_data DESC";
-      $data['order'] = $this->db(0)->get_where('order_data', $where);
+      $expanded = $this->loadExpandedOrders($where);
 
       $recap = [];
       $recap_2 = [];
 
-      foreach ($data['order'] as $do) {
-         $spk = unserialize($do['spk_dvs']);
+      foreach ($expanded as $do) {
+         $spk = @unserialize($do['spk_dvs']);
+         if (!is_array($spk) || !isset($spk[$parse])) {
+            continue;
+         }
          $spk_code = "";
          $spk_text = "";
+         $cekId = isset($do['cek_id']) ? $do['cek_id'] : (string) $do['id_order_data'];
 
          if ($spk[$parse]['status'] == 0) {
             foreach ($spk as $s_key => $sp) {
@@ -68,10 +131,10 @@ class SPK extends Controller
             }
 
             if (isset($recap[$spk_code])) {
-               $recap[$spk_code]['order'] .= "," . $do['id_order_data'];
+               $recap[$spk_code]['order'] .= "," . $cekId;
                $recap[$spk_code]['jumlah'] += $do['jumlah'];
             } else {
-               $recap[$spk_code]['order'] = $do['id_order_data'];
+               $recap[$spk_code]['order'] = $cekId;
                $recap[$spk_code]['spk'] = $spk_text;
                $recap[$spk_code]['jumlah'] = $do['jumlah'];
             }
@@ -88,10 +151,10 @@ class SPK extends Controller
                   }
 
                   if (isset($recap_2[$spk_code])) {
-                     $recap_2[$spk_code]['order'] .= "," . $do['id_order_data'];
+                     $recap_2[$spk_code]['order'] .= "," . $cekId;
                      $recap_2[$spk_code]['jumlah'] += $do['jumlah'];
                   } else {
-                     $recap_2[$spk_code]['order'] = $do['id_order_data'];
+                     $recap_2[$spk_code]['order'] = $cekId;
                      $recap_2[$spk_code]['spk'] = $spk_text;
                      $recap_2[$spk_code]['jumlah'] = $do['jumlah'];
                   }
@@ -101,7 +164,7 @@ class SPK extends Controller
       }
 
       $data_ = [];
-      foreach ($data['order'] as $key => $do) {
+      foreach ($expanded as $key => $do) {
          $data_[$do['ref']][$key] = $do;
       }
 
@@ -138,8 +201,15 @@ class SPK extends Controller
       $data_ = [];
 
       foreach ($data as $d) {
-         $where = "id_order_data = " . $d;
-         $data_[$d] = $this->db(0)->get_where_row('order_data', $where);
+         $d = trim($d);
+         if ($d === '') {
+            continue;
+         }
+         $resolved = $this->resolveCekRow($d);
+         if ($resolved === null) {
+            continue;
+         }
+         $data_[$d] = $resolved['row'];
       }
 
       $data['pelanggan'] = $this->db(0)->get('pelanggan');
@@ -156,9 +226,15 @@ class SPK extends Controller
 
       $data['order'] = [];
       foreach ($data_get as $d) {
-         $where = "id_order_data = " . $d;
-         $data_ = $this->db(0)->get_where_row('order_data', $where);
-         array_push($data['order'], $data_);
+         $d = trim($d);
+         if ($d === '') {
+            continue;
+         }
+         $resolved = $this->resolveCekRow($d);
+         if ($resolved === null) {
+            continue;
+         }
+         array_push($data['order'], $resolved['row']);
       }
 
       $data_ = [];
@@ -193,8 +269,17 @@ class SPK extends Controller
 
       if (count($cek) > 0) {
          foreach ($cek as $c) {
-            $where = "id_order_data = " . $c;
-            $data = unserialize($this->db(0)->get_where_row('order_data', $where)['spk_dvs']);
+            $resolved = $this->resolveCekRow($c);
+            if ($resolved === null) {
+               echo "Item tidak ditemukan: " . $c;
+               exit();
+            }
+
+            $data = @unserialize($resolved['row']['spk_dvs']);
+            if (!is_array($data)) {
+               echo "Data SPK tidak valid";
+               exit();
+            }
 
             if ($tahap == 1) {
                $data[$id_divisi]["status"] = 1;
@@ -207,7 +292,14 @@ class SPK extends Controller
             }
 
             $set = "spk_dvs = '" . serialize($data) . "', spk_lanjutan = REPLACE(spk_lanjutan, 'D-" . $id_divisi . "#', '')";
-            $do = $this->db(0)->update("order_data", $set, $where);
+            if ($resolved['parsed']['type'] === 'bertahap') {
+               $where = "id = " . $resolved['parsed']['id'];
+               $do = $this->db(0)->update("spk_bertahap", $set, $where);
+            } else {
+               $where = "id_order_data = " . $resolved['parsed']['id'];
+               $do = $this->db(0)->update("order_data", $set, $where);
+            }
+
             if ($do['errno'] == 0) {
                $this->model('Log')->write($this->userData['user'] . " updateSPK Success!");
                echo $do['errno'];

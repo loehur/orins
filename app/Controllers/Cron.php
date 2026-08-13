@@ -354,6 +354,23 @@ class Cron extends Controller
       }
 
       // Process Orders
+      $bertahapOk = true;
+      $bertahapReason = '';
+      $orderIdsCron = [];
+      if (count($data['order']) > 0) {
+         foreach ($data['order'] as $do) {
+            if (isset($do['id_order_data'])) {
+               $orderIdsCron[] = (int) $do['id_order_data'];
+            }
+         }
+      }
+      $stagesByOrder = [];
+      $orderIdsCron = array_values(array_unique(array_filter($orderIdsCron)));
+      if (count($orderIdsCron) > 0) {
+         $btRows = $this->db(0)->get_where('spk_bertahap', 'id_order_data IN (' . implode(',', $orderIdsCron) . ')');
+         $stagesByOrder = $this->model('SpkBertahap')->groupByOrderId($btRows);
+      }
+
       if (count($data['order']) > 0) {
          foreach ($data['order'] as $do) {
             if ($do['tuntas'] == 1) {
@@ -380,6 +397,15 @@ class Cron extends Controller
             $countSPK = count($divisi_arr);
             if ($id_ambil == 0 && $cancel == 0 && $countSPK > 0) {
                $ambil_all = false;
+            }
+
+            $oid = (int) ($do['id_order_data'] ?? 0);
+            if ($cancel == 0 && $oid > 0 && isset($stagesByOrder[$oid]) && count($stagesByOrder[$oid]) > 0) {
+               $sumTahap = $this->model('SpkBertahap')->sumQty($stagesByOrder[$oid]);
+               if ($sumTahap < (int) $do['jumlah']) {
+                  $bertahapOk = false;
+                  $bertahapReason = 'SPK Bertahap belum full qty induk (#' . $oid . ': ' . $sumTahap . '/' . (int) $do['jumlah'] . ')';
+               }
             }
          }
       }
@@ -410,7 +436,7 @@ class Cron extends Controller
       $ready_to_tuntas = false;
       $reason = "";
 
-      if ($verify_payment == $bill && $ambil_all == true && $verify_kas_kecil == true) {
+      if ($verify_payment == $bill && $ambil_all == true && $verify_kas_kecil == true && $bertahapOk) {
          if ($bill > 0 && $verify_payment > 0) {
             $ready_to_tuntas = true;
             $reason = "Normal Payment Matched";
@@ -426,7 +452,11 @@ class Cron extends Controller
             }
          }
       } else {
-         $reason = "Criteria Not Met (Payment: " . ($verify_payment == $bill ? 'OK' : 'Diff') . ", Ambil: " . ($ambil_all ? 'OK' : 'No') . ", KasKecil: " . ($verify_kas_kecil ? 'OK' : 'No') . ")";
+         if (!$bertahapOk) {
+            $reason = $bertahapReason;
+         } else {
+            $reason = "Criteria Not Met (Payment: " . ($verify_payment == $bill ? 'OK' : 'Diff') . ", Ambil: " . ($ambil_all ? 'OK' : 'No') . ", KasKecil: " . ($verify_kas_kecil ? 'OK' : 'No') . ")";
+         }
       }
 
       // Actions

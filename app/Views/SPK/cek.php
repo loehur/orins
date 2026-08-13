@@ -54,9 +54,20 @@
                                 </tr>
                             <?php }
                             ?>
-                            <tr>
+                            <tr<?= !empty($do['bertahap']) ? ' class="table-info"' : '' ?>>
                                 <td class="text-success">
+                                    <?php if (!empty($do['bertahap'])) { ?>
+                                        <span class="badge bg-info text-dark"><i class="fa-solid fa-layer-group"></i> Tahap <?= (int)$do['bertahap']['tahap'] ?></span><br>
+                                    <?php } ?>
                                     <b><small><?= ucwords($produk) ?></small></b>
+                                    <?php if (!empty($do['bertahap'])) {
+                                        $bt = $do['bertahap']; ?>
+                                        <br><small class="text-muted">
+                                            <i class="fa-solid fa-boxes-stacked"></i> induk <?= (int)$bt['qty_induk'] ?>
+                                            · <i class="fa-solid fa-scissors"></i> tahap <?= (int)$bt['qty_tahap'] ?>
+                                            · <i class="fa-solid fa-hourglass-half"></i> sisa <?= (int)$bt['qty_sisa'] ?>
+                                        </small>
+                                    <?php } ?>
                                 </td>
                                 <td class="text-end text-purple"><b><?= number_format($do['jumlah']) ?></b>pcs</td>
                             </tr>

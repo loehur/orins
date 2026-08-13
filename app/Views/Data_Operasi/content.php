@@ -413,6 +413,22 @@
                                                                 <?php } else { ?>
                                                                     <span class="text-nowrap text-success"><small><?= $id . "# " . ucwords($produk) ?></small></span>
                                                                 <?php } ?>
+                                                                <?php
+                                                                $btShow = isset($data['spk_bertahap'][$id]) ? $data['spk_bertahap'][$id] : [];
+                                                                if (count($btShow) > 0) {
+                                                                    $btSumShow = 0;
+                                                                    foreach ($btShow as $bts) {
+                                                                        $btSumShow += (int) $bts['qty'];
+                                                                    }
+                                                                    $btSisaShow = max(0, (int) $do['jumlah'] - $btSumShow);
+                                                                ?>
+                                                                    <span class="badge bg-info text-dark ms-1" title="SPK Bertahap">
+                                                                        <i class="fa-solid fa-layer-group"></i> Bertahap <?= count($btShow) ?> ·
+                                                                        <i class="fa-solid fa-boxes-stacked"></i> <?= (int)$do['jumlah'] ?> ·
+                                                                        <i class="fa-solid fa-scissors"></i> <?= (int)$btSumShow ?> ·
+                                                                        <i class="fa-solid fa-hourglass-half"></i> sisa <?= (int)$btSisaShow ?>
+                                                                    </span>
+                                                                <?php } ?>
 
                                                                 <div class="btn-group">
                                                                     <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -429,6 +445,24 @@
                                                                         <?php } ?>
                                                                         <?php if ($cancel == 0) { ?>
                                                                             <li><a data-bs-toggle="modal" data-bs-target="#modalTransfer" class="dropdown-item px-2 transfer" data-type="order" data-id="<?= $id ?>" href="#">Transfer</a></li>
+                                                                            <?php if ($countSPK > 0) {
+                                                                                $btList = isset($data['spk_bertahap'][$id]) ? $data['spk_bertahap'][$id] : [];
+                                                                                $btSum = 0;
+                                                                                foreach ($btList as $bt) {
+                                                                                    $btSum += (int) $bt['qty'];
+                                                                                }
+                                                                                $btSisa = max(0, (int) $do['jumlah'] - $btSum);
+                                                                                $btNext = count($btList) + 1;
+                                                                                if ($btSisa > 0) { ?>
+                                                                                <li><a data-bs-toggle="modal" data-bs-target="#modalSpkBertahap" class="dropdown-item px-2 spkBertahap" href="#"
+                                                                                    data-id="<?= $id ?>"
+                                                                                    data-produk="<?= htmlspecialchars(ucwords($produk), ENT_QUOTES) ?>"
+                                                                                    data-qty-induk="<?= (int) $do['jumlah'] ?>"
+                                                                                    data-qty-sudah="<?= (int) $btSum ?>"
+                                                                                    data-qty-sisa="<?= (int) $btSisa ?>"
+                                                                                    data-tahap="<?= (int) $btNext ?>">SPK Bertahap</a></li>
+                                                                            <?php }
+                                                                            } ?>
                                                                         <?php } ?>
                                                                     </ul>
                                                                 </div>
@@ -496,6 +530,35 @@
                                                 </td>
                                                 <td class="text-nowrap" style="line-height: 120%;"><small>
                                                         <?php
+                                                        $btStatusList = isset($data['spk_bertahap'][$id]) ? $data['spk_bertahap'][$id] : [];
+                                                        if (count($btStatusList) > 0) {
+                                                            foreach ($btStatusList as $bts) {
+                                                                $btSpk = @unserialize($bts['spk_dvs']);
+                                                                if (!is_array($btSpk)) {
+                                                                    $btSpk = [];
+                                                                }
+                                                                echo '<span class="badge bg-info text-dark mb-1"><i class="fa-solid fa-layer-group"></i> T' . (int)$bts['tahap'] . ' · ' . (int)$bts['qty'] . 'pcs</span><br>';
+                                                                foreach ($divisi as $key => $dvs) {
+                                                                    if (!isset($btSpk[$key])) {
+                                                                        continue;
+                                                                    }
+                                                                    if ($btSpk[$key]['status'] == 1) {
+                                                                        $karyawan = $this->dKaryawanAll[$btSpk[$key]['user_produksi']]["nama"];
+                                                                        echo '<i class="fa-solid fa-check text-success"></i> ' . $dvs . " (" . $karyawan . ")<br>";
+                                                                    } else {
+                                                                        echo '<i class="fa-regular fa-circle"></i> ' . $dvs . "<br>";
+                                                                    }
+                                                                    if ($btSpk[$key]['cm'] == 1) {
+                                                                        if ($btSpk[$key]['cm_status'] == 1) {
+                                                                            $karyawan = $this->dKaryawanAll[$btSpk[$key]['user_cm']]["nama"];
+                                                                            echo '<i class="fa-solid text-success fa-check-double"></i> ' . $dvs . " (" . $karyawan . ")<br>";
+                                                                        } else {
+                                                                            echo '<i class="fa-regular fa-circle"></i> ' . $dvs . '<br>';
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        } else {
                                                         foreach ($divisi as $key => $dvs) {
                                                             if ($divisi_arr[$key]['status'] == 1) {
                                                                 $karyawan = $this->dKaryawanAll[$divisi_arr[$key]['user_produksi']]["nama"];
@@ -512,6 +575,7 @@
                                                                     echo '<i class="fa-regular fa-circle"></i> ' . $dvs . '<br>';
                                                                 }
                                                             }
+                                                        }
                                                         }
                                                         ?>
 
@@ -1938,6 +2002,40 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalSpkBertahap" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title"><i class="fa-solid fa-layer-group text-info"></i> SPK Bertahap <span id="btTahapLabel" class="badge bg-secondary">Tahap 1</span></h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formSpkBertahap" action="<?= PV::BASE_URL ?>Data_Operasi/spk_bertahap" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="id_order_data" id="btIdOrder" value="">
+                    <div class="mb-2 small">
+                        <div class="fw-bold text-success" id="btProduk">-</div>
+                        <div class="mt-1 text-muted">
+                            <i class="fa-solid fa-boxes-stacked"></i> Induk: <b id="btQtyInduk">0</b>
+                            &nbsp;·&nbsp;
+                            <i class="fa-solid fa-scissors"></i> Sudah: <b id="btQtySudah">0</b>
+                            &nbsp;·&nbsp;
+                            <i class="fa-solid fa-hourglass-half"></i> Sisa: <b id="btQtySisa" class="text-danger">0</b>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label">Qty tahap ini</label>
+                        <input type="number" min="1" class="form-control form-control-sm" name="qty" id="btQtyInput" required>
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-primary">Buat Tahap</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('click', function(e) {
         var t = e.target;
@@ -1947,5 +2045,52 @@
             document.querySelector('#modalTransfer input[name=item_type]').value = mt;
             document.querySelector('#modalTransfer input[name=item_id]').value = id;
         }
+        if (t.classList.contains('spkBertahap') || (t.closest && t.closest('.spkBertahap'))) {
+            var el = t.classList.contains('spkBertahap') ? t : t.closest('.spkBertahap');
+            document.getElementById('btIdOrder').value = el.getAttribute('data-id');
+            document.getElementById('btProduk').textContent = el.getAttribute('data-produk') || '';
+            document.getElementById('btQtyInduk').textContent = el.getAttribute('data-qty-induk') || '0';
+            document.getElementById('btQtySudah').textContent = el.getAttribute('data-qty-sudah') || '0';
+            document.getElementById('btQtySisa').textContent = el.getAttribute('data-qty-sisa') || '0';
+            document.getElementById('btTahapLabel').textContent = 'Tahap ' + (el.getAttribute('data-tahap') || '1');
+            var sisa = parseInt(el.getAttribute('data-qty-sisa') || '0', 10) || 0;
+            var inp = document.getElementById('btQtyInput');
+            inp.max = sisa;
+            inp.value = sisa > 0 ? sisa : 1;
+        }
+    });
+
+    $('#formSpkBertahap').on('submit', function(e) {
+        e.preventDefault();
+        var $form = $(this);
+        var qty = parseInt($('#btQtyInput').val(), 10) || 0;
+        var sisa = parseInt($('#btQtySisa').text(), 10) || 0;
+        if (qty <= 0) {
+            showToast('Qty harus lebih dari 0', 'warning');
+            return;
+        }
+        if (qty > sisa) {
+            showToast('Qty tidak boleh melebihi sisa (' + sisa + ')', 'warning');
+            return;
+        }
+        $.ajax({
+            url: $form.attr('action'),
+            type: 'POST',
+            data: $form.serialize(),
+            success: function(res) {
+                if (String(res).trim() === '0') {
+                    showToast('SPK Bertahap berhasil dibuat', 'success');
+                    var modalEl = document.getElementById('modalSpkBertahap');
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                    content();
+                } else {
+                    showToast(res, 'danger');
+                }
+            },
+            error: function() {
+                showToast('Gagal menyimpan SPK Bertahap', 'danger');
+            }
+        });
     });
 </script>

@@ -56,7 +56,23 @@ class SPK_C extends Controller
       $data['date'] = $TD;
 
       $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND cancel = 0 AND insertTime LIKE '%" . $TD . "%' AND spk_dvs LIKE '%" . $dvs . "%' ORDER BY id_order_data DESC";
-      $data['order'] = $this->db(0)->get_where('order_data', $where);
+      $orders = $this->db(0)->get_where('order_data', $where);
+      if (!is_array($orders) || isset($orders['errno'])) {
+         $orders = [];
+      }
+      $ids = [];
+      foreach ($orders as $do) {
+         if (isset($do['id_order_data'])) {
+            $ids[] = (int) $do['id_order_data'];
+         }
+      }
+      $ids = array_values(array_unique(array_filter($ids)));
+      $stagesByOrder = [];
+      if (count($ids) > 0) {
+         $rows = $this->db(0)->get_where('spk_bertahap', 'id_order_data IN (' . implode(',', $ids) . ') ORDER BY tahap ASC');
+         $stagesByOrder = $this->model('SpkBertahap')->groupByOrderId($rows);
+      }
+      $data['order'] = $this->model('SpkBertahap')->expandOrdersForSpk($orders, $stagesByOrder);
 
       $data_ = [];
       foreach ($data['order'] as $key => $do) {
@@ -94,8 +110,22 @@ class SPK_C extends Controller
       $tahap = $_POST['mode'];
       $date = date("Y-m-d h:i:s");
 
-      $where = "id_order_data = " . $id;
-      $data = unserialize($this->db(0)->get_where_row('order_data', $where)['spk_dvs']);
+      $parsed = $this->model('SpkBertahap')->parseCekId($id);
+      if ($parsed['type'] === 'bertahap') {
+         $where = "id = " . $parsed['id'];
+         $row = $this->db(0)->get_where_row('spk_bertahap', $where);
+         $table = 'spk_bertahap';
+      } else {
+         $where = "id_order_data = " . $parsed['id'];
+         $row = $this->db(0)->get_where_row('order_data', $where);
+         $table = 'order_data';
+      }
+      if (!isset($row['spk_dvs'])) {
+         echo "Item tidak ditemukan";
+         exit();
+      }
+
+      $data = unserialize($row['spk_dvs']);
 
       if ($tahap == 1) {
          $data[$id_divisi]["status"] = 1;
@@ -108,7 +138,7 @@ class SPK_C extends Controller
       }
 
       $set = "spk_dvs = '" . serialize($data) . "', spk_lanjutan = REPLACE(spk_lanjutan, 'D-" . $id_divisi . "#', '')";
-      $do = $this->db(0)->update("order_data", $set, $where);
+      $do = $this->db(0)->update($table, $set, $where);
       if ($do['errno'] == 0) {
          echo 0;
       } else {
@@ -124,8 +154,15 @@ class SPK_C extends Controller
       $push = $_POST['push'];
       $set =  "spk_lanjutan = CONCAT(spk_lanjutan, 'D-" . $push . "#')";
 
-      $where = "id_order_data = " . $id;
-      $do = $this->db(0)->update("order_data", $set, $where);
+      $parsed = $this->model('SpkBertahap')->parseCekId($id);
+      if ($parsed['type'] === 'bertahap') {
+         $where = "id = " . $parsed['id'];
+         $table = 'spk_bertahap';
+      } else {
+         $where = "id_order_data = " . $parsed['id'];
+         $table = 'order_data';
+      }
+      $do = $this->db(0)->update($table, $set, $where);
       if ($do['errno'] == 0) {
          echo 0;
       } else {

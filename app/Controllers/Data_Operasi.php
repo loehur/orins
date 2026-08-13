@@ -193,6 +193,21 @@ class Data_Operasi extends Controller
          }
       }
 
+      $data['spk_bertahap'] = [];
+      $orderIds = [];
+      foreach ($data['order'] as $ref => $list) {
+         foreach ($list as $od) {
+            if (isset($od['id_order_data'])) {
+               $orderIds[] = (int) $od['id_order_data'];
+            }
+         }
+      }
+      $orderIds = array_values(array_unique(array_filter($orderIds)));
+      if (count($orderIds) > 0) {
+         $rows = $this->db(0)->get_where('spk_bertahap', 'id_order_data IN (' . implode(',', $orderIds) . ') ORDER BY tahap ASC');
+         $data['spk_bertahap'] = $this->model('SpkBertahap')->groupByOrderId($rows);
+      }
+
       $this->view($this->v_content, $data);
    }
 
@@ -540,6 +555,61 @@ class Data_Operasi extends Controller
          }
       }
 
+      echo 0;
+   }
+
+   public function spk_bertahap()
+   {
+      $id_order_data = (int) ($_POST['id_order_data'] ?? 0);
+      $qty = (int) ($_POST['qty'] ?? 0);
+
+      if ($id_order_data <= 0 || $qty <= 0) {
+         echo 'Data tidak lengkap / qty harus > 0';
+         exit();
+      }
+
+      $row = $this->db(0)->get_where_row('order_data', 'id_order_data = ' . $id_order_data);
+      if (!isset($row['id_order_data'])) {
+         echo 'Item tidak ditemukan';
+         exit();
+      }
+      if ((int) $row['cancel'] !== 0) {
+         echo 'Item sudah cancel';
+         exit();
+      }
+      if ((int) $row['tuntas'] === 1) {
+         echo 'Item sudah tuntas';
+         exit();
+      }
+
+      $spkRaw = $row['spk_dvs'] ?? '';
+      $spkArr = (strlen($spkRaw) > 1) ? @unserialize($spkRaw) : [];
+      if (!is_array($spkArr) || count($spkArr) === 0) {
+         echo 'Item tidak punya SPK';
+         exit();
+      }
+
+      $qtyInduk = (int) $row['jumlah'];
+      $sudah = (int) $this->db(0)->sum_col_where('spk_bertahap', 'qty', 'id_order_data = ' . $id_order_data);
+      $sisa = $qtyInduk - $sudah;
+      if ($qty > $sisa) {
+         echo 'Qty tahap melebihi sisa (' . $sisa . ' dari induk ' . $qtyInduk . ')';
+         exit();
+      }
+
+      $maxTahap = (int) $this->db(0)->scalar('SELECT COALESCE(MAX(tahap), 0) FROM spk_bertahap WHERE id_order_data = ' . $id_order_data);
+      $tahapBaru = $maxTahap + 1;
+      $spkReset = $this->model('SpkBertahap')->resetSpkStatus($spkRaw);
+
+      $cols = 'id_order_data, tahap, qty, spk_dvs, spk_lanjutan, id_user';
+      $vals = $id_order_data . ',' . $tahapBaru . ',' . $qty . ",'" . $spkReset . "',''," . (int) $this->userData['id_user'];
+      $ins = $this->db(0)->insertCols('spk_bertahap', $cols, $vals);
+      if ($ins['errno'] <> 0) {
+         echo $ins['error'];
+         exit();
+      }
+
+      $this->model('Log')->write($this->userData['user'] . ' SPK Bertahap #' . $id_order_data . ' tahap ' . $tahapBaru . ' qty ' . $qty);
       echo 0;
    }
 
@@ -1223,6 +1293,20 @@ class Data_Operasi extends Controller
       $idTokoNota = 0;
       $orderLines = [];
       $mutasiLines = [];
+      $bertahapIncomplete = [];
+
+      $analisaOrderIds = [];
+      foreach ($orders as $o) {
+         if (isset($o['id_order_data'])) {
+            $analisaOrderIds[] = (int) $o['id_order_data'];
+         }
+      }
+      $analisaOrderIds = array_values(array_unique(array_filter($analisaOrderIds)));
+      $stagesAnalisa = [];
+      if (count($analisaOrderIds) > 0) {
+         $btRows = $this->db(0)->get_where('spk_bertahap', 'id_order_data IN (' . implode(',', $analisaOrderIds) . ') ORDER BY tahap ASC');
+         $stagesAnalisa = $this->model('SpkBertahap')->groupByOrderId($btRows);
+      }
 
       foreach ($charge as $c) {
          if ((int)($c['cancel'] ?? 0) === 0) {
@@ -1278,22 +1362,55 @@ class Data_Operasi extends Controller
             $ambilAll = false;
          }
 
+         $oid = (int) $do['id_order_data'];
+         $hasBertahap = isset($stagesAnalisa[$oid]) && count($stagesAnalisa[$oid]) > 0;
          $spkStatusLines = [];
-         foreach ($spkArr as $idDiv => $dv) {
-            $status = (int)($dv['status'] ?? 0);
-            $cm = (int)($dv['cm'] ?? 0);
-            $cmStatus = (int)($dv['cm_status'] ?? 0);
-            $done = ($status === 1 && ($cm !== 1 || $cmStatus === 1));
-            $divName = isset($this->dDvs_all[$idDiv]['divisi']) ? $this->dDvs_all[$idDiv]['divisi'] : (isset($this->dDvs[$idDiv]['divisi']) ? $this->dDvs[$idDiv]['divisi'] : ('D-' . $idDiv));
-            $spkStatusLines[] = [
-               'divisi' => $divName,
-               'done' => $done,
-               'status' => $status,
-               'cm' => $cm,
-               'cm_status' => $cmStatus,
-            ];
-            if ($cancel === 0 && !$done) {
-               $spkPending[$divName] = true;
+         if ($hasBertahap) {
+            $sumTahap = $this->model('SpkBertahap')->sumQty($stagesAnalisa[$oid]);
+            if ($cancel === 0 && $sumTahap < (int) $do['jumlah']) {
+               $bertahapIncomplete[] = '#' . $oid . ' (' . $sumTahap . '/' . (int) $do['jumlah'] . ')';
+            }
+            foreach ($stagesAnalisa[$oid] as $st) {
+               $stSpk = @unserialize($st['spk_dvs']);
+               if (!is_array($stSpk)) {
+                  $stSpk = [];
+               }
+               foreach ($stSpk as $idDiv => $dv) {
+                  $status = (int)($dv['status'] ?? 0);
+                  $cm = (int)($dv['cm'] ?? 0);
+                  $cmStatus = (int)($dv['cm_status'] ?? 0);
+                  $done = ($status === 1 && ($cm !== 1 || $cmStatus === 1));
+                  $divName = isset($this->dDvs_all[$idDiv]['divisi']) ? $this->dDvs_all[$idDiv]['divisi'] : (isset($this->dDvs[$idDiv]['divisi']) ? $this->dDvs[$idDiv]['divisi'] : ('D-' . $idDiv));
+                  $label = $divName . ' T' . (int)$st['tahap'];
+                  $spkStatusLines[] = [
+                     'divisi' => $label,
+                     'done' => $done,
+                     'status' => $status,
+                     'cm' => $cm,
+                     'cm_status' => $cmStatus,
+                  ];
+                  if ($cancel === 0 && !$done) {
+                     $spkPending[$label] = true;
+                  }
+               }
+            }
+         } else {
+            foreach ($spkArr as $idDiv => $dv) {
+               $status = (int)($dv['status'] ?? 0);
+               $cm = (int)($dv['cm'] ?? 0);
+               $cmStatus = (int)($dv['cm_status'] ?? 0);
+               $done = ($status === 1 && ($cm !== 1 || $cmStatus === 1));
+               $divName = isset($this->dDvs_all[$idDiv]['divisi']) ? $this->dDvs_all[$idDiv]['divisi'] : (isset($this->dDvs[$idDiv]['divisi']) ? $this->dDvs[$idDiv]['divisi'] : ('D-' . $idDiv));
+               $spkStatusLines[] = [
+                  'divisi' => $divName,
+                  'done' => $done,
+                  'status' => $status,
+                  'cm' => $cm,
+                  'cm_status' => $cmStatus,
+               ];
+               if ($cancel === 0 && !$done) {
+                  $spkPending[$divName] = true;
+               }
             }
          }
 
@@ -1477,6 +1594,10 @@ class Data_Operasi extends Controller
 
       if (count($spkPending) > 0) {
          $flags[] = ['level' => 'warn', 'text' => 'SPK belum selesai di divisi: ' . implode(', ', array_keys($spkPending)) . ' (tidak menghalangi tuntas cron, info saja)'];
+      }
+      if (count($bertahapIncomplete) > 0) {
+         $readyToTuntas = false;
+         $flags[] = ['level' => 'error', 'text' => 'SPK Bertahap belum full qty induk: ' . implode(', ', $bertahapIncomplete)];
       }
 
       $tuntasInduk = is_array($dRef) ? (int)($dRef['tuntas'] ?? 0) : 0;

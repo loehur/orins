@@ -23,9 +23,10 @@
                             $no++;
                             $spkDone = 0;
                             $spkCount = 0;
-                            $id_order_data = $do['id_order_data'];
+                            $id_order_data = isset($do['cek_id']) ? $do['cek_id'] : $do['id_order_data'];
                             $id_produk = $do['id_produk'];
                             $produk = ucwords($do['produk']);
+                            $isBertahap = !empty($do['bertahap']);
                             $detail_arr = unserialize($do['produk_detail']);
                             $detail = "";
                             foreach ($detail_arr as $da) {
@@ -65,7 +66,9 @@
                             }
 
                             $classTR = "";
-                            if ($spkDone == $spkCount) {
+                            if ($isBertahap) {
+                                $classTR = "table-info border-info";
+                            } elseif ($spkDone == $spkCount) {
                                 $classTR = "table-info";
                             } else {
                                 if ($spkDone == 1) {
@@ -107,10 +110,21 @@
                                     <table class="float-start">
                                         <tr>
                                             <td class="pe-1 text-sm">
+                                                <?php if ($isBertahap) { ?>
+                                                    <span class="badge bg-info text-dark mb-1"><i class="fa-solid fa-layer-group"></i> Tahap <?= (int)$do['bertahap']['tahap'] ?></span><br>
+                                                <?php } ?>
                                                 <span class="text-success"><?= $produk ?></span><br>
                                                 <?php
                                                 foreach ($detail_arr as $da) { ?>
                                                     <?= strtoupper($da['detail_name']) ?>
+                                                <?php } ?>
+                                                <?php if ($isBertahap) {
+                                                    $bt = $do['bertahap']; ?>
+                                                    <br><small class="text-muted">
+                                                        <i class="fa-solid fa-boxes-stacked"></i> induk <?= (int)$bt['qty_induk'] ?>
+                                                        · <i class="fa-solid fa-scissors"></i> tahap <?= (int)$bt['qty_tahap'] ?>
+                                                        · <i class="fa-solid fa-hourglass-half"></i> sisa <?= (int)$bt['qty_sisa'] ?>
+                                                    </small>
                                                 <?php } ?>
                                             </td>
                                             <td valign="bottom" class="text-end text-purple pe-2" style="width:40px"><b><?= number_format($do['jumlah']) ?></b>pcs</td>
@@ -251,7 +265,22 @@
                     if (res == 0) {
                         $('button.cek').click();
                     } else {
-                        alert(res);
+                        if (typeof showToast === 'function') {
+                            showToast(res, 'danger');
+                        } else {
+                            var toastContainer = document.querySelector('.toast-container');
+                            if (!toastContainer) {
+                                toastContainer = document.createElement('div');
+                                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                                toastContainer.style.zIndex = 9999;
+                                document.body.appendChild(toastContainer);
+                            }
+                            var el = document.createElement('div');
+                            el.className = 'toast align-items-center border-0 shadow bg-danger text-white';
+                            el.innerHTML = '<div class="d-flex"><div class="toast-body">' + res + '</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>';
+                            toastContainer.appendChild(el);
+                            new bootstrap.Toast(el, { delay: 4500 }).show();
+                        }
                     }
                 }
             });
@@ -284,7 +313,18 @@
                     if (res == 0) {
                         $("div#content").load('<?= PV::BASE_URL ?>SPK_C/content/' + parse + '/' + parse_2);
                     } else {
-                        alert(res);
+                        var toastContainer = document.querySelector('.toast-container');
+                        if (!toastContainer) {
+                            toastContainer = document.createElement('div');
+                            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                            toastContainer.style.zIndex = 9999;
+                            document.body.appendChild(toastContainer);
+                        }
+                        var el = document.createElement('div');
+                        el.className = 'toast align-items-center border-0 shadow bg-danger text-white';
+                        el.innerHTML = '<div class="d-flex"><div class="toast-body">' + res + '</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>';
+                        toastContainer.appendChild(el);
+                        new bootstrap.Toast(el, { delay: 4500 }).show();
                     }
                 }
             });

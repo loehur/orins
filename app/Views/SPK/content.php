@@ -144,7 +144,24 @@
     </div>
 </div>
 
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
 <script>
+    function showToast(message, type) {
+        type = type || 'danger';
+        var container = document.querySelector('.toast-container');
+        if (!container) return;
+        var bgClass = type === 'danger' ? 'bg-danger text-white' : type === 'success' ? 'bg-success text-white' : type === 'warning' ? 'bg-warning text-dark' : 'bg-info text-white';
+        var icon = type === 'danger' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+        var toastEl = document.createElement('div');
+        toastEl.className = 'toast align-items-center border-0 shadow ' + bgClass;
+        toastEl.setAttribute('role', 'alert');
+        toastEl.innerHTML = '<div class="d-flex"><div class="toast-body d-flex align-items-start"><i class="fas ' + icon + ' me-2 fs-5 flex-shrink-0 mt-1"></i><span class="text-sm">' + String(message).replace(/\n/g, '<br>') + '</span></div><button type="button" class="btn-close ' + (type === 'warning' ? '' : 'btn-close-white') + ' me-2 m-auto" data-bs-dismiss="toast"></button></div>';
+        container.appendChild(toastEl);
+        var toast = new bootstrap.Toast(toastEl, { delay: 4500 });
+        toastEl.addEventListener('hidden.bs.toast', function() { toastEl.remove(); });
+        toast.show();
+    }
+
     $(document).ready(function() {
         $('select.tize').selectize();
     });
@@ -171,9 +188,12 @@
                 if (res == 0) {
                     content();
                 } else {
-                    alert(res);
+                    showToast(res, 'danger');
                 }
             },
+            error: function() {
+                showToast('Gagal menyimpan SPK', 'danger');
+            }
         });
     });
 </script>

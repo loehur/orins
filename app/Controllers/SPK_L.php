@@ -47,7 +47,62 @@ class SPK_L extends Controller
       $dvs = '"D-' . $parse . '"';
 
       $where = "(id_toko = " . $this->userData['id_toko'] . " OR id_afiliasi = " . $this->userData['id_toko'] . ") AND id_pelanggan <> 0 AND cancel = 0 AND id_ambil = 0 AND spk_lanjutan LIKE '%D-" . $parse . "#%' AND spk_dvs LIKE '%" . $dvs . "%' ORDER BY id_order_data DESC";
-      $data['order'] = $this->db(0)->get_where('order_data', $where);
+      $orders = $this->db(0)->get_where('order_data', $where);
+      if (!is_array($orders) || isset($orders['errno'])) {
+         $orders = [];
+      }
+
+      // Gabungkan tahap bertahap yang di-push ke lanjutan
+      $whereBt = "(spk_lanjutan LIKE '%D-" . $parse . "#%')";
+      $btRows = $this->db(0)->get_where('spk_bertahap', $whereBt);
+      if (!is_array($btRows) || isset($btRows['errno'])) {
+         $btRows = [];
+      }
+      $parentIds = [];
+      foreach ($orders as $do) {
+         $parentIds[] = (int) $do['id_order_data'];
+      }
+      foreach ($btRows as $st) {
+         $parentIds[] = (int) $st['id_order_data'];
+      }
+      $parentIds = array_values(array_unique(array_filter($parentIds)));
+      $parents = [];
+      if (count($parentIds) > 0) {
+         $pRows = $this->db(0)->get_where('order_data', 'id_order_data IN (' . implode(',', $parentIds) . ') AND cancel = 0 AND id_ambil = 0 AND (id_toko = ' . $this->userData['id_toko'] . ' OR id_afiliasi = ' . $this->userData['id_toko'] . ')');
+         if (is_array($pRows) && !isset($pRows['errno'])) {
+            foreach ($pRows as $p) {
+               $parents[(int)$p['id_order_data']] = $p;
+            }
+         }
+      }
+
+      $stagesByOrder = [];
+      if (count($parentIds) > 0) {
+         $allStages = $this->db(0)->get_where('spk_bertahap', 'id_order_data IN (' . implode(',', $parentIds) . ') ORDER BY tahap ASC');
+         $stagesByOrder = $this->model('SpkBertahap')->groupByOrderId($allStages);
+      }
+
+      // Base: order biasa (induk tanpa tahapan) yang punya push
+      $baseOrders = [];
+      foreach ($orders as $do) {
+         $oid = (int) $do['id_order_data'];
+         if (!isset($stagesByOrder[$oid]) || count($stagesByOrder[$oid]) === 0) {
+            $baseOrders[] = $do;
+         }
+      }
+      $expanded = $this->model('SpkBertahap')->expandOrdersForSpk($baseOrders, []);
+
+      // Tambah tahap yang di-push
+      foreach ($btRows as $st) {
+         $oid = (int) $st['id_order_data'];
+         if (!isset($parents[$oid])) {
+            continue;
+         }
+         $sumQty = isset($stagesByOrder[$oid]) ? $this->model('SpkBertahap')->sumQty($stagesByOrder[$oid]) : (int)$st['qty'];
+         $expanded[] = $this->model('SpkBertahap')->buildVirtualFromStage($parents[$oid], $st, $sumQty);
+      }
+
+      $data['order'] = $expanded;
 
       $data_ = [];
       foreach ($data['order'] as $key => $do) {
