@@ -29,19 +29,13 @@ class Petty_Cash_F extends Controller
       $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse, "page" => $page]);
    }
 
-   public function content($year = "", $mode = 0)
+   public function content($year = "")
    {
       $idToko = (int)$this->userData['id_toko'];
 
       $year = (int)$year;
       if ($year < 2000 || $year > 2100) {
          $year = (int)date('Y');
-      }
-      $mode = (int)$mode;
-      if ($mode === 1) {
-         $year -= 1;
-      } elseif ($mode === 2) {
-         $year += 1;
       }
 
       $topup = (int)$this->db(0)->sum_col_where(

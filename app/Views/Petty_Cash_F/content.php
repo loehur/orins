@@ -214,9 +214,9 @@
             <div class="pcf-sec-h">
                 <h6>Riwayat Topup</h6>
                 <div class="pcf-year">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="content('<?= (int)$data['year'] ?>',1)" title="Tahun sebelumnya">&lsaquo;</button>
-                    <span class="val"><?= (int)$data['year'] ?></span>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="content('<?= (int)$data['year'] ?>',2)" title="Tahun berikutnya">&rsaquo;</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary pcf-year-btn" data-year="<?= (int)$data['year'] - 1 ?>" title="Tahun sebelumnya">&lsaquo;</button>
+                    <span class="val" id="pcfYearVal"><?= (int)$data['year'] ?></span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary pcf-year-btn" data-year="<?= (int)$data['year'] + 1 ?>" title="Tahun berikutnya">&rsaquo;</button>
                 </div>
             </div>
 
@@ -278,6 +278,16 @@
 
 <script>
 (function() {
+    $(document).off("click.pcfYear", ".pcf-year-btn").on("click.pcfYear", ".pcf-year-btn", function(e) {
+        e.preventDefault();
+        var y = parseInt($(this).attr("data-year"), 10);
+        if (!y) {
+            return;
+        }
+        $("#pcfYearVal").text(y);
+        content(String(y));
+    });
+
     $(document).off("click.pcfVerify", "a.ajax-verify").on("click.pcfVerify", "a.ajax-verify", function(e) {
         e.preventDefault();
         var href = $(this).attr("href");
