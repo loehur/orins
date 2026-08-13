@@ -430,10 +430,13 @@
                 if (typeof res.saldo !== "undefined") {
                     updateSaldo(res.saldo);
                 }
-                if ($delTopupRow && $delTopupRow.length) {
-                    $delTopupRow.addClass("pcf-row-out");
+                var $row = $delTopupRow;
+                delTopupId = 0;
+                $delTopupRow = null;
+                if ($row && $row.length) {
+                    $row.addClass("pcf-row-out");
                     setTimeout(function() {
-                        $delTopupRow.remove();
+                        $row.remove();
                         if ($("#pcfTopupTable tbody tr").length === 0) {
                             $("#pcfTopupList").html('<div class="pcf-empty">Belum ada topup.</div>');
                         }
@@ -441,8 +444,6 @@
                 } else {
                     loadTopupYear(pcfYear);
                 }
-                delTopupId = 0;
-                $delTopupRow = null;
             },
             error: function() {
                 $btn.prop("disabled", false);
@@ -506,20 +507,32 @@
     var submitting = false;
     $("#formPettyTopup").off("submit.petty").on("submit.petty", function(e) {
         e.preventDefault();
+        e.stopImmediatePropagation();
         if (submitting) {
             return false;
         }
-        submitting = true;
         var $form = $(this);
         var $btn = $("#btnPettyTopup");
-        $btn.prop("disabled", true);
+        var $jumlah = $form.find("[name=jumlah]");
+        var jumlah = $jumlah.val();
+        if (!jumlah || parseInt(jumlah, 10) <= 0) {
+            alert("Jumlah tidak valid");
+            return false;
+        }
+
+        submitting = true;
+        var btnText = $btn.text();
+        $btn.prop("disabled", true).text("Memproses...");
+        $jumlah.prop("disabled", true);
+
         $.ajax({
             url: $form.attr("action"),
-            data: $form.serialize(),
+            data: { jumlah: jumlah },
             type: $form.attr("method") || "POST",
             complete: function() {
                 submitting = false;
-                $btn.prop("disabled", false);
+                $jumlah.prop("disabled", false);
+                $btn.prop("disabled", false).text(btnText);
             },
             success: function(res) {
                 if (res == 0) {
@@ -538,6 +551,7 @@
                 alert("Gagal memproses. Coba lagi.");
             }
         });
+        return false;
     });
 })();
 </script>

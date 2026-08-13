@@ -141,8 +141,18 @@ class Petty_Cash_F extends Controller
          exit();
       }
 
+      // Anti double: nominal sama di hari yang sama
+      $today = date('Y-m-d');
+      $dupDay = "id_target = " . $target . " AND tipe = 1 AND jumlah = " . $jumlah
+         . " AND insertTime LIKE '" . $today . "%'";
+      if ($this->db(0)->count_where('kas_kecil', $dupDay) > 0) {
+         echo "Nominal yang sama sudah diinput hari ini";
+         exit();
+      }
+
+      // Anti double klik cepat (cadangan)
       $dupWhere = "id_sumber = 100 AND id_target = " . $target . " AND tipe = 1 AND jumlah = " . $jumlah;
-      if ($this->recentKasKecilDuplicate($dupWhere)) {
+      if ($this->recentKasKecilDuplicate($dupWhere, 90)) {
          echo "Data sudah di input";
          exit();
       }
