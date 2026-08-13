@@ -31,29 +31,55 @@ class Petty_Cash_F extends Controller
 
    public function content()
    {
-      $whereTopup = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 AND st <> 2";
-      $topup = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $whereTopup);
+      $idToko = (int)$this->userData['id_toko'];
 
-      $wherePakai = "id_sumber = " . $this->userData['id_toko'] . " AND (tipe = 2 OR tipe = 5) AND st <> 2";
-      $pakai = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $wherePakai);
-
-      $whereTopupMutasi = "id_target = " . $this->userData['id_toko'] . " AND tipe = 1 ORDER BY insertTime DESC";
-      $data['topup'] = $this->db(0)->get_where('kas_kecil', $whereTopupMutasi);
-
-      $wherePakaiMutasi = "id_sumber = " . $this->userData['id_toko'] . " AND (tipe = 2 OR tipe = 5) AND st = 0 ORDER BY insertTime DESC";
-      $data['pakai'] = $this->db(0)->get_where('kas_kecil', $wherePakaiMutasi);
-
-      $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
+      $topup = (int)$this->db(0)->sum_col_where(
+         'kas_kecil',
+         'jumlah',
+         "id_target = " . $idToko . " AND tipe = 1 AND st <> 2"
+      );
+      $pakai = (int)$this->db(0)->sum_col_where(
+         'kas_kecil',
+         'jumlah',
+         "id_sumber = " . $idToko . " AND (tipe = 2 OR tipe = 5) AND st <> 2"
+      );
 
       $data['saldo'] = $topup - $pakai;
+      $data['sum_topup'] = $topup;
+      $data['sum_pakai'] = $pakai;
+
+      // Riwayat topup terbatas
+      $data['topup'] = $this->db(0)->get_where(
+         'kas_kecil',
+         "id_target = " . $idToko . " AND tipe = 1 ORDER BY id DESC LIMIT 40"
+      );
+
+      // Hanya pemakaian menunggu verify
+      $data['pakai'] = $this->db(0)->get_where(
+         'kas_kecil',
+         "id_sumber = " . $idToko . " AND (tipe = 2 OR tipe = 5) AND st = 0 ORDER BY id DESC LIMIT 60"
+      );
+
+      $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
+      $data['pending'] = is_array($data['pakai']) ? count($data['pakai']) : 0;
+
       $this->view(__CLASS__ . '/content', $data);
    }
 
    function verify($id, $status)
    {
-      $set = "st = '" . $status . "'";
-      $where = "id = '" . $id . "'";
-      $update = $this->db(0)->update("kas_kecil", $set, $where);
+      $id = (int)$id;
+      $status = (int)$status;
+      if ($id <= 0) {
+         echo "ID tidak valid";
+         exit();
+      }
+
+      $update = $this->db(0)->update(
+         "kas_kecil",
+         "st = '" . $status . "'",
+         "id = '" . $id . "' AND st = 0"
+      );
       echo $update['errno'] == 0 ? 0 : $update['error'];
    }
 

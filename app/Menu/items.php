@@ -429,7 +429,7 @@ return [
         [
             'access' => [5],
             'name' => 'Finance',
-            'active' => ['Finance - Non Tunai', 'Finance - Non Tunai Riwayat', 'Finance - Setoran', 'CodGen', 'Audit - Gudang Jual', 'Office - Kas', 'Petty Cash Finance', 'Penjualan SDS'],
+            'active' => ['Finance - Non Tunai', 'Finance - Non Tunai Riwayat', 'Finance - Setoran', 'CodGen', 'Audit - Gudang Jual', 'Petty Cash Finance', 'Penjualan SDS'],
             'icon' => 'dollar-sign',
             'icon-color' => "success",
             'sub' => [
@@ -443,11 +443,12 @@ return [
                     'link' => 'Setoran_F',
                     'active' => 'Finance - Setoran'
                 ],
-                [
-                    'name' => 'Kas Kantor',
-                    'link' => 'Office_Kas',
-                    'active' => 'Office - Kas'
-                ],
+                // Kas Kantor disembunyikan — tidak dipakai
+                // [
+                //     'name' => 'Kas Kantor',
+                //     'link' => 'Office_Kas',
+                //     'active' => 'Office - Kas'
+                // ],
                 [
                     'name' => 'Petty Cash',
                     'link' => 'Petty_Cash_F',

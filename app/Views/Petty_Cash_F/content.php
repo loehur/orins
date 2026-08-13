@@ -1,176 +1,330 @@
-<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
-
 <style>
-    td {
-        align-content: center;
+    .pcf {
+        --pcf-ink: #1a2e22;
+        --pcf-muted: #6b7c72;
+        --pcf-line: #e4ebe6;
+        --pcf-soft: #f3f7f4;
+        --pcf-accent: #1f7a4d;
+        --pcf-warn: #b7791f;
+    }
+    .pcf-bar {
+        display: flex;
+        align-items: stretch;
+        gap: .75rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+    .pcf-saldo {
+        flex: 1 1 180px;
+        background: linear-gradient(135deg, #1f7a4d 0%, #2d9b66 55%, #3cb371 100%);
+        color: #fff;
+        border-radius: .5rem;
+        padding: .85rem 1rem;
+        min-width: 0;
+    }
+    .pcf-saldo .lbl {
+        font-size: .72rem;
+        opacity: .85;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        margin-bottom: .15rem;
+    }
+    .pcf-saldo .amt {
+        font-size: 1.35rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
+    }
+    .pcf-stats {
+        display: flex;
+        gap: .5rem;
+        flex: 2 1 220px;
+    }
+    .pcf-stat {
+        flex: 1;
+        background: var(--pcf-soft);
+        border: 1px solid var(--pcf-line);
+        border-radius: .5rem;
+        padding: .7rem .85rem;
+        min-width: 0;
+    }
+    .pcf-stat .lbl {
+        font-size: .7rem;
+        color: var(--pcf-muted);
+        text-transform: uppercase;
+        letter-spacing: .03em;
+    }
+    .pcf-stat .amt {
+        font-weight: 650;
+        font-variant-numeric: tabular-nums;
+        color: var(--pcf-ink);
+        font-size: .95rem;
+    }
+    .pcf-actions {
+        display: flex;
+        align-items: center;
+    }
+    .pcf-sec {
+        margin-top: 1.15rem;
+    }
+    .pcf-sec-h {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5rem;
+        margin-bottom: .4rem;
+        padding-bottom: .35rem;
+        border-bottom: 1px solid var(--pcf-line);
+    }
+    .pcf-sec-h h6 {
+        margin: 0;
+        font-size: .9rem;
+        font-weight: 700;
+        color: var(--pcf-ink);
+    }
+    .pcf-badge {
+        font-size: .7rem;
+        font-weight: 650;
+        background: #fff4df;
+        color: var(--pcf-warn);
+        border: 1px solid #f0d9a8;
+        border-radius: 999px;
+        padding: .12rem .55rem;
+    }
+    .pcf-badge.ok {
+        background: #e8f6ee;
+        color: var(--pcf-accent);
+        border-color: #b9e0c8;
+    }
+    .pcf table {
+        margin-bottom: 0;
+    }
+    .pcf table td,
+    .pcf table th {
+        vertical-align: middle;
+    }
+    .pcf .amt {
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+    .pcf-meta {
+        color: var(--pcf-muted);
+        font-size: .78rem;
+    }
+    .pcf-note {
+        color: #3d6b9a;
+        font-size: .8rem;
+    }
+    .pcf-empty {
+        color: var(--pcf-muted);
+        font-size: .85rem;
+        padding: .85rem 0;
+    }
+    .pcf-row-pend {
+        background: #fffdf8;
     }
 </style>
 
-<main>
-    <?php
-    $total_setor = 0;
-    ?>
-    <!-- Main page content-->
+<main class="pcf">
     <div class="container pb-4">
-        <div class="row mx-0">
-            <div class="col text-sm text-end fw-bold pe-0">
-                Saldo Rp<?= number_format($data['saldo']) ?>
+        <div class="pcf-bar">
+            <div class="pcf-saldo">
+                <div class="lbl">Saldo Petty Cash</div>
+                <div class="amt">Rp<?= number_format((int)$data['saldo']) ?></div>
             </div>
-            <div class="col-auto text-end">
-                <div class="btn-group me-1">
-                    <button type="button" class="btn shadow-none btn-sm btn-primary bg-gradient py-1 px-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        Topup Petycash
-                    </button>
+            <div class="pcf-stats">
+                <div class="pcf-stat">
+                    <div class="lbl">Total Topup</div>
+                    <div class="amt text-success">Rp<?= number_format((int)$data['sum_topup']) ?></div>
                 </div>
+                <div class="pcf-stat">
+                    <div class="lbl">Total Pakai</div>
+                    <div class="amt text-danger">Rp<?= number_format((int)$data['sum_pakai']) ?></div>
+                </div>
+            </div>
+            <div class="pcf-actions">
+                <button type="button" class="btn btn-sm btn-primary bg-gradient px-3" data-bs-toggle="modal" data-bs-target="#modalPettyTopup">
+                    + Topup
+                </button>
             </div>
         </div>
 
-        <table class="table table-sm text-sm">
-            <tr>
-                <th colspan="10" class="text-success">Riwayat Topup</th>
-            </tr>
-            <?php foreach ($data['topup'] as $a) { ?>
-                <tr>
-                    <td class="align-middle">
-                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
-                    </td>
-                    <td>
-                        <?= $a['ref'] ?>
-                    </td>
-                    <td class="text-end">
-                        <?= number_format($a['jumlah']) ?>
-                    </td>
-                    <td class="text-end" style="width:70px">
-                        <?php if ($a['st'] == 0) { ?>
-                            <span class="text-sm text-warning">Checking</span>
-                        <?php } else { ?>
-                            <?php if ($a['st'] == 1) { ?>
-                                <span class="text-sm text-success">Verified</span>
-                            <?php } ?>
-                        <?php } ?>
-                    </td>
-                </tr>
-            <?php } ?>
-        </table>
+        <div class="pcf-sec">
+            <div class="pcf-sec-h">
+                <h6>Menunggu Verifikasi</h6>
+                <?php if ((int)$data['pending'] > 0) { ?>
+                    <span class="pcf-badge"><?= (int)$data['pending'] ?> pending</span>
+                <?php } else { ?>
+                    <span class="pcf-badge ok">Kosong</span>
+                <?php } ?>
+            </div>
 
-        <table class="table table-sm text-sm">
-            <tr>
-                <th colspan="10" class="text-danger">Pemakaian</th>
-            </tr>
-            <?php
-            foreach ($data['pakai'] as $a) {
-                if ($a['st'] == 1) {
-                    $total_setor += $a['jumlah'];
-                } ?>
-                <tr>
-                    <td>
-                        <?= $a['tanggal'] == "" ? '<i class="fa-solid fa-server"></i> ' . date('d/m/y H:i', strtotime($a['insertTime'])) : '<i class="fa-solid fa-file-pen"></i> ' . $a['tanggal'] ?>
-                        <br>
-                        <span class="text-primary">
-                            <i class="fa-regular fa-note-sticky"></i> <?= $a['note'] ?>
-                        </span>
-                    </td>
-                    <td class="text-end">
-                        <span class='fw-bold text-danger'><i class='fa-solid fa-arrow-right'></i></span> <?= $data['jkeluar'][$a['id_target']]['nama'] ?><br>
-                        <span class="text-primary"><?= number_format($a['jumlah']) ?></span>
-                    </td>
-                    <td class="text-end" style="width:70px">
-                        <?php if ($a['st'] == 0) { ?>
-                            <a class="ajax btn btn-sm btn-success bg-gradient" href="<?= PV::BASE_URL ?>Petty_Cash_F/verify/<?= $a['id'] ?>/1">Verify</a>
-                        <?php } else { ?>
-                            <?php if ($a['st'] == 1) { ?>
-                                <span class="text-sm text-success">Verified</span>
-                            <?php } ?>
+            <?php if (empty($data['pakai'])) { ?>
+                <div class="pcf-empty">Tidak ada pemakaian menunggu verify.</div>
+            <?php } else { ?>
+                <table class="table table-sm text-sm">
+                    <tbody>
+                        <?php foreach ($data['pakai'] as $a) {
+                            $jenis = isset($data['jkeluar'][$a['id_target']])
+                                ? $data['jkeluar'][$a['id_target']]['nama']
+                                : ('#' . $a['id_target']);
+                            $waktu = ($a['tanggal'] ?? '') === ''
+                                ? date('d/m/y H:i', strtotime($a['insertTime']))
+                                : $a['tanggal'];
+                            ?>
+                            <tr class="pcf-row-pend">
+                                <td>
+                                    <div class="fw-semibold"><?= htmlspecialchars($waktu) ?></div>
+                                    <?php if (!empty($a['note'])) { ?>
+                                        <div class="pcf-note"><i class="fa-regular fa-note-sticky"></i> <?= htmlspecialchars($a['note']) ?></div>
+                                    <?php } ?>
+                                </td>
+                                <td class="text-end">
+                                    <div>
+                                        <span class="text-danger fw-bold"><i class="fa-solid fa-arrow-right"></i></span>
+                                        <?= htmlspecialchars($jenis) ?>
+                                    </div>
+                                    <div class="amt fw-semibold"><?= number_format((int)$a['jumlah']) ?></div>
+                                </td>
+                                <td class="text-end" style="width:88px">
+                                    <a class="ajax-verify btn btn-sm btn-success bg-gradient py-0 px-2"
+                                       href="<?= PV::BASE_URL ?>Petty_Cash_F/verify/<?= (int)$a['id'] ?>/1">Verify</a>
+                                </td>
+                            </tr>
                         <?php } ?>
-                    </td>
-                </tr>
+                    </tbody>
+                </table>
             <?php } ?>
-        </table>
+        </div>
+
+        <div class="pcf-sec">
+            <div class="pcf-sec-h">
+                <h6>Riwayat Topup</h6>
+            </div>
+
+            <?php if (empty($data['topup'])) { ?>
+                <div class="pcf-empty">Belum ada topup.</div>
+            <?php } else { ?>
+                <table class="table table-sm text-sm">
+                    <thead>
+                        <tr class="text-secondary">
+                            <th>Waktu</th>
+                            <th>Ref</th>
+                            <th class="text-end">Jumlah</th>
+                            <th class="text-end" style="width:90px">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($data['topup'] as $a) {
+                            $st = (int)$a['st'];
+                            ?>
+                            <tr>
+                                <td><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></td>
+                                <td class="pcf-meta"><?= htmlspecialchars($a['ref']) ?></td>
+                                <td class="text-end amt fw-semibold"><?= number_format((int)$a['jumlah']) ?></td>
+                                <td class="text-end">
+                                    <?php if ($st === 0) { ?>
+                                        <span class="text-warning">Checking</span>
+                                    <?php } elseif ($st === 1) { ?>
+                                        <span class="text-success">Verified</span>
+                                    <?php } else { ?>
+                                        <span class="text-secondary">—</span>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            <?php } ?>
+        </div>
     </div>
 </main>
 
-<div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="modalPettyTopup" tabindex="-1" aria-labelledby="modalPettyTopupLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
-            <div class="modal-header">
-                Topup PetyCash
+            <div class="modal-header py-2">
+                <h6 class="modal-title mb-0" id="modalPettyTopupLabel">Topup Petty Cash</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="formPettyTopup" class="ajax" action="<?= PV::BASE_URL ?>Petty_Cash_F/topupPety" method="POST">
+            <form id="formPettyTopup" action="<?= PV::BASE_URL ?>Petty_Cash_F/topupPety" method="POST">
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label" required>Jumlah</label>
-                        <input type="number" min="1" name="jumlah" class="form-control" required>
-                    </div>
+                    <label class="form-label">Jumlah</label>
+                    <input type="number" min="1" step="1" name="jumlah" class="form-control" placeholder="Rp" required autofocus>
                 </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" id="btnPettyTopup" class="btn btn-success">Proses</button>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" id="btnPettyTopup" class="btn btn-sm btn-success">Proses</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-
 <script>
-    $("a.ajax").click(function(e) {
+(function() {
+    $(document).off("click.pcfVerify", "a.ajax-verify").on("click.pcfVerify", "a.ajax-verify", function(e) {
         e.preventDefault();
-        var href = $(this).attr('href');
+        var href = $(this).attr("href");
+        var $btn = $(this);
+        if ($btn.data("busy")) {
+            return;
+        }
+        $btn.data("busy", 1).prop("disabled", true).addClass("disabled");
         $.ajax({
             url: href,
-            type: 'POST',
-            data: {},
+            type: "POST",
+            complete: function() {
+                $btn.data("busy", 0).prop("disabled", false).removeClass("disabled");
+            },
             success: function(res) {
                 if (res == 0) {
                     content();
                 } else {
                     alert(res);
                 }
+            },
+            error: function() {
+                alert("Gagal verify. Coba lagi.");
             }
         });
-    })
-
-    $("form").on("submit", function(e) {
-        e.preventDefault();
     });
 
-    (function() {
-        var submitting = false;
-        $("#formPettyTopup").off("submit.petty").on("submit.petty", function(e) {
-            e.preventDefault();
-            if (submitting) {
-                return false;
-            }
-            submitting = true;
-            var $form = $(this);
-            var $btn = $("#btnPettyTopup");
-            $btn.prop("disabled", true);
-            $.ajax({
-                url: $form.attr("action"),
-                data: $form.serialize(),
-                type: $form.attr("method") || "POST",
-                complete: function() {
-                    submitting = false;
-                    $btn.prop("disabled", false);
-                },
-                success: function(res) {
-                    if (res == 0) {
-                        var modalEl = document.getElementById("exampleModal");
-                        if (modalEl) {
-                            var modal = bootstrap.Modal.getInstance(modalEl);
-                            if (modal) {
-                                modal.hide();
-                            }
-                        }
-                        $form[0].reset();
-                        content();
-                    } else {
-                        alert(res);
+    var submitting = false;
+    $("#formPettyTopup").off("submit.petty").on("submit.petty", function(e) {
+        e.preventDefault();
+        if (submitting) {
+            return false;
+        }
+        submitting = true;
+        var $form = $(this);
+        var $btn = $("#btnPettyTopup");
+        $btn.prop("disabled", true);
+        $.ajax({
+            url: $form.attr("action"),
+            data: $form.serialize(),
+            type: $form.attr("method") || "POST",
+            complete: function() {
+                submitting = false;
+                $btn.prop("disabled", false);
+            },
+            success: function(res) {
+                if (res == 0) {
+                    var modalEl = document.getElementById("modalPettyTopup");
+                    if (modalEl) {
+                        var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                        modal.hide();
                     }
-                },
-                error: function() {
-                    alert("Gagal memproses. Coba lagi.");
+                    $form[0].reset();
+                    content();
+                } else {
+                    alert(res);
                 }
-            });
+            },
+            error: function() {
+                alert("Gagal memproses. Coba lagi.");
+            }
         });
-    })();
+    });
+})();
 </script>
