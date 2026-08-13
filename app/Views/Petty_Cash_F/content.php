@@ -220,36 +220,9 @@
                 </div>
             </div>
 
-            <?php if (empty($data['topup'])) { ?>
-                <div class="pcf-empty">Belum ada topup.</div>
-            <?php } else { ?>
-                <table class="table table-sm text-sm">
-                    <tbody>
-                        <?php foreach ($data['topup'] as $a) {
-                            $st = (int)$a['st'];
-                            ?>
-                            <tr class="pcf-row-topup">
-                                <td>
-                                    <div class="fw-semibold"><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></div>
-                                    <div class="pcf-meta"><?= htmlspecialchars($a['ref']) ?></div>
-                                </td>
-                                <td class="text-end">
-                                    <div class="amt fw-semibold"><?= number_format((int)$a['jumlah']) ?></div>
-                                </td>
-                                <td class="text-end" style="width:88px">
-                                    <?php if ($st === 0) { ?>
-                                        <span class="text-warning">Checking</span>
-                                    <?php } elseif ($st === 1) { ?>
-                                        <span class="text-success">Verified</span>
-                                    <?php } else { ?>
-                                        <span class="text-secondary">—</span>
-                                    <?php } ?>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-            <?php } ?>
+            <div id="pcfTopupList">
+                <?php $this->view(__CLASS__ . '/topup_list', $data); ?>
+            </div>
         </div>
         </div>
     </div>
@@ -278,14 +251,44 @@
 
 <script>
 (function() {
-    $(document).off("click.pcfYear", ".pcf-year-btn").on("click.pcfYear", ".pcf-year-btn", function(e) {
-        e.preventDefault();
-        var y = parseInt($(this).attr("data-year"), 10);
-        if (!y) {
+    var pcfYear = <?= (int)$data['year'] ?>;
+    var pcfLoading = false;
+
+    function setYearUi(y) {
+        pcfYear = y;
+        $("#pcfYearVal").text(y);
+        $(".pcf-year-btn").eq(0).attr("data-year", y - 1);
+        $(".pcf-year-btn").eq(1).attr("data-year", y + 1);
+    }
+
+    function loadTopupYear(y) {
+        y = parseInt(y, 10);
+        if (!y || pcfLoading) {
             return;
         }
-        $("#pcfYearVal").text(y);
-        content(String(y));
+        pcfLoading = true;
+        setYearUi(y);
+        var $list = $("#pcfTopupList");
+        $list.css("opacity", 0.45);
+        $.ajax({
+            url: "<?= PV::BASE_URL ?>Petty_Cash_F/topupList/" + y,
+            type: "GET",
+            complete: function() {
+                pcfLoading = false;
+                $list.css("opacity", 1);
+            },
+            success: function(html) {
+                $list.html(html);
+            },
+            error: function() {
+                $list.html('<div class="pcf-empty">Gagal memuat riwayat.</div>');
+            }
+        });
+    }
+
+    $(document).off("click.pcfYear", ".pcf-year-btn").on("click.pcfYear", ".pcf-year-btn", function(e) {
+        e.preventDefault();
+        loadTopupYear($(this).attr("data-year"));
     });
 
     $(document).off("click.pcfVerify", "a.ajax-verify").on("click.pcfVerify", "a.ajax-verify", function(e) {
@@ -304,7 +307,7 @@
             },
             success: function(res) {
                 if (res == 0) {
-                    content();
+                    content(String(pcfYear));
                 } else {
                     alert(res);
                 }
@@ -341,7 +344,7 @@
                         modal.hide();
                     }
                     $form[0].reset();
-                    content();
+                    content(String(pcfYear));
                 } else {
                     alert(res);
                 }

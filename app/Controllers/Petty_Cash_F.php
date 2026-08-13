@@ -69,6 +69,22 @@ class Petty_Cash_F extends Controller
       $this->view(__CLASS__ . '/content', $data);
    }
 
+   public function topupList($year = "")
+   {
+      $idToko = (int)$this->userData['id_toko'];
+      $year = (int)$year;
+      if ($year < 2000 || $year > 2100) {
+         $year = (int)date('Y');
+      }
+
+      $data['year'] = $year;
+      $data['topup'] = $this->db(0)->get_where(
+         'kas_kecil',
+         "id_target = " . $idToko . " AND tipe = 1 AND insertTime LIKE '" . $year . "%' ORDER BY id DESC"
+      );
+      $this->view(__CLASS__ . '/topup_list', $data);
+   }
+
    function verify($id, $status)
    {
       $id = (int)$id;
