@@ -7,7 +7,7 @@
         --pcf-warn: #b7791f;
     }
     .pcf > .container {
-        max-width: 380px;
+        max-width: 500px;
         margin-left: 0;
         margin-right: auto;
     }
@@ -41,7 +41,20 @@
     }
     .pcf-actions {
         display: flex;
+        align-items: stretch;
+        flex: 0 0 auto;
+    }
+    .pcf-actions .btn {
+        height: 100%;
+        min-height: 100%;
+        padding: .85rem 1.15rem;
+        border-radius: .5rem;
+        font-weight: 700;
+        font-size: .95rem;
+        display: inline-flex;
         align-items: center;
+        justify-content: center;
+        white-space: nowrap;
     }
     .pcf-sec {
         margin-top: 1.15rem;
@@ -114,7 +127,7 @@
                 <div class="amt">Rp<?= number_format((int)$data['saldo']) ?></div>
             </div>
             <div class="pcf-actions">
-                <button type="button" class="btn btn-sm btn-primary bg-gradient px-3" data-bs-toggle="modal" data-bs-target="#modalPettyTopup">
+                <button type="button" class="btn btn-primary bg-gradient" data-bs-toggle="modal" data-bs-target="#modalPettyTopup">
                     + Topup
                 </button>
             </div>
