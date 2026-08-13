@@ -43,25 +43,22 @@ class Petty_Cash_F extends Controller
          'jumlah',
          "id_sumber = " . $idToko . " AND (tipe = 2 OR tipe = 5) AND st <> 2"
       );
-
       $data['saldo'] = $topup - $pakai;
-      $data['sum_topup'] = $topup;
-      $data['sum_pakai'] = $pakai;
 
-      // Riwayat topup terbatas
+      $wherePending = "id_sumber = " . $idToko . " AND (tipe = 2 OR tipe = 5) AND st = 0";
+      $data['pending_total'] = (int)$this->db(0)->count_where('kas_kecil', $wherePending);
+      $data['pakai'] = $this->db(0)->get_where(
+         'kas_kecil',
+         $wherePending . " ORDER BY id DESC LIMIT 5"
+      );
+      $data['pending_shown'] = is_array($data['pakai']) ? count($data['pakai']) : 0;
+
       $data['topup'] = $this->db(0)->get_where(
          'kas_kecil',
          "id_target = " . $idToko . " AND tipe = 1 ORDER BY id DESC LIMIT 40"
       );
 
-      // Hanya pemakaian menunggu verify
-      $data['pakai'] = $this->db(0)->get_where(
-         'kas_kecil',
-         "id_sumber = " . $idToko . " AND (tipe = 2 OR tipe = 5) AND st = 0 ORDER BY id DESC LIMIT 60"
-      );
-
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
-      $data['pending'] = is_array($data['pakai']) ? count($data['pakai']) : 0;
 
       $this->view(__CLASS__ . '/content', $data);
    }

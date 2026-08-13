@@ -3,9 +3,13 @@
         --pcf-ink: #1a2e22;
         --pcf-muted: #6b7c72;
         --pcf-line: #e4ebe6;
-        --pcf-soft: #f3f7f4;
         --pcf-accent: #1f7a4d;
         --pcf-warn: #b7791f;
+    }
+    .pcf > .container {
+        max-width: 380px;
+        margin-left: 0;
+        margin-right: auto;
     }
     .pcf-bar {
         display: flex;
@@ -15,7 +19,7 @@
         flex-wrap: wrap;
     }
     .pcf-saldo {
-        flex: 1 1 180px;
+        flex: 1 1 140px;
         background: linear-gradient(135deg, #1f7a4d 0%, #2d9b66 55%, #3cb371 100%);
         color: #fff;
         border-radius: .5rem;
@@ -34,31 +38,6 @@
         font-weight: 700;
         font-variant-numeric: tabular-nums;
         line-height: 1.2;
-    }
-    .pcf-stats {
-        display: flex;
-        gap: .5rem;
-        flex: 2 1 220px;
-    }
-    .pcf-stat {
-        flex: 1;
-        background: var(--pcf-soft);
-        border: 1px solid var(--pcf-line);
-        border-radius: .5rem;
-        padding: .7rem .85rem;
-        min-width: 0;
-    }
-    .pcf-stat .lbl {
-        font-size: .7rem;
-        color: var(--pcf-muted);
-        text-transform: uppercase;
-        letter-spacing: .03em;
-    }
-    .pcf-stat .amt {
-        font-weight: 650;
-        font-variant-numeric: tabular-nums;
-        color: var(--pcf-ink);
-        font-size: .95rem;
     }
     .pcf-actions {
         display: flex;
@@ -99,8 +78,7 @@
     .pcf table {
         margin-bottom: 0;
     }
-    .pcf table td,
-    .pcf table th {
+    .pcf table td {
         vertical-align: middle;
     }
     .pcf .amt {
@@ -123,6 +101,9 @@
     .pcf-row-pend {
         background: #fffdf8;
     }
+    .pcf-row-topup {
+        background: #f7fbf8;
+    }
 </style>
 
 <main class="pcf">
@@ -131,16 +112,6 @@
             <div class="pcf-saldo">
                 <div class="lbl">Saldo Petty Cash</div>
                 <div class="amt">Rp<?= number_format((int)$data['saldo']) ?></div>
-            </div>
-            <div class="pcf-stats">
-                <div class="pcf-stat">
-                    <div class="lbl">Total Topup</div>
-                    <div class="amt text-success">Rp<?= number_format((int)$data['sum_topup']) ?></div>
-                </div>
-                <div class="pcf-stat">
-                    <div class="lbl">Total Pakai</div>
-                    <div class="amt text-danger">Rp<?= number_format((int)$data['sum_pakai']) ?></div>
-                </div>
             </div>
             <div class="pcf-actions">
                 <button type="button" class="btn btn-sm btn-primary bg-gradient px-3" data-bs-toggle="modal" data-bs-target="#modalPettyTopup">
@@ -152,8 +123,8 @@
         <div class="pcf-sec">
             <div class="pcf-sec-h">
                 <h6>Menunggu Verifikasi</h6>
-                <?php if ((int)$data['pending'] > 0) { ?>
-                    <span class="pcf-badge"><?= (int)$data['pending'] ?> pending</span>
+                <?php if ((int)$data['pending_total'] > 0) { ?>
+                    <span class="pcf-badge"><?= (int)$data['pending_shown'] ?> dari <?= (int)$data['pending_total'] ?></span>
                 <?php } else { ?>
                     <span class="pcf-badge ok">Kosong</span>
                 <?php } ?>
@@ -206,23 +177,19 @@
                 <div class="pcf-empty">Belum ada topup.</div>
             <?php } else { ?>
                 <table class="table table-sm text-sm">
-                    <thead>
-                        <tr class="text-secondary">
-                            <th>Waktu</th>
-                            <th>Ref</th>
-                            <th class="text-end">Jumlah</th>
-                            <th class="text-end" style="width:90px">Status</th>
-                        </tr>
-                    </thead>
                     <tbody>
                         <?php foreach ($data['topup'] as $a) {
                             $st = (int)$a['st'];
                             ?>
-                            <tr>
-                                <td><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></td>
-                                <td class="pcf-meta"><?= htmlspecialchars($a['ref']) ?></td>
-                                <td class="text-end amt fw-semibold"><?= number_format((int)$a['jumlah']) ?></td>
+                            <tr class="pcf-row-topup">
+                                <td>
+                                    <div class="fw-semibold"><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></div>
+                                    <div class="pcf-meta"><?= htmlspecialchars($a['ref']) ?></div>
+                                </td>
                                 <td class="text-end">
+                                    <div class="amt fw-semibold"><?= number_format((int)$a['jumlah']) ?></div>
+                                </td>
+                                <td class="text-end" style="width:88px">
                                     <?php if ($st === 0) { ?>
                                         <span class="text-warning">Checking</span>
                                     <?php } elseif ($st === 1) { ?>
