@@ -12,16 +12,14 @@
                         <div class="pcf-meta"><?= htmlspecialchars($a['ref']) ?></div>
                     </td>
                     <td class="text-end">
-                        <div class="amt fw-semibold"><?= number_format((int)$a['jumlah']) ?></div>
-                    </td>
-                    <td class="text-end" style="width:88px">
-                        <?php if ($st === 0) { ?>
-                            <span class="text-warning">Checking</span>
-                        <?php } elseif ($st === 1) { ?>
-                            <span class="text-success">Verified</span>
-                        <?php } else { ?>
-                            <span class="text-secondary">—</span>
-                        <?php } ?>
+                        <div class="amt fw-semibold">
+                            <?= number_format((int)$a['jumlah']) ?>
+                            <?php if ($st === 0) { ?>
+                                <i class="fa-solid fa-clock text-warning ms-1" title="Checking"></i>
+                            <?php } elseif ($st === 1) { ?>
+                                <i class="fa-solid fa-circle-check text-success ms-1" title="Verified"></i>
+                            <?php } ?>
+                        </div>
                     </td>
                 </tr>
             <?php } ?>
