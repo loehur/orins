@@ -29,13 +29,15 @@ class Petty_Cash extends Controller
       $this->view($this->v_viewer, ["controller" => __CLASS__, "parse" => $parse1, "page" => $parse2]);
    }
 
-   public function content($ym = "")
+   public function content($year = "", $ym = "")
    {
       $idToko = (int)$this->userData['id_toko'];
+      $year = $this->normalizeYear($year);
       $ym = $this->normalizeYm($ym);
       $canOps = in_array($this->userData['user_tipe'], PV::PRIV[2]);
 
       $data['saldo'] = $this->calcSaldo($idToko);
+      $data['year'] = $year;
       $data['ym'] = $ym;
       $data['can_ops'] = $canOps;
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
@@ -49,13 +51,13 @@ class Petty_Cash extends Controller
       );
       $data['pending_shown'] = is_array($data['pending']) ? count($data['pending']) : 0;
 
-      // Riwayat topup bulan terpilih (verified)
+      // Riwayat topup per tahun
       $data['topup'] = $this->db(0)->get_where(
          'kas_kecil',
-         "id_target = " . $idToko . " AND tipe = 1 AND st <> 0 AND insertTime LIKE '" . $ym . "%' ORDER BY id DESC"
+         "id_target = " . $idToko . " AND tipe = 1 AND st <> 0 AND insertTime LIKE '" . $year . "%' ORDER BY id DESC"
       );
 
-      // Pemakaian bulan terpilih
+      // Pemakaian per bulan
       $data['pakai'] = $this->db(0)->get_where(
          'kas_kecil',
          "id_sumber = " . $idToko . " AND (tipe = 2 OR tipe = 5) AND insertTime LIKE '" . $ym . "%' ORDER BY id DESC"
@@ -64,15 +66,15 @@ class Petty_Cash extends Controller
       $this->view(__CLASS__ . '/content', $data);
    }
 
-   public function topupList($ym = "")
+   public function topupList($year = "")
    {
       $idToko = (int)$this->userData['id_toko'];
-      $ym = $this->normalizeYm($ym);
-      $data['ym'] = $ym;
+      $year = $this->normalizeYear($year);
+      $data['year'] = $year;
       $data['can_ops'] = in_array($this->userData['user_tipe'], PV::PRIV[2]);
       $data['topup'] = $this->db(0)->get_where(
          'kas_kecil',
-         "id_target = " . $idToko . " AND tipe = 1 AND st <> 0 AND insertTime LIKE '" . $ym . "%' ORDER BY id DESC"
+         "id_target = " . $idToko . " AND tipe = 1 AND st <> 0 AND insertTime LIKE '" . $year . "%' ORDER BY id DESC"
       );
       $this->view(__CLASS__ . '/topup_list', $data);
    }
@@ -236,6 +238,15 @@ class Petty_Cash extends Controller
          'ok' => 1,
          'saldo' => $this->calcSaldo($idToko),
       ]);
+   }
+
+   private function normalizeYear($year)
+   {
+      $year = (int)$year;
+      if ($year < 2000 || $year > 2100) {
+         return (int)date('Y');
+      }
+      return $year;
    }
 
    private function normalizeYm($ym)

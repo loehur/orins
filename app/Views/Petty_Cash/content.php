@@ -1,4 +1,5 @@
 <?php
+$year = (int)$data['year'];
 $ym = $data['ym'];
 $ymLabel = date('M Y', strtotime($ym . '-01'));
 $ymPrev = date('Y-m', strtotime($ym . '-01 -1 month'));
@@ -72,23 +73,26 @@ $canOps = !empty($data['can_ops']);
         margin-bottom: .85rem;
         max-width: 500px;
     }
-    .pc-month {
+    .pc-nav {
         display: inline-flex;
         align-items: center;
         gap: .35rem;
     }
-    .pc-month .btn {
+    .pc-nav .btn {
         padding: .05rem .45rem;
         line-height: 1.2;
         font-size: .8rem;
     }
-    .pc-month .val {
+    .pc-nav .val {
         font-weight: 700;
         font-variant-numeric: tabular-nums;
-        min-width: 4.5rem;
+        min-width: 2.6rem;
         text-align: center;
         color: var(--pc-ink);
         font-size: .9rem;
+    }
+    .pc-nav.pc-nav-month .val {
+        min-width: 4.5rem;
     }
     .pc-cols {
         display: flex;
@@ -100,6 +104,11 @@ $canOps = !empty($data['can_ops']);
         flex: 1 1 280px;
         max-width: 500px;
         min-width: 0;
+    }
+    #pcPakaiList {
+        max-height: 500px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
     }
     .pc-sec-h {
         display: flex;
@@ -143,6 +152,11 @@ $canOps = !empty($data['can_ops']);
     .pc-note {
         color: #3d6b9a;
         font-size: .8rem;
+    }
+    .pc-jenis {
+        font-style: italic;
+        color: #8a9690;
+        font-size: .85rem;
     }
     .pc-empty {
         color: var(--pc-muted);
@@ -205,16 +219,21 @@ $canOps = !empty($data['can_ops']);
             <?php } ?>
         </div>
 
-        <div class="pc-month-bar">
-            <div class="pc-month">
-                <button type="button" class="btn btn-sm btn-outline-secondary pc-month-btn" data-ym="<?= $ymPrev ?>">&lsaquo;</button>
-                <span class="val" id="pcMonthVal"><?= $ymLabel ?></span>
-                <button type="button" class="btn btn-sm btn-outline-secondary pc-month-btn" data-ym="<?= $ymNext ?>">&rsaquo;</button>
-            </div>
-            <span class="pc-meta">Filter riwayat &amp; pemakaian</span>
-        </div>
-
         <div class="pc-cols">
+            <div class="pc-sec">
+                <div class="pc-sec-h">
+                    <h6>Pemakaian</h6>
+                    <div class="pc-nav pc-nav-month">
+                        <button type="button" class="btn btn-sm btn-outline-secondary pc-month-btn" data-ym="<?= $ymPrev ?>">&lsaquo;</button>
+                        <span class="val" id="pcMonthVal"><?= $ymLabel ?></span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary pc-month-btn" data-ym="<?= $ymNext ?>">&rsaquo;</button>
+                    </div>
+                </div>
+                <div id="pcPakaiList">
+                    <?php $this->view('Petty_Cash/pakai_list', $data); ?>
+                </div>
+            </div>
+
             <div class="pc-sec">
                 <div class="pc-sec-h">
                     <h6>Topup Menunggu Verify</h6>
@@ -232,18 +251,14 @@ $canOps = !empty($data['can_ops']);
 
                 <div class="pc-sec-h mt-3">
                     <h6>Riwayat Topup</h6>
+                    <div class="pc-nav">
+                        <button type="button" class="btn btn-sm btn-outline-secondary pc-year-btn" data-year="<?= $year - 1 ?>">&lsaquo;</button>
+                        <span class="val" id="pcYearVal"><?= $year ?></span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary pc-year-btn" data-year="<?= $year + 1 ?>">&rsaquo;</button>
+                    </div>
                 </div>
                 <div id="pcTopupList">
                     <?php $this->view('Petty_Cash/topup_list', $data); ?>
-                </div>
-            </div>
-
-            <div class="pc-sec">
-                <div class="pc-sec-h">
-                    <h6>Pemakaian</h6>
-                </div>
-                <div id="pcPakaiList">
-                    <?php $this->view('Petty_Cash/pakai_list', $data); ?>
                 </div>
             </div>
         </div>
@@ -324,8 +339,10 @@ $canOps = !empty($data['can_ops']);
 
 <script>
 (function() {
+    var pcYear = <?= (int)$year ?>;
     var pcYm = "<?= $ym ?>";
-    var pcLoading = false;
+    var pcLoadingYear = false;
+    var pcLoadingMonth = false;
 
     function formatRp(n) {
         n = parseInt(n, 10) || 0;
@@ -351,6 +368,13 @@ $canOps = !empty($data['can_ops']);
         return d.getFullYear() + "-" + (m < 10 ? "0" + m : m);
     }
 
+    function setYearUi(y) {
+        pcYear = parseInt(y, 10);
+        $("#pcYearVal").text(pcYear);
+        $(".pc-year-btn").eq(0).attr("data-year", pcYear - 1);
+        $(".pc-year-btn").eq(1).attr("data-year", pcYear + 1);
+    }
+
     function setMonthUi(ym) {
         pcYm = ym;
         $("#pcMonthVal").text(monthLabel(ym));
@@ -358,30 +382,34 @@ $canOps = !empty($data['can_ops']);
         $(".pc-month-btn").eq(1).attr("data-ym", shiftYm(ym, 1));
     }
 
-    function loadMonth(ym) {
+    function loadTopupYear(y) {
+        y = parseInt(y, 10);
+        if (!y || pcLoadingYear) return;
+        pcLoadingYear = true;
+        setYearUi(y);
+        var $list = $("#pcTopupList").css("opacity", 0.45);
+        $.get("<?= PV::BASE_URL ?>Petty_Cash/topupList/" + y)
+            .done(function(html) { $list.html(html); })
+            .fail(function() { $list.html('<div class="pc-empty">Gagal memuat.</div>'); })
+            .always(function() {
+                pcLoadingYear = false;
+                $list.css("opacity", 1);
+            });
+    }
+
+    function loadPakaiMonth(ym) {
         ym = String(ym || "");
-        if (!ym || pcLoading) return;
-        pcLoading = true;
+        if (!ym || pcLoadingMonth) return;
+        pcLoadingMonth = true;
         setMonthUi(ym);
-        var $topup = $("#pcTopupList").css("opacity", 0.45);
-        var $pakai = $("#pcPakaiList").css("opacity", 0.45);
-        var done = 0;
-        function finish() {
-            done += 1;
-            if (done >= 2) {
-                pcLoading = false;
-                $topup.css("opacity", 1);
-                $pakai.css("opacity", 1);
-            }
-        }
-        $.get("<?= PV::BASE_URL ?>Petty_Cash/topupList/" + ym)
-            .done(function(html) { $topup.html(html); })
-            .fail(function() { $topup.html('<div class="pc-empty">Gagal memuat.</div>'); })
-            .always(finish);
+        var $list = $("#pcPakaiList").css("opacity", 0.45);
         $.get("<?= PV::BASE_URL ?>Petty_Cash/pakaiList/" + ym)
-            .done(function(html) { $pakai.html(html); })
-            .fail(function() { $pakai.html('<div class="pc-empty">Gagal memuat.</div>'); })
-            .always(finish);
+            .done(function(html) { $list.html(html); })
+            .fail(function() { $list.html('<div class="pc-empty">Gagal memuat.</div>'); })
+            .always(function() {
+                pcLoadingMonth = false;
+                $list.css("opacity", 1);
+            });
     }
 
     function updatePendingBadge(shown, total) {
@@ -398,9 +426,14 @@ $canOps = !empty($data['can_ops']);
         });
     }
 
+    $(document).off("click.pcYear", ".pc-year-btn").on("click.pcYear", ".pc-year-btn", function(e) {
+        e.preventDefault();
+        loadTopupYear($(this).attr("data-year"));
+    });
+
     $(document).off("click.pcMonth", ".pc-month-btn").on("click.pcMonth", ".pc-month-btn", function(e) {
         e.preventDefault();
-        loadMonth($(this).attr("data-ym"));
+        loadPakaiMonth($(this).attr("data-ym"));
     });
 
     $(document).off("click.pcVerify", "a.ajax-verify").on("click.pcVerify", "a.ajax-verify", function(e) {
@@ -438,7 +471,7 @@ $canOps = !empty($data['can_ops']);
                         } else {
                             updatePendingBadge(shown, total);
                         }
-                        loadMonth(pcYm);
+                        loadTopupYear(pcYear);
                     }, 280);
                 }, 180);
             },
@@ -488,7 +521,7 @@ $canOps = !empty($data['can_ops']);
                         modal.hide();
                     }
                     $form[0].reset();
-                    content(pcYm);
+                    content(String(pcYear), pcYm);
                 } else {
                     alert(res);
                 }
@@ -547,7 +580,7 @@ $canOps = !empty($data['can_ops']);
                         }
                     }, 280);
                 } else {
-                    loadMonth(pcYm);
+                    loadPakaiMonth(pcYm);
                 }
                 $btn.prop("disabled", false);
             },

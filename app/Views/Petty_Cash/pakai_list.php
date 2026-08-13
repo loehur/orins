@@ -25,10 +25,7 @@
                         </div>
                     </td>
                     <td class="text-end">
-                        <div>
-                            <span class="text-danger fw-bold"><i class="fa-solid fa-arrow-right"></i></span>
-                            <?= htmlspecialchars($jenis) ?>
-                        </div>
+                        <div class="pc-jenis"><?= htmlspecialchars($jenis) ?></div>
                         <div class="amt fw-semibold">
                             <?= number_format((int)$a['jumlah']) ?>
                             <?php if ($st === 0) { ?>
