@@ -49,7 +49,7 @@ class Petty_Cash_F extends Controller
       $data['pending_total'] = (int)$this->db(0)->count_where('kas_kecil', $wherePending);
       $data['pakai'] = $this->db(0)->get_where(
          'kas_kecil',
-         $wherePending . " ORDER BY id DESC LIMIT 5"
+         $wherePending . " ORDER BY id DESC LIMIT 20"
       );
       $data['pending_shown'] = is_array($data['pakai']) ? count($data['pakai']) : 0;
 

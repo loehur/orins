@@ -7,7 +7,7 @@
         --pcf-warn: #b7791f;
     }
     .pcf > .container {
-        max-width: 500px;
+        max-width: 1040px;
         margin-left: 0;
         margin-right: auto;
     }
@@ -17,6 +17,7 @@
         gap: .75rem;
         margin-bottom: 1rem;
         flex-wrap: wrap;
+        max-width: 500px;
     }
     .pcf-saldo {
         flex: 1 1 140px;
@@ -56,8 +57,17 @@
         justify-content: center;
         white-space: nowrap;
     }
+    .pcf-cols {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 1.25rem;
+        align-items: flex-start;
+    }
     .pcf-sec {
-        margin-top: 1.15rem;
+        flex: 1 1 280px;
+        max-width: 500px;
+        min-width: 0;
+        margin-top: 0;
     }
     .pcf-sec-h {
         display: flex;
@@ -133,6 +143,7 @@
             </div>
         </div>
 
+        <div class="pcf-cols">
         <div class="pcf-sec">
             <div class="pcf-sec-h">
                 <h6>Menunggu Verifikasi</h6>
@@ -216,6 +227,7 @@
                     </tbody>
                 </table>
             <?php } ?>
+        </div>
         </div>
     </div>
 </main>
