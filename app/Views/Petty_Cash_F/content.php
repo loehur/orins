@@ -123,6 +123,15 @@
     }
     .pcf-row-pend {
         background: #fffdf8;
+        transition: opacity .28s ease, transform .28s ease, max-height .28s ease, padding .28s ease;
+    }
+    .pcf-row-pend.pcf-row-out {
+        opacity: 0;
+        transform: translateX(12px);
+        pointer-events: none;
+    }
+    .pcf-row-pend.pcf-row-ok td {
+        background: #e8f6ee;
     }
     .pcf-row-topup {
         background: #f7fbf8;
@@ -165,49 +174,18 @@
         <div class="pcf-sec">
             <div class="pcf-sec-h">
                 <h6>Menunggu Verifikasi</h6>
-                <?php if ((int)$data['pending_total'] > 0) { ?>
-                    <span class="pcf-badge"><?= (int)$data['pending_shown'] ?> dari <?= (int)$data['pending_total'] ?></span>
-                <?php } else { ?>
-                    <span class="pcf-badge ok">Kosong</span>
-                <?php } ?>
+                <span class="pcf-badge<?= (int)$data['pending_total'] > 0 ? '' : ' ok' ?>" id="pcfPendingBadge">
+                    <?php if ((int)$data['pending_total'] > 0) { ?>
+                        <?= (int)$data['pending_shown'] ?> dari <?= (int)$data['pending_total'] ?>
+                    <?php } else { ?>
+                        Kosong
+                    <?php } ?>
+                </span>
             </div>
 
-            <?php if (empty($data['pakai'])) { ?>
-                <div class="pcf-empty">Tidak ada pemakaian menunggu verify.</div>
-            <?php } else { ?>
-                <table class="table table-sm text-sm">
-                    <tbody>
-                        <?php foreach ($data['pakai'] as $a) {
-                            $jenis = isset($data['jkeluar'][$a['id_target']])
-                                ? $data['jkeluar'][$a['id_target']]['nama']
-                                : ('#' . $a['id_target']);
-                            $waktu = ($a['tanggal'] ?? '') === ''
-                                ? date('d/m/y H:i', strtotime($a['insertTime']))
-                                : $a['tanggal'];
-                            ?>
-                            <tr class="pcf-row-pend">
-                                <td>
-                                    <div class="fw-semibold"><?= htmlspecialchars($waktu) ?></div>
-                                    <?php if (!empty($a['note'])) { ?>
-                                        <div class="pcf-note"><i class="fa-regular fa-note-sticky"></i> <?= htmlspecialchars($a['note']) ?></div>
-                                    <?php } ?>
-                                </td>
-                                <td class="text-end">
-                                    <div>
-                                        <span class="text-danger fw-bold"><i class="fa-solid fa-arrow-right"></i></span>
-                                        <?= htmlspecialchars($jenis) ?>
-                                    </div>
-                                    <div class="amt fw-semibold"><?= number_format((int)$a['jumlah']) ?></div>
-                                </td>
-                                <td class="text-end" style="width:88px">
-                                    <a class="ajax-verify btn btn-sm btn-success bg-gradient py-0 px-2"
-                                       href="<?= PV::BASE_URL ?>Petty_Cash_F/verify/<?= (int)$a['id'] ?>/1">Verify</a>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-            <?php } ?>
+            <div id="pcfPendingList">
+                <?php $this->view('Petty_Cash_F/pending_list', $data); ?>
+            </div>
         </div>
 
         <div class="pcf-sec">
@@ -286,6 +264,27 @@
         });
     }
 
+    function updatePendingBadge(shown, total) {
+        var $badge = $("#pcfPendingBadge");
+        if (total <= 0) {
+            $badge.addClass("ok").text("Kosong");
+        } else {
+            $badge.removeClass("ok").text(shown + " dari " + total);
+        }
+    }
+
+    function refreshPendingList(pendingTotal) {
+        $.ajax({
+            url: "<?= PV::BASE_URL ?>Petty_Cash_F/pendingList",
+            type: "GET",
+            success: function(html) {
+                $("#pcfPendingList").html(html);
+                var shown = $("#pcfPendingTable tbody tr").length;
+                updatePendingBadge(shown, pendingTotal);
+            }
+        });
+    }
+
     $(document).off("click.pcfYear", ".pcf-year-btn").on("click.pcfYear", ".pcf-year-btn", function(e) {
         e.preventDefault();
         loadTopupYear($(this).attr("data-year"));
@@ -295,24 +294,44 @@
         e.preventDefault();
         var href = $(this).attr("href");
         var $btn = $(this);
-        if ($btn.data("busy")) {
+        var $tr = $btn.closest("tr");
+        if ($btn.data("busy") || $tr.hasClass("pcf-row-out")) {
             return;
         }
         $btn.data("busy", 1).prop("disabled", true).addClass("disabled");
         $.ajax({
             url: href,
             type: "POST",
-            complete: function() {
-                $btn.data("busy", 0).prop("disabled", false).removeClass("disabled");
-            },
+            dataType: "json",
             success: function(res) {
-                if (res == 0) {
-                    content(String(pcfYear));
-                } else {
-                    alert(res);
+                if (!res || !res.ok) {
+                    $btn.data("busy", 0).prop("disabled", false).removeClass("disabled");
+                    alert((res && res.error) ? res.error : "Gagal verify");
+                    return;
                 }
+                $tr.addClass("pcf-row-ok");
+                $btn.replaceWith('<span class="text-success"><i class="fa-solid fa-circle-check"></i></span>');
+                setTimeout(function() {
+                    $tr.addClass("pcf-row-out");
+                    setTimeout(function() {
+                        $tr.remove();
+                        var shown = $("#pcfPendingTable tbody tr").length;
+                        var total = parseInt(res.pending_total, 10) || 0;
+                        if (shown === 0) {
+                            if (total > 0) {
+                                refreshPendingList(total);
+                            } else {
+                                $("#pcfPendingList").html('<div class="pcf-empty">Tidak ada pemakaian menunggu verify.</div>');
+                                updatePendingBadge(0, 0);
+                            }
+                        } else {
+                            updatePendingBadge(shown, total);
+                        }
+                    }, 280);
+                }, 180);
             },
             error: function() {
+                $btn.data("busy", 0).prop("disabled", false).removeClass("disabled");
                 alert("Gagal verify. Coba lagi.");
             }
         });

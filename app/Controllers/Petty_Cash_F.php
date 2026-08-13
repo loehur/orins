@@ -85,12 +85,27 @@ class Petty_Cash_F extends Controller
       $this->view(__CLASS__ . '/topup_list', $data);
    }
 
+   public function pendingList()
+   {
+      $idToko = (int)$this->userData['id_toko'];
+      $wherePending = "id_sumber = " . $idToko . " AND (tipe = 2 OR tipe = 5) AND st = 0";
+      $data['pending_total'] = (int)$this->db(0)->count_where('kas_kecil', $wherePending);
+      $data['pakai'] = $this->db(0)->get_where(
+         'kas_kecil',
+         $wherePending . " ORDER BY id DESC LIMIT 10"
+      );
+      $data['pending_shown'] = is_array($data['pakai']) ? count($data['pakai']) : 0;
+      $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
+      $this->view(__CLASS__ . '/pending_list', $data);
+   }
+
    function verify($id, $status)
    {
       $id = (int)$id;
       $status = (int)$status;
       if ($id <= 0) {
-         echo "ID tidak valid";
+         header('Content-Type: application/json');
+         echo json_encode(['ok' => 0, 'error' => 'ID tidak valid']);
          exit();
       }
 
@@ -99,7 +114,21 @@ class Petty_Cash_F extends Controller
          "st = '" . $status . "'",
          "id = '" . $id . "' AND st = 0"
       );
-      echo $update['errno'] == 0 ? 0 : $update['error'];
+
+      header('Content-Type: application/json');
+      if ($update['errno'] <> 0) {
+         echo json_encode(['ok' => 0, 'error' => $update['error']]);
+         exit();
+      }
+
+      $idToko = (int)$this->userData['id_toko'];
+      $wherePending = "id_sumber = " . $idToko . " AND (tipe = 2 OR tipe = 5) AND st = 0";
+      $pendingTotal = (int)$this->db(0)->count_where('kas_kecil', $wherePending);
+
+      echo json_encode([
+         'ok' => 1,
+         'pending_total' => $pendingTotal,
+      ]);
    }
 
    function topupPety()
