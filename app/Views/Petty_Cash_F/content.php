@@ -221,7 +221,7 @@
             </div>
 
             <div id="pcfTopupList">
-                <?php $this->view(__CLASS__ . '/topup_list', $data); ?>
+                <?php $this->view('Petty_Cash_F/topup_list', $data); ?>
             </div>
         </div>
         </div>
