@@ -112,12 +112,23 @@ class Operasi extends Controller
                 if ($update['errno'] == 0) {
                     if (PV::PRO == 1 && $notif == 1) {
                         $get = $cek_toko_asal[$this->userData['id_toko']];
-                        $nama_sumber = strtoupper($this->dToko[$get['id_toko']]['nama_toko']);
-                        $pelanggan = strtoupper($this->dPelangganAll[$get['id_pelanggan']]['nama']);
+                        $id_pel = $get['id_pelanggan'] ?? 0;
+                        $id_toko = $get['id_toko'] ?? 0;
+                        $nama_sumber = isset($this->dToko[$id_toko])
+                            ? strtoupper($this->dToko[$id_toko]['nama_toko'])
+                            : ('TOKO#' . $id_toko);
+                        $pel = $this->dPelangganAll[$id_pel] ?? null;
+                        if ($pel === null) {
+                            $pel = $this->db(0)->get_where_row('pelanggan', "id_pelanggan = " . (int)$id_pel);
+                        }
+                        $pelanggan = strtoupper($pel['nama'] ?? ('PELANGGAN#' . $id_pel));
                         $no_ref = substr($ref, 0, strlen($ref) - 4) . "-" . substr($ref, -4);
-                        $text = "*" . $nama_sumber . "* \nAn. " . $pelanggan . " \nNo. " . $no_ref . ", " . " Sudah Selesai. \n" . PV::publicUrl('I/i/' . $get['id_pelanggan']);
+                        $link = method_exists('PV', 'publicUrl')
+                            ? PV::publicUrl('I/i/' . $id_pel)
+                            : ('https://' . PV::DOMAIN . rtrim(PV::BASE_URL, '/') . '/I/i/' . $id_pel);
+                        $text = "*" . $nama_sumber . "* \nAn. " . $pelanggan . " \nNo. " . $no_ref . ", " . " Sudah Selesai. \n" . $link;
 
-                        $hp = $this->dPelangganAll[$get['id_pelanggan']]['no_hp'];
+                        $hp = $pel['no_hp'] ?? '';
                         $no_wa = $this->valid_number($hp);
                         if ($no_wa <> false) {
                             $target = $no_wa;
@@ -144,16 +155,26 @@ class Operasi extends Controller
                     if ($update['errno'] == 0) {
                         if (PV::PRO == 1 && $notif == 1) {
                             $get = $cek_toko[$this->userData['id_toko']];
-                            $pelanggan = strtoupper($this->dPelangganAll[$get['id_pelanggan']]['nama']);
-                            $cs_name = $this->dKaryawanAll[$get['id_user_afiliasi']]['nama'];
-                            $cs = strtoupper(substr($cs_name, 0, 2) . "-" . $get['id_user_afiliasi']);
+                            $id_pel = $get['id_pelanggan'] ?? 0;
+                            $pel = $this->dPelangganAll[$id_pel] ?? null;
+                            if ($pel === null) {
+                                $pel = $this->db(0)->get_where_row('pelanggan', "id_pelanggan = " . (int)$id_pel);
+                            }
+                            $pelanggan = strtoupper($pel['nama'] ?? ('PELANGGAN#' . $id_pel));
+                            $cs_name = isset($this->dKaryawanAll[$id_karyawan])
+                                ? $this->dKaryawanAll[$id_karyawan]['nama']
+                                : '';
+                            $cs = strtoupper(substr($cs_name, 0, 2) . "-" . $id_karyawan);
                             $sort_ref = substr($get['ref'], -4);
                             $text = "*" . $pelanggan . "* _#" . $sort_ref . "_ \nSudah Selesai. _" . $cs . "_";
 
-                            $target = $this->dToko[$get['id_toko']]['hp'];
-                            $kirim = $this->data("WA")->send_wa(PV::API_KEY['fonnte'], $target, $text, 1);
-                            if ($kirim['status'] <> true) {
-                                print_r($kirim);
+                            $id_toko_asal = $get['id_toko'] ?? 0;
+                            $target = isset($this->dToko[$id_toko_asal]) ? $this->dToko[$id_toko_asal]['hp'] : '';
+                            if ($target !== '' && $target !== null) {
+                                $kirim = $this->data("WA")->send_wa(PV::API_KEY['fonnte'], $target, $text, 1);
+                                if ($kirim['status'] <> true) {
+                                    print_r($kirim);
+                                }
                             }
                         }
                     }

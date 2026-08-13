@@ -1,34 +1,89 @@
-<link rel="stylesheet" href="<?= PV::ASSETS_URL ?>css/autocomplete.css" rel="stylesheet" />
-
 <style>
-    td {
-        align-content: center;
+    .ok-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .75rem;
+        margin-bottom: .75rem;
+    }
+    .ok-head h6 {
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: .02em;
+    }
+    .ok-empty {
+        color: #6c757d;
+        font-size: .875rem;
+        padding: .75rem 0;
+    }
+    .ok-amt {
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+    .ok-meta {
+        color: #6c757d;
+        font-size: .8rem;
     }
 </style>
 
 <main>
-    <?php
-    $total_setor = 0;
-    ?>
-    <!-- Main page content-->
-    <div class="container">
-        <div class="row mx-0">
-            <div class="col text-end">
-                <div class="btn-group me-1">
-                    <button type="button" class="btn shadow-none btn-sm btn-primary bg-gradient py-1 px-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                        Operasi Kas
-                        <span class="visually-hidden">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-start mt-2 p-0">
-                        <li><a data-bs-toggle="modal" data-bs-target="#exampleModal" class="dropdown-item" href="#">Topup Petycash</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-auto text-end pt-2">
-                Saldo Kas Rp<?= number_format($data['saldo']) ?>
-            </div>
+    <div class="container pb-4">
+        <div class="ok-head">
+            <h6>Topup Petty Cash</h6>
+            <button type="button" class="btn btn-sm btn-primary bg-gradient px-3" data-bs-toggle="modal" data-bs-target="#modalTopupOffice">
+                + Topup
+            </button>
         </div>
 
+        <table class="table table-sm text-sm mb-0">
+            <thead>
+                <tr class="text-secondary">
+                    <th>Waktu</th>
+                    <th>Tujuan</th>
+                    <th class="text-end">Jumlah</th>
+                    <th class="text-end" style="width:90px">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($data['keluar_list'])) { ?>
+                    <tr>
+                        <td colspan="4" class="ok-empty border-0">Belum ada topup.</td>
+                    </tr>
+                <?php } else {
+                    foreach ($data['keluar_list'] as $a) {
+                        $tokoNama = isset($this->dToko[$a['id_target']])
+                            ? strtoupper($this->dToko[$a['id_target']]['nama_toko'])
+                            : ('#' . $a['id_target']);
+                        $st = (int)$a['st'];
+                        ?>
+                        <tr>
+                            <td class="align-middle">
+                                <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
+                                <div class="ok-meta"><?= htmlspecialchars($a['ref']) ?></div>
+                            </td>
+                            <td class="align-middle">
+                                <span class="text-success fw-bold"><i class="fa-solid fa-arrow-right"></i></span>
+                                <?= htmlspecialchars($tokoNama) ?>
+                            </td>
+                            <td class="align-middle text-end ok-amt fw-semibold">
+                                <?= number_format((int)$a['jumlah']) ?>
+                            </td>
+                            <td class="align-middle text-end">
+                                <?php if ($st === 0) { ?>
+                                    <span class="text-warning">Checking</span>
+                                <?php } elseif ($st === 1) { ?>
+                                    <span class="text-success">Verified</span>
+                                <?php } else { ?>
+                                    <span class="text-secondary">—</span>
+                                <?php } ?>
+                            </td>
+                        </tr>
+                    <?php }
+                } ?>
+            </tbody>
+        </table>
+
+        <?php /* Setoran Kas Kantor — tidak ditampilkan (kode tetap disimpan)
         <table class="table table-sm text-sm">
             <tr>
                 <th colspan="10" class="text-success">Setoran Kas Kantor</th>
@@ -79,130 +134,82 @@
                 </tr>
             <?php } ?>
         </table>
-
-        <table class="table table-sm text-sm">
-            <tr>
-                <th colspan="10" class="text-primary">Mutasi</th>
-            </tr>
-            <?php foreach ($data['keluar_list'] as $a) {
-                if ($a['st'] == 1) {
-                    $total_setor += $a['jumlah'];
-                } ?>
-                <tr>
-                    <td class="align-middle">
-                        <?= date('d/m/y H:i', strtotime($a['insertTime'])) ?>
-                    </td>
-                    <td>
-                        <?= $a['tipe'] == 1 ? "Topup Petycash" : "OPO IKI" ?>
-                    </td>
-                    <td>
-                        <span class='fw-bold text-success'><i class='fa-solid fa-arrow-right'></i></span> <?= strtoupper($this->dToko[$a['id_target']]['nama_toko']) ?>
-                    </td>
-                    <td class="text-end">
-                        <?= number_format($a['jumlah']) ?>
-                    </td>
-                    <td class="text-end" style="width:70px">
-                        <?php if ($a['st'] == 0) { ?>
-                            <span class="text-sm text-warning">Checking</span>
-                        <?php } else { ?>
-                            <?php if ($a['st'] == 1) { ?>
-                                <span class="text-sm text-success">Verified</span>
-                            <?php } ?>
-                        <?php } ?>
-                    </td>
-                </tr>
-            <?php } ?>
-        </table>
+        */ ?>
     </div>
 </main>
 
-<div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="modalTopupOffice" tabindex="-1" aria-labelledby="modalTopupOfficeLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                Topup PetyCash
+            <div class="modal-header py-2">
+                <h6 class="modal-title mb-0" id="modalTopupOfficeLabel">Topup Petty Cash</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="formOfficeTopup" class="ajax" action="<?= PV::BASE_URL ?>Office_Kas/topupPety" method="POST">
+            <form id="formOfficeTopup" action="<?= PV::BASE_URL ?>Office_Kas/topupPety" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label" required>Jumlah</label>
-                        <input type="number" min="1" name="jumlah" class="form-control" required>
+                        <label class="form-label">Toko</label>
+                        <select class="form-select" name="toko" required>
+                            <option value="">— pilih toko —</option>
+                            <?php foreach ($this->dToko as $dt) {
+                                if ((int)$dt['id_toko'] === 0) {
+                                    continue;
+                                } ?>
+                                <option value="<?= (int)$dt['id_toko'] ?>"><?= htmlspecialchars($dt['nama_toko']) ?></option>
+                            <?php } ?>
+                        </select>
                     </div>
-                    <select class="form form-select" name="toko">
-                        <?php foreach ($this->dToko as $dt) { ?>
-                            <option value="<?= $dt['id_toko'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModalAff"><?= $dt['nama_toko'] ?></option>
-                        <?php } ?>
-                    </select>
+                    <div class="mb-0">
+                        <label class="form-label">Jumlah</label>
+                        <input type="number" min="1" step="1" name="jumlah" class="form-control" placeholder="Rp" required>
+                    </div>
                 </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" id="btnOfficeTopup" class="btn btn-success">Proses</button>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" id="btnOfficeTopup" class="btn btn-sm btn-success">Proses</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-
 <script>
-    $("a.ajax").click(function(e) {
+(function() {
+    var submitting = false;
+    $("#formOfficeTopup").off("submit.petty").on("submit.petty", function(e) {
         e.preventDefault();
-        var href = $(this).attr('href');
+        if (submitting) {
+            return false;
+        }
+        submitting = true;
+        var $form = $(this);
+        var $btn = $("#btnOfficeTopup");
+        $btn.prop("disabled", true);
         $.ajax({
-            url: href,
-            type: 'POST',
-            data: {},
+            url: $form.attr("action"),
+            data: $form.serialize(),
+            type: $form.attr("method") || "POST",
+            complete: function() {
+                submitting = false;
+                $btn.prop("disabled", false);
+            },
             success: function(res) {
                 if (res == 0) {
+                    var modalEl = document.getElementById("modalTopupOffice");
+                    if (modalEl) {
+                        var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                        modal.hide();
+                    }
+                    $form[0].reset();
                     content();
                 } else {
                     alert(res);
                 }
+            },
+            error: function() {
+                alert("Gagal memproses. Coba lagi.");
             }
         });
-    })
-
-    $("form").on("submit", function(e) {
-        e.preventDefault();
     });
-
-    (function() {
-        var submitting = false;
-        $("#formOfficeTopup").off("submit.petty").on("submit.petty", function(e) {
-            e.preventDefault();
-            if (submitting) {
-                return false;
-            }
-            submitting = true;
-            var $form = $(this);
-            var $btn = $("#btnOfficeTopup");
-            $btn.prop("disabled", true);
-            $.ajax({
-                url: $form.attr("action"),
-                data: $form.serialize(),
-                type: $form.attr("method") || "POST",
-                complete: function() {
-                    submitting = false;
-                    $btn.prop("disabled", false);
-                },
-                success: function(res) {
-                    if (res == 0) {
-                        var modalEl = document.getElementById("exampleModal");
-                        if (modalEl) {
-                            var modal = bootstrap.Modal.getInstance(modalEl);
-                            if (modal) {
-                                modal.hide();
-                            }
-                        }
-                        $form[0].reset();
-                        content();
-                    } else {
-                        alert(res);
-                    }
-                },
-                error: function() {
-                    alert("Gagal memproses. Coba lagi.");
-                }
-            });
-        });
-    })();
+})();
 </script>

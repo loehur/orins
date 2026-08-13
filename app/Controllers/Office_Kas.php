@@ -18,7 +18,7 @@ class Office_Kas extends Controller
    public function index()
    {
       $this->view("Layouts/layout_main", [
-         "title" => "Office - Kas"
+         "title" => "Office - Petty Cash"
       ]);
 
       $this->viewer();
@@ -31,15 +31,23 @@ class Office_Kas extends Controller
 
    public function content()
    {
+      // Setoran kas kantor — tidak dipakai di halaman ini (kode tetap disimpan)
+      /*
       $whereSplit = "id_target = 0 AND (tipe = 0 OR tipe = 4) AND st = 0";
       $data['split'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
 
       $whereSplit = "id_target = 0 AND (tipe = 0 OR tipe = 4) AND st <> 0";
       $data['split_done'] = $this->db(0)->get_where('kas_kecil', $whereSplit, 'ref');
+      */
 
-      $whereSplit = "id_sumber = 0 ORDER BY id DESC";
-      $data['keluar_list'] = $this->db(0)->get_where('kas_kecil', $whereSplit);
+      // Riwayat topup pettycash dari office (terbaru dulu, dibatasi)
+      $data['keluar_list'] = $this->db(0)->get_where(
+         'kas_kecil',
+         "id_sumber = 0 AND tipe = 1 ORDER BY id DESC LIMIT 80"
+      );
 
+      // Skip perhitungan saldo — Office_Kas hanya untuk pettycash (kode tetap disimpan)
+      /*
       $whereSetor = "id_target = 0 AND (tipe = 0 OR tipe = 4) AND st = 1";
       $data['setor'] = $this->db(0)->sum_col_where('kas_kecil', 'jumlah', $whereSetor);
 
@@ -55,6 +63,8 @@ class Office_Kas extends Controller
       }
 
       $data['saldo'] = $data['setor'] - $data['keluar'];
+      */
+
       $this->view(__CLASS__ . '/content', $data);
    }
 
