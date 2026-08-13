@@ -135,6 +135,34 @@
     }
     .pcf-row-topup {
         background: #f7fbf8;
+        transition: opacity .28s ease, transform .28s ease;
+    }
+    .pcf-row-topup.pcf-row-out {
+        opacity: 0;
+        transform: translateX(12px);
+        pointer-events: none;
+    }
+    .pcf-del-topup {
+        line-height: 1;
+        vertical-align: baseline;
+        opacity: .55;
+    }
+    .pcf-del-topup:hover {
+        opacity: 1;
+    }
+    .pcf-warn-box {
+        background: #fff5f5;
+        border: 1px solid #f1b0b7;
+        border-left: 4px solid #dc3545;
+        border-radius: .35rem;
+        padding: .75rem .85rem;
+        color: #842029;
+        font-size: .875rem;
+    }
+    .pcf-warn-box strong {
+        display: block;
+        margin-bottom: .35rem;
+        font-size: .95rem;
     }
     .pcf-year {
         display: inline-flex;
@@ -161,7 +189,7 @@
         <div class="pcf-bar">
             <div class="pcf-saldo">
                 <div class="lbl">Saldo Petty Cash</div>
-                <div class="amt">Rp<?= number_format((int)$data['saldo']) ?></div>
+                <div class="amt" id="pcfSaldoAmt">Rp<?= number_format((int)$data['saldo']) ?></div>
             </div>
             <div class="pcf-actions">
                 <button type="button" class="btn btn-primary bg-gradient" data-bs-toggle="modal" data-bs-target="#modalPettyTopup">
@@ -227,6 +255,43 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalDelTopup" tabindex="-1" aria-labelledby="modalDelTopupLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header py-2 bg-danger text-white">
+                <h6 class="modal-title mb-0" id="modalDelTopupLabel">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i> Hapus Topup — Peringatan Keras
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="pcf-warn-box mb-3">
+                    <strong>Tindakan ini tidak bisa dibatalkan.</strong>
+                    Data topup akan dihapus permanen dari sistem dan dapat mengubah saldo petty cash.
+                </div>
+                <div class="small text-muted mb-1">Detail yang akan dihapus:</div>
+                <div class="border rounded px-3 py-2 bg-light">
+                    <div>Ref: <span class="fw-semibold" id="delTopupRef">—</span></div>
+                    <div>Jumlah: <span class="fw-semibold text-danger" id="delTopupJumlah">—</span></div>
+                    <div>Status: <span class="fw-semibold" id="delTopupSt">—</span></div>
+                </div>
+                <div class="form-check mt-3" id="delTopupCheckWrap" style="display:none;">
+                    <input class="form-check-input" type="checkbox" id="delTopupConfirmCheck">
+                    <label class="form-check-label text-danger small" for="delTopupConfirmCheck">
+                        Saya mengerti topup ini sudah <b>Verified</b> dan tetap ingin menghapusnya.
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Batalkan</button>
+                <button type="button" class="btn btn-sm btn-danger" id="btnDelTopupConfirm">
+                    Ya, Hapus Permanen
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 (function() {
     var pcfYear = <?= (int)$data['year'] ?>;
@@ -284,6 +349,107 @@
             }
         });
     }
+
+    function formatRp(n) {
+        n = parseInt(n, 10) || 0;
+        return "Rp" + n.toLocaleString("id-ID");
+    }
+
+    function updateSaldo(saldo) {
+        $("#pcfSaldoAmt").text(formatRp(saldo));
+    }
+
+    var delTopupId = 0;
+    var delTopupSt = 0;
+    var $delTopupRow = null;
+
+    $(document).off("click.pcfDel", ".pcf-del-topup").on("click.pcfDel", ".pcf-del-topup", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $btn = $(this);
+        delTopupId = parseInt($btn.attr("data-id"), 10) || 0;
+        delTopupSt = parseInt($btn.attr("data-st"), 10) || 0;
+        $delTopupRow = $btn.closest("tr");
+        if (!delTopupId) {
+            return;
+        }
+
+        $("#delTopupRef").text($btn.attr("data-ref") || "—");
+        $("#delTopupJumlah").text(formatRp($btn.attr("data-jumlah")));
+        $("#delTopupSt").text(delTopupSt === 1 ? "Verified" : (delTopupSt === 0 ? "Checking" : "—"));
+
+        if (delTopupSt === 1) {
+            $("#delTopupCheckWrap").show();
+            $("#delTopupConfirmCheck").prop("checked", false);
+            $("#btnDelTopupConfirm").prop("disabled", true);
+        } else {
+            $("#delTopupCheckWrap").hide();
+            $("#delTopupConfirmCheck").prop("checked", false);
+            $("#btnDelTopupConfirm").prop("disabled", false);
+        }
+
+        var modalEl = document.getElementById("modalDelTopup");
+        var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.show();
+    });
+
+    $(document).off("change.pcfDelCheck", "#delTopupConfirmCheck").on("change.pcfDelCheck", "#delTopupConfirmCheck", function() {
+        $("#btnDelTopupConfirm").prop("disabled", !this.checked);
+    });
+
+    $(document).off("click.pcfDelGo", "#btnDelTopupConfirm").on("click.pcfDelGo", "#btnDelTopupConfirm", function() {
+        if (!delTopupId) {
+            return;
+        }
+        if (delTopupSt === 1 && !$("#delTopupConfirmCheck").is(":checked")) {
+            return;
+        }
+        var $btn = $(this);
+        if ($btn.data("busy")) {
+            return;
+        }
+        $btn.data("busy", 1).prop("disabled", true);
+        $.ajax({
+            url: "<?= PV::BASE_URL ?>Petty_Cash_F/deleteTopup/" + delTopupId,
+            type: "POST",
+            dataType: "json",
+            complete: function() {
+                $btn.data("busy", 0);
+            },
+            success: function(res) {
+                if (!res || !res.ok) {
+                    $btn.prop("disabled", false);
+                    alert((res && res.error) ? res.error : "Gagal menghapus");
+                    return;
+                }
+                var modalEl = document.getElementById("modalDelTopup");
+                var modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) {
+                    modal.hide();
+                }
+                if (typeof res.saldo !== "undefined") {
+                    updateSaldo(res.saldo);
+                }
+                if ($delTopupRow && $delTopupRow.length) {
+                    $delTopupRow.addClass("pcf-row-out");
+                    setTimeout(function() {
+                        $delTopupRow.remove();
+                        if ($("#pcfTopupTable tbody tr").length === 0) {
+                            $("#pcfTopupList").html('<div class="pcf-empty">Belum ada topup.</div>');
+                        }
+                    }, 280);
+                } else {
+                    loadTopupYear(pcfYear);
+                }
+                delTopupId = 0;
+                $delTopupRow = null;
+            },
+            error: function() {
+                $btn.prop("disabled", false);
+                alert("Gagal menghapus. Coba lagi.");
+            }
+        });
+    });
 
     $(document).off("click.pcfYear", ".pcf-year-btn").on("click.pcfYear", ".pcf-year-btn", function(e) {
         e.preventDefault();

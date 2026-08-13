@@ -163,6 +163,56 @@ class Petty_Cash_F extends Controller
       echo 0;
    }
 
+   function deleteTopup($id = 0)
+   {
+      header('Content-Type: application/json');
+      $id = (int)$id;
+      $idToko = (int)$this->userData['id_toko'];
+
+      if ($id <= 0) {
+         echo json_encode(['ok' => 0, 'error' => 'ID tidak valid']);
+         exit();
+      }
+
+      $row = $this->db(0)->get_where_row(
+         'kas_kecil',
+         "id = " . $id . " AND id_target = " . $idToko . " AND tipe = 1"
+      );
+      if (!$row || empty($row['id'])) {
+         echo json_encode(['ok' => 0, 'error' => 'Data topup tidak ditemukan']);
+         exit();
+      }
+
+      $del = $this->db(0)->delete_where(
+         'kas_kecil',
+         "id = " . $id . " AND id_target = " . $idToko . " AND tipe = 1"
+      );
+      if ($del['errno'] <> 0) {
+         echo json_encode(['ok' => 0, 'error' => $del['error']]);
+         exit();
+      }
+
+      echo json_encode([
+         'ok' => 1,
+         'saldo' => $this->calcSaldo($idToko),
+      ]);
+   }
+
+   private function calcSaldo($idToko)
+   {
+      $topup = (int)$this->db(0)->sum_col_where(
+         'kas_kecil',
+         'jumlah',
+         "id_target = " . (int)$idToko . " AND tipe = 1 AND st <> 2"
+      );
+      $pakai = (int)$this->db(0)->sum_col_where(
+         'kas_kecil',
+         'jumlah',
+         "id_sumber = " . (int)$idToko . " AND (tipe = 2 OR tipe = 5) AND st <> 2"
+      );
+      return $topup - $pakai;
+   }
+
    private function recentKasKecilDuplicate($whereExtra, $seconds = 90)
    {
       $since = date('Y-m-d H:i:s', time() - (int)$seconds);

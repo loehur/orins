@@ -1,12 +1,12 @@
 <?php if (empty($data['topup'])) { ?>
     <div class="pcf-empty">Belum ada topup.</div>
 <?php } else { ?>
-    <table class="table table-sm text-sm">
+    <table class="table table-sm text-sm" id="pcfTopupTable">
         <tbody>
             <?php foreach ($data['topup'] as $a) {
                 $st = (int)$a['st'];
                 ?>
-                <tr class="pcf-row-topup">
+                <tr class="pcf-row-topup" data-id="<?= (int)$a['id'] ?>">
                     <td>
                         <div class="fw-semibold"><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></div>
                         <div class="pcf-meta"><?= htmlspecialchars($a['ref']) ?></div>
@@ -19,6 +19,15 @@
                             <?php } elseif ($st === 1) { ?>
                                 <i class="fa-solid fa-circle-check text-success ms-1" title="Verified"></i>
                             <?php } ?>
+                            <button type="button"
+                                class="btn btn-link btn-sm text-danger p-0 ms-2 pcf-del-topup"
+                                title="Hapus topup"
+                                data-id="<?= (int)$a['id'] ?>"
+                                data-ref="<?= htmlspecialchars($a['ref'], ENT_QUOTES) ?>"
+                                data-jumlah="<?= (int)$a['jumlah'] ?>"
+                                data-st="<?= $st ?>">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
