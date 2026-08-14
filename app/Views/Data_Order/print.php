@@ -48,6 +48,30 @@
         }
     }
 
+    if (!function_exists('print_spk_bertahap_riwayat')) {
+        function print_spk_bertahap_riwayat($orderId, $qtyInduk, $spkBertahap)
+        {
+            $oid = (int) $orderId;
+            if ($oid <= 0 || !isset($spkBertahap[$oid]) || count($spkBertahap[$oid]) === 0) {
+                return '';
+            }
+            $list = $spkBertahap[$oid];
+            $sum = 0;
+            $lines = [];
+            foreach ($list as $st) {
+                $sum += (int) ($st['qty'] ?? 0);
+                $tgl = !empty($st['insertTime']) ? date('d/m H:i', strtotime($st['insertTime'])) : '';
+                $lines[] = 'T' . (int) $st['tahap'] . ' ' . (int) $st['qty'] . 'pcs' . ($tgl !== '' ? ' (' . $tgl . ')' : '');
+            }
+            $sisa = max(0, (int) $qtyInduk - $sum);
+            $html = '<div style="clear:both; padding-top:3px; font-size:12px; line-height:130%;">';
+            $html .= '<small><b>Riwayat SPK Bertahap</b> · induk ' . (int) $qtyInduk . ' · tahap ' . $sum . ' · sisa ' . $sisa . '</small><br>';
+            $html .= '<small>' . implode(' &nbsp;·&nbsp; ', $lines) . '</small>';
+            $html .= '</div>';
+            return $html;
+        }
+    }
+
     $jP = "U";
     $countProduksi = count($data['order']) + count($data['paket']);
     $countBarang = count($data['mutasi']);
@@ -272,6 +296,7 @@
                                                         <small>Note<br><span style="color: red;white-space: nowrap;"><?= $pdo['note'] ?></span></small>
                                                     </div>
                                                 <?php } ?>
+                                                <?= print_spk_bertahap_riwayat($pdo['id_order_data'] ?? 0, $pdo['jumlah'] ?? 0, $data['spk_bertahap'] ?? []) ?>
                                             </td>
                                         </tr>
                                     <?php } ?>
@@ -360,6 +385,7 @@
                                     <span style="color: red;white-space: nowrap;"><?= $do['note'] ?></span>
                                 </div>
                             <?php } ?>
+                            <?= print_spk_bertahap_riwayat($do['id_order_data'] ?? 0, $do['jumlah'] ?? 0, $data['spk_bertahap'] ?? []) ?>
                         </td>
                         <td style="text-align: right;vertical-align:text-top; padding-left:7px">
                             <?= $do['jumlah'] ?>

@@ -485,6 +485,21 @@ class Data_Order extends Controller
       $data['order'] = $this->db(0)->get_where('order_data', $where);
       $data['mutasi'] = $this->db(0)->get_where('master_mutasi', $where_mutasi);
 
+      $data['spk_bertahap'] = [];
+      $printOrderIds = [];
+      if (is_array($data['order'])) {
+         foreach ($data['order'] as $od) {
+            if (isset($od['id_order_data'])) {
+               $printOrderIds[] = (int) $od['id_order_data'];
+            }
+         }
+      }
+      $printOrderIds = array_values(array_unique(array_filter($printOrderIds)));
+      if (count($printOrderIds) > 0) {
+         $btRows = $this->db(0)->get_where('spk_bertahap', 'id_order_data IN (' . implode(',', $printOrderIds) . ') ORDER BY tahap ASC');
+         $data['spk_bertahap'] = $this->model('SpkBertahap')->groupByOrderId($btRows);
+      }
+
       $where_ref = "ref = '" . $parse . "'";
       $refRow = $this->db(0)->get_where_row('ref', $where_ref, 'ref');
       $data['mark'] = $refRow['mark'] ?? '';
