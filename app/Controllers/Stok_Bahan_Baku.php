@@ -75,19 +75,28 @@ class Stok_Bahan_Baku extends Controller
       }
 
       $qty = $_POST['qty'];
-      $barang = $this->db(0)->get_where_row('master_barang', "id = " . $id_barang);
-      if (isset($barang['sn']) && $barang['sn'] == 1 && $sn === "") {
+      $stokLots = $this->data('Barang')->stok_data($id_barang, $id_sumber);
+      $hasSnStock = false;
+      $sdsAvail = [];
+      foreach ($stokLots as $s) {
+         if ((int)$s['qty'] <= 0) {
+            continue;
+         }
+         $sdsAvail[(int)$s['sds']] = true;
+         if ((int)$s['sds'] === (int)$sds && (string)($s['sn'] ?? '') !== '') {
+            $hasSnStock = true;
+         }
+      }
+      if ($hasSnStock && $sn === "") {
          echo "SN wajib dipilih";
          exit();
       }
-
-      //cek stok (sesuai tampilan: total jika SN kosong, per SN jika diisi)
-      if ($sn === "") {
-         $stok_all = $this->data('Barang')->stok_data_all($id_barang, $id_sumber);
-         $stok = isset($stok_all[$id_barang]) ? (int) $stok_all[$id_barang]['qty'] : 0;
-      } else {
-         $stok = $this->data('Barang')->sisa_stok($id_barang, $id_sumber, $sn, $sds);
+      if (!isset($sdsAvail[(int)$sds])) {
+         echo "SDS tidak tersedia di stok";
+         exit();
       }
+
+      $stok = $this->data('Barang')->sisa_stok($id_barang, $id_sumber, $sn, $sds);
       if ($stok < $qty) {
          echo $stok <= 0 ? "Stok Kosong" : "Stok tidak mencukupi. Tersedia: " . $stok;
          exit();

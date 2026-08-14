@@ -59,6 +59,26 @@ class Stok_Pakai extends Controller
       $this->view(__CLASS__ . '/riwayat_pakai', $data);
    }
 
+   public function stok_info($id_barang = 0, $id_sumber = 0)
+   {
+      $id_barang = (int)$id_barang;
+      $id_sumber = (int)$id_sumber;
+      $stok = $this->data('Barang')->stok_data($id_barang, $id_sumber);
+      $list = [];
+      foreach ($stok as $s) {
+         if ((int)$s['qty'] <= 0) {
+            continue;
+         }
+         $list[] = [
+            'sn' => (string)($s['sn'] ?? ''),
+            'sds' => (int)$s['sds'],
+            'qty' => (int)$s['qty'],
+         ];
+      }
+      header('Content-Type: application/json');
+      echo json_encode($list);
+   }
+
    public function hapus_pakai()
    {
       $id = (int)($_POST['id'] ?? 0);
