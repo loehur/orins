@@ -41,6 +41,15 @@
         line-height: 1.15;
         vertical-align: middle;
     }
+
+    #sn_wrap .selectize-control {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    #sn_wrap .selectize-dropdown {
+        z-index: 2000;
+    }
 </style>
 
 <main>
@@ -99,7 +108,7 @@
                             <div class="col">
                                 <div id="sn_wrap" style="display:none;">
                                     <label class="form-label text-sm" id="sn_label">SN</label>
-                                    <select class="form-select mb-2" name="sn" id="sn_select">
+                                    <select class="form-select tize mb-2" name="sn" id="sn_select" placeholder="Pilih SN">
                                         <option value="">Pilih SN</option>
                                     </select>
                                 </div>
@@ -207,12 +216,44 @@
         }
     }
 
+    function snSelectize() {
+        var el = document.getElementById("sn_select");
+        return (el && el.selectize) ? el.selectize : null;
+    }
+
+    function initSnSelectize() {
+        var el = document.getElementById("sn_select");
+        if (!el) {
+            return null;
+        }
+        if (!el.selectize) {
+            $(el).selectize({
+                placeholder: "Cari / pilih SN",
+                allowEmptyOption: true,
+                searchField: ["value", "text"],
+                onChange: function() {
+                    applyQtyMax();
+                }
+            });
+        }
+        return el.selectize;
+    }
+
     function setSnMode(useSelect) {
         hasSnItem = !!useSelect;
         if (hasSnItem) {
             $("#sn_wrap").show();
             $("#sn_select").prop("disabled", false).prop("required", true);
+            var sz = initSnSelectize();
+            if (sz) {
+                sz.enable();
+            }
         } else {
+            var sz = snSelectize();
+            if (sz) {
+                sz.clear(true);
+                sz.disable();
+            }
             $("#sn_wrap").hide();
             $("#sn_select").prop("disabled", true).prop("required", false).val("");
         }
@@ -238,8 +279,8 @@
 
     function renderSnOptions() {
         var sds = $("#sds_value").val();
-        var $sel = $("#sn_select").empty().append('<option value="">Pilih SN</option>');
-        var count = 0;
+        var sz = initSnSelectize();
+        var options = [];
         $.each(stockLots, function(i, item) {
             if (String(item.sn || "") === "") {
                 return;
@@ -247,11 +288,26 @@
             if (String(item.sds) !== String(sds)) {
                 return;
             }
-            $sel.append($("<option>").val(item.sn).attr("data-qty", item.qty).text(item.sn));
-            count++;
+            options.push({
+                value: String(item.sn),
+                text: String(item.sn),
+                qty: item.qty
+            });
         });
-        if (count === 0) {
-            $sel.append('<option value="" disabled>SN tidak tersedia</option>');
+
+        if (sz) {
+            sz.clear(true);
+            sz.clearOptions();
+            sz.addOption(options);
+            sz.refreshOptions(false);
+        } else {
+            var $sel = $("#sn_select").empty().append('<option value="">Pilih SN</option>');
+            $.each(options, function(i, opt) {
+                $sel.append($("<option>").val(opt.value).attr("data-qty", opt.qty).text(opt.text));
+            });
+            if (options.length === 0) {
+                $sel.append('<option value="" disabled>SN tidak tersedia</option>');
+            }
         }
         $("#qty_input").val(1).removeAttr("max");
         applyQtyMax();
@@ -261,7 +317,15 @@
         var maxQty = 0;
         var sds = $("#sds_value").val();
         if (hasSnItem) {
-            maxQty = parseInt($("#sn_select").find(":selected").data("qty"), 10) || 0;
+            var sz = snSelectize();
+            if (sz) {
+                var val = sz.getValue();
+                if (val && sz.options[val]) {
+                    maxQty = parseInt(sz.options[val].qty, 10) || 0;
+                }
+            } else {
+                maxQty = parseInt($("#sn_select").find(":selected").data("qty"), 10) || 0;
+            }
         } else {
             $.each(stockLots, function(i, item) {
                 if (String(item.sds) === String(sds) && String(item.sn || "") === "") {
@@ -363,7 +427,7 @@
             }
         });
 
-        $('select.tize').selectize();
+        $('select.tize').not('#sn_select').selectize();
 
         $('#tb_barang').dataTable({
             "bLengthChange": false,
