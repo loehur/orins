@@ -144,16 +144,28 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
                 </div>
             </div>
 
-        <?php } else { ?>
+        <?php } else {
+            $tiketMonth = $data['month'] ?? date('Y-m');
+            $bulanNama = [
+                '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+                '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+                '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember',
+            ];
+            $ymParts = explode('-', $tiketMonth);
+            $tiketMonthLabel = ($bulanNama[$ymParts[1] ?? ''] ?? ($ymParts[1] ?? '')) . ' ' . ($ymParts[0] ?? '');
+        ?>
             <div class="row mx-0 mb-3 align-items-center">
                 <div class="col ps-0">
                     <span class="fw-bold text-primary">Tiket Selesai</span>
-                    <span class="text-muted small ms-2">(semua riwayat)</span>
+                    <span class="text-muted small ms-2"><?= htmlspecialchars($tiketMonthLabel) ?></span>
+                </div>
+                <div class="col-auto pe-0">
+                    <input type="month" id="tiketMonth" class="form-control form-control-sm" max="<?= date('Y-m') ?>" value="<?= htmlspecialchars($tiketMonth) ?>">
                 </div>
             </div>
 
             <?php if (count($data['tiket']) === 0) { ?>
-                <div class="alert alert-light border text-center">Belum ada tiket selesai.</div>
+                <div class="alert alert-light border text-center">Belum ada tiket selesai pada <?= htmlspecialchars($tiketMonthLabel) ?>.</div>
             <?php } else { ?>
                 <table class="table table-sm table-hover text-sm">
                     <thead>
@@ -428,6 +440,13 @@ $tipeLabel = [1 => 'Perbaikan', 2 => 'Fitur Baru', 3 => 'Usulan'];
 
     $(document).off('click.tiketRow', '.tiket-row').on('click.tiketRow', '.tiket-row', function() {
         tiketOpenDetail($(this).data('id'));
+    });
+
+    $(document).off('change.tiketMonth', '#tiketMonth').on('change.tiketMonth', '#tiketMonth', function() {
+        var m = $(this).val();
+        if (m && typeof content === 'function') {
+            content('selesai', m);
+        }
     });
 
     $(document).off('submit.tiketCreate', '#formTiketBaru').on('submit.tiketCreate', '#formTiketBaru', function(e) {

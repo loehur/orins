@@ -50,7 +50,7 @@ class Tiket extends Controller
       return $this->isDev() || (int) $ticket['id_user'] === (int) $this->userData['id_user'];
    }
 
-   public function index($mode = "proses")
+   public function index($mode = "proses", $month = "")
    {
       if (!in_array($mode, ['proses', 'selesai'], true)) {
          $mode = 'proses';
@@ -63,7 +63,16 @@ class Tiket extends Controller
          "title" => $title
       ]);
 
-      $this->viewer($mode);
+      $this->viewer($mode, $month);
+   }
+
+   private function normalizeYm($ym)
+   {
+      $ym = trim((string) $ym);
+      if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $ym)) {
+         return date('Y-m');
+      }
+      return $ym;
    }
 
    public function viewer($mode = "proses", $month = "")
@@ -100,8 +109,9 @@ class Tiket extends Controller
          $where = "status = 0 AND " . $this->ticketScopeWhere() . " ORDER BY id_tiket DESC";
          $data['tiket'] = $this->db(0)->get_where('tiket', $where);
       } else {
-         // Tanpa filter bulan — tampilkan semua tiket selesai
-         $where = "status = 1 AND " . $this->ticketScopeWhere() . " ORDER BY selesai_time DESC";
+         $month = $this->normalizeYm($month);
+         $data['month'] = $month;
+         $where = "status = 1 AND selesai_time LIKE '" . $month . "%' AND " . $this->ticketScopeWhere() . " ORDER BY selesai_time DESC";
          $data['tiket'] = $this->db(0)->get_where('tiket', $where);
       }
 
