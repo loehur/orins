@@ -1903,8 +1903,9 @@
         }
     });
 
-    $(document).on("submit", "form", function(e) {
+    $(document).off("submit.operasiForms").on("submit.operasiForms", "form", function(e) {
         if ($(this).closest('#modalTransfer').length) return;
+        if ($(this).closest('#modalSpkBertahap').length || $(this).attr('id') === 'formSpkBertahap') return;
         if ($(this).attr('action') && $(this).attr('action').indexOf('ubahPelanggan') >= 0) return;
 
         e.preventDefault();
@@ -2037,32 +2038,36 @@
 </div>
 
 <script>
-    document.addEventListener('click', function(e) {
-        var t = e.target;
-        if (t.classList.contains('transfer')) {
-            var mt = t.getAttribute('data-type');
-            var id = t.getAttribute('data-id');
-            document.querySelector('#modalTransfer input[name=item_type]').value = mt;
-            document.querySelector('#modalTransfer input[name=item_id]').value = id;
-        }
-        if (t.classList.contains('spkBertahap') || (t.closest && t.closest('.spkBertahap'))) {
-            var el = t.classList.contains('spkBertahap') ? t : t.closest('.spkBertahap');
-            document.getElementById('btIdOrder').value = el.getAttribute('data-id');
-            document.getElementById('btProduk').textContent = el.getAttribute('data-produk') || '';
-            document.getElementById('btQtyInduk').textContent = el.getAttribute('data-qty-induk') || '0';
-            document.getElementById('btQtySudah').textContent = el.getAttribute('data-qty-sudah') || '0';
-            document.getElementById('btQtySisa').textContent = el.getAttribute('data-qty-sisa') || '0';
-            document.getElementById('btTahapLabel').textContent = 'Tahap ' + (el.getAttribute('data-tahap') || '1');
-            var sisa = parseInt(el.getAttribute('data-qty-sisa') || '0', 10) || 0;
-            var inp = document.getElementById('btQtyInput');
-            inp.max = sisa;
-            inp.value = sisa > 0 ? sisa : 1;
-        }
+    $(document).off('click.spkBertahap').on('click.spkBertahap', '.transfer', function() {
+        document.querySelector('#modalTransfer input[name=item_type]').value = this.getAttribute('data-type');
+        document.querySelector('#modalTransfer input[name=item_id]').value = this.getAttribute('data-id');
     });
 
-    $('#formSpkBertahap').on('submit', function(e) {
+    $(document).off('click.spkBertahapOpen').on('click.spkBertahapOpen', 'a.spkBertahap', function(e) {
         e.preventDefault();
+        var el = this;
+        document.getElementById('btIdOrder').value = el.getAttribute('data-id');
+        document.getElementById('btProduk').textContent = el.getAttribute('data-produk') || '';
+        document.getElementById('btQtyInduk').textContent = el.getAttribute('data-qty-induk') || '0';
+        document.getElementById('btQtySudah').textContent = el.getAttribute('data-qty-sudah') || '0';
+        document.getElementById('btQtySisa').textContent = el.getAttribute('data-qty-sisa') || '0';
+        document.getElementById('btTahapLabel').textContent = 'Tahap ' + (el.getAttribute('data-tahap') || '1');
+        var sisa = parseInt(el.getAttribute('data-qty-sisa') || '0', 10) || 0;
+        var inp = document.getElementById('btQtyInput');
+        inp.max = sisa;
+        inp.value = '';
+        inp.placeholder = 'Maks ' + sisa;
+        $('#formSpkBertahap').data('submitting', false);
+        $('#formSpkBertahap button[type=submit]').prop('disabled', false);
+    });
+
+    $(document).off('submit.spkBertahap').on('submit.spkBertahap', '#formSpkBertahap', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
         var $form = $(this);
+        if ($form.data('submitting')) {
+            return;
+        }
         var qty = parseInt($('#btQtyInput').val(), 10) || 0;
         var sisa = parseInt($('#btQtySisa').text(), 10) || 0;
         if (qty <= 0) {
@@ -2073,6 +2078,9 @@
             showToast('Qty tidak boleh melebihi sisa (' + sisa + ')', 'warning');
             return;
         }
+        $form.data('submitting', true);
+        var $btn = $form.find('button[type=submit]');
+        $btn.prop('disabled', true);
         $.ajax({
             url: $form.attr('action'),
             type: 'POST',
@@ -2086,10 +2094,14 @@
                     content();
                 } else {
                     showToast(res, 'danger');
+                    $form.data('submitting', false);
+                    $btn.prop('disabled', false);
                 }
             },
             error: function() {
                 showToast('Gagal menyimpan SPK Bertahap', 'danger');
+                $form.data('submitting', false);
+                $btn.prop('disabled', false);
             }
         });
     });

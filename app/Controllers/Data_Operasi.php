@@ -589,11 +589,29 @@ class Data_Operasi extends Controller
          exit();
       }
 
+      $lockName = 'spk_bertahap_' . $id_order_data;
+      $gotLock = (int) $this->db(0)->scalar("SELECT GET_LOCK('" . $lockName . "', 8)");
+      if ($gotLock !== 1) {
+         echo 'Sistem sedang memproses tahap untuk item ini. Coba sekali lagi.';
+         exit();
+      }
+
       $qtyInduk = (int) $row['jumlah'];
       $sudah = (int) $this->db(0)->sum_col_where('spk_bertahap', 'qty', 'id_order_data = ' . $id_order_data);
       $sisa = $qtyInduk - $sudah;
       if ($qty > $sisa) {
+         $this->db(0)->scalar("SELECT RELEASE_LOCK('" . $lockName . "')");
          echo 'Qty tahap melebihi sisa (' . $sisa . ' dari induk ' . $qtyInduk . ')';
+         exit();
+      }
+
+      $recent = (int) $this->db(0)->count_where(
+         'spk_bertahap',
+         'id_order_data = ' . $id_order_data . ' AND insertTime >= DATE_SUB(NOW(), INTERVAL 1 SECOND)'
+      );
+      if ($recent > 0) {
+         $this->db(0)->scalar("SELECT RELEASE_LOCK('" . $lockName . "')");
+         echo 0;
          exit();
       }
 
@@ -604,6 +622,7 @@ class Data_Operasi extends Controller
       $cols = 'id_order_data, tahap, qty, spk_dvs, spk_lanjutan, id_user';
       $vals = $id_order_data . ',' . $tahapBaru . ',' . $qty . ",'" . $spkReset . "',''," . (int) $this->userData['id_user'];
       $ins = $this->db(0)->insertCols('spk_bertahap', $cols, $vals);
+      $this->db(0)->scalar("SELECT RELEASE_LOCK('" . $lockName . "')");
       if ($ins['errno'] <> 0) {
          echo $ins['error'];
          exit();
