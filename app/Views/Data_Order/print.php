@@ -60,7 +60,7 @@
             $lines = [];
             foreach ($list as $st) {
                 $sum += (int) ($st['qty'] ?? 0);
-                $tgl = !empty($st['insertTime']) ? date('d/m H:i', strtotime($st['insertTime'])) : '';
+                $tgl = !empty($st['insertTime']) ? date('d/m/y H:i', strtotime($st['insertTime'])) : '';
                 $lines[] = 'T' . (int) $st['tahap'] . ' ' . (int) $st['qty'] . 'pcs' . ($tgl !== '' ? ' (' . $tgl . ')' : '');
             }
             $sisa = max(0, (int) $qtyInduk - $sum);
