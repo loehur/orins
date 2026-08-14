@@ -61,7 +61,7 @@ class Petty_Cash_F extends Controller
       $data['year'] = $year;
       $data['topup'] = $this->db(0)->get_where(
          'kas_kecil',
-         "id_target = " . $idToko . " AND tipe = 1 AND insertTime LIKE '" . $year . "%' ORDER BY id DESC"
+         $this->topupYearWhere($idToko, $year) . " ORDER BY COALESCE(NULLIF(tanggal, ''), insertTime) DESC, id DESC"
       );
 
       $data['jkeluar'] = $this->db(0)->get('pengeluaran_jenis', 'id');
@@ -80,7 +80,7 @@ class Petty_Cash_F extends Controller
       $data['year'] = $year;
       $data['topup'] = $this->db(0)->get_where(
          'kas_kecil',
-         "id_target = " . $idToko . " AND tipe = 1 AND insertTime LIKE '" . $year . "%' ORDER BY id DESC"
+         $this->topupYearWhere($idToko, $year) . " ORDER BY COALESCE(NULLIF(tanggal, ''), insertTime) DESC, id DESC"
       );
       $this->view(__CLASS__ . '/topup_list', $data);
    }
@@ -134,19 +134,23 @@ class Petty_Cash_F extends Controller
    function topupPety()
    {
       $jumlah = (int)($_POST['jumlah'] ?? 0);
+      $tanggal = $this->parseTopupTanggal($_POST['tanggal'] ?? '');
       $target = (int)$this->userData['id_toko'];
 
       if ($jumlah <= 0) {
          echo "Jumlah tidak valid";
          exit();
       }
+      if ($tanggal === '') {
+         echo "Tanggal tidak valid (maksimal hari ini, minimal 1 bulan mundur)";
+         exit();
+      }
 
-      // Anti double: nominal sama di hari yang sama
-      $today = date('Y-m-d');
+      // Anti double: nominal sama di tanggal yang sama
       $dupDay = "id_target = " . $target . " AND tipe = 1 AND jumlah = " . $jumlah
-         . " AND insertTime LIKE '" . $today . "%'";
+         . " AND tanggal = '" . $tanggal . "'";
       if ($this->db(0)->count_where('kas_kecil', $dupDay) > 0) {
-         echo "Nominal yang sama sudah diinput hari ini";
+         echo "Nominal yang sama sudah diinput di tanggal tersebut";
          exit();
       }
 
@@ -158,8 +162,8 @@ class Petty_Cash_F extends Controller
       }
 
       $ref = date('ymdHis') . rand(10, 99);
-      $cols = 'id_sumber, id_target, tipe, ref, jumlah, st';
-      $vals = "100," . $target . ",1,'" . $ref . "'," . $jumlah . ",0";
+      $cols = 'id_sumber, id_target, tipe, ref, jumlah, st, tanggal';
+      $vals = "100," . $target . ",1,'" . $ref . "'," . $jumlah . ",0,'" . $tanggal . "'";
       $do = $this->db(0)->insertCols('kas_kecil', $cols, $vals);
       if ($do['errno'] == 1062) {
          echo "data sudah di input";
@@ -206,6 +210,29 @@ class Petty_Cash_F extends Controller
          'ok' => 1,
          'saldo' => $this->calcSaldo($idToko),
       ]);
+   }
+
+   private function topupYearWhere($idToko, $year)
+   {
+      return "id_target = " . (int)$idToko
+         . " AND tipe = 1 AND COALESCE(NULLIF(tanggal, ''), insertTime) LIKE '" . (int)$year . "%'";
+   }
+
+   private function parseTopupTanggal($raw)
+   {
+      $tanggal = trim((string)$raw);
+      $dt = DateTime::createFromFormat('Y-m-d', $tanggal);
+      if (!$dt || $dt->format('Y-m-d') !== $tanggal) {
+         return '';
+      }
+
+      $today = date('Y-m-d');
+      $min = date('Y-m-d', strtotime('-1 month'));
+      if ($tanggal > $today || $tanggal < $min) {
+         return '';
+      }
+
+      return $tanggal;
    }
 
    private function calcSaldo($idToko)

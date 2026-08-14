@@ -3,10 +3,15 @@
 <?php } else { ?>
     <table class="table table-sm text-sm" id="pcPendingTable">
         <tbody>
-            <?php foreach ($data['pending'] as $a) { ?>
+            <?php foreach ($data['pending'] as $a) {
+                $tgl = trim($a['tanggal'] ?? '');
+                $waktu = $tgl !== ''
+                    ? date('d/m/y', strtotime($tgl))
+                    : date('d/m/y H:i', strtotime($a['insertTime']));
+                ?>
                 <tr class="pc-row-pend" data-id="<?= (int)$a['id'] ?>">
                     <td>
-                        <div class="fw-semibold"><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></div>
+                        <div class="fw-semibold"><?= htmlspecialchars($waktu) ?></div>
                         <div class="pc-meta"><?= htmlspecialchars($a['ref']) ?></div>
                     </td>
                     <td class="text-end">

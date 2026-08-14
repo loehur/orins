@@ -243,6 +243,15 @@
             </div>
             <form id="formPettyTopup" action="<?= PV::BASE_URL ?>Petty_Cash_F/topupPety" method="POST">
                 <div class="modal-body">
+                    <?php
+                    $tglMax = date('Y-m-d');
+                    $tglMin = date('Y-m-d', strtotime('-1 month'));
+                    ?>
+                    <div class="mb-2">
+                        <label class="form-label">Tanggal</label>
+                        <input type="date" name="tanggal" class="form-control"
+                               value="<?= $tglMax ?>" min="<?= $tglMin ?>" max="<?= $tglMax ?>" required>
+                    </div>
                     <label class="form-label">Jumlah</label>
                     <input type="number" min="1" step="1" name="jumlah" class="form-control" placeholder="Rp" required autofocus>
                 </div>
@@ -505,6 +514,26 @@
     });
 
     var submitting = false;
+
+    function ymd(d) {
+        var pad = function(n) { return (n < 10 ? "0" : "") + n; };
+        return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+    }
+
+    function resetTopupTanggal() {
+        var $tgl = $("#formPettyTopup [name=tanggal]");
+        if (!$tgl.length) {
+            return;
+        }
+        var today = new Date();
+        var minD = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+        $tgl.attr("max", ymd(today)).attr("min", ymd(minD)).val(ymd(today));
+    }
+
+    $("#modalPettyTopup").off("show.bs.modal.pcfTgl").on("show.bs.modal.pcfTgl", function() {
+        resetTopupTanggal();
+    });
+
     $("#formPettyTopup").off("submit.petty").on("submit.petty", function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -514,9 +543,15 @@
         var $form = $(this);
         var $btn = $("#btnPettyTopup");
         var $jumlah = $form.find("[name=jumlah]");
+        var $tanggal = $form.find("[name=tanggal]");
         var jumlah = $jumlah.val();
+        var tanggal = $tanggal.val();
         if (!jumlah || parseInt(jumlah, 10) <= 0) {
             alert("Jumlah tidak valid");
+            return false;
+        }
+        if (!tanggal) {
+            alert("Tanggal tidak valid");
             return false;
         }
 
@@ -524,14 +559,16 @@
         var btnText = $btn.text();
         $btn.prop("disabled", true).text("Memproses...");
         $jumlah.prop("disabled", true);
+        $tanggal.prop("disabled", true);
 
         $.ajax({
             url: $form.attr("action"),
-            data: { jumlah: jumlah },
+            data: { jumlah: jumlah, tanggal: tanggal },
             type: $form.attr("method") || "POST",
             complete: function() {
                 submitting = false;
                 $jumlah.prop("disabled", false);
+                $tanggal.prop("disabled", false);
                 $btn.prop("disabled", false).text(btnText);
             },
             success: function(res) {
@@ -542,7 +579,9 @@
                         modal.hide();
                     }
                     $form[0].reset();
-                    content(String(pcfYear));
+                    resetTopupTanggal();
+                    var y = (tanggal && tanggal.length >= 4) ? parseInt(tanggal.substring(0, 4), 10) : pcfYear;
+                    content(String(y || pcfYear));
                 } else {
                     alert(res);
                 }

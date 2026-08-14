@@ -54,7 +54,7 @@ class Petty_Cash extends Controller
       // Riwayat topup per tahun
       $data['topup'] = $this->db(0)->get_where(
          'kas_kecil',
-         "id_target = " . $idToko . " AND tipe = 1 AND st <> 0 AND insertTime LIKE '" . $year . "%' ORDER BY id DESC"
+         $this->topupYearWhere($idToko, $year) . " AND st <> 0 ORDER BY COALESCE(NULLIF(tanggal, ''), insertTime) DESC, id DESC"
       );
 
       // Pemakaian per bulan
@@ -74,7 +74,7 @@ class Petty_Cash extends Controller
       $data['can_ops'] = in_array($this->userData['user_tipe'], PV::PRIV[2]);
       $data['topup'] = $this->db(0)->get_where(
          'kas_kecil',
-         "id_target = " . $idToko . " AND tipe = 1 AND st <> 0 AND insertTime LIKE '" . $year . "%' ORDER BY id DESC"
+         $this->topupYearWhere($idToko, $year) . " AND st <> 0 ORDER BY COALESCE(NULLIF(tanggal, ''), insertTime) DESC, id DESC"
       );
       $this->view(__CLASS__ . '/topup_list', $data);
    }
@@ -256,6 +256,12 @@ class Petty_Cash extends Controller
          return date('Y-m');
       }
       return $ym;
+   }
+
+   private function topupYearWhere($idToko, $year)
+   {
+      return "id_target = " . (int)$idToko
+         . " AND tipe = 1 AND COALESCE(NULLIF(tanggal, ''), insertTime) LIKE '" . (int)$year . "%'";
    }
 
    private function calcSaldo($idToko)

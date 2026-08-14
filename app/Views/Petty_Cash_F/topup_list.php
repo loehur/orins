@@ -5,10 +5,14 @@
         <tbody>
             <?php foreach ($data['topup'] as $a) {
                 $st = (int)$a['st'];
+                $tgl = trim($a['tanggal'] ?? '');
+                $waktu = $tgl !== ''
+                    ? date('d/m/y', strtotime($tgl))
+                    : date('d/m/y H:i', strtotime($a['insertTime']));
                 ?>
                 <tr class="pcf-row-topup" data-id="<?= (int)$a['id'] ?>">
                     <td>
-                        <div class="fw-semibold"><?= date('d/m/y H:i', strtotime($a['insertTime'])) ?></div>
+                        <div class="fw-semibold"><?= htmlspecialchars($waktu) ?></div>
                         <div class="pcf-meta"><?= htmlspecialchars($a['ref']) ?></div>
                     </td>
                     <td class="text-end">
