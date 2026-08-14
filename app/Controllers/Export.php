@@ -43,12 +43,9 @@ class Export extends Controller
       $data = $this->db(0)->get_where("order_data", $where);
       $tanggal = date("Y-m-d");
 
-      $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
-      $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
-      $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data, 'ref'));
-
-      $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
-      $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
+      $ref_data = $this->ensureRefDataComplete([], array_column($data, 'ref'));
+      $dPelanggan = $this->loadByIds('pelanggan', 'id_pelanggan', array_column($data, 'id_pelanggan'), 'id_pelanggan, nama');
+      $dKaryawan = $this->loadByIds('karyawan', 'id_karyawan', array_column($data, 'id_penerima'), 'id_karyawan, nama');
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
       $rows = [];
       $rows[] = array('TRX_ID', 'NO_REFERENSI', 'FP', 'TANGGAL', 'JENIS', 'PELANGGAN', 'MARK', 'KODE_BARANG', 'PRODUK', 'KODE_MYOB', 'DETAIL_BARANG', 'SERIAL_NUMBER', 'QTY', 'HARGA', 'DISKON', 'TOTAL', 'CS', 'AFF/STORE', 'STATUS', 'NOTE', 'EXPORTED');
@@ -121,18 +118,14 @@ class Export extends Controller
       list($date_from, $date_to, $periodLabel, $startTime, $endTime) = $this->getPeriodParams();
       $filename = strtoupper($this->dToko[$this->userData['id_toko']]['nama_toko']) . "-ITEM-SALES-" . $periodLabel . ".xlsx";
 
-      $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
-      $dBarang = $this->db(0)->get('master_barang', 'id');
-
       $where = "paket_group = '' AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2";
       $data = $this->db(0)->get_where("master_mutasi", $where);
 
-      $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
-      $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
-      $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data, 'ref'));
-
+      $dPelanggan = $this->loadByIds('pelanggan', 'id_pelanggan', array_column($data, 'id_target'), 'id_pelanggan, nama');
+      $dBarang = $this->loadByIds('master_barang', 'id', array_column($data, 'id_barang'), 'id, product_name, brand, model, code, code_myob');
+      $dKaryawan = $this->loadByIds('karyawan', 'id_karyawan', array_column($data, 'cs_id'), 'id_karyawan, nama');
       $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
-      $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
+      $ref_data = $this->ensureRefDataComplete([], array_column($data, 'ref'));
       $refPaymentSummary = $this->loadRefPaymentSummary(array_column($data, 'ref'));
 
       $tanggal = date("Y-m-d");
@@ -191,11 +184,6 @@ class Export extends Controller
 
          $tanggal = date("Y-m-d");
 
-         $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
-         $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
-
-         $dPelanggan = $this->db(0)->get('pelanggan', 'id_pelanggan');
-         $dKaryawan = $this->db(0)->get('karyawan', 'id_karyawan');
          $pj = $this->db(0)->get('pelanggan_jenis', 'id_pelanggan_jenis');
          $paket = $this->db(0)->get('paket_main', "id");
 
@@ -206,7 +194,9 @@ class Export extends Controller
 
          $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_toko = " . $this->userData['id_toko'];
          $data = $this->db(0)->get_where("order_data", $where);
-         $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data, 'ref'));
+         $dPelanggan = $this->loadByIds('pelanggan', 'id_pelanggan', array_column($data, 'id_pelanggan'), 'id_pelanggan, nama');
+         $dKaryawan = $this->loadByIds('karyawan', 'id_karyawan', array_column($data, 'id_penerima'), 'id_karyawan, nama');
+         $ref_data = $this->ensureRefDataComplete([], array_column($data, 'ref'));
 
          foreach ($data as $a) {
             $jumlah = $a['jumlah'];
@@ -250,9 +240,11 @@ class Export extends Controller
             $lineData["1" . $a['id_order_data']] = array($a['id_order_data'], "R" . $ref, 0, $tgl_order[$ref], $jenis, $pelanggan, $mark, $paket_ref, 'PAKET', '', $nama_paket, $paket_group, $a['paket_qty'], $harga_paket, 0, $harga_paket * $a['paket_qty'], $cs, $afiliasi, $order_status, $note, $tanggal);
          }
 
-         $dBarang = $this->db(0)->get('master_barang', 'id');
          $where = "paket_group <> '' AND price_locker = 1 AND insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "' AND ref <> '' AND id_sumber = " . $this->userData['id_toko'] . " AND jenis = 2";
          $data2 = $this->db(0)->get_where("master_mutasi", $where);
+         $dBarang = $this->loadByIds('master_barang', 'id', array_column($data2, 'id_barang'), 'id, product_name, brand, model, code, code_myob');
+         $dPelanggan += $this->loadByIds('pelanggan', 'id_pelanggan', array_column($data2, 'id_target'), 'id_pelanggan, nama');
+         $dKaryawan += $this->loadByIds('karyawan', 'id_karyawan', array_column($data2, 'cs_id'), 'id_karyawan, nama');
          $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data2, 'ref'));
          $refPaymentSummary = $this->loadRefPaymentSummary(array_column($data2, 'ref'));
 
@@ -338,9 +330,7 @@ class Export extends Controller
       $data = $this->db(0)->get_where("kas", $where);
       $tanggal = date("Y-m-d");
 
-      $where = "insertTime BETWEEN '" . $startTime . "' AND '" . $endTime . "'";
-      $ref_data = $this->db(0)->get_where('ref', $where, 'ref');
-      $ref_data = $this->ensureRefDataComplete($ref_data, array_column($data, 'ref_transaksi'));
+      $ref_data = $this->ensureRefDataComplete([], array_column($data, 'ref_transaksi'));
 
       $pacc = $this->db(0)->get_where('payment_account', "id_toko = '" . $this->userData['id_toko'] . "' ORDER BY freq DESC", 'id');
 
@@ -432,9 +422,9 @@ class Export extends Controller
          echo "Tanggal From melewati Date To";
          exit();
       }
-      $days = ($tst - $tsf) / 86400;
-      if ($days > 92) {
-         echo "Maksimal periode 3 bulan (92 hari)";
+      $days = (int) round(($tst - $tsf) / 86400) + 1;
+      if ($days > 31) {
+         echo "Maksimal periode 1 bulan (31 hari)";
          exit();
       }
       return [$df, $dt];
@@ -443,6 +433,8 @@ class Export extends Controller
    /** Returns [date_from, date_to, periodLabel, startTime, endTime] */
    private function getPeriodParams()
    {
+      @ini_set('memory_limit', '512M');
+      @set_time_limit(180);
       list($date_from, $date_to) = $this->getPeriod();
       return [
          $date_from,
@@ -460,12 +452,27 @@ class Export extends Controller
       if (empty($missingRefs)) {
          return $ref_data;
       }
-      $escaped = array_map(function ($r) {
-         return "'" . addslashes((string) $r) . "'";
-      }, $missingRefs);
-      $where = "ref IN (" . implode(",", $escaped) . ")";
-      $extra = $this->db(0)->get_where('ref', $where, 'ref');
-      return $ref_data + (is_array($extra) ? $extra : []);
+      $where = "ref IN (" . $this->refListSql($missingRefs) . ")";
+      $extra = $this->db(0)->get_cols_where('ref', 'ref, mark, tuntas, tuntas_date', $where, 1, 'ref');
+      return $ref_data + $this->queryRows($extra);
+   }
+
+   /** Load only the rows whose IDs appear in the export data. */
+   private function loadByIds(string $table, string $idCol, array $ids, string $cols = '*'): array
+   {
+      $list = $this->refListSql($ids);
+      if ($list === '') {
+         return [];
+      }
+      return $this->queryRows($this->db(0)->get_cols_where($table, $cols, "$idCol IN ($list)", 1, $idCol));
+   }
+
+   private function queryRows($result): array
+   {
+      if (!is_array($result) || isset($result['error']) || isset($result['errno'])) {
+         return [];
+      }
+      return $result;
    }
 
    private function isRefTuntas($ref, array $row, array $ref_data): bool
@@ -557,81 +564,72 @@ class Export extends Controller
          return $summary;
       }
 
-      $charges = $this->db(0)->get_cols_where(
+      $charges = $this->queryRows($this->db(0)->get_cols_where(
          'charge',
          'ref_transaksi, SUM(jumlah) as jumlah',
          "ref_transaksi IN (" . $refList . ") AND cancel = 0 GROUP BY ref_transaksi",
          1,
          'ref_transaksi'
-      );
-      if (is_array($charges)) {
-         foreach ($charges as $ref => $row) {
-            $summary = $this->refPaymentSummaryEntry($summary, $ref);
-            $summary[(string)$ref]['bill'] += (int)($row['jumlah'] ?? 0);
-         }
+      ));
+      foreach ($charges as $ref => $row) {
+         $summary = $this->refPaymentSummaryEntry($summary, $ref);
+         $summary[(string)$ref]['bill'] += (int)($row['jumlah'] ?? 0);
       }
 
-      $orders = $this->db(0)->get_where('order_data', "ref IN (" . $refList . ")", 'ref', 1);
-      if (is_array($orders)) {
-         foreach ($orders as $ref => $items) {
-            foreach ($items as $do) {
-               if ((int)$do['cancel'] === 0 && (int)$do['stok'] === 0) {
-                  $summary = $this->refPaymentSummaryEntry($summary, $ref);
-                  $summary[(string)$ref]['bill'] += ((int)$do['harga'] * (int)$do['jumlah'] + (int)$do['harga_paket']) - (int)$do['diskon'];
-               }
-            }
-         }
+      $orders = $this->queryRows($this->db(0)->get_cols_where(
+         'order_data',
+         'ref, SUM((harga * jumlah + harga_paket) - diskon) as jumlah',
+         "ref IN (" . $refList . ") AND cancel = 0 AND stok = 0 GROUP BY ref",
+         1,
+         'ref'
+      ));
+      foreach ($orders as $ref => $row) {
+         $summary = $this->refPaymentSummaryEntry($summary, $ref);
+         $summary[(string)$ref]['bill'] += (int)($row['jumlah'] ?? 0);
       }
 
-      $mutasi = $this->db(0)->get_where('master_mutasi', "ref IN (" . $refList . ")", 'ref', 1);
-      if (is_array($mutasi)) {
-         foreach ($mutasi as $ref => $items) {
-            foreach ($items as $dm) {
-               if ((int)$dm['stat'] !== 2) {
-                  $summary = $this->refPaymentSummaryEntry($summary, $ref);
-                  $summary[(string)$ref]['bill'] += ((int)$dm['qty'] * (int)$dm['harga_jual'] + (int)$dm['harga_paket']) - ((int)$dm['diskon'] * (int)$dm['qty']);
-               }
-            }
-         }
+      $mutasi = $this->queryRows($this->db(0)->get_cols_where(
+         'master_mutasi',
+         'ref, SUM((qty * harga_jual + harga_paket) - (diskon * qty)) as jumlah',
+         "ref IN (" . $refList . ") AND stat <> 2 GROUP BY ref",
+         1,
+         'ref'
+      ));
+      foreach ($mutasi as $ref => $row) {
+         $summary = $this->refPaymentSummaryEntry($summary, $ref);
+         $summary[(string)$ref]['bill'] += (int)($row['jumlah'] ?? 0);
       }
 
-      $kasRows = $this->db(0)->get_where(
+      $kasRows = $this->queryRows($this->db(0)->get_cols_where(
          'kas',
-         "ref_transaksi IN (" . $refList . ") AND status_mutasi <> 2",
-         'ref_transaksi',
-         1
-      );
-      if (is_array($kasRows)) {
-         foreach ($kasRows as $ref => $payments) {
-            foreach ($payments as $dk) {
-               $summary = $this->applyPaidAmount(
-                  $summary,
-                  $ref,
-                  (int)($dk['jumlah'] ?? 0),
-                  $dk['insertTime'] ?? ''
-               );
-            }
-         }
+         'ref_transaksi, SUM(jumlah) as jumlah, MAX(insertTime) as last_pay',
+         "ref_transaksi IN (" . $refList . ") AND status_mutasi <> 2 GROUP BY ref_transaksi",
+         1,
+         'ref_transaksi'
+      ));
+      foreach ($kasRows as $ref => $row) {
+         $summary = $this->applyPaidAmount(
+            $summary,
+            $ref,
+            (int)($row['jumlah'] ?? 0),
+            $row['last_pay'] ?? ''
+         );
       }
 
-      // xtra_diskon dihitung sebagai pembayaran (lihat Data_Operasi, Cron::run_cek_tuntas)
-      $diskonRows = $this->db(0)->get_where(
+      $diskonRows = $this->queryRows($this->db(0)->get_cols_where(
          'xtra_diskon',
-         "ref_transaksi IN (" . $refList . ") AND cancel = 0",
-         'ref_transaksi',
-         1
-      );
-      if (is_array($diskonRows)) {
-         foreach ($diskonRows as $ref => $diskons) {
-            foreach ($diskons as $ds) {
-               $summary = $this->applyPaidAmount(
-                  $summary,
-                  $ref,
-                  (int)($ds['jumlah'] ?? 0),
-                  $ds['insertTime'] ?? ''
-               );
-            }
-         }
+         'ref_transaksi, SUM(jumlah) as jumlah, MAX(insertTime) as last_pay',
+         "ref_transaksi IN (" . $refList . ") AND cancel = 0 GROUP BY ref_transaksi",
+         1,
+         'ref_transaksi'
+      ));
+      foreach ($diskonRows as $ref => $row) {
+         $summary = $this->applyPaidAmount(
+            $summary,
+            $ref,
+            (int)($row['jumlah'] ?? 0),
+            $row['last_pay'] ?? ''
+         );
       }
 
       return $summary;
@@ -680,94 +678,64 @@ class Export extends Controller
 
    private function output_xlsx($filename, $rows, $sheetName = 'Sheet1')
    {
+      if (!empty($rows[0])) {
+         $codeColumns = [];
+         $idColumns = [];
+         $snColumns = [];
+         $detailColumns = [];
+         foreach ($rows[0] as $i => $header) {
+            $headerUpper = strtoupper((string) $header);
+            if (strpos($headerUpper, 'KODE') !== false || strpos($headerUpper, 'CODE') !== false) {
+               $codeColumns[$i] = true;
+            }
+            if (strpos($headerUpper, 'SERIAL') !== false) {
+               $snColumns[$i] = true;
+            }
+            if (strpos($headerUpper, 'TRX_ID') !== false || strpos($headerUpper, 'NO_REF') !== false) {
+               $idColumns[$i] = true;
+            }
+            if (strpos($headerUpper, 'DETAIL_BARANG') !== false) {
+               $detailColumns[$i] = true;
+            }
+         }
+
+         $rowCount = count($rows);
+         for ($r = 1; $r < $rowCount; $r++) {
+            foreach ($rows[$r] as $c => $val) {
+               if (isset($codeColumns[$c]) && is_numeric($val) && $val !== '') {
+                  $rows[$r][$c] = 'C' . $val;
+               } elseif (isset($snColumns[$c]) && $val !== '' && $val !== null) {
+                  $rows[$r][$c] = 'SN' . $val;
+               } elseif (isset($idColumns[$c]) && is_numeric($val) && $val !== '') {
+                  $rows[$r][$c] = 'T' . $val;
+               } elseif (isset($detailColumns[$c]) && $val !== '' && $val !== null && preg_match('/^\d/', (string) $val)) {
+                  $rows[$r][$c] = 'G' . $val;
+               } elseif (is_numeric($val) && $val !== '') {
+                  $rows[$r][$c] = strpos((string) $val, '.') !== false ? (float) $val : (int) $val;
+               }
+            }
+         }
+      }
+
       $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
       $sheet = $spreadsheet->getActiveSheet();
       $sheet->setTitle($sheetName);
+      $sheet->fromArray($rows, null, 'A1', true);
 
-      // Identify which columns should be stored as text based on header names
-      $codeColumns = [];  // Will get 'C' prefix
-      $idColumns = [];    // Will get 'T' prefix
-      $snColumns = [];    // Will get 'SN' prefix
-      $detailColumns = []; // Will get 'G' prefix if starts with number
       if (!empty($rows[0])) {
-         $colNum = 1;
-         foreach ($rows[0] as $header) {
-            $headerUpper = strtoupper((string) $header);
-            // Code columns get 'C' prefix
-            if (
-               strpos($headerUpper, 'KODE') !== false ||
-               strpos($headerUpper, 'CODE') !== false
-            ) {
-               $codeColumns[$colNum] = true;
-            }
-            // Serial columns get 'SN' prefix
-            if (strpos($headerUpper, 'SERIAL') !== false) {
-               $snColumns[$colNum] = true;
-            }
-            // ID columns get 'T' prefix
-            if (
-               strpos($headerUpper, 'TRX_ID') !== false ||
-               strpos($headerUpper, 'NO_REF') !== false
-            ) {
-               $idColumns[$colNum] = true;
-            }
-            // Detail columns get 'G' prefix if starts with number
-            if (strpos($headerUpper, 'DETAIL_BARANG') !== false) {
-               $detailColumns[$colNum] = true;
-            }
-            $colNum++;
-         }
+         $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->getFont()->setBold(true);
       }
 
-      $rowNum = 1;
-      foreach ($rows as $row) {
-         $colNum = 1;
-         foreach ($row as $val) {
-            // Code columns get 'C' prefix
-            if (isset($codeColumns[$colNum]) && $rowNum > 1 && is_numeric($val) && $val !== '') {
-               $sheet->setCellValue([$colNum, $rowNum], 'C' . $val);
-            }
-            // Serial columns get 'SN' prefix
-            elseif (isset($snColumns[$colNum]) && $rowNum > 1 && $val !== '' && $val !== null) {
-               $sheet->setCellValue([$colNum, $rowNum], 'SN' . $val);
-            }
-            // ID columns get 'T' prefix
-            elseif (isset($idColumns[$colNum]) && $rowNum > 1 && is_numeric($val) && $val !== '') {
-               $sheet->setCellValue([$colNum, $rowNum], 'T' . $val);
-            }
-            // Detail columns get 'G' prefix if value starts with a digit
-            elseif (isset($detailColumns[$colNum]) && $rowNum > 1 && $val !== '' && $val !== null && preg_match('/^\d/', (string) $val)) {
-               $sheet->setCellValue([$colNum, $rowNum], 'G' . $val);
-            } else {
-               // For non-text columns, convert numeric strings to actual numbers
-               if ($rowNum > 1 && is_numeric($val) && $val !== '') {
-                  // Convert to number (float or int)
-                  $val = strpos($val, '.') !== false ? (float) $val : (int) $val;
-               }
-               $sheet->setCellValue([$colNum, $rowNum], $val);
-            }
-            $colNum++;
-         }
-         $rowNum++;
-      }
-
-      // Auto-size columns for header row
-      foreach (range('A', $sheet->getHighestColumn()) as $col) {
-         $sheet->getColumnDimension($col)->setAutoSize(true);
-      }
-
-      // Style header row (bold)
-      $headerRange = 'A1:' . $sheet->getHighestColumn() . '1';
-      $sheet->getStyle($headerRange)->getFont()->setBold(true);
-
-      // Create xlsx file
       $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+      $writer->setPreCalculateFormulas(false);
 
       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       header('Content-Disposition: attachment; filename="' . $filename . '"');
       header('Cache-Control: max-age=0');
 
       $writer->save('php://output');
+      $spreadsheet->disconnectWorksheets();
+      unset($spreadsheet, $writer, $rows);
       exit();
    }
 }

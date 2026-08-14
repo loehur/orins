@@ -1,7 +1,7 @@
 <main>
     <div class="ms-3 me-3 bg-white">
         <div class="rounded border border-primary px-3 pt-2 pb-1">
-            <div class="fw-bold mb-2"><span class="text-primary">Period</span> <small class="text-muted">(max 3 bulan / 92 hari)</small></div>
+            <div class="fw-bold mb-2"><span class="text-primary">Period</span> <small class="text-muted">(max 1 bulan / 31 hari)</small></div>
             <div class="row">
                 <div class="col" style="min-width:270px;min-width:300px">
                     <form class="export-form" action="<?php PV::BASE_URL ?>Export/export" method="POST">
@@ -121,10 +121,10 @@ document.querySelectorAll('.export-form').forEach(function(form) {
             showToast('Tanggal From tidak boleh melewati Date To', 'danger');
             return;
         }
-        var days = Math.round((toDate - fromDate) / 86400000);
-        if (days > 92) {
+        var days = Math.round((toDate - fromDate) / 86400000) + 1;
+        if (days > 31) {
             e.preventDefault();
-            showToast('Maksimal periode 3 bulan (92 hari)', 'warning');
+            showToast('Maksimal periode 1 bulan (31 hari)', 'warning');
             return;
         }
     });
