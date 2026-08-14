@@ -351,6 +351,29 @@
                                                                 <?php } else { ?>
                                                                     <span class="text-nowrap text-success"><small><?= $id . "# " . ucwords($produk) ?></small></span>
                                                                 <?php } ?>
+                                                                <?php
+                                                                $btShow = isset($data['spk_bertahap'][$id]) ? $data['spk_bertahap'][$id] : [];
+                                                                if (count($btShow) > 0) {
+                                                                    $btSumShow = 0;
+                                                                    foreach ($btShow as $bts) {
+                                                                        $btSumShow += (int) $bts['qty'];
+                                                                    }
+                                                                    $btSisaShow = max(0, (int) $do['jumlah'] - $btSumShow);
+                                                                    $btLines = [];
+                                                                    foreach ($btShow as $bts) {
+                                                                        $tgl = !empty($bts['insertTime']) ? date('d/m/y H:i', strtotime($bts['insertTime'])) : '';
+                                                                        $btLines[] = 'T' . (int)$bts['tahap'] . ' ' . (int)$bts['qty'] . 'pcs' . ($tgl !== '' ? ' (' . $tgl . ')' : '');
+                                                                    }
+                                                                ?>
+                                                                    <br>
+                                                                    <span class="badge bg-info text-dark mt-1" title="SPK Bertahap">
+                                                                        <i class="fa-solid fa-layer-group"></i> Bertahap <?= count($btShow) ?> ·
+                                                                        <i class="fa-solid fa-boxes-stacked"></i> <?= (int)$do['jumlah'] ?> ·
+                                                                        <i class="fa-solid fa-scissors"></i> <?= (int)$btSumShow ?> ·
+                                                                        <i class="fa-solid fa-hourglass-half"></i> sisa <?= (int)$btSisaShow ?>
+                                                                    </span>
+                                                                    <div class="small text-muted mt-1"><?= implode(' &nbsp;·&nbsp; ', $btLines) ?></div>
+                                                                <?php } ?>
                                                             </td>
                                                         <tr>
                                                         <tr>
@@ -393,6 +416,35 @@
                                                 </td>
                                                 <td class="text-nowrap td-auto" style="line-height: 120%;"><small>
                                                         <?php
+                                                        $btStatusList = isset($data['spk_bertahap'][$id]) ? $data['spk_bertahap'][$id] : [];
+                                                        if (count($btStatusList) > 0) {
+                                                            foreach ($btStatusList as $bts) {
+                                                                $btSpk = @unserialize($bts['spk_dvs']);
+                                                                if (!is_array($btSpk)) {
+                                                                    $btSpk = [];
+                                                                }
+                                                                echo '<span class="badge bg-info text-dark mb-1"><i class="fa-solid fa-layer-group"></i> T' . (int)$bts['tahap'] . ' · ' . (int)$bts['qty'] . 'pcs</span><br>';
+                                                                foreach ($divisi as $key => $dvs) {
+                                                                    if (!isset($btSpk[$key])) {
+                                                                        continue;
+                                                                    }
+                                                                    if ($btSpk[$key]['status'] == 1) {
+                                                                        $karyawan = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $btSpk[$key]['user_produksi']);
+                                                                        echo '<i class="fa-solid fa-check text-success"></i> ' . $dvs . " (" . $karyawan . ")<br>";
+                                                                    } else {
+                                                                        echo '<i class="fa-regular fa-circle"></i> ' . $dvs . "<br>";
+                                                                    }
+                                                                    if ($btSpk[$key]['cm'] == 1) {
+                                                                        if ($btSpk[$key]['cm_status'] == 1) {
+                                                                            $karyawan = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $btSpk[$key]['user_cm']);
+                                                                            echo '<i class="fa-solid text-success fa-check-double"></i> ' . $dvs . " (" . $karyawan . ")<br>";
+                                                                        } else {
+                                                                            echo '<i class="fa-regular fa-circle"></i> ' . $dvs . '<br>';
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        } else {
                                                         foreach ($divisi as $key => $dvs) {
                                                             if ($divisi_arr[$key]['status'] == 1) {
                                                                 $karyawan = $this->model('Arr')->get($this->dKaryawanAll, "id_karyawan", "nama", $divisi_arr[$key]['user_produksi']);
@@ -409,6 +461,7 @@
                                                                     echo '<i class="fa-regular fa-circle"></i> ' . $dvs . '<br>';
                                                                 }
                                                             }
+                                                        }
                                                         }
                                                         ?>
 

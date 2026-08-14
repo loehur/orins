@@ -105,6 +105,21 @@ class Cek extends Controller
       }
       $data['id_pelanggan'] = $id_pelanggan;
 
+      $data['spk_bertahap'] = [];
+      $cekOrderIds = [];
+      foreach ($data['order'] as $refO => $list) {
+         foreach ($list as $od) {
+            if (isset($od['id_order_data'])) {
+               $cekOrderIds[] = (int) $od['id_order_data'];
+            }
+         }
+      }
+      $cekOrderIds = array_values(array_unique(array_filter($cekOrderIds)));
+      if (count($cekOrderIds) > 0) {
+         $btRows = $this->db(0)->get_where('spk_bertahap', 'id_order_data IN (' . implode(',', $cekOrderIds) . ') ORDER BY tahap ASC');
+         $data['spk_bertahap'] = $this->model('SpkBertahap')->groupByOrderId($btRows);
+      }
+
       $this->view(__CLASS__ . "/order", $data);
    }
 
