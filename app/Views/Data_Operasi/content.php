@@ -66,6 +66,29 @@
         color: #842029;
         font-size: 0.9rem;
     }
+
+    .item-dropdown-btn.dropdown-toggle::after {
+        display: none;
+    }
+
+    .item-dropdown-btn {
+        line-height: 1;
+        padding: 0 0.2rem;
+        color: #6c757d;
+    }
+
+    .item-dropdown-btn i {
+        font-size: 0.85rem;
+        vertical-align: middle;
+    }
+
+    .spk-bertahap-summary {
+        display: block;
+        margin-top: 0.2rem;
+        font-weight: 500;
+        white-space: normal;
+        text-align: left;
+    }
 </style>
 
 <main>
@@ -413,26 +436,10 @@
                                                                 <?php } else { ?>
                                                                     <span class="text-nowrap text-success"><small><?= $id . "# " . ucwords($produk) ?></small></span>
                                                                 <?php } ?>
-                                                                <?php
-                                                                $btShow = isset($data['spk_bertahap'][$id]) ? $data['spk_bertahap'][$id] : [];
-                                                                if (count($btShow) > 0) {
-                                                                    $btSumShow = 0;
-                                                                    foreach ($btShow as $bts) {
-                                                                        $btSumShow += (int) $bts['qty'];
-                                                                    }
-                                                                    $btSisaShow = max(0, (int) $do['jumlah'] - $btSumShow);
-                                                                ?>
-                                                                    <span class="badge bg-info text-dark ms-1" title="SPK Bertahap">
-                                                                        <i class="fa-solid fa-layer-group"></i> Bertahap <?= count($btShow) ?> ·
-                                                                        <i class="fa-solid fa-boxes-stacked"></i> <?= (int)$do['jumlah'] ?> ·
-                                                                        <i class="fa-solid fa-scissors"></i> <?= (int)$btSumShow ?> ·
-                                                                        <i class="fa-solid fa-hourglass-half"></i> sisa <?= (int)$btSisaShow ?>
-                                                                    </span>
-                                                                <?php } ?>
 
                                                                 <div class="btn-group">
-                                                                    <button type="button" class="border-0 bg-white ps-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                        <span class="visually-hidden">Toggle Dropdown</span>
+                                                                    <button type="button" class="border-0 bg-white item-dropdown-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Menu item">
+                                                                        <i class="fa-solid fa-caret-down"></i>
                                                                     </button>
                                                                     <ul class="dropdown-menu p-0 border-0 shadow-sm text-sm">
                                                                         <?php if (in_array($this->userData['user_tipe'], PV::PRIV[2])) { // hanya kasir
@@ -479,6 +486,22 @@
                                                                             <?php } ?>
                                                                         </span>
                                                                     <?php } ?>
+                                                                <?php } ?>
+                                                                <?php
+                                                                $btShow = isset($data['spk_bertahap'][$id]) ? $data['spk_bertahap'][$id] : [];
+                                                                if (count($btShow) > 0) {
+                                                                    $btSumShow = 0;
+                                                                    foreach ($btShow as $bts) {
+                                                                        $btSumShow += (int) $bts['qty'];
+                                                                    }
+                                                                    $btSisaShow = max(0, (int) $do['jumlah'] - $btSumShow);
+                                                                ?>
+                                                                    <span class="badge bg-info text-dark spk-bertahap-summary" title="SPK Bertahap">
+                                                                        <i class="fa-solid fa-layer-group"></i> Bertahap <?= count($btShow) ?> ·
+                                                                        <i class="fa-solid fa-boxes-stacked"></i> <?= (int)$do['jumlah'] ?> ·
+                                                                        <i class="fa-solid fa-scissors"></i> <?= (int)$btSumShow ?> ·
+                                                                        <i class="fa-solid fa-hourglass-half"></i> sisa <?= (int)$btSisaShow ?>
+                                                                    </span>
                                                                 <?php } ?>
                                                             </td>
                                                         </tr>
